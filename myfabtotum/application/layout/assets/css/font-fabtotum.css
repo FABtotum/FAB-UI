@@ -1,0 +1,86 @@
+@font-face {
+ font-family: "fabtotum";
+  src:url("../fonts/fabtotum.eot");
+  src:url("../fonts/fabtotum.eot?#iefix") format("embedded-opentype"),
+    url("../fonts/fabtotum.woff") format("woff"),
+    url("../fonts/fabtotum.ttf") format("truetype"),
+    url("../fonts/fabtotum.svg#fabtotum") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-fab-"], [class*=" icon-fab-"] {
+	font-family: 'fabtotum';
+
+    
+    display: inline-block;
+
+font-style: normal;
+font-weight: normal;
+line-height: 1;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+
+
+.fab-fw {
+    width: 1.2857142857142858em;
+    text-align: center;
+}
+
+.fab-lg {
+    font-size: 1.3333333333333333em;
+    line-height: .75em;
+    vertical-align: -15%;
+}
+
+.fab-4x {
+    font-size: 4em;
+}
+
+.fab-2x {
+    font-size: 2em;
+}
+
+.icon-fab-plugin:before {
+	content: "\e605";
+}
+.icon-fab-print:before {
+	content: "\e604";
+}
+.icon-fab-usb:before {
+	content: "\e600";
+}
+.icon-fab-term:before {
+	content: "\e601";
+}
+.icon-fab-scan:before {
+	content: "\e602";
+}
+.icon-fab-printable:before {
+	content: "\e603";
+}
+.icon-fab-not-printable:before {
+	content: "\e606";
+}
+.icon-fab-mill:before {
+	content: "\e607";
+}
+.icon-fab-manager:before {
+	content: "\e608";
+}
+.icon-fab-jog:before {
+	content: "\e609";
+}
+.icon-fab-home:before {
+	content: "\e60a";
+}
+.icon-fab-gcode:before {
+	content: "\e60b";
+}
+.icon-fab-e:before {
+	content: "\e60c";
+}
+.icon-fab-a:before {
+	content: "\e60d";
+}

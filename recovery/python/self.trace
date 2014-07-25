@@ -1,0 +1,148 @@
+Starting self test
+Front door switch test: Done!
+Building plane recognition test: Done!
+Starting self test
+Front door switch test: Done!
+Building plane recognition test: Done!
+Heating test starting...
+OK : Extruder heating
+OK : Bed heating
+OK : Milling motor stress test
+OK : Probe test
+OK : Head Light test
+OK : Laser test
+Now testing ambient light...
+OK : Ambient light test
+Homing procedure: Done!
+Errors:0
+true
+Starting self test
+Front door switch test: Done!
+Building plane recognition test: Done!
+Heating test starting...
+OK : Extruder heating(ok T:200.1 /200.0 B:28.0 /0.0 T0:200.1 /200.0 @:0 B@:0)
+OK : Bed heating(ok T:200.1 /200.0 B:28.0 /0.0 T0:200.1 /200.0 @:0 B@:0)
+Brushless motor test...
+RPM: 4000
+RPM: 5000
+RPM: 6000
+RPM: 7000
+RPM: 8000
+RPM: 9000
+RPM: 10000
+RPM: 11000
+RPM: 12000
+RPM: 13000
+OK : Milling motor stress test
+(visual confirmation) : Probe down
+(visual confirm) : Light test
+OK : Head Light test
+(visual confirm) : Laser test
+OK : Laser test
+(visual confirm) Now testing ambient light...
+OK : Ambient light test
+Homing procedure: Done!
+------------------------------
+-----------COMPLETED----------
+------------------------------
+Errors:0
+true
+Starting self test
+Front door switch test: Done!
+Building plane recognition test: Done!
+Heating test starting...
+OK : Extruder heating(ok T:197.1 /200.0 B:28.2 /0.0 T0:197.1 /200.0 @:86 B@:0)
+OK : Bed heating(ok T:197.1 /200.0 B:28.2 /0.0 T0:197.1 /200.0 @:86 B@:0)
+Brushless motor test...
+RPM: 4000
+RPM: 5000
+RPM: 6000
+RPM: 7000
+RPM: 8000
+RPM: 9000
+RPM: 10000
+RPM: 11000
+RPM: 12000
+RPM: 13000
+OK : Milling motor stress test
+(visual confirmation) : Probe down
+(visual confirm) : Light test
+OK : Head Light test
+(visual confirm) : Laser test
+OK : Laser test
+(visual confirm) Now testing ambient light...
+OK : Ambient light test
+Homing procedure: Done!
+------------------------------
+-----------COMPLETED----------
+------------------------------
+Errors:0
+true
+Starting self test
+Front door switch test: Done!
+Building plane recognition test: Done!
+Heating test starting...
+OK : Extruder heating(ok T:200.3 /200.0 B:28.3 /0.0 T0:200.3 /200.0 @:27 B@:0)
+OK : Bed heating(ok T:200.3 /200.0 B:28.3 /0.0 T0:200.3 /200.0 @:27 B@:0)
+Brushless motor test...
+RPM: 5000
+RPM: 6000
+RPM: 7000
+RPM: 8000
+RPM: 9000
+RPM: 10000
+RPM: 11000
+RPM: 12000
+RPM: 13000
+OK : Milling motor stress test
+(visual confirmation) : Probe down
+(visual confirm) : Light test
+OK : Head Light test
+(visual confirm) : Laser test
+OK : Laser test
+(visual confirm) Now testing ambient light...
+OK : Ambient light test
+Homing procedure: Done!
+------------------------------
+-----------COMPLETED----------
+------------------------------
+Errors:0
+true
+Starting self test
+Front door switch test: Done!
+Building plane recognition test: Done!
+Heating test starting...
+Starting self test
+Front door switch test: Done!
+Building plane recognition test: Done!
+Heating test starting...
+Starting self test
+Front door switch test: Done!
+Building plane recognition test: Done!
+Heating test starting...
+OK : Extruder heating(200.1)
+OK : Bed heating(46.9)
+Brushless motor test...
+RPM: 5000
+RPM: 6000
+RPM: 7000
+RPM: 8000
+RPM: 9000
+RPM: 10000
+RPM: 11000
+RPM: 12000
+RPM: 13000
+OK : Milling motor stress test
+(visual confirmation) : Probe down
+(visual confirm) : Light test
+OK : Head Light test
+(visual confirm) : Laser test
+OK : Laser test
+(visual confirm) Now testing ambient light...
+OK : Ambient light test
+Homing procedure: Done!
+------------------------------
+-----------COMPLETED----------
+------------------------------
+Errors:0
+true
