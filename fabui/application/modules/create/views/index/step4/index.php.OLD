@@ -1,0 +1,96 @@
+<div class="step-pane" id="step4">
+	<div class="row">
+		<div class="col-sm-6">
+			<h2 class="text-primary">
+				 Are you ready?
+			</h2>
+		</div>
+	</div>
+
+	<div class="row">
+
+		<div class="col-sm-9">
+			<div class="row">
+
+				<div class="col-sm-4">
+
+					<div class="row">
+						<div class="col-sm-6">
+							<img
+								src="<?php echo base_url() ?>/application/modules/create/assets/img/storyboardicon-01.png"
+								alt="" style="width: 100%;">
+						</div>
+						<div class="col-sm-6">
+
+							<div class="row">
+
+								<div class="col-sm-12">
+									<h1 class="text-align-center"><span class="badge">1</span></h1>
+								</div>
+							</div>
+							
+							<div class="row">
+
+								<div class="col-sm-12">
+									<h1 class="text-align-center">Make sure that the working plane
+										is clean and free to use</h1>
+								</div>
+							</div>
+
+
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<div class="col-sm-4">
+
+					<div class="row">
+						<div class="col-sm-6">
+							<img
+								src="<?php echo base_url() ?>/application/modules/create/assets/img/storyboardicon-02.png"
+								alt="" style="width: 100%;">
+						</div>
+						<div class="cols-sm-6">
+							<h1 class="text-align-center">Close the cover</h1>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="col-sm-4">
+
+					<div class="row">
+						<div class="col-sm-6">
+							<img
+								src="<?php echo base_url() ?>/application/modules/create/assets/img/storyboardicon-03.png"
+								alt="" style="width: 100%;">
+						</div>
+						<div class="cols-sm-6">
+							<h1 class="text-align-center">Click print</h1>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+		<div class="col-sm-3">
+
+			<div class="well">
+				<div class="btn-group btn-group-justified">
+					<a id="print-button" href="javascript:void(0);"
+						class="btn btn-default">Print</a>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+
+</div>
