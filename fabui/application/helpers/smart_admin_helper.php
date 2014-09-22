@@ -14,11 +14,13 @@ function widget($id, $title,  $attributes = array(), $content, $well = false, $n
 	$_default_attributes['data-widget-editbutton']       = 'false';
 	$_default_attributes['data-widget-togglebutton']     = 'false';
 	$_default_attributes['data-widget-deletebutton']     = 'false';
-	$_default_attributes['data-widget-fullscreenbutton'] = 'false';
+	$_default_attributes['data-widget-fullscreenbutton'] = 'true';
 	$_default_attributes['data-widget-custombutton']     = 'false';
 	$_default_attributes['data-widget-collapsed']        = 'false';
 	$_default_attributes['data-widget-sortable']         = 'false';
 	$_default_attributes['data-widget-icon']             = '';
+	
+	
 	
 	
 	$attr = is_array($attributes) ? array_merge($_default_attributes, $attributes) : $_default_attributes;

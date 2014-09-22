@@ -64,7 +64,7 @@
     <div class="col-md-4 col-lg-4"  id="bed-slider-container">
         <div class="well well-sm text-center">
         	<h4>Bed <i class="fab-lg fab-fw icon-fab-term txt-color-red"></i></h4>
-            <h5>actual:&nbsp;<span id="label-temp2"><?php echo $bed_temp == '' ? 0 : $bed_temp; ?></span>°C&nbsp;&nbsp;-&nbsp;&nbsp;target:<span id="label-temp2-target">&nbsp;<?php echo $_bed_temperature_target ?></span> °C </h5>
+            <h5>actual:&nbsp;<span id="label-temp2"><?php echo $_bed_temperature == '' ? 0 : $_bed_temperature; ?></span>°C&nbsp;&nbsp;-&nbsp;&nbsp;target:<span id="label-temp2-target">&nbsp;<?php echo $_bed_temperature_target ?></span> °C </h5>
             <div id="temp2" data-action="temp2" class="sliders margin-bottom-10"></div>
         </div>
     </div>

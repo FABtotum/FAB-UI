@@ -5,7 +5,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
 
 /** LOAD FROM USB DISK */
 $_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
-$_command     = 'sudo python /var/www/fabui/python/usb_browser.py  --dest='.$_destination;
+$_command     = 'sudo python '.PYTHON_PATH.'usb_browser.py  --dest='.$_destination;
 shell_exec($_command);
 
 

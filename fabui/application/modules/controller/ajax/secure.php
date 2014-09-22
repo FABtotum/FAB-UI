@@ -26,7 +26,7 @@ $serial->serialflush();
 
 $serial->deviceClose();
 
-$_response_items['command'] = $command;
+$_response_items['command']  = $command;
 $_response_items['response'] = $response;
 
 header('Content-Type: application/json');

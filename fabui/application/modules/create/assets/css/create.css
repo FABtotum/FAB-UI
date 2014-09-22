@@ -136,3 +136,14 @@
 .noUi-handle:hover {
     background: #6c6c6c !important;
 }
+
+
+#ace-editor pre {
+	line-height: 20px;
+}
+
+#ace-editor strong {
+	font-size: 16px;
+	color: #346597;
+	
+}

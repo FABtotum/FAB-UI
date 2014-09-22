@@ -23,21 +23,26 @@
                 submitButton.addEventListener("click", function() {
                     
                     if($("#object-form").valid()){
-                        
-                        openWait("Uploading e saving files...");
-                        
-                        if(myDropzone.getQueuedFiles().length > 0){
+                    	
+                    	$("#save-object").addClass("disabled");
+                    	$("#save-object").html('<i class="fa fa-save"></i> Saving');
+                    	
+                    	if(myDropzone.getQueuedFiles().length > 0){
                             
+                            openWait("Uploading e saving files..")
                             myDropzone.processQueue(); 
+                        }else{
+                        	
+                        	add_usb_files();
+                        	$("#object-form").submit();
+                        	return false;
+                        	
                         }
+                    	
                              
                         
                     }else{
-                        
-                        add_usb_files();
-                        $("#object-form").submit();
-                        return false;
-                        
+                      
                         
                     }
                     
@@ -52,7 +57,7 @@
                         
                         if($("#object-form").valid()){
                             
-                            openWait("Uploading e saving files...");
+                            /*openWait("Uploading e saving files...2");*/
                             $('#files').val(files.toString());
                             add_usb_files();
                             $("#object-form").submit();
@@ -248,6 +253,9 @@ function folder_item(item, parent){
 
 
 function add_usb_files(){
+	
+	
+	
     
      if($('.tree').length > 0){
                             

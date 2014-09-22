@@ -9,6 +9,7 @@ class Database {
     protected $_database;
     protected $_db;
     protected $_result;
+	protected $_num_rows;
     
     /**
      * 
@@ -30,6 +31,7 @@ class Database {
         $this->_username = DB_USERNAME;
         $this->_password = DB_PASSWORD;
         $this->_database = DB_DATABASE;
+		$this->_num_rows = 0;
         
         $this->_db = new mysqli($this->_hostname, $this->_username, $this->_password, $this->_database);
         
@@ -51,13 +53,32 @@ class Database {
         $this->_result = $this->_db->query($query);
         
         if(is_object($this->_result)){
-
-            $rows = array();
+        	
+			
+        	$this->_num_rows = $this->_result->num_rows;
+			
+			if($this->_result->num_rows){
+				
+				$rows = array();
             
-            while($row = $this->_result->fetch_assoc()){
-                $rows[] = $row;
-            }
-            return $rows;
+	            while($row = $this->_result->fetch_assoc()){
+	                $rows[] = $row;
+	            }
+				
+				
+				if($this->_result->num_rows == 1){
+					return $rows[0];
+				}
+				
+				return $rows;
+				
+            	
+				
+			}else{
+				return false;
+			}
+
+            
           
         }
     }
@@ -142,6 +163,11 @@ class Database {
          
         
     }
+	
+	
+	public function get_num_rows(){
+		return $this->_num_rows;
+	}
     
     
     

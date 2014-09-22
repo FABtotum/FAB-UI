@@ -30,6 +30,8 @@
             "sAjaxSource": '<?php echo module_url('objectmanager').'ajax/all_objects_for_table.php' ?>'
             
         });
+        
+        $("[rel=tooltip]").tooltip();
 
 	});
 

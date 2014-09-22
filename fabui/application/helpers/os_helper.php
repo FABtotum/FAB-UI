@@ -8,18 +8,14 @@ if ( ! function_exists('installed_plugins'))
 	
 	function exist_process($pid){
 		
-        //echo $pid;
+        
 		$cmd = 'sudo ps '. $pid;
         
-        //echo '>>'.posix_getsid($pid);
-		
-		// run the system command and assign output to a variable ($output)
+       
 		exec($cmd, $output, $result);
-        
-        //$res = shell_exec($cmd);
-        
-        //print_r($res);
 		
+		
+       
 		// check the number of lines that were returned
 		if(count($output) >= 2){
 		

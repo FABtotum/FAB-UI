@@ -40,11 +40,11 @@ if($_output_name == ''){
 $_output_name .= '.asc';
 
 
-$_output_file = '/var/www/temp/'.$_output_name;
+$_output_file = TEMP_PATH.$_output_name;
 
 
 /** EXEC JOING COMMAND */
-$_command_join = 'sudo python /var/www/fabui/python/join.py '.$_output_file.' '.$_string_files;
+$_command_join = 'sudo python '.PYTHON_PATH.'join.py '.$_output_file.' '.$_string_files;
 $_shell_response = shell_exec($_command_join);
 
 

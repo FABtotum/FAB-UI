@@ -9,20 +9,8 @@
     var trace_file;
     var monitor_file;
 
-    $(function () {
-        
-        /*
-        editor = ace.edit("editor");
-        editor.getSession().setMode("ace/mode/text");
-        editor.setTheme("ace/theme/terminal");
-        editor.renderer.setShowGutter(false);
-        editor.renderer.setShowPrintMargin(false);
-        editor.setHighlightActiveLine(false);
-        editor.setReadOnly(true);
-        */
-        
+    $(function () {       
         $("#start").on('click', self_test);
-          
     });
     
     
@@ -30,9 +18,13 @@
     function self_test(){
         
         
-        
-        
         var remote = $('#send-report').is(':checked') ? 1 : 0 ;
+        $("#editor").html(''); 
+        
+        trace_file = '';
+        monitor_file = '';
+        
+        finished = false;
         
         $("#start").addClass("disabled");
         $("#send-report").attr("disabled", 'disabled');
@@ -112,10 +104,7 @@
 			  dataType: 'text'
         }).done(function( response ) {
             
-            /*
-            editor.getSession().setValue(response);
-            editor.navigateLineEnd();
-            */
+          
             
             $("#editor").html(response);
             $('#editor').scrollTop(1E10);

@@ -21,15 +21,7 @@
 	            
 	            
 	            ask_password(false);
-	            
-	            
-	            
-	            
-				
-				            
-	            
-	            
-	            
+
 		});
 		
 		

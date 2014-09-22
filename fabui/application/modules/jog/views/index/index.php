@@ -1,12 +1,10 @@
 <div class="row">
-	<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+	<div class="col-xs-2 col-sm-2 col-md-1 col-lg-2">
 		<h1 class="page-title txt-color-blueDark">
-            <i class="icon-fab-jog fab-fw"></i>
-			</i>
-			Jog
+            <i class="icon-fab-jog fab-fw"></i>&nbsp;Jog
 		</h1>
 	</div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right margin-top-10">
+    <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 text-right margin-top-10">
 		<div class="onoffswitch-container">
 			<span class="onoffswitch-title">Motors</span> 
 			<span class="onoffswitch">
@@ -17,6 +15,7 @@
 				</label> 
 			</span> 
 		</div>
+		<!--
         <div class="onoffswitch-container">
 			<span class="onoffswitch-title">Coordinates</span> 
 			<span class="onoffswitch">
@@ -27,6 +26,7 @@
 				</label> 
 			</span> 
 		</div>
+		-->
         <div class="onoffswitch-container">
 			<span class="onoffswitch-title">Light</span> 
 			<span class="onoffswitch">
@@ -43,13 +43,13 @@
 <div class="row">
     <div class="col-sm-6">
         <div class="well ">
-            <div class="btn-group" style="margin-top: 10px;">
+            
                 <a rel="tooltip" id="home-all-axis" href="javascript:void(0)" type="button" class="btn btn-default">Home All axis</a>
 				<a rel="tooltip" id="zero-all"      href="javascript:void(0)" type="button" class="btn btn-default">Zero All</a>
 				<a rel="tooltip" id="position"      href="javascript:void(0)" type="button" class="btn btn-default">Position</a>
 				<a rel="tooltip" id="get-temp-ext"  href="javascript:void(0)" type="button" class="btn btn-default">Temperature</a>
                 <a rel="tooltip" id="bed-align"     href="javascript:void(0)" type="button" class="btn btn-default macro">Auto bed leveling</a>
-			</div>
+			
         </div>
     </div>
     
@@ -59,6 +59,12 @@
             
             <div class="row">
                 <div class="col-sm-12">
+                	
+                	
+                	<a class="btn btn-default" href="javascript:void(0)" id="reset-controller">Reset controller</a>
+                	
+                	
+                	<!--
                     <div class="btn-group margin-top-10">
                         <a id="save-position" href="javascript:void(0)" type="button" class="btn btn-default">Save position</a>
                     </div>
@@ -70,6 +76,7 @@
                         <a  id="pos-4" href="javascript:void(0)" type="button" class="btn btn-default saved-position" data-code="" style="display:none;">Pos 4</a>
                         <a  id="pos-5" href="javascript:void(0)" type="button" class="btn btn-default saved-position" data-code="" style="display:none;">Pos 5</a>
                     </div>
+                   -->
                 </div>
             </div>
             
@@ -78,12 +85,16 @@
     </div>
     
 </div>
+
+
 <div class="row">
     <div class="col-sm-6">
         <div class="well text-center">
         	<h4>Extruder <i class="fab-lg fab-fw icon-fab-term"></i></h4>
             <h5>actual: <span id="ext-actual-degrees"><?php echo $_ext_temp ?></span>&deg; - target:&nbsp;<span class="" id="ext-degrees"><?php echo $_ext_temp ?></span>&deg; C </h5>
             <div id="ext-temp" class="noUiSlider"></div>
+            
+
         </div>
     </div>
     <div class="col-sm-6">
@@ -97,82 +108,128 @@
 <div class="row">
 	<div class="col-sm-12">
 		<div class="">
+			
+			
+			
 			<div class="row">
        
 				<div class="col-sm-8">
-					<div class="well text-center" style="height: 266px;">
-						<div class="btn-group-vertical">
-							<a href="javascript:void(0)" data-attribue-direction="up-left" data-attribute-keyboard="103" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-								<i class="fa fa-arrow-left fa-1x fa-rotate-45">
-								</i>
-							</a>
-							<a href="javascript:void(0)" data-attribue-direction="left" data-attribute-keyboard="100" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-								<span class="glyphicon glyphicon-arrow-left ">
-								</span>
-							</a>
-							<a href="javascript:void(0)" data-attribue-direction="down-left" data-attribute-keyboard="97" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-								<i class="fa fa-arrow-down fa-rotate-45 ">
-								</i>
-							</a>
+					<div class="well text-center" style="">
+						
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="smart-form" style="background: none; margin-top: -30px">
+									<fieldset style="background: none;">
+										<div class="row">
+											<section class="col col-4">
+												<label class="label text-center">Step (mm)</label>
+												<label class="input-sx">
+													<input class="text-center" type="text" id="step" value="10">
+												</label>
+											</section>
+											<section class="col col-4">
+												<label class="label text-center">Feedrate</label>
+												<label class="input-sx">
+													<input class="text-center" type="text" id="feedrate" value="1000">
+												</label>
+											</section>
+											<section class="col col-4">
+												<label class="label text-center">Z Step (mm)</label>
+												<label class="input-sx"> 
+													<input class="text-center" type="text" id="z-step" value="5">
+												</label>
+											</section>
+											
+										</div>
+
+									</fieldset>
+								</div>
+							</div>
 						</div>
-						<div class="btn-group-vertical">
-							<a href="javascript:void(0)" data-attribue-direction="up" data-attribute-keyboard="104" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-								<i class="fa fa-arrow-up fa-1x">
-								</i>
-							</a>
-							<a href="javascript:void(0)" data-attribue-direction="home" data-attribute-keyboard="101" class="btn btn-default btn-lg btn-circle btn-xl directions rotondo">
-								<i class="fa fa-bullseye">
-								</i>
-							</a>
-							<a href="javascript:void(0)" data-attribue-direction="down" data-attribute-keyboard="98" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-								<i class="glyphicon glyphicon-arrow-down ">
-								</i>
-							</a>
-						</div>
-						<div class="btn-group-vertical">
-							<a href="javascript:void(0)" data-attribue-direction="up-right" data-attribute-keyboard="105" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-								<i class="fa fa-arrow-up fa-1x fa-rotate-45">
-								</i>
-							</a>
-							<a href="javascript:void(0)" data-attribue-direction="right" data-attribute-keyboard="102" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-								<span class="glyphicon glyphicon-arrow-right">
-								</span>
-							</a>
-							<a href="javascript:void(0)" data-attribue-direction="down-right" data-attribute-keyboard="99" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-								<i class="fa fa-arrow-right fa-rotate-45">
-								</i>
-							</a>
-						</div>
-                        
-                        
-                        <div class="btn-group-vertical" style="margin-left: 10px;">
-							<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="10" data-attribute-function="zdown">
-								<i class="fa fa-angle-double-up"></i>&nbsp;10
-							</a>
-							<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="5" data-attribute-function="zdown">
-								<i class="fa fa-angle-double-up">
-								</i>&nbsp;5
-							</a>
-							<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zdown">
-								<i class="fa fa-angle-double-up">
-								</i>&nbsp;1
-							</a>
-                            <hr />
-							<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zup">
-								<i class="fa fa-angle-double-down">
-								</i>&nbsp;1
-							</a>
-							<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="5" data-attribute-function="zup">
-								<i class="fa fa-angle-double-down">
-								</i>&nbsp;5
-							</a>
-							<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="10" data-attribute-function="zup">
-								<i class="fa fa-angle-double-down">
-								</i>&nbsp;10
-							</a>
+						<div class="row">
+							<div class="col-sm-12">
+						
+								<div class="btn-group-vertical">
+									<a href="javascript:void(0)" data-attribue-direction="up-left" data-attribute-keyboard="103" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-left fa-1x fa-rotate-45">
+										</i>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="left" data-attribute-keyboard="100" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<span class="glyphicon glyphicon-arrow-left ">
+										</span>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="down-left" data-attribute-keyboard="97" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-down fa-rotate-45 ">
+										</i>
+									</a>
+								</div>
+								<div class="btn-group-vertical">
+									<a href="javascript:void(0)" data-attribue-direction="up" data-attribute-keyboard="104" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-up fa-1x">
+										</i>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="home" data-attribute-keyboard="101" class="btn btn-default btn-lg btn-circle btn-xl directions rotondo">
+										<i class="fa fa-bullseye">
+										</i>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="down" data-attribute-keyboard="98" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="glyphicon glyphicon-arrow-down ">
+										</i>
+									</a>
+								</div>
+								<div class="btn-group-vertical">
+									<a href="javascript:void(0)" data-attribue-direction="up-right" data-attribute-keyboard="105" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-up fa-1x fa-rotate-45">
+										</i>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="right" data-attribute-keyboard="102" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<span class="glyphicon glyphicon-arrow-right">
+										</span>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="down-right" data-attribute-keyboard="99" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-right fa-rotate-45">
+										</i>
+									</a>
+								</div>
+		                        
+		                        
+		                        <div class="btn-group-vertical" style="margin-left: 10px;">
+		                        	<!--
+									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="10" data-attribute-function="zdown">
+										<i class="fa fa-angle-double-up"></i>&nbsp;10
+									</a>
+									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="5" data-attribute-function="zdown">
+										<i class="fa fa-angle-double-up">
+										</i>&nbsp;5
+									</a>
+									-->
+									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zdown">
+										<i class="fa fa-angle-double-up">
+										</i>&nbsp;Z -
+									</a>
+		                            <hr />
+									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zup">
+										<i class="fa fa-angle-double-down">
+										</i>&nbsp; Z +
+									</a>
+									<!--
+									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="5" data-attribute-function="zup">
+										<i class="fa fa-angle-double-down">
+										</i>&nbsp;5
+									</a>
+									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="10" data-attribute-function="zup">
+										<i class="fa fa-angle-double-down">
+										</i>&nbsp;10
+									</a>
+									-->
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
+			
+				
+				
 				<div class="col-sm-4 margin-bottom-10">
                             <ul id="myTab1" class="nav nav-tabs tabs-pull-right bordered">
                                 <li><a href="#modeb" data-toggle="tab" data-mode="e" class="extruder-mode"> <i class="fab-lg fab-fw icon-fab-e fab-2x"></i></a></li>
@@ -224,17 +281,29 @@
         <div class="well">      
             <div class="row" style="margin-left:0px; margin-right: 0px;">
                 <div class="col-sm-6 margin-bottom-10">
-                    <p>MDI</p>
+                    <p>MDI <a id="gcode-manual" data-toggle="modal" href="<?php echo site_url("jog/manual") ?>" data-target="#manula-modal" class="pull-right" href="javascript:void(0);">Help</a></p>
                     <textarea class="form-control" id="mdi" style="height: 200px; text-transform: uppercase; resize: none"></textarea>
-                    <!--<div class="well" id="mdi" style="height: 200px; text-transform:uppercase;"></div>-->
+                    
                     <button id="run" type="button" class="btn btn-primary btn-sm btn-block">Run</button>
                 </div>
                 <div class="col-sm-6">
                     <p>Console <a id="clear-console" class="pull-right" href="javascript:void(0);">Clear</a></p>
-                    <!--<div class="well" id="console" style="height: 200px;"></div>-->
+                    
                     <pre id="console" style="height: 200px; overflow: auto !important;"></pre>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true" id="manula-modal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      
+
+    </div>
+  </div>
+</div>
+
+

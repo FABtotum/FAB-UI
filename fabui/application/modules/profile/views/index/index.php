@@ -13,18 +13,18 @@
 				<li class="active">
 					<a href="#basic-info" data-toggle="tab"><i class="fa fa-fw fa-lg fa-pencil-square-o"></i>&nbsp;Basic info</a>
 				</li>
-				<!--
+				
 				<li>
 					<a href="#password-tab" data-toggle="tab"><i class="fa fa-fw fa-lg fa-key"></i>&nbsp;Password</a>
 				</li>
-				-->
+				
 				<li>
 					<a href="#theme-tab" data-toggle="tab"><i class="fa fa-fw fa-lg fa-delicious"></i>&nbsp;Theme</a>
 				</li>
 
 			</ul>
 			<div id="myTabContent1" class="tab-content padding-10">
-				<div class="tab-pane fade in active" id="basic-info">
+				<div class="tab-pane fade in active margin-top-10" id="basic-info">
 
 					<div class="row">
 
@@ -85,7 +85,32 @@
 					</div>
 
 				</div>
-				<div class="tab-pane fade" id="password-tab">
+				<div class="tab-pane fade margin-top-10" id="password-tab">
+					
+					<div class="row">
+						<div class="col-md-6">
+							<form id="password-form" >
+								<div class="form-group">
+									<label>Old password</label>
+									<input name="old_password" id="old_password" type="password"  class="form-control">
+								</div>
+								
+								<div class="form-group">
+									<label>New password</label>
+									<input name="new_password" id="new_password" type="password"  class="form-control">
+								</div>
+							
+								<div class="form-group">
+									<label>Confirm new password</label>
+									<input name="confirm_new_password" id="confirm_new_password" type="password"  class="form-control">
+								</div>
+							
+							</form>
+						</div>
+						
+						
+							
+					</div>
 
 				</div>
 

@@ -40,7 +40,7 @@ $db = new Database();
 
 /** GET TASK FROM DB */
 $_task = $db->query('select * from sys_tasks where id='.$_task_id);
-$_task = $_task[0];
+//$_task = $_task[0];
 
 /** LOAD TASK'S ATTRIBUTES */
 $_attributes = json_decode($_task['attributes'], TRUE);
@@ -236,6 +236,13 @@ if($_type == 'update_fw'){
     $_command_close = 'sudo python /var/www/fabui/python/gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log > /dev/null &';
     shell_exec($_command_close);
     sleep(2);
+}
+
+
+/** SELF TEST */
+if($_type=="self_test"){
+	/** SLEEP MORE TO LET THE UI REFRESH */	
+	sleep(5);
 }
 
 

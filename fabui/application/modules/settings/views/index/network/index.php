@@ -3,11 +3,20 @@
     <div class="row margin-top-10">
     	
     	<div class="col-sm-12">
-    		
-    		<div class="well-sm no-border pull-right">
-    			<h4><i class="fa fa-sitemap <?php echo $_SERVER['SERVER_ADDR'] == $lan['ip'] ? ' txt-color-green' : ''; ?>"></i> 
-    				Lan: <a target="_blank" href="http://<?php echo $lan['ip'] ?>"><?php echo $lan['ip'] ?></a>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-signal <?php echo $_SERVER['SERVER_ADDR'] == $con_wlan['ip'] ? ' txt-color-green' : ''; ?>"></i>&nbsp;Wifi: <a target="_blank" href="http://<?php echo $con_wlan['ip']; ?>" id="wifi-ip"><?php echo $con_wlan['ip'] ?></a></h4>
-    		</div>
+
+   			<div class="well-sm no-border pull-right">
+   				<h4>
+   					<?php if(isset($lan['name'])): ?>
+   						<i class="fa fa-sitemap <?php echo $_SERVER['SERVER_ADDR'] == $lan['ip'] ? ' txt-color-green' : ''; ?>"></i>
+   						Lan: <a target="_blank" href="http://<?php echo $lan['ip'] ?>"><?php echo $lan['ip'] ?></a>&nbsp;&nbsp;&nbsp;&nbsp;
+   					<?php endif; ?>
+   					<?php if(isset($con_wlan['name'])):?>
+   						<i class="fa  fa-wifi <?php echo $_SERVER['SERVER_ADDR'] == $con_wlan['ip'] ? ' txt-color-green' : ''; ?>"></i>
+   						Wifi: <a target="_blank" href="http://<?php echo $con_wlan['ip']; ?>" id="wifi-ip"><?php echo $con_wlan['ip'] ?></a>
+   					<?php endif; ?>
+   					
+   				</h4>
+   			</div>
     		
     	</div>
     	
@@ -17,55 +26,9 @@
         <div class="col-md-12">
             <div class="well no-border">
                 <form id="advanced-form" class="form-horizontal" action="<?php echo site_url('settings/network') ?>" method="post">
-                    <!--
+                    
                     <fieldset>
-                        <legend><i class="fa fa-sitemap"></i> &nbsp;Lan</legend>
-                        
-                        <?php if(sizeof($lan) > 0): ?>
-                        	
-                        	
-                        	<table class="table table-striped table-forum">
-                        		
-                        		<tbody>
-                        			
-                        			<tr>
-                        				<td style="width: 5%;">
-                        					<!--
-                        					<label class="radio">
-												<input type="radio" checked="true" name="net" data-type="lan" value="lan-<?php echo $lan['name'];?>" /><i></i>
-											</label>
-											
-                        				</td>
-                        				<td class="text-left">
-                        					
-                        					<h4>
-												<a class="" href="javascript:void(0)"> <?php echo $lan['name'].' '.$lan['type'] ?>
-					                            
-												</a>
-												<small>
-													<?php echo $lan[ 'ip'] ?>
-												</small>
-					                           
-											</h4>
-                        					
-                        				</td>
-                        			</tr>
-                        		</tbody>
-                        		
-                        		
-                        		
-                        	</table>
-                        	
-                        	
-                        	
-                        	
-                        <?php endif; ?>
-                        
-                        
-                    </fieldset>
-                    -->
-                    <fieldset>
-                        <h4 style="margin-bottom: 10px;"><i class="fa fa-rss"></i> &nbsp; Available networks in range</h4>
+                        <h4 style="margin-bottom: 10px;"><i class="fa fa-wifi"> </i> &nbsp; Available networks in range</h4>
                         
                         <?php if(sizeof($wlan)> 0): ?>
                         	

@@ -4,8 +4,8 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
 
 /** CREATE LOG FILES */
 $_time                 = $_POST['time'];
-$_destination_trace    = '/var/www/temp/check_pre_scan_'.$_time.'.trace';
-$_destination_response = '/var/www/temp/check_pre_scan_'.$_time.'.log';
+$_destination_trace    = TEMP_PATH.'check_pre_scan_'.$_time.'.trace';
+$_destination_response = TEMP_PATH.'check_pre_scan_'.$_time.'.log';
 
 
 write_file($_destination_trace, '', 'w');
@@ -16,7 +16,7 @@ chmod($_destination_response, 0777);
 
 /** EXEC COMMAND */
 
-$_command        = 'sudo python /var/www/fabui/python/gmacro.py check_pre_scan '.$_destination_trace.' '.$_destination_response.' > /dev/null';
+$_command        = 'sudo python '.PYTHON_PATH.'gmacro.py check_pre_scan '.$_destination_trace.' '.$_destination_response.' > /dev/null';
 $_output_command = shell_exec ( $_command );
 $_pid            = trim(str_replace('\n', '', $_output_command));
 

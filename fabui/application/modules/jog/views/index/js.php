@@ -5,7 +5,8 @@
 	var interval_ticker;
 	
 	
-	$(function() {
+	$(function() { 
+		
 		
 		
 		/** MOTORS */
@@ -25,7 +26,7 @@
 	        } else {
 			    coordinates("absolute");         
 	        }
-	    });
+	    });  
 	    
 	    
 	    /** LIGHTS */
@@ -163,9 +164,34 @@
     	interval_ticker   = setInterval(ticker, 1000);
     	
     	pre_jog();
+    	
+    	
+    	
+    	
+    	
+    	/** RESET CONTROLLER */
+    	$("#reset-controller").on('click', ask_reset);
 		
 		
+		$("#z-step").spinner({
+				step : 0.01,
+				numberFormat : "n",
+				
+				min: 0
+		});
 		
+		
+		$("#step").spinner({
+				step :0.5,
+				numberFormat : "n",
+				min: 0
+		});
+		
+		$("#feedrate").spinner({
+				step :50,
+				numberFormat : "n",
+				min: 0
+		});		
 		
 	});
 	
@@ -303,7 +329,7 @@
 	                });
 	            }
 	            
-	            write_to_console('M105', '[Ext: ' + response.ext + ' / ' + response.ext_target   + ' ---  Bed: ' + parseInt(response.bed) + ' / ' + response.bed_target +  ']\n');
+	            write_to_console('Temperatures (M105)', '[Ext: ' + response.ext + ' / ' + response.ext_target   + ' ---  Bed: ' + parseInt(response.bed) + ' / ' + response.bed_target +  ']\n');
 	          
 	        });
 	}
@@ -368,7 +394,7 @@
 		$.ajax({
 			type: "POST",
 			url : "<?php echo module_url('jog').'ajax/exec.php' ?>",
-			data : {function: func, value: value, time: timestamp},
+			data : {function: func, value: value, time: timestamp, step:$("#step").val(), z_step:$("#z-step").val(), feedrate: $("#feedrate").val()},
 			dataType: "json"
 		}).done(function( data ) {
 	        write_to_console(data.command, data.response);
@@ -438,7 +464,51 @@
 	function save_value(key, value){
 		
 	}
-
+	
+	
+	function ask_reset(){
+		
+		
+		$.SmartMessageBox({
+			title: "Reset controller",
+			content: "This operation will reset your control board, continue?",
+			buttons: '[No][Yes]'
+			}, function(ButtonPressed) {
+			   
+				if (ButtonPressed === "Yes") {
+				  	reset_controller();
+					
+				}
+				if (ButtonPressed === "No") {
+					
+					return false;
+				}
+		
+		});
+		
+		
+	}
+	
+	function reset_controller(){
+		
+		
+		$(".btn").addClass('disabled');
+		$("#reset-controller").html('Resetting..');
+	    $.ajax({
+	              url : '<?php echo module_url('controller').'ajax/reset_controller.php' ?>',
+				  dataType : 'json',
+				  type: 'post'
+			}).done(function(response) {
+			 
+			 	 $(".btn").removeClass('disabled');
+			 	 $("#reset-controller").html('Reset controller');
+			 	  write_to_console('<strong>Reset controller</strong>', '<strong>done</strong>\n');
+			 	
+	        });
+		 
+		
+	}
+	
 	
 	
 	

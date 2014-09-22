@@ -28,35 +28,47 @@ if($_internet){
     } 
 }
 
-/** CHECK FOR TASKS */
-//$_tasks_json = file_get_contents('/var/www/temp/notifications.json', FILE_USE_INCLUDE_PATH);
-//$_tasks      = json_decode($_tasks_json, TRUE);
+
+
+$_tasks['items']  = array();
 
 /** LOAD DB */
 $db = new Database();
 /** GET ALL RUNNING TASKS */
 $_tasks_rows = $db->query('select * from sys_tasks where status="running"');
 /** CLOSE DB CONNECTION */
+$_tasks_number = $db->get_num_rows();  
 $db->close();
 
-$_tasks['number'] = count($_tasks_rows);
-$_tasks['tasks']  = '';
-$_type         = '';
 
+$_tasks['number'] = $_tasks_number;
+if($_tasks_rows){
 
-if($_tasks['number'] > 0){
-    foreach($_tasks_rows as $_t){
-        $_tasks['tasks'][] = $_t;
-    }    
+	$_tasks['number'] = $_tasks_number;
+	
+	if($_tasks_number >  1){
+	    foreach($_tasks_rows as $_t){
+	        $_tasks['items'][] = $_t;
+	    }   
+	}
+
+	if($_tasks_number == 1){
+		
+		$_tasks['items'][] = $_tasks_rows;
+		
+	}
+		
 }
+
+
+
+
 
 $_response_items = array();
 
 $_response_items['updates'] = $_updates;
 $_response_items['tasks']   = $_tasks;
 $_response_items['internet'] = $_internet;
-
-
 
 header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 header('Content-Type: application/json');

@@ -91,3 +91,23 @@
     </div>
 </div>
 <?php  endif; ?>
+<!-- ONLY FOR GCODE FILE -->
+<?php if(strtolower($file->file_ext) == '.gc' || strtolower($file->file_ext) == '.gcode'): ?>
+	
+	<div class="row">
+		<div class="col-sm-6 text-center">
+			<div class="well">
+				<div class="row">
+					<div class="col-sm-6"></div>
+					<div class="col-sm-6">
+						<h1 class="text-primary"><a href="<?php  echo site_url('objectmanager/file/preview/'.$obj_id.'/'.$file->id)?>">GCode Viewer</a></h1>
+						<h2>A web-based 3D viewer for GCode files.</h2>
+						<p><a target="_blank" href="https://github.com/joewalnes/gcode-viewer">more details</a></p>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+
+<?php endif; ?>

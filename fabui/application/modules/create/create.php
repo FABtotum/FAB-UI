@@ -11,68 +11,84 @@ class Create extends Module {
 	public function __construct()
 	{
 		parent::__construct();
-        error_reporting(0);
+		
+		 $this->load->helper('print_helper');
+        /** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
+        if(is_printer_busy('print')){
+            redirect('dashboard');
+        }
+        
         $this->lang->load($_SESSION['language']['name'], $_SESSION['language']['name']);
 	}
 
-	public function index($obj_id = ""){
+	
+	public function index(){
 
-		//carico X class database
+		/** INIT DB & MODELS */
 		$this->load->database();
 		$this->load->model('objects');
-		$this->load->model('printsettings');
 		$this->load->model('tasks');
-		//init function
-		$this->load->helper('form');
+		
+		/**
+		 * LOAD HELPERS
+		*/
         $this->load->helper('ft_date_helper');
 		$this->load->helper('smart_admin_helper');
-		$this->load->helper('create_smart_form_helper');
+		$this->load->helper('os_helper');
         
-        
-        
+       
         /** LOAD REQUEST PARAMETER */
         $_request_obj  = $this->input->get('obj');
         $_request_file = $this->input->get('file');
          
-        //$this->layout->set_compress(false);
-
-
+        
+		
 		/**
-		 * verifico prima se c'� una stampa gi� in esecuzione
+		 * check if printer is already printing
 		*/
 		$_task = $this->tasks->get_running('create', 'print');
-
 		
-	
+		
 		
 		$_running = $_task ? true : false;
 
 		if($_running){
 		  
-			$this->load->model('files');
-
-			$_attributes = json_decode($_task['attributes'], TRUE);
+		  	/** GET TASK ATTRIBUTES */
+		  	$_attributes = json_decode($_task['attributes'], TRUE);
 			
-			$_object          = $this->objects->get_obj_by_id($_attributes['id_object']);
-			$_file            = $this->files->get_file_by_id($_attributes['id_file']);
 			
-            
-            if(isset($_attributes['pid']) && $_attributes['pid'] != ''){
-            
-                if(isset($_attributes['monitor']) && $_attributes['monitor'] != ''){
-                
-                    $_monitor         = file_get_contents($_attributes['monitor']);
-        			$_monitor_encoded = json_decode($_monitor);
-                    $_stats           = json_decode(file_get_contents($_attributes['stats']), TRUE);
-                
-                }
-            
-            }else{
-                $this->tasks->delete($_task['id']);
-                    
-                $_running = FALSE;
-            }
+			/** CHECK IF PID IS STILL ALIVE */
+			if(exist_process($_attributes['pid'])){
+			
+				
+				$this->load->model('files');
+				
+				$_object          = $this->objects->get_obj_by_id($_attributes['id_object']);
+				$_file            = $this->files->get_file_by_id($_attributes['id_file']);
+				
+	            if(isset($_attributes['pid']) && $_attributes['pid'] != ''){
+	            
+	                if(isset($_attributes['monitor']) && $_attributes['monitor'] != ''){
+	                
+	                    $_monitor         = file_get_contents($_attributes['monitor']);
+	        			$_monitor_encoded = json_decode($_monitor);
+	                    $_stats           = json_decode(file_get_contents($_attributes['stats']), TRUE);
+	                
+	                }
+	            
+	            }else{
+	                $this->tasks->delete($_task['id']);
+	                $_running = FALSE;
+	            }
            
+		   
+		   }else{
+		   		/** PROCESS IS DEAD */
+		   		$_running = false;
+				$this->tasks->delete($_task['id']);
+				
+		   }
 
 		}
 
@@ -81,6 +97,9 @@ class Create extends Module {
 		 *  IMPOSTAZIONI STEP1
 		 */
         $data_step1['objects']  = $this->objects->get_for_print();
+		
+		
+		
         $_table = $this->load->view('index/step1/table', $data_step1, TRUE);
         $_widget_table = widget('objects'.time(), 'Objects',  '', $_table, false, true, true);
         
@@ -94,35 +113,6 @@ class Create extends Module {
 		 */
 		$data_step2[] = '';
 
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		/**
-		 * IMPOSTAZIONI STEP3
-		 */
-		//generazione tab
-
-		
-		/*
-		$settings_section = $this->printsettings->get_sections();
-
-		$_tab_items = array();
-
-		foreach($settings_section as $section){
-
-			$content = craeate_section($section->id);
-
-			$_tab_items[] = array('reference' => $section->section_name,    'title' => $section->section_label,    'content'=> $content);
-
-		}
-
-		$_step3_tab = tab('step3_tab', $_tab_items);
-
-		$data_step3['_tab3_widget'] = widget('_tab3_widget', '', '', $_step3_tab, true);*/
-		//$data_step3['_tab3_widget'] = widget('_tab3_widget', '', '', $this->load->view('index/step3/widget', '', TRUE), true);
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 		/**
 		 * IMPOSTAZIONI STEP4
@@ -135,6 +125,8 @@ class Create extends Module {
 		 * IMPOSTAZIONI STEP5
 		*/
 
+		
+		
 		$data_widget_step5['_progress_percent'] = $_running ? number_format($_monitor_encoded->print->stats->percent, 2, ',', ' '): '0';
 		$data_widget_step5['_lines']            = $_running ? $_monitor_encoded->print->lines : '-';
 		$data_widget_step5['_current_line']     = $_running ? $_monitor_encoded->print->stats->line_number : '-';
@@ -144,10 +136,11 @@ class Create extends Module {
         $data_widget_step5['_bed_temperature']  = $_running ? $_monitor_encoded->print->stats->bed : 0;
 		$data_widget_step5['_bed_temperature_target']  = $_running ? $_monitor_encoded->print->stats->bed_target : '-';
 		$data_widget_step5['_pid']              = $_running ? $_attributes['pid'] : 0;
-		$data_widget_step5['_velocity']         = $_running ? $_attributes['velocity'] : 100;
+		$data_widget_step5['_velocity']         = $_running && isset($_attributes['speed']) ? $_attributes['speed'] : 100;
 		$data_widget_step5['_running']          = $_running;
-        $data_widget_step5['ext_temp']          = $ext_temp;
-        $data_widget_step5['bed_temp']          = $bed_temp;
+        
+        //$data_widget_step5['ext_temp']          = $_running ? $ext_temp : 0;
+        //$data_widget_step5['bed_temp']          = $_running ? $bed_temp : 0;
 
 
 		//$data_step5['_tab5_monitor_widget'] = widget('_tab5_monitor_widget', 'Print Monitor', '', $this->load->view('index/step5/widget', $data_widget_step5, TRUE), false);
@@ -164,7 +157,7 @@ class Create extends Module {
 		//inclusione dei step
 		$data['_step_1']  = $this->load->view('index/step1/index', $data_step1, TRUE);
 		$data['_step_2']  = $this->load->view('index/step2/index', $data_step2, TRUE);
-		$data['_step_3']  = $this->load->view('index/step3/index', $data_step3, TRUE);
+		//$data['_step_3']  = $this->load->view('index/step3/index', $data_step3, TRUE);
 		$data['_step_4']  = $this->load->view('index/step4/index', $data_step4, TRUE);
 		$data['_step_5']  = $this->load->view('index/step5/index', $data_step5, TRUE);
         $data['_step_6']  = $this->load->view('index/step6/index', '', TRUE);
@@ -186,30 +179,18 @@ class Create extends Module {
         $data_js['_uri_trace']        = $_running ? $_attributes['uri_trace'] : '' ;
 		$data_js['_seconds']          = $_running ? (time() - intval($_monitor_encoded->print->started)) : 0;
 
-		$data_js['_estimated_time']   = $_running ? 'new Array("'.implode('","', $_stats['estimated_time']).'")' : 'new Array()';
-		$data_js['_progress_steps']   = $_running ? 'new Array("'.implode('","', $_stats['progress_steps']).'")' : 'new Array()';
+		$data_js['_estimated_time']   = $_running && is_array($_stats) ? 'new Array("'.implode('","', $_stats['estimated_time']).'")' : 'new Array()';
+		$data_js['_progress_steps']   = $_running && is_array($_stats) ? 'new Array("'.implode('","', $_stats['progress_steps']).'")' : 'new Array()';
         $data_js['ext_temp']          = $_running ? $_monitor_encoded->print->stats->extruder : 0;
         $data_js['bed_temp']          = $_running ? $_monitor_encoded->print->stats->bed : 0;
-		$data_js['ext_target']          = $_running ? $_monitor_encoded->print->stats->extruder_target : 0;
-        $data_js['bed_target']          = $_running ? $_monitor_encoded->print->stats->bed_target : 0;
-        $data_js['_velocity']         = $_running ? $_attributes['velocity'] : 100;
+		$data_js['ext_target']        = $_running ? $_monitor_encoded->print->stats->extruder_target : 0;
+        $data_js['bed_target']        = $_running ? $_monitor_encoded->print->stats->bed_target : 0;
+        $data_js['_velocity']         = $_running && isset($_attributes['speed']) ? $_attributes['speed'] : 100;
         
         $data_js['_request_obj']     =  $_request_obj;
         $data_js['_request_file']    =  $_request_file;  
-        
-
-
-        //$this->layout->set_compress(false);
-
-		//echo $_monitor_encoded->print->started;
-		//echo time();
-
-		$_time = (time() - intval($_monitor_encoded->print->started));
-
-
-
-
-
+		
+		$_time =  $_running ? (time() - intval($_monitor_encoded->print->started)) : 0;
 
 		/**
 		 * IMPOSTAZIONI LAYOUT
@@ -237,9 +218,9 @@ class Create extends Module {
 
 
 		$js_in_page  = $this->load->view('index/js', $data_js, TRUE);
-		//$css_in_page  = $this->load->view('index/css', '', TRUE);
+		
 
-		//$this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => ''));
+		
 		$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'create module'));
         
         

@@ -11,8 +11,8 @@ class Scan extends Module {
         
         $this->load->helper('print_helper');
         /** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
-        if(is_printer_busy()){
-            //redirect('dashboard');
+        if(is_printer_busy('scan')){
+            redirect('dashboard');
         }
         
         $this->lang->load($_SESSION['language']['name'], $_SESSION['language']['name']);

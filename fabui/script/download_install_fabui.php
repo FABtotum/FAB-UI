@@ -156,9 +156,9 @@ if($do_update){
     shell_exec('sudo rm -rf /var/www/fabui_old/');
 
 	/** FILE PERMISSIONS */
-	shell_exec('sudo chmod 666 /var/www/fabui/config/config.json');
+	shell_exec('sudo chmod 666 '.FABUI_PATH.'config/config.json');
 	
-	shell_exec('sudo chmod 777 /var/www/fabui/application/layout/assets/img/avatar');
+	shell_exec('sudo chmod 777 '.FABUI_PATH.'application/layout/assets/img/avatar');
 	
 	/** simbolic link */
 	shell_exec('sudo ln -s /var/www/upload /var/www/fabui/upload');

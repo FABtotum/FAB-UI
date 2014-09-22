@@ -53,7 +53,7 @@ function create_gcode($_object, $_id_file,  $file, $configuration, $_output){
     
     /** CREATING TASK FILES */
     $_time               = time();
-    $_destination_folder = '/var/www/tasks/slice_'.$id_task.'_'.$_time.'/';
+    $_destination_folder = TASKS_PATH.'slice_'.$id_task.'_'.$_time.'/';
     $_monitor_file       = $_destination_folder.'slice_'.$id_task.'_'.$_time.'.monitor';
     $_trace_file         = $_destination_folder.'slice_'.$id_task.'_'.$_time.'.trace';
     $_debug_file         = $_destination_folder.'log.debug';
@@ -69,7 +69,7 @@ function create_gcode($_object, $_id_file,  $file, $configuration, $_output){
     
     
     /** START PROCESS */
-    $_command        = 'sudo python /var/www/fabui/python/slic3r_wrapper.py -t'.$_trace_file.' -l'.$_monitor_file.' -i'.$file.' -o'.$_destination_folder.$_output.' -c'.$configuration.' -k'.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
+    $_command        = 'sudo python '.PYTHON_PATH.'slic3r_wrapper.py -t'.$_trace_file.' -l'.$_monitor_file.' -i'.$file.' -o'.$_destination_folder.$_output.' -c'.$configuration.' -k'.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
     $_output_command = shell_exec ( $_command );
     $_slice_pid      = trim(str_replace('\n', '', $_output_command));
     
@@ -154,7 +154,7 @@ function create_stl($_object, $_id_file,  $file, $_output){
     
      /** CREATING TASK FILES */
     $_time               = time();
-    $_destination_folder = '/var/www/tasks/mesh_'.$id_task.'_'.$_time.'/';
+    $_destination_folder = TASKS_PATH.'mesh_'.$id_task.'_'.$_time.'/';
     $_monitor_file       = $_destination_folder.'mesh_'.$id_task.'_'.$_time.'.json';
     $_trace_file         = $_destination_folder.'mesh_'.$id_task.'_'.$_time.'.trace';
     $_debug_file         = $_destination_folder.'log.debug';
@@ -170,7 +170,7 @@ function create_stl($_object, $_id_file,  $file, $_output){
     
     
     /** START PROCESS */
-    $_command        = 'sudo python /var/www/fabui/python/meshlab_wrapper.py -t'.$_trace_file.' -l'.$_monitor_file.' -i'.$file.' -o'.$_destination_folder.$_new_output_name.' -s/root/meshlab_script.mlx -k'.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
+    $_command        = 'sudo python '.PYTHON_PATH.'meshlab_wrapper.py -t'.$_trace_file.' -l'.$_monitor_file.' -i'.$file.' -o'.$_destination_folder.$_new_output_name.' -s/root/meshlab_script.mlx -k'.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
     $_output_command = shell_exec ( $_command );
     $_mesh_pid       = trim(str_replace('\n', '', $_output_command));
     

@@ -27,7 +27,7 @@ $id_task = $db->insert('sys_tasks', $_task_data);
 
 /** CREATING TASK FILES */
 $_time               = time();
-$_destination_folder = '/var/www/tasks/update_'.$_type.'_'.$id_task.'_'.$_time.'/';
+$_destination_folder = TASKS_PATH.'update_'.$_type.'_'.$id_task.'_'.$_time.'/';
 $_monitor_file       = $_destination_folder.'update_'.$_type.'_'.$id_task.'_'.$_time.'.monitor';
 $_debug_file         = $_destination_folder.'update_'.$_type.'_'.$id_task.'_'.$_time.'.debug';
 $_uri_monitor        = '/tasks/update_'.$_type.'_'.$id_task.'_'.$_time.'/'.'update_'.$_type.'_'.$id_task.'_'.$_time.'.monitor';
@@ -49,7 +49,7 @@ switch($_type){
         break;
 }
 
-$_command          = 'sudo php /var/www/fabui/script/'.$_script.' '.$id_task.' '.$_destination_folder.' '.$_monitor_file.' 2>'.$_debug_file.' > /dev/null & echo $!';
+$_command          = 'sudo php '.FABUI_PATH.'script/'.$_script.' '.$id_task.' '.$_destination_folder.' '.$_monitor_file.' 2>'.$_debug_file.' > /dev/null & echo $!';
 $_response_command = shell_exec ( $_command);
 $_pid              = trim(str_replace('\n', '', $_response_command));
 

@@ -8,10 +8,8 @@ $db = new Database();
 /** GET ALL RUNNING TASKS */
 $_tasks = $db->query('select * from sys_tasks where status="running"');
 /** CLOSE DB CONNECTION */
+$_tasks_number = $db->get_num_rows();
 $db->close();
-
-
-$_tasks_number = count($_tasks);
 
 
 if($_tasks_number == 0){
@@ -25,6 +23,18 @@ if($_tasks_number == 0){
 }else{
 ?>
 <ul class="notification-body">
+	
+	<?php  
+	
+	if($_tasks_number == 1){
+		
+		$_temp  = $_tasks;
+		$_tasks = array();
+		$_tasks[] = $_temp;
+		
+	}
+	?>
+	
     <?php foreach($_tasks as $_task): ?>
     <?php 
         $_task_attributes = json_decode($_task['attributes'], TRUE);
@@ -53,11 +63,7 @@ if($_tasks_number == 0){
                 $_icon    = 'fa fa-cogs';
 				$_detail  = site_url($_task['controller']);
                 break;
-            
         }
-     
-        
-        
     ?>
 	<li>
 		<span>
@@ -73,8 +79,6 @@ if($_tasks_number == 0){
 	</li>
     <?php endforeach; ?>
 </ul>
-
 <?
 }
- 
 ?>

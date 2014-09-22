@@ -5,8 +5,8 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
 
 /** CREATE LOG FILES */
 $_time                 = $_POST['time'];
-$_destination_trace    = '/var/www/temp/engage_feeder_'.$_time.'.trace';
-$_destination_response = '/var/www/temp/engage_feeder_'.$_time.'.log';
+$_destination_trace    = TEMP_PATH.'engage_feeder_'.$_time.'.trace';
+$_destination_response = TEMP_PATH.'engage_feeder_'.$_time.'.log';
 
 write_file($_destination_trace, '', 'w');
 chmod($_destination_trace, 0777);
@@ -18,7 +18,7 @@ chmod($_destination_response, 0777);
 sleep(1);
 
 /** EXEC COMMAND */
-$_command        = 'sudo python /var/www/fabui/python/gmacro.py engage_feeder '.$_destination_trace.' '.$_destination_response.' > /dev/null';
+$_command        = 'sudo python '.PYTHON_PATH.'gmacro.py engage_feeder '.$_destination_trace.' '.$_destination_response.' > /dev/null';
 $_output_command = shell_exec ( $_command );
 $_pid            = trim(str_replace('\n', '', $_output_command));
 

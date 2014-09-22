@@ -242,6 +242,9 @@ class Settings extends Module {
             case 'self-test':
                 $this->_maintenance_self_test();
                 break;
+			case 'probe-calibration':
+				$this->_probe_calibration();
+				break;
             default:
                 $_tab_header = $this->tab_header('maintenance');
                 $data['_breadcrumb']  = 'Maintenance';
@@ -258,7 +261,7 @@ class Settings extends Module {
     private function _maintenance_spool(){
         
         
-        $_tab_header = $this->tab_header('maintenance');
+        $_tab_header = $this->tab_header('maintenance'); 
         
         $data['_breadcrumb']  = 'Maintenance > Spool';
         $data['_tab_header']  = $_tab_header;
@@ -293,7 +296,24 @@ class Settings extends Module {
         $this->layout->view('index/index', $data);
         
     }
-     
+    
+	
+	
+	private function _probe_calibration(){
+		
+		
+		$_tab_header = $this->tab_header('maintenance');
+		 
+		$data['_breadcrumb']  = 'Maintenance > Probe Calibration';
+        $data['_tab_header']  = $_tab_header;
+        $data['_tab_content'] = $this->load->view('index/maintenance/probe-calibration/index', $data, TRUE);
+		
+		$js_in_page = $this->load->view('index/maintenance/probe-calibration/js', $data, TRUE);
+        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+		
+		
+		$this->layout->view('index/index', $data);		
+	}
     
     
     

@@ -1,14 +1,14 @@
 <?php
-//require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-//require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/ajax/lib/utilities.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] .'/fabui/ajax/lib/utilities.php';
 
 /** SAVE DATA FROM POST */
 $_action = $_POST['action'];
 $_value = $_POST['value'];
 $_pid = $_POST['pid'];
 $_data_file = $_POST['data_file'];
-$_id_task = $_POST['id_task'];
+$_id_task = $_POST['id_task']; 
 
 switch($_action) {
 
@@ -59,6 +59,19 @@ switch($_action) {
 
 /** WRITE TO DATA FILE */
 $_write_return = write_file($_data_file, $_command . PHP_EOL, 'a+');
+
+
+if($_action == 'velocity'){
+	
+	$db = new Database();
+	$_task = $db->query('select * from sys_tasks where id='.$_id_task);
+	$_attributes = json_decode($_task['attributes'], TRUE);
+	$_attributes['speed'] = $_value;
+	$_data_update['attributes'] = json_encode($_attributes);
+    $db->update('sys_tasks', array('column' => 'id', 'value' => $_id_task, 'sign' => '='), $_data_update);
+    $db->close();  
+	
+}
 
 $_response_items['status'] = 200;
 $_response_items['command'] = $_command;

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #gmacro.py controlled 1by1 gcode operations
 import sys
 import time, datetime
@@ -58,7 +59,7 @@ def macro(code,expected_reply,timeout,error_msg,delay_after,warning=False,verbos
 		while not (serial_reply==expected_reply or serial_reply[:4]==expected_reply):
 			#Expected reply
 			#no reply:
-			if (time.time()>=macro_start_time+timeout+1):
+			if (time.time()>=macro_start_time+timeout+5):
 				if serial_reply=="":
 					serial_reply="<nothing>"
 				#trace_msg="failed macro (timeout):"+ code+ " expected "+ expected_reply+ ", received : "+ serial_reply
@@ -250,7 +251,7 @@ elif preset=="p_scan":
 elif preset=="end_scan":
 	trace("Initializing Probing procedure",log_trace)
 	macro("M700","ok",1,"Shutting Down Laser",0.1)
-	macro("M28 X0 Y0","ok",1,"Homing",2)
+	macro("G28 X0 Y0","ok",1,"Homing",2)
 	macro("M402","ok",1,"Disabling probe",2)
 	macro("G0 Z140 F1000","ok",5,"Moving to pre-scan position",3)
 	macro("M701 S"+str(units[color][r]),"ok",2,"turning on lights",0.1)
@@ -260,7 +261,7 @@ elif preset=="end_scan":
 #zero_all
 elif preset=="home_all":
 	trace("Now homing all axes",log_trace)
-	macro("G90","ok",1,"set abs position",0)
+	macro("G90","ok",2,"set abs position",0)
 	macro("G28","ok",100,"homing all axes",1)
 
 #unload spool
@@ -280,6 +281,8 @@ elif preset=="unload_spool":
 #load spool
 elif preset=="load_spool":
 	trace("loading Spool",log_trace)
+	macro("G27","ok",100,"zeroing Z axis",0.1)
+	macro("G0 Z150 F1000","ok",3,"Zeroing Z axis",0.1)
 	macro("M302 S0","ok",5,"Enabling Cold extrusion",0.1)
 	macro("M83","ok",5,"setting relative estrusion mode",0.1)
 	macro("G92 E0","ok",5,"setting extruder position to 0",0.1)
@@ -309,6 +312,46 @@ elif preset=="start_up":
 	macro("M702 S"+str(units[color][g]),"ok",2,"turning on lights",0.1)
 	macro("M703 S"+str(units[color][b]),"ok",2,"turning on lights",0.1)
 
+#shutdown
+elif preset=="shutdown":
+	trace("shutting down",log_trace)
+	macro("M729","ok",2,"Asleep!",1,verbose=False)
+	
+#probe calibration
+elif preset=="probe_setup_prepare":
+	trace("Preparing Calibration procedure",log_trace)
+	macro("G90","ok",1,"Abs_mode",1)
+	macro("G28","ok",90,"homing all axis",1)
+	macro("G91","ok",1,"Relative mode",1)
+	macro("G0 X17 Y61.5","ok",1,"Offset",1)
+	macro("G90","ok",1,"Abs_mode",1)
+	macro("G0 Z1 F1000","ok",2,"Moving to calibration position",1)
+	#macro("M109 S200","ok",90,"Heating Nozzle ccounting for thermal expasion)",30)	
+		
+elif preset=="probe_setup_calibrate":
+	trace("Calibrating probe",log_trace)
+	macro("M104 S0","ok",90,"nozzle off",1)
+	#get old probe-nozzle height difference
+	serial.flushInput()
+	serial.write("M503\r\n")
+	data=serial.read(1024)
+	z_probe_old=float(data.split("Z Probe Length: ")[1].split("\n")[0])
+	trace("Old Position : "+str(z_probe_old)+" mm",log_trace)
+	
+	#get Z position
+	serial.flushInput()
+	serial.write("M114\r\n")
+	data=serial.read(1024)
+	z_touch=float(data.split("Z:")[1].split(" ")[0])
+	trace("Current height : "+str(z_touch)+" mm",log_trace)
+	
+	#write config to EEPROM
+	z_probe_new=abs(z_probe_old+(z_touch-0.1))
+	serial.write("M710 S"+str(z_probe_new)+"\r\n")
+	####
+	macro("G28","ok",90,"homing all axis",1)
+	trace("Probe calibrated : "+str(z_probe_new)+" mm",log_trace)
+	
 	
 #END 
 

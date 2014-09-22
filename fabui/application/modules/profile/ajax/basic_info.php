@@ -21,10 +21,10 @@ $image_content = base64_decode($image_content);
 
 
 /** ADD PERMISSIONS  */
-shell_exec('sudo chmod 777 /var/www/fabui/application/layout/assets/img/avatar');
+shell_exec('sudo chmod 777 '.FABUI_PATH.'application/layout/assets/img/avatar');
 
 $_avatar = '/assets/img/avatar/'.$_SESSION['user']['id'].'_'.time().'.'.$image_type;
-file_put_contents('/var/www/fabui/application/layout/'.$_avatar, $image_content);
+file_put_contents(FABUI_PATH.'application/layout/'.$_avatar, $image_content);
 
 /** REMOVE OLD AVATAR IMAGE */
 shell_exec('sudo rm /var/www/fabui/application/layout/'.$_SESSION['user']['avatar']);

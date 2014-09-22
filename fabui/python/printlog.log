@@ -1,0 +1,1 @@
+{"print":{"name": "gcode.nc","pid": "7836","lines": "127889","started": "1410776059.06","paused": "False","completed": "0","completed_time": "0","shutdown": "False","stats":{"percent":"0.567679784813","line_number":726,"extruder":209.9,"bed":60.6,"extruder_target":210.0,"bed_target":60.0,"position": "0,0,0,0"}}}

@@ -102,8 +102,13 @@ class Login extends Module {
                 $_SESSION['logged_in'] = TRUE;
                 $_SESSION['type']      = 'fabtotum';
                 
-                
-                
+               
+			  	/** LOAD HELPER */
+        		$this->load->helper('update_helper'); 
+                $_fabui_local   =  myfab_get_local_version();
+				$_SESSION['fabui_version'] = $_fabui_local;
+				
+				
                 $this->user->update_login($user->id);
                
 

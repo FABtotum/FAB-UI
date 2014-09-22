@@ -228,9 +228,6 @@ function myfab_get_local_version(){
 	
 	/** GET TASK FROM DB */
 	$_version = $db->query('select sys_configuration.value from sys_configuration where sys_configuration.key="fabui_version"');
-	$_version = $_version[0];
-	$db->close();
-	//$_local_version = file_get_contents(MYFAB_LOCAL_VERSION_PATH, FILE_USE_INCLUDE_PATH );
 	return $_version['value'];
 }
 
@@ -238,19 +235,12 @@ function myfab_get_local_version(){
  *
  */
 function marlin_get_local_version(){
-		/*
-	$_local_version = file_get_contents(MARLIN_LOCAL_VERSION_PATH, FILE_USE_INCLUDE_PATH );
-	return $_local_version;
-	*/
-	
-	
+
 	/** LOAD DB */
 	$db = new Database();
 	/** GET TASK FROM DB */
 	$_version = $db->query('select sys_configuration.value from sys_configuration where sys_configuration.key="fw_version"');
-	$_version = $_version[0];
 	$db->close();
-	//$_local_version = file_get_contents(MYFAB_LOCAL_VERSION_PATH, FILE_USE_INCLUDE_PATH );
 	return $_version['value'];
 	
 	

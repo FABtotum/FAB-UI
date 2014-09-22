@@ -28,7 +28,7 @@ $id_task = $db->insert('sys_tasks', $_task_data);
 
 /** CREATING TASK FILES */
 $_time               = time();
-$_destination_folder = '/var/www/tasks/settings_'.$_type.'_'.$id_task.'_'.$_time.'/';
+$_destination_folder = TASKS_PATH.'settings_'.$_type.'_'.$id_task.'_'.$_time.'/';
 $_monitor_file       = $_destination_folder.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.json';
 $_trace_file         = $_destination_folder.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.trace';
 $_uri_monitor        = '/tasks/settings_'.$_type.'_'.$id_task.'_'.$_time.'/'.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.json';
@@ -47,10 +47,10 @@ chmod($_trace_file, 0777);
 $fabui_version = '';
 /** GET TASK FROM DB */
 $fabui_version = $db->query('select sys_configuration.value from sys_configuration where sys_configuration.key="fabui_version"');
-$fabui_version = $fabui_version[0];
+//$fabui_version = $fabui_version[0];
 $fabui_version = $fabui_version['value'];
 
-$_command          = 'sudo python /var/www/recovery/python/self_test.py '.$_trace_file.' '.$_monitor_file.' '.$_remote.' 0 '.$id_task.' '.$fabui_version.' 2>'.$_debug_file.' > /dev/null & echo $!';
+$_command          = 'sudo python '.RECOVERY_PATH.'python/self_test.py '.$_trace_file.' '.$_monitor_file.' '.$_remote.' 0 '.$id_task.' '.$fabui_version.' 2>'.$_debug_file.' > /dev/null & echo $!';
 $_response_command = shell_exec ($_command);
 $_pid              = trim(str_replace('\n', '', $_response_command));
 

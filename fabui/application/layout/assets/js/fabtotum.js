@@ -255,10 +255,11 @@ function set_tasks(data){
     var controller = '';
     
     $(".task-list").find('span').html('	Tasks (' + data.number + ') ');
-    
-    $.each(data.tasks, function() {
+     
+    $.each(data.items, function() {
         
         var row = this;
+      
         controller = row.controller;
        
     });  

@@ -43,6 +43,34 @@ class Objects extends CI_Model {
         }
 
 	}
+	
+	
+	
+	function get_user_objects($user){
+		
+		$this->db->select($this->_table_name.'.id, '.$this->_table_name.'.obj_name, '.$this->_table_name.'.obj_description, '.$this->_table_name.'.date_insert, '.$this->_table_name.'.date_updated, count(id_file) as num_files');
+		$this->db->group_by($this->_table_name.'.id');
+		$this->db->join('sys_obj_files', 'sys_obj_files.id_obj = '.$this->_table_name.'.id', 'left');
+		$this->db->where('user', $_SESSION['user']['id']);
+		$query = $this->db->get($this->_table_name);
+		
+		return $query->result();
+		
+	}
+	
+	
+	function get_public_objects(){
+		
+		$this->db->select($this->_table_name.'.id, '.$this->_table_name.'.obj_name, '.$this->_table_name.'.obj_description, '.$this->_table_name.'.date_insert, '.$this->_table_name.'.date_updated, count(id_file) as num_files');
+		$this->db->group_by($this->_table_name.'.id');
+		$this->db->join('sys_obj_files', 'sys_obj_files.id_obj = '.$this->_table_name.'.id', 'left');
+		$this->db->where('private', 0);
+		$this->db->where('user <> '.$_SESSION['user']['id']);
+		$query = $this->db->get($this->_table_name);
+		
+		return $query->result();
+		
+	}
     
     
     /**
@@ -56,37 +84,17 @@ class Objects extends CI_Model {
         $printable_files[] = '.nc';
         
         /** GET ALL OBJECTS */
-        $all_objects = $this->get_all();
+        //$all_objects = $this->get_all();
+		
+		$my_objects = $this->get_user_objects($_SESSION['user']['id']);
+		$public_objects = $this->get_public_objects();
         
-        $objects = array();
-        
-        /*
-        foreach($all_objects as $object){
-            
-            $files = $this->get_files($object->id);
-            
-            foreach($files as $file_id){
-                
-                $query = $this->db->query("select * from sys_files where id=".$file_id);
-                $row = $query->row();
-                
-                //print_r($row);
-                //echo $row->file_ext;
-                
-                
-              //  if(in_array($row->file_ext, $printable_files)){
-                    
-                    $objects[] = $object;
-                   // break;
-                    
-                    
-                //}
-                
-            }
-            
-        }*/
-        
-        return $all_objects;
+		$_objects = array_merge($my_objects, $public_objects);
+		
+        //$objects = array();
+		
+		
+        return $_objects;
         
         
         

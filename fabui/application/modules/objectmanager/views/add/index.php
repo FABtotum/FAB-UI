@@ -42,6 +42,12 @@
 								method="POST">
 								<fieldset>
 									<input name="authenticity_token" type="hidden">
+									<div class="checkbox">
+										
+										<label rel="tooltip" data-placement="top" data-original-title="If is checked everyone can use this object">
+												<input    type="checkbox" name="private" id="private"> Public
+										</label>
+									</div>
 									<div class="form-group">
 										<label>Name</label> <input class="form-control" id="name"
 											name="name" type="text">

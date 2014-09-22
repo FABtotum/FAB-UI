@@ -11,7 +11,7 @@ $_id_task = $_POST['id_task'];
 /** LOAD DB */
 $db    = new Database();
 $_task = $db->query('select * from sys_tasks where id='.$_id_task);
-$_task = $_task[0];
+
 
 /** UPDATE TASK */
 $_data_update = array();

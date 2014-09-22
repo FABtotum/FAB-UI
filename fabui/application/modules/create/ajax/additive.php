@@ -20,7 +20,9 @@
     					<h1>
     						<span class="badge">1</span>
     					</h1>
-    					<h2>Close the cover end click </h2>
+    					<h2>Make sure the feeder is engaged</h2>
+    					<h2>Close the cover</h2>
+    					<h2>Click 'Engage' to engage the feeder or click the skip button to continue </h2>
     					
     				</div>
     			</div>
@@ -264,9 +266,9 @@
     <div class="row button-print-container margin-bottom-10">
         <div class="col-sm-12 text-center ">
         
-            <a id="modal_link" data-action="feeder" href="javascript:void(0);" class="btn btn-primary btn-lg">Click here when ready</a>
+            <a id="modal_link" data-action="feeder" href="javascript:void(0);" class="btn btn-primary btn-lg">Engage</a>
             
-            <!-- <a id="skip" style="display: none;" href="javascript:void(0);" class="btn btn-primary btn-lg">Skip & Print</a> -->
+            <a id="skip_engage"  href="javascript:void(0);" class="btn btn-primary btn-lg">Skip</a> 
             
         </div>
     </div>
@@ -279,6 +281,26 @@
 	$("#ext-slider-container").show();
 	$("#bed-slider-container").show();
 	$("#rpm-slider-container").hide();
+	$("#skip_engage").on('click', skip_engage);
+	
+	function skip_engage(){
+		
+		$("#row_0").slideUp('slow', function(){
+			
+			
+			$("#row_1").slideDown('slow', function(){
+				$("#skip_engage").hide();
+				
+				$("#modal_link").html('Continue');
+                $("#modal_link").attr('data-action', '');
+				
+				
+			});	
+			
+			
+			
+		});
+	}
 
     $('#modal_link').on('click', function(){
     
@@ -395,9 +417,19 @@
                     
                 }else{
                     $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-warning').addClass('txt-color-red');
-                    $('.check_result').html(response.trace);
+                    /*$('.check_result').html(response.trace);*/
                     $("#modal_link").html('Oops.. try again');
-                    $("#modal_link").attr('data-action', 'check');    
+                    $("#modal_link").attr('data-action', 'check');
+                    
+                    
+                    $.smallBox({
+						title : "Warnign",
+						content: response.trace,
+						color : "#C46A69",
+						icon : "fa fa-warning",
+		                timeout: 15000
+		            });
+                        
                 }
                 
                 ticker_url = '';
@@ -444,9 +476,22 @@
                     
                 }else{
                     $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-warning').addClass('txt-color-red');
-                    $('.check_result').html(response.trace);
+                    /*$('.check_result').html(response.trace);*/
                     $("#modal_link").html('Oops.. try again');
-                    $("#modal_link").attr('data-action', 'check');    
+                    $("#modal_link").attr('data-action', 'check');
+                    
+                    $.smallBox({
+						title : "Warnign",
+						content: response.trace,
+						color : "#C46A69",
+						icon : "fa fa-warning",
+		                timeout: 15000
+		            }); 
+		                    
+                    
+                    	
+                    
+                        
                 }
                 
                 ticker_url = '';

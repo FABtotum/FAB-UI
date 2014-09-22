@@ -19,17 +19,17 @@ $_calibration = $_POST['calibration'];
 if($_print_type ==  'additive'){
 	
 	
-	$_macro_trace    = '/var/www/temp/print_check_'.$_time.'.trace';
+	$_macro_trace    = TEMP_PATH.'print_check_'.$_time.'.trace';
 	
 	switch($_calibration){
 		
 		case 'homing':
 			$_macro_function = 'home_all';
-			$_macro_response = '/var/www/temp/calibration_homing_'.$_time.'.log';
+			$_macro_response = TEMP_PATH.'calibration_homing_'.$_time.'.log';
 			break;
 		case 'abl':
 			$_macro_function = 'auto_bed_leveling';
-			$_macro_response = '/var/www/temp/auto_bed_leveling'.$_time.'.log';
+			$_macro_response = TEMP_PATH.'auto_bed_leveling'.$_time.'.log';
 			break;
 		
 	}
@@ -43,7 +43,7 @@ if($_print_type ==  'additive'){
 	
 	
 	/** START MACRO */
-	$_command_macro  = 'sudo python /var/www/fabui/python/gmacro.py '.$_macro_function.' '.$_macro_trace.' '.$_macro_response;
+	$_command_macro  = 'sudo python '.PYTHON_PATH.'gmacro.py '.$_macro_function.' '.$_macro_trace.' '.$_macro_response;
 	$_output_macro   = shell_exec ( $_command_macro );
 	$_pid_macro      = trim(str_replace('\n', '', $_output_macro));
 	
@@ -62,7 +62,7 @@ if($_print_type ==  'additive'){
 	
 	file_put_contents($_macro_response, '');
 	
-	$_command_start_print_macro  = 'sudo python /var/www/fabui/python/gmacro.py start_print '.$_macro_trace.' '.$_macro_response;
+	$_command_start_print_macro  = 'sudo python '.PYTHON_PATH.'gmacro.py start_print '.$_macro_trace.' '.$_macro_response;
 	$_output_start_print_macro   = shell_exec ( $_command_start_print_macro );
     $_pid_start_print_macro      = trim(str_replace('\n', '', $_output_start_print_macro));
 	
@@ -93,7 +93,8 @@ if($_print_type ==  'additive'){
 $db    = new Database();
 /** LOAD FILE */
 $_file = $db->query('select * from sys_files where id='.$_file_id);
-$_file = $_file[0];
+
+//$_file = $_file[0];
 
 /** ADD TASK */
 $_task_data['user']       = $_SESSION['user']['id'];
@@ -109,7 +110,7 @@ $id_task = $db->insert('sys_tasks', $_task_data);
 
 /** CREATING TASK FILES */
 $_time               = time();
-$_destination_folder = '/var/www/tasks/print_'.$id_task.'_'.$_time.'/';
+$_destination_folder = TASKS_PATH.'print_'.$id_task.'_'.$_time.'/';
 $_monitor_file       = $_destination_folder.'print_'.$id_task.'_'.$_time.'.monitor';
 $_data_file          = $_destination_folder.'print_'.$id_task.'_'.$_time.'.data';
 $_trace_file         = $_destination_folder.'print_'.$id_task.'_'.$_time.'.trace';
@@ -136,7 +137,7 @@ $_time_monitor = 2;
 
 
 /** START PROCESS */
-$_command        = 'sudo python /var/www/fabui/python/gpusher.py '.$_file['full_path'] .' '.$_monitor_file .' '.$_data_file.' '.$_time_monitor.' '.$_trace_file.' '.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
+$_command        = 'sudo python '.PYTHON_PATH.'gpusher.py '.$_file['full_path'] .' '.$_monitor_file .' '.$_data_file.' '.$_time_monitor.' '.$_trace_file.' '.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
 $_output_command = shell_exec ( $_command );
 $_print_pid      = trim(str_replace('\n', '', $_output_command));
 
@@ -153,6 +154,7 @@ $_attributes_items['uri_monitor'] =  $_uri_monitor;
 $_attributes_items['uri_trace']   =  $_uri_trace;
 $_attributes_items['folder']      =  $_destination_folder;
 $_attributes_items['stats']       =  $_stats_file;
+$_attributes_items['speed']       =  100;
 
 $_data_update['attributes']= json_encode($_attributes_items);
 /** UPDATE TASK INFO TO DB */

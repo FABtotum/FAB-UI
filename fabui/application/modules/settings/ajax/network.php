@@ -18,7 +18,7 @@ if($net !=  ''){
 	if($_is_wifi){
 		
 		$net = str_replace('wifi-', '', $net);
-		shell_exec("sudo python /var/www/fabui/python/connection_setup.py -n".$net." -p".$password);
+		shell_exec("sudo python ".PYTHON_PATH."connection_setup.py -n".$net." -p".$password);
 		
 		shell_exec("sudo ifdown wlan0");
 		sleep(3);

@@ -51,7 +51,8 @@ class Objectmanager extends Module {
         
         $_table = $this->load->view('index/table', '', TRUE);
         
-        $_widget_table = widget('objects'.time(), 'Objects',  '', $_table, false, true, true);
+		$attr['data-widget-icon'] = 'fa fa-cubes';
+        $_widget_table = widget('objects'.time(), 'Objects',  $attr, $_table, false, true, true);
         
 
 		$js_in_page = $this->load->view('index/js', '', TRUE);
@@ -79,9 +80,13 @@ class Objectmanager extends Module {
 			$this->load->model('objects');
             
             
+			$private = $this->input->post('private');
+			
+			
 			$_obj_data['user']            = $_SESSION['user']['id'];
 			$_obj_data['obj_name']        = $this->input->post('name');
 			$_obj_data['obj_description'] = $this->input->post('description');
+			$_obj_data['private']         = $private == 'on' ? 0 : 1;
 
 			//inserisco il nuogo oggetto
 			$_obj_id = $this->objects->insert_obj($_obj_data);
@@ -190,7 +195,8 @@ class Objectmanager extends Module {
        $_table = $this->load->view('edit/table', $_widget_data, TRUE);
        
        /** CREATE WIDGET */
-       $_widget_table = widget('objects'.time(), 'Files',  '', $_table, false, true, true);
+       $attr['data-widget-icon'] = 'fa fa-files-o';
+       $_widget_table = widget('objects'.time(), 'Files',  $attr, $_table, false, true, true);
        
        
        
@@ -264,7 +270,7 @@ class Objectmanager extends Module {
 		 * Verifico l'estensione del file in modo da salvarlo nell cartella esatta, se la cartella non esiste la creo
 		*/
 		$_tmp_file_name = explode('.', $_FILES['file']['name']);
-		$_extension     = end($_tmp_file_name);
+		$_extension     = strtolower(end($_tmp_file_name));
 
 		if(!file_exists($upload_dir.$_extension)) // se la cartella non esiste la creo
 		{
@@ -484,8 +490,8 @@ class Objectmanager extends Module {
         
         if($action == "view"){
             
-            ini_set( 'error_reporting', E_ALL );
-			ini_set( 'display_errors', true );
+            //ini_set( 'error_reporting', E_ALL );
+			//ini_set( 'display_errors', true );
             
             /** LOAD HELPER */
             $this->load->helper('ft_file_helper');
@@ -531,6 +537,50 @@ class Objectmanager extends Module {
            $this->layout->set_compress(false); 
             
         }
+
+
+		if($action == 'preview'){
+			
+			
+			/** LOAD HELPER */
+            $this->load->helper('ft_file_helper');
+			$this->load->helper('smart_admin_helper');
+            
+            //carico X class database
+      		$this->load->database();
+        	$this->load->model('files');
+            $file = $this->files->get_file_by_id($file_id);
+			
+			$data['file']         = $file;
+			
+			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/modernizr.custom.93389.js', 'comment' => ''));
+			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/sugar-1.2.4.min.js', 'comment' => '')); 
+			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/Three.js', 'comment' => ''));
+			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/three.TrackballControls.js', 'comment' => ''));
+			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/gcode-parser.js', 'comment' => ''));  
+			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/gcode-model.js', 'comment' => ''));  
+			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/renderer.js', 'comment' => ''));
+			//$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/three.TrackballControls.js', 'comment' => '')); 
+			
+			//krios
+			$attr['data-widget-fullscreenbutton'] = 'false';
+			$attr['data-widget-icon'] = 'fa fa-cube';
+			$widget_id = 'render_area'.time();
+			$_widget_preview = widget($widget_id, 'GCode Viewer',  $attr, '<div id="renderArea"></div>', false, true, true);
+			
+			$data['widget'] = $_widget_preview;
+			$data['widget_id'] = $widget_id;
+			
+			$css_in_page = $this->load->view('file/css_preview', '', TRUE);
+			$js_in_page  = $this->load->view('file/js_preview', $data, TRUE);
+			
+			$this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => '')); 
+			$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+			
+			
+			$this->layout->set_compress(false);
+			
+		}
         
         
 
@@ -599,14 +649,13 @@ class Objectmanager extends Module {
         
         $data['obj_id']  = $obj;
         $data['file']    = $_file;
-         //$data[]
+         
          
          
          
         $_extension = str_replace('.', '', $_file->file_ext); 
         
-        
-        
+		
         switch($_extension){
             
             case 'asc':
@@ -629,24 +678,14 @@ class Objectmanager extends Module {
             case 'gc':
             case 'nc':
                 $data['first_box_title']  = 'Print';
-                $data['first_box_desc']   = 'This experimental feature takes the selected cloud data and process it into a solid STL file that can be printed.'; 
+                $data['first_box_desc']   = 'Print the file'; 
                 $data['first_box_img']    = '<i class="img-responsive icon-fab-print" style="font-size: 189px;"></i>';
                 $data['first_box_action'] = 'print';
                 break;   
         }
         $_is_asc = strtolower($_file->file_ext) == '.asc' ;
-        
-        /*
-        $_asc_desc = 'This experimental feature takes the selected cloud data and process it into a solid STL file that can be printed.';
-        $_stl_desc = 'This experimental feature takes the selected STL file and turns it into a printable model (additive manufacturing only).';
-        
-        $data['first_box_title']  = $_is_asc ? 'Reconstruction' : 'Slicing';
-        $data['first_box_desc']   = $_is_asc ? $_asc_desc : $_stl_desc;
-        $data['first_box_img']    = $_is_asc ? 'reconstruction.png' : 'slicing.png';
-        $data['first_box_action'] = $_is_asc ? 'asc' : 'stl';
-        */
-        
-        
+
+		
         $this->layout->view('manage/index', $data);
         
     }

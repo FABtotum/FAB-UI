@@ -1,13 +1,12 @@
-import numpy as np
-import cv2,cv
-import sys
+import time
 
-difference = cv2.imread("1_l.png")
+start = time.clock()
 
-row=1
-col=2
-difference[row,col,1]=255
-cv2.imwrite('vision.png',difference)
+time.sleep(10);
 
-sys.exit()
+end = time.clock()
 
+
+diff = end-start
+
+print "%.2gs" % (diff)

@@ -12,8 +12,8 @@ $_action = $_POST['action'];
 /** CREATE LOG E MONITOR FILES */
 
 $_time                 = time();
-$_destination_trace    = '/var/www/temp/spool_'.$_action.'_'.$_time.'.trace';
-$_destination_response = '/var/www/temp/spool_'.$_action.'_'.$_time.'.response';
+$_destination_trace    = TEMP_PATH.'spool_'.$_action.'_'.$_time.'.trace';
+$_destination_response = TEMP_PATH.'spool_'.$_action.'_'.$_time.'.response';
 
 
 write_file($_destination_trace, '', 'w');

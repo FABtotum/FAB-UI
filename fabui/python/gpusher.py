@@ -1,5 +1,4 @@
 #printcore wrapper (provisional version)
-
 import os, sys
 import serial
 import datetime,time
@@ -71,6 +70,31 @@ def gcode_load(fname):
 		
 	return data
 
+
+#OVERRIDE GCODE DESCRIPTION
+def override_description(command):
+	
+	command_splitted = command.split()
+	
+	code= command_splitted[0]
+	value= command_splitted[1]
+	value=value.replace("S", "");
+	
+	description=""
+	
+	if code=="M104":
+		description= "<strong>Extruder temperature set to "+value+" &deg;C</strong>"
+	elif code== "M140":
+		description= "<strong>Extruder bed set to "+value+" &deg;C</strong>"
+	elif code=="M220":
+		description="<strong>Speed set to "+value+"%</strong>"
+	elif code=="M3":
+		description="<strong>RPM speed set to "+value+"%</strong>"
+	else:
+		descritpion="description none"
+	return description
+	
+
 #code=gcode_load(ncfile)
 ovr_code=[] #override code initialized
 
@@ -105,15 +129,16 @@ p.loud = False  #true for verbose
 time.sleep(2)
 
 p.send_now("M105") #get the heating temps to fasten things up a little
-trace("Loading Program")
+trace("Loading file..")
+
 gcode=gcode_load(ncfile)
 #meanwhile the heater is running
-
-trace("Optimizing Gcode.<strong>This might take a while</strong>")
+trace("File loaded")
+trace("Optimizing Gcode. <strong>This operation might take a while</strong>, please wait..")
 gcode = gcoder.LightGCode(gcode)
-
+trace("<strong>Gcode optimized</strong>")
 p.startprint(gcode)
-trace("Getting started...")
+trace("Print started")
 start =time.time()  #time of print start
 
 try:
@@ -151,7 +176,6 @@ try:
 						
 					if override=="!pause":
 						if not paused:
-							
 							p.send_now("G0 X200 Y200") #move in the corner
 							completed="paused"						
 							trace("Print is now paused")
@@ -177,11 +201,12 @@ try:
 
 				else:
 					#gcode is executed ASAP
-					trace("Sending Comand:" + str(override))
+					trace("Command added to the gcode queue: " + str(override))
 					p.send_now(override)
 					
 				open(comfile, 'w').close() #clear the override file
-				trace("UI comand:" + override)
+				#trace("UI comand:" + override)
+				trace(override_description(override))
 								
 		#STATUS REPORT
 		if statusreport:
@@ -198,7 +223,8 @@ except Exception,err:
 #set the JSON job as completed
 if not killed:
 	#completed!
-	trace("Procedure Completed")
+	#trace("Procedure Completed")
+	trace("<strong>Print completed</strong>")
 	completed=1
 	completed_time=int(time.time())
 	printlog(100,len(p.mainqueue),len(p.mainqueue))

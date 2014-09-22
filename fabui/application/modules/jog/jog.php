@@ -9,7 +9,7 @@ class Jog extends Module {
         $this->load->helper('print_helper');
         /** IF PRINTER IS BUSY I CANT JOG  */
         if(is_printer_busy()){
-            //redirect('dashboard');
+            redirect('dashboard');
         }
         
         $this->lang->load($_SESSION['language']['name'], $_SESSION['language']['name']);
@@ -54,7 +54,7 @@ class Jog extends Module {
         //$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
         $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/knob/jquery.knob.min.js', 'comment'=>'KNOB'));
         
-       
+       	//$this->layout->set_custom_ribbon($this->load->view('index/top_buttons', '', TRUE));
 
         //$this->layout->set_compress(false);
 
@@ -82,6 +82,14 @@ class Jog extends Module {
         
         $this->layout->view('setup/index', $data);
     }
+	
+	
+	
+	
+	public function manual(){
+		
+		$this->load->view('manual/index', '');
+	}
 
 
 

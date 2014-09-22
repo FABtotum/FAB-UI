@@ -175,7 +175,7 @@
                 <?php //if(is_internet_avaiable()): ?>
 				<span class="ribbon-button-alignment internet" style="display:none">
 					<span class="btn btn-ribbon "  rel="tooltip" data-placement="bottom" data-original-title="Connected to internet"
-					data-html="true"><i class="fa fa-globe"></i>
+					data-html="true"><i class="fa fa-globe "></i>
 					</span>
 				</span>
                 <?php //endif; ?>
@@ -186,6 +186,9 @@
 					</span>
 				</span>
 				<?php echo $_breadcrumbs ?>
+				
+				<?php echo $_custom_ribbon; ?>
+				
 			</div>
 			<!-- END RIBBON -->
 			<!-- MAIN CONTENT -->

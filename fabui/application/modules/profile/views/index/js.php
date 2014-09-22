@@ -83,21 +83,93 @@
 				}
 			}
 		});
+		
+		
+		
+		var $validator_password = $("#password-form").validate({
+
+			rules: {
+				old_password: {
+					required: true
+				},
+				new_password: {
+					required: true
+				},
+				confirm_new_password: {
+					required: true,
+					equalTo : '#new_password'
+				}
+
+			},
+			messages: {
+				old_password: "Please enter your password",
+				new_password: "Please enter your new password",
+				confirm_new_password: {
+					
+					required: "Please confirm yuor new password",
+					equalTo: 'Please enter the same password as above'
+				}
+				
+			},
+
+			highlight: function(element) {
+				$(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+			},
+			unhighlight: function(element) {
+				$(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+			},
+			errorElement: 'span',
+			errorClass: 'help-block',
+			errorPlacement: function(error, element) {
+				if (element.parent('.input-group').length) {
+					error.insertAfter(element.parent());
+				} else {
+					error.insertAfter(element);
+				}
+			}
+		});
+		
+		
+		
   		
 	});
 	
 	
 	$("#save-button").click(function(){
 		
-		var $valid = $("#basic-info-form").valid();
 		
-		if(!$valid){
+		
+		var active_tab = $("#myTabContent1").find('.active').attr("id");
+		
+		
+		
+		
+		if(active_tab == 'password-tab'){
 			
-			return false;
+			$valid = $("#password-form").valid();
+			
+			if($valid){
+				save_password();
+			}
+			
+			
+		}else{
+			
+			var $valid = $("#basic-info-form").valid();
+		
+			if(!$valid){
+				
+				return false;
+			}
+			
+			
+			save_basic_info();
+			
 		}
 		
 		
-		save_basic_info();
+		
+		
 		
 		
 	});
@@ -162,6 +234,43 @@
 		           
 		});
 		
+		
+	}
+	
+	
+	function save_password(){
+		
+		$("#save-button").addClass('disabled');
+		$("#save-button").html('Saving..');
+		
+		
+		$.ajax({
+          url: '<?php echo module_url('profile').'ajax/save_password.php'; ?>',
+          data:{ old_password: $("#old_password").val(), new_password: $("#new_password").val(), confirm_new_password: $("#confirm_new_password").val()},
+          type: "POST",
+          dataType: 'json'
+		}).done(function( response ) {
+			
+			
+			
+			$.smallBox({
+				title : response.title,
+				content : response.message,
+				color : response.color,
+				iconSmall : response.icon,
+                timeout : 4000
+            });
+			
+			
+			if(response.result = 'ok'){
+				$("#password-form")[0].reset();
+			}
+			
+			$("#save-button").removeClass('disabled');
+			$("#save-button").html('Save');
+			
+		           
+		});
 		
 	}
 	

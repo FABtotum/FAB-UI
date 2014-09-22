@@ -15,10 +15,9 @@ class FT_Layout {
 	protected $_layout_title;
     
     protected $_skin;
-    
-    //protected $_language;
-
-
+	
+	protected $_custom_ribbon;
+	
 	protected $_ft_layout_view_paths  = array();
 	protected $_ft_module_view_paths  = array();
 	protected $_ft_layout_cached_vars = array();
@@ -195,7 +194,9 @@ class FT_Layout {
 
 		//prima carico il contenuto del modulo/plugin che chiamiamo controller_view
 		$data['_controller_view'] = $this->_ci->load->view($view, $vars, TRUE);
-
+		
+		//extra ribbon
+		$data['_custom_ribbon'] = $this->_custom_ribbon;
 
 
 		return $this->_ft_load(array('_ci_view' => 'index', '_ci_vars' => $this->_ci_object_to_array($data), '_ci_return' => $return));
@@ -356,6 +357,12 @@ class FT_Layout {
 	public function set_layout_title($title){
 		$this->_layout_title = $title;
 	}
+	
+	
+	
+	public function set_custom_ribbon($custom){
+		$this->_custom_ribbon = $custom;
+	}
 
 
 
@@ -427,25 +434,12 @@ class FT_Layout {
 				if(isset($css['comment']) && $css['comment'] != '')
 					$html .= '<!-- '.$css['comment']. ' -->'.PHP_EOL;
                 
-				$_src = isset($css['external']) && $css['external'] == TRUE ?  $css['src'] : base_url().$css['src'];
+				$_src = isset($css['external']) && $css['external'] == TRUE ?  $css['src'] : base_url().$css['src'].'?v='.$_SESSION['fabui_version'];
 
 				$html .= '<link rel="stylesheet" type="text/css" media="screen" href="'.$_src.'">'.PHP_EOL;
                 
                 
-                 /*
-                if(isset($css['font']) && $css['font'] == true){
-                    
-                    $_src = isset($css['external']) && $css['external'] == TRUE ?  $css['src'] : base_url().$css['src'];
-                    $html .= '<link rel="stylesheet" type="text/css" media="screen" href="'.$_src.'">'.PHP_EOL;
-                    
-                }else{
-                    
-                    $_css_script =  file_get_contents($_dir.$css['src'], FILE_USE_INCLUDE_PATH);
-                    $html .= '<style>'.$_css_script.'</style>';
-                }
-                
-                
-                */
+                 
                 
 			}
 
@@ -458,6 +452,7 @@ class FT_Layout {
 
 
 	protected function _load_js(){
+		
 
         $_dir = '/var/www/fabui/';
 		$html = '';
@@ -474,7 +469,7 @@ class FT_Layout {
 					$html .= '<!-- '.$js['comment']. ' -->'.PHP_EOL;
 
 
-				$_src = isset($js['external']) && $js['external'] == TRUE ?  $js['src'] : base_url().$js['src'];
+				$_src = isset($js['external']) && $js['external'] == TRUE ?  $js['src'] : base_url().$js['src'].'?v='.$_SESSION['fabui_version'];
                 
                 
 				$html .= '<script src="'.$_src.'"></script>'.PHP_EOL;
@@ -780,6 +775,9 @@ class FT_Layout {
 	
 	
 	
+	
+	
+	
 	protected function _do_compression($string){
 		
         //return $string;
@@ -811,10 +809,11 @@ class FT_Layout {
         
         return preg_replace($_search, $_replace, $buffer);
         
-        
-      
-		
 	}
+	
+	
+	
+	
 
 
 }

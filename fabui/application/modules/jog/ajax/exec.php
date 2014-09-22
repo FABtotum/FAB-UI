@@ -8,17 +8,19 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/application/libraries/Serial.php'
 $function = $_POST['function'];
 $value    = $_POST["value"];
 $time     = $_POST['time'];
-
+$_step    = $_POST['step'];
+$z_step   = $_POST['z_step'];
+$feedrate = $_POST['feedrate'];
 /** LOAD DATABASE CLASS */
 $db = new Database();
 
 
 /** LOAD JOG PARAMETERS FROM DATABASE */
-$_step     = $db->query('SELECT value FROM sys_configuration where sys_configuration.key = "step" ');
-$_step     = $_step[0]['value'];
+//$_step     = $db->query('SELECT value FROM sys_configuration where sys_configuration.key = "step" ');
+//$_step     = $_step[0]['value'];
 
-$_feedrate = $db->query('SELECT value FROM sys_configuration where sys_configuration.key = "feedrate" ');
-$_feedrate = $_feedrate[0]['value'];
+//$_feedrate = $db->query('SELECT value FROM sys_configuration where sys_configuration.key = "feedrate" ');
+//$_feedrate = $_feedrate[0]['value'];
 
 /** CLOSE DB */
 $db->close();
@@ -36,17 +38,19 @@ $_functions["lights"]["off"] = "M706 S0";
 $_functions["coordinates"]["relative"] = "G91";
 $_functions["coordinates"]["absolute"] = "G90";
 
-$_functions["directions"]["up"]         = "G0 Y+".$_step;
-$_functions["directions"]["up-right"]   = "G0 Y+".$_step." X+".$_step;
-$_functions["directions"]["up-left"]    = "G0 Y+".$_step." X-".$_step;
-$_functions["directions"]["down"]       = "G0 Y-".$_step;
-$_functions["directions"]["down-right"] = "G0 Y-".$_step." X+".$_step;
-$_functions["directions"]["down-left"]  = "G0 Y-".$_step." X-".$_step;
-$_functions["directions"]["left"]       = "G0 X-".$_step;
-$_functions["directions"]["right"]      = "G0 X+".$_step;
+$_functions["directions"]["up"]         = "G91".PHP_EOL."G0 Y+".$_step.' F'.$feedrate;
+$_functions["directions"]["up-right"]   = "G91".PHP_EOL."G0 Y+".$_step." X+".$_step.' F'.$feedrate;
+$_functions["directions"]["up-left"]    = "G91".PHP_EOL."G0 Y+".$_step." X-".$_step.' F'.$feedrate;
+$_functions["directions"]["down"]       = "G91".PHP_EOL."G0 Y-".$_step.' F'.$feedrate;
+$_functions["directions"]["down-right"] = "G91".PHP_EOL."G0 Y-".$_step." X+".$_step.' F'.$feedrate;
+$_functions["directions"]["down-left"]  = "G91".PHP_EOL."G0 Y-".$_step." X-".$_step.' F'.$feedrate;
+$_functions["directions"]["left"]       = "G91".PHP_EOL."G0 X-".$_step.' F'.$feedrate;
+$_functions["directions"]["right"]      = "G91".PHP_EOL."G0 X+".$_step.' F'.$feedrate;
 
 
-$_functions["directions"]["home"]       = "G0 X0 Y0 Z0";
+$_functions["directions"]["home"]       = "G90 G0 X0 Y0";
+
+//$_functions["directions"]["home"]       = "G0 X0 Y0 Z0";
 
 $_functions["rotation"] = "G90".PHP_EOL."G0 E";
 
@@ -108,10 +112,10 @@ switch ($function){
 		$command_value = $_functions[$function];
 		break;
     case 'zup':
-		$command_value = 'G0 Z+'.$value;
+		$command_value = 'G91'.PHP_EOL.'G0 Z+'.$z_step.' F'.$feedrate;
 		break;
     case 'zdown':
-		$command_value = 'G0 Z-'.$value;
+		$command_value = 'G91'.PHP_EOL.'G0 Z-'.$z_step.' F'.$feedrate;
 		break;
     case 'bed-align':
 		//$command_value = 'G91'.PHP_EOL.'G28'.PHP_EOL.'G0 Z60'.PHP_EOL.'M402'.PHP_EOL.'G29'.PHP_EOL.'G0 Z60'.PHP_EOL.'M402'.PHP_EOL.'G0 X90 Y70'.PHP_EOL.'G92 X0 Y0'; 

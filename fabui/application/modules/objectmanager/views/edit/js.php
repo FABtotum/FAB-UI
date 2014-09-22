@@ -16,7 +16,7 @@ function save_object(){
 	$.ajax({
 		type: "POST",
 		url: "<?php echo module_url('objectmanager').'ajax/save_object.php' ?>",
-		data: {object_id : <?php echo $_object->id ?>, name: $("#obj_name").val(), description: $("#obj_description").val()},
+		data: {object_id : <?php echo $_object->id ?>, name: $("#obj_name").val(), description: $("#obj_description").val(), private: $("#private").is(':checked') ? 1 : 0},
 		dataType: 'json'
 	}).done(function(response) {
 

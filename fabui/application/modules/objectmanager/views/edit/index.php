@@ -1,11 +1,9 @@
-<div class="row">
-	<div class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+<div class="row margin-bottom-10">
+	<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 		<h1 class="page-title txt-color-blueDark"><i class="icon-fab-manager fab-fw"></i> Objectmanager <span> > Edit</span> > <span><strong id="label-obj-name"><?php echo $_object -> obj_name; ?></strong></span></h1>
 	</div>
-	<div class="col-xs-6 col-sm-8 col-md-8 col-lg-8 text-align-right">
-		<div class="page-title">
-			<a href="<?php  echo site_url('objectmanager')?>" class="btn btn-default"><i class="icon-fab-manager"></i> Back to objects</a>&nbsp;&nbsp;
-		</div>
+	<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+			<a href="<?php  echo site_url('objectmanager')?>" class="btn btn-default pull-right"><i class="icon-fab-manager"></i> Back to objects</a>&nbsp;&nbsp;
 	</div>
 </div>
 <div class="row">
@@ -16,6 +14,15 @@
 					<legend>
 						Object
 					</legend>
+					<div class="form-group">
+						<label rel="tooltip" data-placement="top" data-original-title="If is checked everyone can use this object" class="col-md-1 control-label"> Public </label>
+						<div class="col-md-11">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" name="private" id="private" <?php echo $_object->private == 0 ? 'checked="checked"' : '' ?>></label>
+							</div>
+						</div>
+					</div>
 					<div class="form-group">
 						<label class="col-md-1 control-label"> Name </label>
 						<div class="col-md-11">
