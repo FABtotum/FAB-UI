@@ -140,7 +140,7 @@ trace("<strong>Gcode optimized</strong>")
 p.startprint(gcode)
 trace("Print started")
 start =time.time()  #time of print start
-
+progress=0
 try:
 	#if statusreport:
 	#	p.loud = False
@@ -219,7 +219,7 @@ except Exception,err:
 	trace("An error occurred")
 	print str(err)
 
-
+status="performed"
 #set the JSON job as completed
 if not killed:
 	#completed!
@@ -233,14 +233,24 @@ else:
 	completed=1
 	completed_time=int(time.time())
 	printlog(progress,p.queueindex,len(p.mainqueue))
+	status="stopped"
+	
+	
+#port = '/dev/ttyAMA0'
+#baud = 115200
+#serial = serial.Serial(port, baud, timeout=0.5)
+#serial.flushInput()
+#serial.flushOutput()
 	
 #empty the comfile //NOT NEEDED ANYMORE
 #call (['sudo echo "" > '+ comfile], shell=True)
 
-#finalize database-side operations
-call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print"], shell=True)
-
 p.disconnect()
+
+#finalize database-side operations
+call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print " + status +" "], shell=True)
+
+
 
 #shudown the printer if requested
 if shutdown:

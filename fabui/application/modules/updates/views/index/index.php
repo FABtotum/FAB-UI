@@ -10,7 +10,7 @@
 				
 			</li>
 			<li class="sparks-info">
-				<h5> Marlin FW<span class="txt-color-purple"><i class="fa fa-shield"></i>&nbsp;v&nbsp;<?php echo $marlin_local ?></span></h5>
+				<h5> FABlin FW<span class="txt-color-purple"><i class="fa fa-shield"></i>&nbsp;v&nbsp;<?php echo $marlin_local ?></span></h5>
 			</li>
 		</ul>
 	</div>
@@ -37,7 +37,7 @@
                 </thead>
                 <tbody>
                 	<!-- FAB UI -->
-                	<tr class="<?php echo $running == true && $update_type == 'fabui' ? 'warning' : ''; ?>">
+                	<tr class="<?php echo $running == true && $update_type == 'fabui' || $fabui ? 'warning' : ''; ?>">
                 		<td class="text-center" style="width: 40px;"><i class="fa fa-tablet txt-color-blue fa-2x text-muted"></i></td>
                 		<td>
 	                        <h4>
@@ -47,13 +47,19 @@
 	                    </td>
 	                    <td>
 	                    	<?php if($internet): ?>
-	                    		<h5><?php echo $fabui ? 'A new update for FAB UI beta is avaiable' : 'Your FAB UI is updated to the latest version' ?></h5>
+	                    		<h4><?php echo $fabui ? '<a> A new update is avaiable.<strong class="txt-color-red"> Get new version ' .$fabui_remote.' now!</strong></a> ' : 'Your FAB UI is updated to the latest version' ?>
+	                    			
+	                    			<?php if($fabui): ?>
+	                    			<small><a data-toggle="modal" style="cursor:pointer" data-target="#fabui_changelog">See details</a></small>
+	                    			<?php endif; ?>
+	                    		</h4>
+	                    		
 	                    	<?php endif; ?>
 	                    </td>
 	                    <td class="text-right">
 	                    	<?php if($internet): ?>
                             <a class="btn btn-default btn-sm download download-myfab" download-item="fabui">
-                                <i class="fa fa-refresh"></i> Update
+                               <i class="fa fa-refresh"></i> Update
                             </a>
                              <a class="btn btn-default btn-sm delete" style="display: <?php echo $running == true && $update_type == 'fabui' ? '' : 'none' ?>;">
                                <i class="fa fa-times"></i>
@@ -64,17 +70,23 @@
                 	<!-- END FAB UI -->
                 	<!-- MARLIN FW -->
                 	
-                	<tr class="<?php echo $running == true && $update_type == 'marlin' ? 'warning' : ''; ?>">
+                	<tr class="<?php echo $running == true && $update_type == 'marlin' || $marlin ? 'warning' : ''; ?>">
                 		<td class="text-center" style="width: 40px;"><i class="fa fa-shield txt-color-purple  fa-2x text-muted"></i></td>
                 		<td>
                             <h4>
-                                <a href="javascript:void(0);">Marlin Firmware</a>
+                                <a href="javascript:void(0);">FABlin Firmware</a>
                                 <small>Installed version: <i><?php echo $marlin_local; ?></i></small>
                             </h4>
                         </td>
                         <td>
                         	<?php if($internet): ?>
-                        		<h5><?php echo $marlin ? 'A new update for Marlin Firmware is avaiable' : 'Your Marlin Firmware is updated to the latest version' ?></h5>
+                        		<h4><?php echo $marlin ? ' <a>A new update for FABlin Firmware is avaiable.<strong class="txt-color-red"> Get new version '.$marlin_remote.' now!</strong> </a>' : 'Your FABlin Firmware is updated to the latest version' ?>
+                        			
+                        			<?php if($marlin): ?>
+	                    			<small><a data-toggle="modal" style="cursor:pointer" data-target="#fw_changelog">See details</a></small>
+	                    			<?php endif; ?>
+                        			
+                        		</h4>
                         	<?php endif; ?>
                         </td>
                         <td class="text-right">
@@ -113,5 +125,54 @@
         </div>
 
 
+<?php endif; ?>
+
+
+<?php if($fabui): ?>
+<div class="modal fade" id="fabui_changelog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">FAB UI beta v.<?php echo $fabui_remote ?></h4>
+			</div>
+			<div class="modal-body">
+				<?php echo $fabui_changelog; ?>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">
+					OK
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<?php endif; ?>
+
+
+
+<?php if($marlin): ?>
+<div class="modal fade" id="fw_changelog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">FABlin Firmware v.<?php echo $marlin_remote;  ?></h4>
+			</div>
+			<div class="modal-body">
+				<?php echo $fw_changelog; ?>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">
+					OK
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <?php endif; ?>
 

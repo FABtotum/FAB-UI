@@ -12,9 +12,7 @@ class Dashboard extends Module {
 
 	public function index(){
 	   
-      
-	  
-       
+
        //GET ALL ACTIVE WIDGETS
        $this->load->library('WidgetsFactory');
        

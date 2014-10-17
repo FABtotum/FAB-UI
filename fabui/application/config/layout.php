@@ -33,7 +33,7 @@ $layout['_css'][] = array('src' => 'application/layout/assets/js/plugin/magnific
 
 $layout['_css'][] = array('src' => 'application/layout/assets/css/fonts.css', 'comment'=> 'Google Font', 'external' => FALSE, 'font' =>true);
 $layout['_css'][] = array('src' => 'application/layout/assets/css/fabtotum_style.css', 'comment'=> 'Fabtotum', 'external' => FALSE);
-
+//$layout['_css'][] = array('src'=>'application/layout/assets/js/plugin/jbar/style.css', 'comment' => 'magnific-popup', 'external' => FALSE);
 /*
  * Default JS to include on all pages
  */
@@ -45,7 +45,7 @@ $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/jquery-touc
 $layout['_js'][] = array('src'=>'application/layout/assets/js/bootstrap/bootstrap.min.js', 'comment' => 'BOOTSTRAP JS', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/notification/SmartNotification.min.js', 'comment' => 'CUSTOM NOTIFICATION', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/smartwidgets/jarvis.widget.min.js', 'comment' => 'JARVIS WIDGETS', 'external' => FALSE);
-//$layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js', 'comment' => 'EASY PIE CHARTS', 'external' => FALSE);
+$layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js', 'comment' => 'EASY PIE CHARTS', 'external' => FALSE);
 //$layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/sparkline/jquery.sparkline.min.js', 'comment' => 'SPARKLINES', 'external' => FALSE);
 //$layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/jquery-validate/jquery.validate.min.js', 'comment' => 'JQUERY VALIDATE', 'external' => FALSE);
 //$layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/masked-input/jquery.maskedinput.min.js', 'comment' => 'JQUERY MASKED INPUT', 'external' => FALSE);
@@ -56,6 +56,7 @@ $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/fastclick/f
 
 
 $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js', 'comment' => 'magnific-popup', 'external' => FALSE);
+//$layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/jbar/jbar.min.js', 'comment' => 'magnific-popup', 'external' => FALSE);
 
 
 $layout['_js'][] = array('src'=>'application/layout/assets/js/demo.min.js', 'comment' => 'Demo', 'external' => FALSE);

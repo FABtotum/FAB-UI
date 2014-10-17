@@ -260,7 +260,7 @@ function marlin_get_remote_version(){
  * 
  */
 function is_internet_avaiable(){
-    return !$sock = @fsockopen('www.google.com', 80, $num, $error, 5) ? false : true;    
+    return !$sock = @fsockopen('www.google.com', 80, $num, $error, 2) ? false : true;    
 }
 
 
@@ -325,6 +325,121 @@ function wlan(){
     
 
 }
+
+
+
+function optimize_gcode($gcode_data){
+	
+	
+	$gcode_data = explode(PHP_EOL, $gcode_data);
+	
+	$optimized_gcode = array();
+	
+	foreach($gcode_data as $line){
+		
+		if(!is_blank($line) && !is_comment($line)){
+			
+			$optimized_gcode[] = normalize_line($line);	
+			
+		}
+	}
+	
+	return $optimized_gcode;
+	
+}
+
+
+function is_blank($line){
+	
+	$line = trim($line);
+	return $line == '' || $line == PHP_EOL ? true : false;
+	
+}
+
+
+function is_comment($line){
+	
+	$line = trim($line);
+	return $line[0] == ';' ? true : false;
+	
+}
+
+
+function normalize_line($line){
+		
+	$temp = explode(';', $line);	
+	return trim($temp[0]).PHP_EOL;
+	
+}
+
+
+/**
+ * STOLEN FROM CI
+ * Create a Directory Map
+ *
+ * Reads the specified directory and builds an array
+ * representation of it.  Sub-folders contained with the
+ * directory will be mapped as well.
+ *
+ * @access	public
+ * @param	string	path to source
+ * @param	int		depth of directories to traverse (0 = fully recursive, 1 = current dir, etc)
+ * @return	array
+ */
+function directory_map($source_dir, $directory_depth = 0, $hidden = FALSE)
+{
+		if ($fp = @opendir($source_dir))
+		{
+			$filedata	= array();
+			$new_depth	= $directory_depth - 1;
+			$source_dir	= rtrim($source_dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+			while (FALSE !== ($file = readdir($fp)))
+			{
+				// Remove '.', '..', and hidden files [optional]
+				if ( ! trim($file, '.') OR ($hidden == FALSE && $file[0] == '.'))
+				{
+					continue;
+				}
+
+				if (($directory_depth < 1 OR $new_depth > 0) && @is_dir($source_dir.$file))
+				{
+					$filedata[$file] = directory_map($source_dir.$file.DIRECTORY_SEPARATOR, $new_depth, $hidden);
+				}
+				else
+				{
+					$filedata[] = $file;
+				}
+			}
+
+			closedir($fp);
+			return $filedata;
+		}
+
+		return FALSE;
+}
+
+
+
+function clean_temp(){
+	    
+	$files = directory_map(TEMP_PATH);
+	
+	$files_to_take[] = 'picture.jpg';
+	$files_to_take[] = 'fab_ui_safety.json';
+	
+	foreach($files as $file){
+		
+		if(!in_array($file, $files_to_take)){
+			unlink(TEMP_PATH.$file);
+		}
+		
+		
+	}
+	
+	
+}
+
 
 
 

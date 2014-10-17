@@ -245,6 +245,9 @@ class Settings extends Module {
 			case 'probe-calibration':
 				$this->_probe_calibration();
 				break;
+			case 'feeder':
+				$this->_maintenance_feeder();
+				break;
             default:
                 $_tab_header = $this->tab_header('maintenance');
                 $data['_breadcrumb']  = 'Maintenance';
@@ -258,7 +261,27 @@ class Settings extends Module {
     
     
     
-    private function _maintenance_spool(){
+    private function _maintenance_feeder(){
+        
+        
+        $_tab_header = $this->tab_header('maintenance'); 
+        
+        $data['_breadcrumb']  = 'Maintenance > Feeder';
+        $data['_tab_header']  = $_tab_header;
+        $data['_tab_content'] = $this->load->view('index/maintenance/feeder/index.php', $data, TRUE);
+        
+        $js_in_page = $this->load->view('index/maintenance/feeder/js', $data, TRUE);
+        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+
+
+       
+        $this->layout->view('index/index', $data);
+        
+    }
+	
+	
+	
+	private function _maintenance_spool(){
         
         
         $_tab_header = $this->tab_header('maintenance'); 
@@ -274,11 +297,8 @@ class Settings extends Module {
         $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
         $this->layout->view('index/index', $data);
         
-        
-        
-        
-        
     }
+	
     
     private function _maintenance_self_test(){
         
@@ -312,6 +332,10 @@ class Settings extends Module {
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
 		
 		
+		/** AVOID TO SEND ALWAYS G91 FOR EVERY MOVEMENT */
+		$_SESSION['relative'] = false;
+		
+		
 		$this->layout->view('index/index', $data);		
 	}
     
@@ -322,7 +346,7 @@ class Settings extends Module {
         $_tabs[] = array('name' => 'settings',    'label'=>'General',     'url' => site_url('settings'),             'icon' => 'fa fa-lg fa-fw fa fa-cogs');
         //$_tabs[] = array('name' => 'scan',        'label'=>'Scan',        'url' => site_url('settings/scan'),        'icon' => 'fab-lg fab-fw icon-fab-scan');
         //$_tabs[] = array('name' => 'create',      'label'=>'Print',       'url' => site_url('settings/create'),      'icon' => 'fab-lg fab-fw icon-fab-print');
-        $_tabs[] = array('name' => 'jog',         'label'=>'Jog',         'url' => site_url('settings/jog'),         'icon' => 'fab-lg fab-fw icon-fab-jog');
+        //$_tabs[] = array('name' => 'jog',         'label'=>'Jog',         'url' => site_url('settings/jog'),         'icon' => 'fab-lg fab-fw icon-fab-jog');
         //$_tabs[] = array('name' => 'plugin',    'label'=>'Plugin',   'url' => site_url('settings/plugin'),   'icon' => 'fab-lg fab-fw icon-fab-plugin');
         
 		$_tabs[] = array('name' => 'maintenance', 'label'=>'Maintenance', 'url' => site_url('settings/maintenance'), 'icon' => 'fa fa-lg fa-fw fa-wrench');

@@ -18,14 +18,19 @@
         <div class="well">
         
             <div class="row">
-                <div class="col-sm-6"></div>
-                <div class="col-sm-6">
-                
-                    
-                    <a id="check-pre-scan" href="javascript:void(0);" class="btn btn-primary btn-lg">Click here when ready</a>
-                
+                <div class="col-sm-6 text-center">
+                	 <img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/scan/assets/img/probing/1.png" />
+                </div>
+                <div class="col-sm-6 text-center">
+                	 <h1><span class="badge">1</span></h1>
+                	<h1 class="text-primary ">Position the object</h1>
+                	<h2>Position your object in the center of the platform when promted.<br> Secure it with a double sided tape or use the fixture holes</h2>
+                	
+                	<a id="check-pre-scan" href="javascript:void(0);" class="btn btn-primary btn-lg">Click here when ready</a>
                 </div>
             </div>
+            
+           
             
         </div>
     
@@ -155,7 +160,11 @@
                /** STEP SUCCESSIVO */
                 setTimeout(function(){ $("#row_2").slideUp('slow', function(){
                     closeWait();
-                     $("#row_3").slideDown('slow', function(){});
+                     $("#row_3").slideDown('slow', function(){
+                     	
+                     	$("#start-p-scan").trigger('click');
+                     	
+                     });
                  });}, 3000);
                  
                           

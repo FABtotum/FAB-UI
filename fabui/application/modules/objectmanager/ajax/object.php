@@ -27,6 +27,15 @@ $_object['date_updated'] =  mysql_to_human($_object['date_updated']);
 /** LOAD OBJECT'S FILES FROM DB */
 $_object_files = $db->query("select * from sys_obj_files where id_obj=".$_object_id);
 
+if($db->get_num_rows() == 1){
+	
+	$temp = $_object_files;
+	$_object_files = array();
+	$_object_files[] = $temp;
+}
+
+
+
 $_files = array();
 
 foreach($_object_files as $_obj){

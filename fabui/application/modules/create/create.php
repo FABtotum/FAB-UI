@@ -11,7 +11,7 @@ class Create extends Module {
 	public function __construct()
 	{
 		parent::__construct();
-		
+		error_reporting(0);
 		 $this->load->helper('print_helper');
         /** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
         if(is_printer_busy('print')){
@@ -138,6 +138,7 @@ class Create extends Module {
 		$data_widget_step5['_pid']              = $_running ? $_attributes['pid'] : 0;
 		$data_widget_step5['_velocity']         = $_running && isset($_attributes['speed']) ? $_attributes['speed'] : 100;
 		$data_widget_step5['_running']          = $_running;
+		
         
         //$data_widget_step5['ext_temp']          = $_running ? $ext_temp : 0;
         //$data_widget_step5['bed_temp']          = $_running ? $bed_temp : 0;
@@ -146,6 +147,7 @@ class Create extends Module {
 		//$data_step5['_tab5_monitor_widget'] = widget('_tab5_monitor_widget', 'Print Monitor', '', $this->load->view('index/step5/widget', $data_widget_step5, TRUE), false);
 		$data_step5['_tab5_monitor_widget'] = $this->load->view('index/step5/widget', $data_widget_step5, TRUE);
         $data_step5['_running']             = $_running;
+		$data_step5['mail']                 = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : 0;
 
 
         /**

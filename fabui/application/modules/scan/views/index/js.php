@@ -559,10 +559,10 @@ var print_monitor = function (){
         openWait('Finalizing scan');
         
         setTimeout(function(){
-            get_info()
+            get_info();
             
             /** get all info from the task */
-        }, 5000);
+        }, 15000);
 	}
 
 };
@@ -579,7 +579,7 @@ function get_info(){
 		dataType : 'json',
 	}).done(function(response) {
         
-        obj_id = response.id_obj;
+        obj_id      = response.id_obj;
         id_asc_file = response.id_file;
         
         $(".download-scan").attr('href', '<?php echo site_url('objectmanager/download') ?>' + '/' + id_asc_file);
@@ -598,7 +598,7 @@ function get_info(){
 function monitor_call(){
 
 
-	/*se la scansione non � finita*/
+	/*se la scansione non è finita*/
 	if(!scan_finished || (!ISPROBING && !pprocess_finished)){	
 	
 		$.ajax({
@@ -1177,7 +1177,7 @@ function stop_scan(message){
 		}).done(function( data ) {
 		  
           if(data.status == 'ok'){
-                setTimeout(function(){document.location.href = '<?php echo site_url('scan') ?>';}, 3000); 
+                setTimeout(function(){document.location.href = '<?php echo site_url('scan') ?>';}, 1000); 
           }			
     });
     

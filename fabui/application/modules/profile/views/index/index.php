@@ -19,7 +19,7 @@
 				</li>
 				
 				<li>
-					<a href="#theme-tab" data-toggle="tab"><i class="fa fa-fw fa-lg fa-delicious"></i>&nbsp;Theme</a>
+					<a href="#settings-tab" data-toggle="tab"><i class="fa fa-fw fa-lg fa-delicious"></i>&nbsp;Settings</a>
 				</li>
 
 			</ul>
@@ -114,41 +114,53 @@
 
 				</div>
 
-				<div class="tab-pane fade" id="theme-tab">
+				<div class="tab-pane fade" id="settings-tab">
 
 					<div class="row">
 
 						<div class="col-sm-12">
-							<fieldset>
-								<div class="form-group">
-
-									<label>Theme skin</label>
-									<div class="radio">
-										<label>
-											<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-0' ? 'checked="checked"' : '' ?>
-											name="theme_skin" value="smart-style-0">
-											<span> Default </span> </label>
+							<div class="form-horizontal">
+								<fieldset>
+									<div class="form-group">
+										<label class="col-md-1 control-label">Theme skin</label>
+										<div class="col-md-11">
+											<div class="radio">
+												<label>
+													<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-0' ? 'checked="checked"' : '' ?>
+													name="theme_skin" value="smart-style-0">
+													<span> Default </span> </label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-1' ? 'checked="checked"' : '' ?>
+													name="theme_skin" value="smart-style-1">
+													<span> Dark Elegance </span> </label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-2' ? 'checked="checked"' : '' ?>
+													name="theme_skin" value="smart-style-2">
+													<span> Ultra Light </span> </label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-3' ? 'checked="checked"' : '' ?>
+													name="theme_skin" value="smart-style-3">
+													<span> Google Skin </span> </label>
+											</div>
+										</div>
 									</div>
-									<div class="radio">
-										<label>
-											<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-1' ? 'checked="checked"' : '' ?>
-											name="theme_skin" value="smart-style-1">
-											<span> Dark Elegance </span> </label>
+								</fieldset>
+								
+								<fieldset>
+									<div class="form-group">
+										<label class="col-md-1 control-label">Lock screen</label>
+										<div class="col-md-11">
+											<?php echo form_dropdown('lock_screen', $lock_screen_options, $lock_screen, 'class="form-control" id="lock_screen"'); ?>
+										</div>
 									</div>
-									<div class="radio">
-										<label>
-											<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-2' ? 'checked="checked"' : '' ?>
-											name="theme_skin" value="smart-style-2">
-											<span> Ultra Light </span> </label>
-									</div>
-									<div class="radio">
-										<label>
-											<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-3' ? 'checked="checked"' : '' ?>
-											name="theme_skin" value="smart-style-3">
-											<span> Google Skin </span> </label>
-									</div>
-								</div>
-							</fieldset>
+								</fieldset>
+							</div>
 						</div>
 					</div>
 				</div>

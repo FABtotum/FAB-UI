@@ -1,6 +1,7 @@
 <?php
+session_start();
 require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
+//require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/application/libraries/Serial.php';
 
@@ -12,9 +13,7 @@ $_step    = $_POST['step'];
 $z_step   = $_POST['z_step'];
 $feedrate = $_POST['feedrate'];
 /** LOAD DATABASE CLASS */
-$db = new Database();
-
-
+//$db = new Database();
 /** LOAD JOG PARAMETERS FROM DATABASE */
 //$_step     = $db->query('SELECT value FROM sys_configuration where sys_configuration.key = "step" ');
 //$_step     = $_step[0]['value'];
@@ -22,11 +21,26 @@ $db = new Database();
 //$_feedrate = $db->query('SELECT value FROM sys_configuration where sys_configuration.key = "feedrate" ');
 //$_feedrate = $_feedrate[0]['value'];
 
+
+$db_step = 10;
+$db_feedrate = 1000;
+
+$z_step  = $z_step == '' ? 10 : $z_step;
+
+$_step    = $_step    == '' ? $db_step: $_step;
+$feedrate = $feedrate == '' ? $db_feedrate : $feedrate;
 /** CLOSE DB */
-$db->close();
+//$db->close();
 
 /** MACRO */
 $_macro = false;
+
+$relative = '';
+
+if($_SESSION['relative'] == false){
+	$relative = 'G91';
+	$_SESSION['relative'] = true;
+}
 
 
 $_functions["motors"]["on"]  = "M17";
@@ -38,14 +52,14 @@ $_functions["lights"]["off"] = "M706 S0";
 $_functions["coordinates"]["relative"] = "G91";
 $_functions["coordinates"]["absolute"] = "G90";
 
-$_functions["directions"]["up"]         = "G91".PHP_EOL."G0 Y+".$_step.' F'.$feedrate;
-$_functions["directions"]["up-right"]   = "G91".PHP_EOL."G0 Y+".$_step." X+".$_step.' F'.$feedrate;
-$_functions["directions"]["up-left"]    = "G91".PHP_EOL."G0 Y+".$_step." X-".$_step.' F'.$feedrate;
-$_functions["directions"]["down"]       = "G91".PHP_EOL."G0 Y-".$_step.' F'.$feedrate;
-$_functions["directions"]["down-right"] = "G91".PHP_EOL."G0 Y-".$_step." X+".$_step.' F'.$feedrate;
-$_functions["directions"]["down-left"]  = "G91".PHP_EOL."G0 Y-".$_step." X-".$_step.' F'.$feedrate;
-$_functions["directions"]["left"]       = "G91".PHP_EOL."G0 X-".$_step.' F'.$feedrate;
-$_functions["directions"]["right"]      = "G91".PHP_EOL."G0 X+".$_step.' F'.$feedrate;
+$_functions["directions"]["up"]         = $relative.PHP_EOL."G0 Y+".$_step.' F'.$feedrate;
+$_functions["directions"]["up-right"]   = $relative.PHP_EOL."G0 Y+".$_step." X+".$_step.' F'.$feedrate;
+$_functions["directions"]["up-left"]    = $relative.PHP_EOL."G0 Y+".$_step." X-".$_step.' F'.$feedrate;
+$_functions["directions"]["down"]       = $relative.PHP_EOL."G0 Y-".$_step.' F'.$feedrate;
+$_functions["directions"]["down-right"] = $relative.PHP_EOL."G0 Y-".$_step." X+".$_step.' F'.$feedrate;
+$_functions["directions"]["down-left"]  = $relative.PHP_EOL."G0 Y-".$_step." X-".$_step.' F'.$feedrate;
+$_functions["directions"]["left"]       = $relative.PHP_EOL."G0 X-".$_step.' F'.$feedrate;
+$_functions["directions"]["right"]      = $relative.PHP_EOL."G0 X+".$_step.' F'.$feedrate;
 
 
 $_functions["directions"]["home"]       = "G90 G0 X0 Y0";
@@ -112,23 +126,23 @@ switch ($function){
 		$command_value = $_functions[$function];
 		break;
     case 'zup':
-		$command_value = 'G91'.PHP_EOL.'G0 Z+'.$z_step.' F'.$feedrate;
+		$command_value = $relative.PHP_EOL.'G0 Z+'.$z_step.' F'.$feedrate;
 		break;
     case 'zdown':
-		$command_value = 'G91'.PHP_EOL.'G0 Z-'.$z_step.' F'.$feedrate;
+		$command_value = $relative.PHP_EOL.'G0 Z-'.$z_step.' F'.$feedrate;
 		break;
     case 'bed-align':
-		//$command_value = 'G91'.PHP_EOL.'G28'.PHP_EOL.'G0 Z60'.PHP_EOL.'M402'.PHP_EOL.'G29'.PHP_EOL.'G0 Z60'.PHP_EOL.'M402'.PHP_EOL.'G0 X90 Y70'.PHP_EOL.'G92 X0 Y0'; 
-		//$command_value = 'G91'.PHP_EOL.'G0 Z5 F1000'.PHP_EOL.'G90'.PHP_EOL.'G28'.PHP_EOL.'G29'.PHP_EOL.'G0 X+10 Y+10 Z+30 F5000';
         $_macro        = true;
         $_macro_name   = 'auto_bed_leveling';
-        
         break;
     case 'extruder_mode':
         $command_value = $_functions[$function][$value];
+		if($value == "e"){
+			$command_value .= PHP_EOL."G92 E0";
+		}
         break;
     case 'extruder-e':
-        $command_value = 'G0 E'.$value.' F300';
+        $command_value = $relative.PHP_EOL.'G0 E'.$value.' F300';
         break;
     case 'lights':
         $command_value = $_functions[$function][$value];
@@ -141,25 +155,36 @@ switch ($function){
 
 if(!$_macro){
     
-    $command_value=str_replace("_","\r\n",$command_value);
+    $command_value=trim(str_replace("_","\r\n",$command_value));
     /** LOAD SERIAL CLASS */
     $serial = new Serial();
-    
+
     $serial->deviceSet(PORT_NAME);
     $serial->confBaudRate(BOUD_RATE);
     $serial->confParity("none");
     $serial->confCharacterLength(8);
     $serial->confStopBits(1);
     $serial->deviceOpen();
-    $serial->sendMessage($command_value.PHP_EOL);
-    $reply = $serial->readPort();
+	
+	$temp = explode(PHP_EOL, $command_value);
+	
+	$response = '';
+	
+	foreach($temp as $com){
+		$response .= '<strong>'.$com.'</strong> : ';
+		$serial->sendMessage($com.PHP_EOL);
+		$response .= str_replace(PHP_EOL, '', $serial->readPort()).PHP_EOL;	
+	}
+	
     $serial->serialflush();
     $serial->deviceClose();
-    
-    $_response_items['command']  = $command_value;
-    $_response_items['response'] = $reply;
+	
+    $_response_items['response'] = trim($response).PHP_EOL;
 
 }else{
+	
+	
+	$_SESSION['relative'] = false;
     
     $_macro_response = '/var/www/temp/jog_'.$time.'.log';
     $_macro_trace    = '/var/www/temp/jog_'.$time.'.trace'; 
@@ -176,17 +201,17 @@ if(!$_macro){
 	$_output_macro   = shell_exec ( $_command_macro );
 	$_pid_macro      = trim(str_replace('\n', '', $_output_macro));
     
-    $_response_items['command']   = $_macro_name;
-    $_response_items['response']  = file_get_contents($_macro_response, FILE_USE_INCLUDE_PATH);
-    $_response_items['pid_macro'] = $_pid_macro;
+    $_response_items['command']       = $_macro_name;
+    $_response_items['response']      = file_get_contents($_macro_response, FILE_USE_INCLUDE_PATH);
+    $_response_items['pid_macro']     = $_pid_macro;
     $_response_items['command_macro'] = $_command_macro;
     
-    unlink($_macro_response);
-    //unlink($_macro_trace);
+    //unlink($_macro_response);
+   	//unlink($_macro_trace);
     sleep(1);    
 }
 
-unlink($_macro_trace);
+//unlink($_macro_trace);
 header('Content-Type: application/json');
 echo minify(json_encode($_response_items));
 

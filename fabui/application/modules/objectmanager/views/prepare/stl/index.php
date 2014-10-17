@@ -4,7 +4,7 @@
     </div>
 </div>
 
-<div class="row setting">   
+<div class="row setting" style="<?php echo $_task ? 'display:none;' : ''; ?>">   
     <div class="col-sm-12">
         <div class="well">
         
@@ -50,7 +50,7 @@
 
 
 
-<div class="row monitor" style="display: none;">
+<div class="row monitor" style="<?php echo $_task ? '' : 'display:none;'; ?>">
     <div class="col-md-4 col-lg-4">
         <div class="well well-sm text-center">
             <p>Elapsed Time</p>
@@ -70,7 +70,7 @@
         </div>
     </div>
 </div>
-<div class="row monitor" style="display: none;">
+<div class="row monitor" style="<?php echo $_task ? '' : 'display:none;'; ?>">
     <div class="col-md-12">
         <div class="well text-center">
             <p>Progress <span id="label-progress"></span></p>
@@ -83,7 +83,7 @@
         </div>
     </div>
 </div>
-<div class="row monitor" style="display: none;">
+<div class="row monitor" style="<?php echo $_task ? '' : 'display:none;'; ?>">
     <div class="col-sm-12">
         <div class="well" id="editor" style="height: 200px; ">
         </div>

@@ -15,8 +15,7 @@ $_marlin_remote_version  = marlin_get_remote_version();
 
 
 $_file_name = $_folder.MARLIN_DOWNLOAD_FILE;
-$_url       = MARLIN_DOWNLOAD_URL.MARLIN_DOWNLOAD_FILE;
-
+$_url       = MARLIN_DOWNLOAD_URL.$_marlin_remote_version.'/'.MARLIN_DOWNLOAD_FILE;
 
 $do_update = $_marlin_local_version < $_marlin_remote_version ;
 
@@ -77,7 +76,12 @@ if($do_update){
     sleep(2);
 	
 	
-   	$_command = 'sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:'.$_file_name.':i > /var/www/recovery/update/temp/install.log';
+	/** LOG FLASH  */
+	$log = TEMP_PATH.'flash_'.time().'.log';
+	write_file($_data_file, '', 'w');
+	chmod($_data_file, 0777);
+	
+   	$_command = 'sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:'.$_file_name.':i > '.$log;
     shell_exec($_command);
 		
 	/** UPDATE VERSION  */

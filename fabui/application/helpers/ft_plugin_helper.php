@@ -51,15 +51,16 @@ if ( ! function_exists('plugin_info'))
 			preg_match ( '|Author:(.*)$|mi',      $_plugin_info, $author_name );
 			preg_match ( '|Author URI:(.*)$|mi',  $_plugin_info, $author_uri );
 			preg_match ( '|Plugin Slug:(.*)$|mi', $_plugin_info, $plugin_slug );
+			preg_match ( '|Icon:(.*)$|mi',        $_plugin_info, $icon );
 			
-			foreach ( array ('name', 'uri', 'version', 'description', 'author_name', 'author_uri', 'plugin_slug' ) as $field ) {
+			foreach ( array ('name', 'uri', 'version', 'description', 'author_name', 'author_uri', 'plugin_slug', 'icon' ) as $field ) {
 				if (! empty ( ${$field} ))
 					${$field} = trim ( ${$field} [1] );
 				else
 					${$field} = '';
 			}
 			
-			$_plugin_info = array ('name' => $name, 'title' => $name, 'plugin_uri' => $uri, 'description' => $description, 'author' => $author_name, 'author_uri' => $author_uri, 'version' => $version );
+			$_plugin_info = array ('name' => $name, 'title' => $name, 'plugin_uri' => $uri, 'description' => $description, 'author' => $author_name, 'author_uri' => $author_uri, 'version' => $version, 'icon'=>$icon );
 			
 			return $_plugin_info;
 			

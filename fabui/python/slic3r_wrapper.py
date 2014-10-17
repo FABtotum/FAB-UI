@@ -79,11 +79,11 @@ names.append("Slic3r is being initialized")
 	
 cmd = 'sudo /var/www/fabui/slic3r/slic3r -load '+config+' -o '+ output + ' ' +input
 
-print cmd
+p = Popen(cmd, stdout = PIPE, stderr = STDOUT, shell = True)
+slicer_pid=p.pid
 
-
-p = Popen(cmd, stdout = PIPE, 
-        stderr = STDOUT, shell = True)		
+#aggiorno info pid per gli attributi del task
+call (['sudo php /var/www/fabui/script/update_slicer_task.php '+str(task_id)+ " " +str(slicer_pid)], shell=True)		
 
 i=0
 basetime=time.time()

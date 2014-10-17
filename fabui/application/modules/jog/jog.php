@@ -53,11 +53,13 @@ class Jog extends Module {
         $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.css', 'comment' => 'javascript for the noUISlider'));
         //$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
         $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/knob/jquery.knob.min.js', 'comment'=>'KNOB'));
-        
-       	//$this->layout->set_custom_ribbon($this->load->view('index/top_buttons', '', TRUE));
 
         //$this->layout->set_compress(false);
-
+		
+		
+		/** AVOID TO SEND ALWAYS G91 FOR EVERY MOVEMENT */
+		$_SESSION['relative'] = false;
+		
 		$this->layout->view('index/index', $data); 
 	}
     
@@ -88,7 +90,7 @@ class Jog extends Module {
 	
 	public function manual(){
 		
-		$this->load->view('manual/index', '');
+		$this->load->view('manual/index_wip', '');
 	}
 
 

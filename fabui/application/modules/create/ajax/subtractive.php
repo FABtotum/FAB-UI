@@ -4,7 +4,8 @@
     
         <div class="well text-center">
         
-            <h1>Instructions</h1>
+            <h1>Subtractive file</h1>
+            <h2>Press the button to continue</h2>
         
         </div>
     
@@ -32,96 +33,122 @@
 
 
 <div id="row_3" class="row interstitial" style="display: none;">
-
-    <div class="col-sm-12">
-    
-        <div class="well text-center">
-        
-            <h1>Set origin</h1>
-            <div class="row  margin-bottom-10 ">
-				<div class="btn-group-vertical">
-					<a href="javascript:void(0)" data-attribue-direction="up-left" data-attribute-keyboard="103" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-						<i class="fa fa-arrow-left fa-1x fa-rotate-45">
-						</i>
-					</a>
-					<a href="javascript:void(0)" data-attribue-direction="left" data-attribute-keyboard="100" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-						<span class="glyphicon glyphicon-arrow-left ">
-						</span>
-					</a>
-					<a href="javascript:void(0)" data-attribue-direction="down-left" data-attribute-keyboard="97" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-						<i class="fa fa-arrow-down fa-rotate-45 ">
-						</i>
-					</a>
+	<div class="col-sm-12">
+		<div class="well">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="text-center">
+						<div class="row">
+							<div class="col-sm-7">
+								<img style=" display: inline;" class="img-responsive" src="application/modules/create/assets/img/subtractive/1.png" />
+							</div>
+							<div class="col-sm-5">
+								
+								<h1></h1>
+								<h2 class="text-center">Jog the endmill to the desired origin point (X=0, Y=0, Z=0) and then press "Start"</h2>
+								
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="btn-group-vertical">
-					<a href="javascript:void(0)" data-attribue-direction="up" data-attribute-keyboard="104" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-						<i class="fa fa-arrow-up fa-1x">
-						</i>
-					</a>
-					<a id="zero-all" href="javascript:void(0)"  class="btn btn-default btn-lg btn-circle btn-xl rotondo">
-						<i class="fa fa-bullseye">
-						</i>
-					</a>
-					<a href="javascript:void(0)" data-attribue-direction="down" data-attribute-keyboard="98" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-						<i class="glyphicon glyphicon-arrow-down ">
-						</i>
-					</a>
-				</div>
-				<div class="btn-group-vertical">
-					<a href="javascript:void(0)" data-attribue-direction="up-right" data-attribute-keyboard="105" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-						<i class="fa fa-arrow-up fa-1x fa-rotate-45">
-						</i>
-					</a>
-					<a href="javascript:void(0)" data-attribue-direction="right" data-attribute-keyboard="102" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-						<span class="glyphicon glyphicon-arrow-right">
-						</span>
-					</a>
-					<a href="javascript:void(0)" data-attribue-direction="down-right" data-attribute-keyboard="99" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
-						<i class="fa fa-arrow-right fa-rotate-45">
-						</i>
-					</a>
-				</div>
-                
-                
-                <div class="btn-group-vertical" style="margin-left: 20px;">
-					<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="10" data-attribute-function="zdown">
-						<i class="fa fa-angle-double-up">
-						</i>
-						10
-					</a>
-					<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="5" data-attribute-function="zdown">
-						<i class="fa fa-angle-double-up">
-						</i>
-						5
-					</a>
-					<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zdown">
-						<i class="fa fa-angle-double-up">
-						</i>
-						1
-					</a>
-                    <hr />
-					<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zup">
-						<i class="fa fa-angle-double-down">
-						</i>
-						1
-					</a>
-					<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="5" data-attribute-function="zup">
-						<i class="fa fa-angle-double-down">
-						</i>
-						5
-					</a>
-					<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="10" data-attribute-function="zup">
-						<i class="fa fa-angle-double-down">
-						</i>
-						10
-					</a>
-				</div>
-                
-                
-			</div>
-        
-        </div>
-    
+			    <div class="col-sm-6">
+			        <div class="text-center">
+			            <div class="row">
+							<div class="col-sm-12">
+								<div class="smart-form" style="background: none; margin-top: -30px">
+									<fieldset style="background: none;">
+										<div class="row">
+											<section class="col col-4">
+												<label class="label text-center">Step (mm)</label>
+												<label class="input-sx">
+													<input class="text-center" type="text" id="step" value="10">
+												</label>
+											</section>
+											<section class="col col-4">
+												<label class="label text-center">Feedrate</label>
+												<label class="input-sx">
+													<input class="text-center" type="text" id="feedrate" value="1000">
+												</label>
+											</section>
+											<section class="col col-4">
+												<label class="label text-center">Z Step (mm)</label>
+												<label class="input-sx"> 
+													<input class="text-center" type="text" id="z-step" value="5">
+												</label>
+											</section>
+											
+										</div>
+			
+									</fieldset>
+								</div>
+							</div>
+						</div>
+			            
+			            <div class="row">
+							<div class="col-sm-12">
+						
+								<div class="btn-group-vertical">
+									<a href="javascript:void(0)" data-attribue-direction="up-left" data-attribute-keyboard="103" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-left fa-1x fa-rotate-45">
+										</i>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="left" data-attribute-keyboard="100" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<span class="glyphicon glyphicon-arrow-left ">
+										</span>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="down-left" data-attribute-keyboard="97" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-down fa-rotate-45 ">
+										</i>
+									</a>
+								</div>
+								<div class="btn-group-vertical">
+									<a href="javascript:void(0)" data-attribue-direction="up" data-attribute-keyboard="104" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-up fa-1x">
+										</i>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="home" data-attribute-keyboard="101" class="btn btn-default btn-lg btn-circle btn-xl directions rotondo">
+										<i class="fa fa-bullseye">
+										</i>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="down" data-attribute-keyboard="98" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="glyphicon glyphicon-arrow-down ">
+										</i>
+									</a>
+								</div>
+								<div class="btn-group-vertical">
+									<a href="javascript:void(0)" data-attribue-direction="up-right" data-attribute-keyboard="105" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-up fa-1x fa-rotate-45">
+										</i>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="right" data-attribute-keyboard="102" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<span class="glyphicon glyphicon-arrow-right">
+										</span>
+									</a>
+									<a href="javascript:void(0)" data-attribue-direction="down-right" data-attribute-keyboard="99" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
+										<i class="fa fa-arrow-right fa-rotate-45">
+										</i>
+									</a>
+								</div>
+			                    
+			                    
+			                    <div class="btn-group-vertical" style="margin-left: 10px;">
+									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zdown">
+										<i class="fa fa-angle-double-up">
+										</i>&nbsp;Z
+									</a>
+			                        <hr />
+									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zup">
+										<i class="fa fa-angle-double-down">
+										</i>&nbsp; Z
+									</a>
+									
+								</div>
+							</div>
+						</div>
+			        </div>
+        		</div>
+    		</div>
+		</div>
     </div>
 
 </div>
@@ -148,6 +175,26 @@
     $( ".axisz" ).on( "click", axisz );
     
 	$(".directions").on("click", directions);
+	
+	
+	$("#z-step").spinner({
+				step : 0.01,
+				numberFormat : "n",
+				min: 0
+		});
+		
+		
+		$("#step").spinner({
+				step :0.5,
+				numberFormat : "n",
+				min: 0
+		});
+		
+		$("#feedrate").spinner({
+				step :50,
+				numberFormat : "n",
+				min: 0
+		});	
 
     $('#exec_button').on('click', function(){
         
@@ -237,11 +284,19 @@
                 var status = response.status;
                 
                 if(status == 200){
+                	
+                	$("#row_2").slideUp('slow', function(){
+                    	$("#row_3").slideDown('slow');
+                    });
+                	
                     
                     $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-check').addClass('txt-color-green');
-                    $("#exec_button").html('Continue');
+                    $("#exec_button").html('Start');
                     $('.check_result').html('');           
                     $("#exec_button").attr('data-action', '');
+                    
+                    
+                    
                     
                 }else{
                     $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-warning').addClass('txt-color-red');
@@ -281,17 +336,16 @@
     
     
     function make_call(func, value){
+    	
+    	$(".btn").addClass('disabled');
 
     	$.ajax({
     		type: "POST",
     		url :ajax_jog_endpoint + 'ajax/exec.php',
-    		data : {function: func, value: value},
-    		dataType: "json",
-    		beforeSend: function(msg){
-    			
-    		}
+    		data : {function: func, value: value, step:$("#step").val(), z_step:$("#z-step").val(), feedrate: $("#feedrate").val()},
+    		dataType: "json"
     	}).done(function( data ) {
-            
+            $(".btn").removeClass('disabled');
             
     	});
 	

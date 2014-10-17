@@ -51,6 +51,10 @@
     
     
     function do_macro(){
+    	
+    	$(".trace").slideDown('slow');
+    	$(".new-spool").remove();
+        $("." + choice + "-choice").slideUp('slow');
         
         $.ajax({
               type: "POST",
@@ -66,11 +70,11 @@
             interval_trace    = setInterval(do_trace, 1000);
             
             
-            $("." + choice + "-choice").slideUp('slow');
+
             $(".start").slideUp('slow');
             $(".start-button").addClass('disabled');
             $(".re-choice").slideUp('slow');
-            $(".title").find("h2").html(choice.charAt(0).toUpperCase() + choice.slice(1) + 'ing Filament');
+            $(".title").find("h2").html(choice.charAt(0).toUpperCase() + choice.slice(1) + 'ing filament');
             $(".title").slideDown('slow', function () {});
             $("#console").slideDown('slow', function () {});
             
@@ -87,8 +91,8 @@
         if(finished == false){
             monitor();
         }else{
-            clearInterval(interval_response);
-            clearInterval(interval_trace);
+        	end();
+            
         }
         
     }
@@ -98,8 +102,8 @@
         if(finished == false){
             trace();
         }else{
-            clearInterval(interval_response);
-            clearInterval(interval_trace);
+        	end();
+            
         }
     }
     
@@ -107,20 +111,24 @@
     
     function monitor(){
         
+      
+        
         $.ajax({
 		      url: response_file,
-			  dataType: 'json'
+			  dataType: 'text'
         }).done(function( response ) {
               
               var string_response = response.replace("<br>", "");
               string_response = string_response.replace(new RegExp('<br>', 'g'), '');
               finished = string_response == 'true' ? true : false;
               
+             
                
                 
         });
         
     }
+    
     
     
     function trace(){
@@ -131,24 +139,61 @@
         }).done(function( response ) {
             
             if(response != ''){
-                /*
-                editor.setValue('');
-                var string_trace = response.replace("<br>", "\n");
-                string_trace = string_trace.replace(new RegExp('<br>', 'g'), '\n');
-                editor.setValue(string_trace);
-                editor.navigateLineEnd();
-                */
                 
-                $("#console").html('<p>' + response + '</p>');
-                
-                
-                var $t = $('#console');
-                $t.animate({"scrollTop": $('#console')[0].scrollHeight}, "slow");
+               $("#console").html(response); 
+               var $t = $('#console');
+               $t.animate({"scrollTop": $('#console')[0].scrollHeight}, "slow");
             }
             
 
         });
         
+    }
+    
+    
+    
+    function end(){
+    	
+    	
+    	clearInterval(interval_response);
+        clearInterval(interval_trace);
+    	
+    	$(".title").find("h2").html(choice.charAt(0).toUpperCase() + choice.slice(1) + 'ing filament completed <i class="fa fa-check text-success"></i>');
+    	
+    	
+    	
+    	var act = choice == 'unload' ? 'load' : 'unload';
+    		
+    	$(".title").find('h2').append('<h5 class="new-spool">Do you want to ' + act + ' spool? <a href="javascript:again(\''+act+'\');"> YES </a> </h5>');
+    		
+    	/** VUOI CARICARCARE FILO ? */
+    	
+    	
+    	$(".trace").slideUp('slow');
+    	
+    	$("#console").html('');
+    }
+    
+    
+    function again(action){
+    	
+    	
+    	choice = action;
+    	finished = false;
+    	
+    	$(".title").slideUp('fast');
+    	$(".start-button").removeClass('disabled');
+    	$(".re-choice").slideDown('fast');
+    	
+    	$("." + action + "-choice").slideDown('fast', function() {
+    		
+    		$(".start").slideDown('fast');
+    		
+    	});
+    	
+    	
+    	
+    	
     }
     
     

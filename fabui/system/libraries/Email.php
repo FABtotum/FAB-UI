@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php  //if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * CodeIgniter
  *
@@ -95,7 +95,7 @@ class CI_Email {
 			$this->_safe_mode = ((boolean)@ini_get("safe_mode") === FALSE) ? FALSE : TRUE;
 		}
 
-		log_message('debug', "Email Class Initialized");
+		//log_message('debug', "Email Class Initialized");
 	}
 
 	// --------------------------------------------------------------------
@@ -388,10 +388,15 @@ class CI_Email {
 		   NOTE: In PHP 5.4 get_magic_quotes_gpc() will always return 0 and
 			 it will probably not exist in future versions at all.
 		*/
-		if ( ! is_php('5.4') && get_magic_quotes_gpc())
-		{
-			$this->_body = stripslashes($this->_body);
+		if(function_exists ('is_php')){
+			
+			if ( ! is_php('5.4') && get_magic_quotes_gpc())
+			{
+				$this->_body = stripslashes($this->_body);
+			}
+			
 		}
+		
 
 		return $this;
 	}
@@ -1969,17 +1974,23 @@ class CI_Email {
 	 */
 	protected function _set_error_message($msg, $val = '')
 	{
-		$CI =& get_instance();
-		$CI->lang->load('email');
-
-		if (substr($msg, 0, 5) != 'lang:' || FALSE === ($line = $CI->lang->line(substr($msg, 5))))
-		{
-			$this->_debug_msg[] = str_replace('%s', $val, $msg)."<br />";
+		if(function_exists ('get_instance')){
+			
+			$CI =& get_instance();
+			$CI->lang->load('email');
+	
+			if (substr($msg, 0, 5) != 'lang:' || FALSE === ($line = $CI->lang->line(substr($msg, 5))))
+			{
+				$this->_debug_msg[] = str_replace('%s', $val, $msg)."<br />";
+			}
+			else
+			{
+				$this->_debug_msg[] = str_replace('%s', $val, $line)."<br />";
+			}
+			
+			
 		}
-		else
-		{
-			$this->_debug_msg[] = str_replace('%s', $val, $line)."<br />";
-		}
+		
 	}
 
 	// --------------------------------------------------------------------

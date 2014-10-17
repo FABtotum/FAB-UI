@@ -33,10 +33,7 @@ class FT_Layout {
 	 */
 	public function __construct()
 	{
-		
 		$this->_initialize();
-
-		
 	}
 	
 	
@@ -72,9 +69,7 @@ class FT_Layout {
 		
 		//add the default META TAG
 		foreach($layout['_meta'] as $meta){
-			
 			$this->add_meta($meta);
-			
 		}
 		
 		
@@ -113,26 +108,33 @@ class FT_Layout {
 		foreach($modules as $_item){
 			
 			//if($_is_running)
-			
+			$_item['plugin'] = false;
 			$this->add_item_menu($_item);
 		}
 		
 		
 		
 		$this->_ci->load->database();
-		$this->_ci->load->model('plugins');
 		
-		$_plugins = $this->_ci->plugins->get_activeted_plugins();
 		
-		foreach($_plugins as $plugin){
+		if(!isset($_SESSION['plugins'])){
 			
-	
-			
-			$this->add_item_menu(array('name' => $plugin->name, 'icon' => '<i class="fa fa-lg fa-fw fa-tag"></i>'));
+			$this->_ci->load->model('plugins');
+			$_SESSION['plugins'] = $this->_ci->plugins->get_activeted_plugins();
 		}
 		
 		
-		unset($_plugins);
+		
+		foreach($_SESSION['plugins'] as $plugin){
+			
+			//print_r($plugin);
+			$attributes = json_decode($plugin->attributes, TRUE);
+				
+			$this->add_item_menu(array('plugin'=>true, 'name' => $plugin->name, 'label' =>$attributes['title'], 'icon' => '<i class="fa fa-lg fa-fw '.$attributes['icon'].'"></i>', 'id' => $plugin->id));
+		}
+		
+		
+		
 		unset($modules);
 		
         
@@ -150,8 +152,6 @@ class FT_Layout {
         
         //$this->_language = $_SESSION['language'];
 		
-
-         
 		log_message('debug', "Loader Class Initialized");
 		
 	}
@@ -417,17 +417,10 @@ class FT_Layout {
 
 	protected function _load_css(){
 
-
-
-        $_dir = '/var/www/fabui/';
         $html = '';
 
 		foreach($this->_css_file as $css){
 		  
-          
-         
-
-
 			if(isset($css['src']) && $css['src'] != ''){
                 
                
@@ -437,9 +430,6 @@ class FT_Layout {
 				$_src = isset($css['external']) && $css['external'] == TRUE ?  $css['src'] : base_url().$css['src'].'?v='.$_SESSION['fabui_version'];
 
 				$html .= '<link rel="stylesheet" type="text/css" media="screen" href="'.$_src.'">'.PHP_EOL;
-                
-                
-                 
                 
 			}
 
@@ -453,30 +443,18 @@ class FT_Layout {
 
 	protected function _load_js(){
 		
-
-        $_dir = '/var/www/fabui/';
 		$html = '';
 
 		foreach($this->_js_file as $js){
 		  
-          
-          
 			if(isset($js['src']) && $js['src'] != ''){
 					
-				
-                	
 				if(isset($js['comment'])&& $js['comment'] != '')
 					$html .= '<!-- '.$js['comment']. ' -->'.PHP_EOL;
 
-
 				$_src = isset($js['external']) && $js['external'] == TRUE ?  $js['src'] : base_url().$js['src'].'?v='.$_SESSION['fabui_version'];
                 
-                
 				$html .= '<script src="'.$_src.'"></script>'.PHP_EOL;
-
-                
-                
-             
 
 			}
 
@@ -525,39 +503,15 @@ class FT_Layout {
 	protected function _load_menu_items(){
 		
 		
-		/*
-		//load plugins
-		$this->_ci->load->database();
-		$this->_ci->load->model('tasks');
-		
-		$_is_running = $this->_ci->tasks->get_running();
-		
-		if($_is_running){
-			//load os helper
-			$this->_ci->load->helper('os_helper');
-			
-			$_attributes = json_decode($_is_running['attributes']);
 
-            $_pid_label = $_is_running['type'] == 'scan' ? 'scan_pid' : 'pid' ;
-			
-			if(!exist_process($_attributes->$_pid_label)){
-				
-				//processo non esiste pi�, chiudo il task
-				$this->_ci->tasks->update($_is_running['id'], array('status'=>'killed', 'finish_date'=>'now()'));
-				$_is_running = false;
-				
-			}
-			
-			
-		}
-        */
-		
-		
 		//modules sidebar menu
 		
 		$html = '';
 		
 		foreach($this->_item_menu as $item){
+			
+			
+			
 			
 		 
 			$active = strtolower(get_class($this->_ci)) == $item['name'] ? 'active' : '';
@@ -565,21 +519,14 @@ class FT_Layout {
 			$html .= '<li class="'.$active.'">';
 			
 			
-			$link = '<a data-controller="'.$item["name"].'" data-block="'.$item["block"].'"  href="'.site_url($item['name']).'">';
-			
-			/**
-			 * CHECK FOR BLOCKING ITEM MENU
-			 */
-             /*
-			if($_is_running){
-				
-				if(!($_is_running['controller'] == $item['name'] || $item['name'] == 'dashboard' || $item['name'] == 'objectmanager')){
-					$link = '<a data-controller="'.$item["name"].'"  data-block="'.$item["block"].'" class="menu-disabled" href="javascript:void(0);">';
-				}
-					
-			}*/
+			$block = isset($_item['block']) ? $_item['block'] : 1;
 			
 			
+			$href = $item['plugin'] ? site_url('plugin/'.$item['name']) : site_url($item['name']);
+			
+			$link = '<a data-controller="'.$item["name"].'" data-block="'.$block.'" data-href="'.$href.'" href="'.$href.'">';
+			
+		
 			$html .= $link;
 			
 			$icon = '';
@@ -593,37 +540,9 @@ class FT_Layout {
 			$_label = isset($item['label']) && $item['label'] != '' ? $item['label'] : $item['name'];
 			
 			
-			$html .= ' <span class="menu-item-parent">'.ucfirst(lang('module_'.$item["name"])).'</span>';
+			$html .= ' <span class="menu-item-parent">'.ucfirst($_label).'</span>';
 			
-			/*
-			if($_is_running['controller'] == $item['name']){ 
-				$html .= '<span class="badge bg-color-red pull-right inbox-badge">!</span>';
-			
-			}
-			*/
-            
-            /*
-			if(isset($item['sons']) && count($item['sons']) > 0){
-			 
-             
-             $html .= '<ul>';
-             
-             foreach($item['sons'] as $son){
-                
-                $html .= '<li>';
-                
-                 $html .= '<a href="'.$son['name'].'">'.$son['label'].'</a>';
-                
-                $html .= '</li>';
-             }
-             
-             
-             
-             $html .= '</ul>';
-			 
-             
-			}
-            */
+		
 			
 			$html .= '</a>';
 			
@@ -780,30 +699,8 @@ class FT_Layout {
 	
 	protected function _do_compression($string){
 		
-        //return $string;
-		
 		$buffer = $string;
-		
-        /*
-		$search = array(
-				'/\n/',			// replace end of line by a space
-				'/\>[^\S ]+/s',		// strip whitespaces after tags, except space
-				'/[^\S ]+\</s',		// strip whitespaces before tags, except space
-				'/(\s)+/s'		// shorten multiple whitespace sequences
-		);
-		
-		$replace = array(
-				' ',
-				'>',
-				'<',
-				'\\1'
-		);
-		
-		//return preg_replace($search, $replace, $buffer);
-        
-        */
-        
-        
+		       
         $_search = array('/ {2,}/', '/<!--.*?-->|\t|(?:\r?\n[ \t]*)+/s');
         $_replace = array(' ','');
         

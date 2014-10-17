@@ -23,7 +23,6 @@ $_response_items['file_size'] = $_file_size;
 /** GET TYPE OF PRINT */
 $_print_type = print_type($_file_path);
 
-
 /** SAVE NEW SIZE TO DB */
 $db = new Database();
 
@@ -36,6 +35,9 @@ $_data_update['raw_name']   = $_name;
 $db->update('sys_files', array('column' => 'id', 'value' => $_file_id, 'sign' => '='), $_data_update);
 $db->close();
 
+
+/** GCODE ANALYZER */
+shell_exec('sudo php /var/www/fabui/script/gcode_analyzer.php '.$_file_id.' > /dev/null & echo $!');
 
 /** JSON RESPONSE */
 header('Content-Type: application/json');

@@ -187,7 +187,7 @@ def probe(x,y):
 		#Expected reply
 		#endstops hit:  Z: 0.0000	
 		#couldn't probe point: = 
-		if (time.time() - probe_start_time>10):
+		if (time.time() - probe_start_time>90):  #timeout management
 			#10 seconds passed, no contact
 			trace_msg="Could not probe "+str(x)+ "," +str(y) + " / " + str(deg) + " degrees"			
 			trace(trace_msg)

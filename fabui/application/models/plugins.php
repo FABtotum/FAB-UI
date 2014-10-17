@@ -28,9 +28,20 @@ class Plugins extends CI_Model {
 	
 	function active($plugin){
 		
+		
 		if(!$this->is_active($plugin)){
 			
-			$this->db->insert($this->_table_name, array('name' => $plugin));
+			
+			if(file_exists(APPPATH.'plugins/'.$plugin.'/'.$plugin.'.php')){
+					
+				$this->load->helper('ft_plugin_helper');	
+				
+				$plugin_info = plugin_info($plugin);
+				
+				$this->db->insert($this->_table_name, array('name' => $plugin, 'attributes'=>json_encode($plugin_info)));
+			
+			}
+
 		}
 		
 	}

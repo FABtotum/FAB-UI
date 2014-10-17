@@ -3,24 +3,17 @@
     <div class="row margin-top-10 choice">
     
         <div class="col-sm-6">
-            
-            
             <div class="well">
-            
-                <h2 class="text-center">Load Filement</h2>
+                <h2 class="text-center">Load Filament</h2>
                 <h2 class="text-center"><a data-action='load' href="javascript:void(0);" class="btn btn-default btn-circle btn-lg choice-button"><i class="fa fa-chevron-down"></i></a></h2>
             </div>
         </div>
-        
-        
         <div class="col-sm-6">
             <div class="well">
             <h2 class="text-center">Unload Filament</h2>
             <h2 class="text-center"><a data-action='unload' href="javascript:void(0);" class="btn btn-default btn-circle btn-lg choice-button"><i class="fa fa-chevron-down"></i></a></h2>
             </div>
         </div>
-        
-          
     </div>
     
     
@@ -142,6 +135,7 @@
     
     </div>
     
+    
      
     <div class="row margin-top-10 start" style="display: none;"> 
     
@@ -159,10 +153,10 @@
         
     </div>
     
-    <div class="row margin-top-10">
+    <div class="row margin-top-10 trace">
     
         <div class="col-md-12">
-            <div class="well" id="console" style="height:300px;display:none;overflow:auto"></div>
+            <pre id="console" style="height:300px;display:none;overflow:auto"></pre>
 		</div>
         
     </div>

@@ -40,9 +40,7 @@
                     
 					<div class="form-actions">
 						<button class="btn btn-primary" type="submit">
-							<i class="fa fa-save">
-							</i>
-							Submit
+							<i class="fa fa-save"></i> Save
 						</button>
 					</div>
 				</form>

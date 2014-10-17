@@ -2,7 +2,7 @@
     <!-- FIRST ROW -->
     <div class="row">
         <div class="col-sm-12">
-            <h2 class="text-primary">Scanning <a href="javascript:void(0);" rel="popover" data-placement="right" data-original-title="Info" data-content=""><span class="badge bg-color-blue">i</span></a> <a id="stop-button" class="btn btn-default txt-color-red controls <?php echo $_task ? '' : 'disabled' ?> stop pull-right" href="#"><i class="fa fa-stop fa-lg"></i></a></h2>
+            <h2 class="text-primary">Scan in progress <a id="stop-button" class="btn btn-default txt-color-red controls <?php echo $_task ? '' : 'disabled' ?> stop pull-right" href="#"><i class="fa fa-stop fa-lg"></i></a></h2>
         </div>
     </div>
     <!-- END FIRST ROW -->

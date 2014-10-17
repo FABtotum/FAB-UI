@@ -6,6 +6,9 @@ class Updates extends Module {
 	{
 		parent::__construct();
         
+		
+		
+		
         $this->load->helper('print_helper');
         /** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
         if(is_printer_busy()){
@@ -37,6 +40,13 @@ class Updates extends Module {
 		$_SESSION['fabui_version'] = $_fabui_local;
 		
 		
+		$_updates =  array();
+		$_updates['number'] = 0;
+		$_updates['time'] = time();	
+		
+		
+		
+		
         /** GET IF IS RUNNING */
         $_task = $this->tasks->get_running('updates');
         
@@ -57,6 +67,9 @@ class Updates extends Module {
 		
         $_is_internet_ok = is_internet_avaiable();
         
+		
+		 $data['fabui']  = false;
+		 $data['marlin'] = false;
         
         if($_is_internet_ok){    
            
@@ -64,31 +77,42 @@ class Updates extends Module {
             $_fabui        = $_fabui_remote > $_fabui_local;
             
             $data['fabui']        = $_fabui;
-            
             $data['fabui_remote'] = $_fabui_remote;
+			
+			if($_fabui){
+				$data['fabui_changelog'] = fabui_changelog($_fabui_remote);
+			}
 			
            
             $_marlin_remote =  marlin_get_remote_version();
             $_marlin        =  $_marlin_remote > $_marlin_local;
             
             $data['marlin']        = $_marlin;
-            
             $data['marlin_remote'] = $_marlin_remote;
+			
+			if($_marlin){
+				$data['fw_changelog'] = fw_changelog($_marlin_remote);
+			}
 			
 			
 			$data['no_update'] = ($_fabui_local == $_fabui_remote ) && ($_marlin_local == $_marlin_remote);
-            
-            
+			
+			
+			$_updates['number'] += $_fabui ? 1 : 0;
+			$_updates['number'] += $_marlin ? 1 : 0;
+			$_updates['fabui']   = $_fabui;
+			$_updates['fw']      = $_marlin;    
         }
+
+
+		$_SESSION['updates'] = $_updates;
         
         
         $js_in_page  = $this->load->view('index/js', $data, TRUE);
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'updates js'));
             
         //$this->layout->set_compress(true);
-            
         
-       
         $data['internet']= $_is_internet_ok; 
 		
         $this->layout->view('index/index', $data); 

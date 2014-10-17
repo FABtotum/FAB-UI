@@ -97,6 +97,7 @@ class Login extends Module {
                 $_user_session['email']      = $user->email;
 				$_user_session['avatar']     = $_settings['avatar'];
 				$_user_session['theme-skin'] = $_settings['theme-skin'];
+				$_user_session['lock-screen'] = isset($_settings['lock-screen']) ? $_settings['lock-screen'] : 0;
                
                 $_SESSION['user']      = $_user_session;
                 $_SESSION['logged_in'] = TRUE;
@@ -104,9 +105,36 @@ class Login extends Module {
                 
                
 			  	/** LOAD HELPER */
-        		$this->load->helper('update_helper'); 
-                $_fabui_local   =  myfab_get_local_version();
+        		$this->load->helper('update_helper');
+				
+				$_fabui_local = myfab_get_local_version();
+				$_fw_local    = marlin_get_local_version();
+				 
+				$_fabui_update = false;
+				$_fw_update    = false;
+				
+				$_updates =  array();
+				$_updates['number'] = 0;
+				$_updates['time'] = time();	
+				
+				if(is_internet_avaiable()){
+					
+					$_fabui_remote_version = myfab_get_remote_version();
+					$_fw_remote_version    = marlin_get_remote_version();
+					
+					$_fabui_update = $_fabui_remote_version > $_fabui_local;
+					$_fw_update    = $_fw_remote_version > $_fw_local;
+					
+					$_updates['number'] += $_fabui_update ? 1 : 0;
+					$_updates['number'] += $_fw_update ? 1 : 0;
+					$_updates['fabui']   = $_fabui_update;
+					$_updates['fw']      = $_fw_update;
+					
+				}
+				 
+               
 				$_SESSION['fabui_version'] = $_fabui_local;
+				$_SESSION['updates'] = $_updates;
 				
 				
                 $this->user->update_login($user->id);

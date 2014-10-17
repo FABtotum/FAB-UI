@@ -55,31 +55,64 @@ switch($_action) {
 		$_command = 'M3 S' . $_value;
 		$_message = 'Command for the RPM speed sent'.$_value;
 		break;
+	case 'send-mail-true':
+		$_command = '';
+		$_message = 'A mail will be send at the end of the print';
+		break;
+	case 'send-mail-false':
+		$_command = '';
+		$_message = 'No mail will be send at the end of the print';
+		break;
+		
 }
 
 /** WRITE TO DATA FILE */
-$_write_return = write_file($_data_file, $_command . PHP_EOL, 'a+');
+if($_command != ''){
+	$_write_return = write_file($_data_file, $_command . PHP_EOL, 'a+');
+}
 
 
-if($_action == 'velocity'){
+
+if($_action == 'velocity' || $_action == 'send-mail-false' || $_action == 'send-mail-true'){
 	
-	$db = new Database();
+	$db    = new Database();
 	$_task = $db->query('select * from sys_tasks where id='.$_id_task);
+	
 	$_attributes = json_decode($_task['attributes'], TRUE);
-	$_attributes['speed'] = $_value;
+	
+	
+	switch($_action){
+		
+		case 'velocity':
+			$_column = 'speed';
+			break;
+		case 'send-mail-false':
+			$_column = 'mail';
+			$_value = 0;
+			break;
+		case 'send-mail-true':
+			$_column = 'mail';
+			$_value = 1;
+			break;
+		
+	}
+	
+	$_attributes[$_column] = $_value;
+	
 	$_data_update['attributes'] = json_encode($_attributes);
     $db->update('sys_tasks', array('column' => 'id', 'value' => $_id_task, 'sign' => '='), $_data_update);
     $db->close();  
 	
 }
 
-$_response_items['status'] = 200;
+$_response_items['status']  = 200;
 $_response_items['command'] = $_command;
-$_response_items['action'] = $_action;
-$_response_items['value'] = $_value;
-$_response_items['file'] = $_data_file;
-$_response_items['return'] = $_write_return;
+$_response_items['action']  = $_action;
+$_response_items['value']   = $_value;
+$_response_items['file']    = $_data_file;
+$_response_items['return']  = $_write_return;
 $_response_items['message'] = $_message;
+
 header('Content-Type: application/json');
 echo minify(json_encode($_response_items));
 ?>

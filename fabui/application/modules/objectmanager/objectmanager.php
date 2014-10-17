@@ -30,9 +30,12 @@ class Objectmanager extends Module {
 					//$this->g_code($_task_attributes['id_object'], $_task_attributes['id_file']);
 					redirect('/objectmanager/prepare/stl/'.$_task_attributes['id_object'].'/'.$_task_attributes['id_file']);
 					break;
+				case 'meshlab':
+					redirect('/objectmanager/prepare/asc/'.$_task_attributes['id_object'].'/'.$_task_attributes['id_file']);
+					break;
+					
 				
-			}
-			
+			}	
 		}
 		
 		
@@ -41,11 +44,11 @@ class Objectmanager extends Module {
 		$this->load->helper('smart_admin_helper');
 		$this->load->helper('ft_date_helper');
 
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js',     'comment'=>''));
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js',     'comment'=>''));
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js',     'comment'=>''));
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment'=>''));
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js',  'comment'=>''));
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js', 'comment'=>''));
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js',         'comment'=>''));
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js',         'comment'=>''));
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js',     'comment'=>''));
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js',      'comment'=>''));
        
 
         
@@ -127,10 +130,7 @@ class Objectmanager extends Module {
         
         $data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
         
-        
-        
-        
-
+		
 		$js_data['accepted_files'] = $this->config->item('upload_accepted_files');
 		$j_data['_upload_max_filesize'] = ini_get("upload_max_filesize");
 
@@ -264,13 +264,23 @@ class Objectmanager extends Module {
 		$upload_dir = $this->config->item('upload_dir');
 		$accepted_files = str_replace('.', '', $this->config->item('upload_accepted_files'));
 		$accepted_files = str_replace(',', '|', $accepted_files);
-
+		
+		
+	
 
 		/*
 		 * Verifico l'estensione del file in modo da salvarlo nell cartella esatta, se la cartella non esiste la creo
 		*/
 		$_tmp_file_name = explode('.', $_FILES['file']['name']);
 		$_extension     = strtolower(end($_tmp_file_name));
+		
+		
+		if($_FILES['file']['type'] == 'application/vnd.ms-pki.stl'){
+			$_FILES['file']['type'] = 'application/octet-stream';
+		}
+		
+		
+		
 
 		if(!file_exists($upload_dir.$_extension)) // se la cartella non esiste la creo
 		{
@@ -278,7 +288,10 @@ class Objectmanager extends Module {
 		}
 
 		$config['upload_path'] = $upload_dir.$_extension;
-		$config['allowed_types'] = $accepted_files;
+		$config['allowed_types'] = '*';
+
+		
+		
 
 		//carico la libreria per la gestione dell'upload
 		$this->load->library('upload', $config);
@@ -305,16 +318,40 @@ class Objectmanager extends Module {
             $_printable_files[] = '.gc';
             $_printable_files[] = '.gcode';
             $_printable_files[] = '.nc';
+			
+			$data['file_ext'] = strtolower($data['file_ext']);
             
+			
+			if(in_array($data['file_ext'], $_printable_files)){
+				$data['attributes'] = 'Processing';
+			}
+			
+			
+			if(in_array($data['file_ext'], $_printable_files)){
+				
+				 $data['print_type'] = print_type($data['full_path']);
+				
+			}
+			
+			
+			
+			$id_file =  $this->files->insert_file($data);
+			
+			
             /** IF IS A PRINTABLE FILE CHECK THE TYPE OF PRINT - ADDITIVE O SUBTRACTIVE */
             if(in_array($data['file_ext'], $_printable_files)){
-                $data['print_type'] = print_type($data['full_path']);
+                
+				/** GCODE ANALYZER */
+				gcode_analyzer($id_file);
+					
+				
             }
             
-            
-			echo $this->files->insert_file($data);
+			
 				
 		}
+		
+		echo $id_file;
 
 	}
 
@@ -468,7 +505,7 @@ class Objectmanager extends Module {
             
             $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
             
-            $js_in_page = $this->load->view('file/js_add', $js_data, TRUE);
+            $js_in_page = $this->load->view('file/add/js', $js_data, TRUE);
             $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'INIT DROPZONE'));
             
             
@@ -504,37 +541,55 @@ class Objectmanager extends Module {
             
             $data['_success'] = false;
             
-            /*
-            if($this->input->post()){
-                //print_r($this->input->post());
-                //exit();
-                
-                $file_content = urldecode($this->input->post('file_content'));
-               
-                exit();
-                
-                file_put_contents($file->full_path, $file_content, FILE_USE_INCLUDE_PATH); 
-                $data['_success'] = true;
-            }*/
-            
-            
-            
-            $data['_file']         = $file;
+			
+			$attributes = json_decode($file->attributes, TRUE);
+			
+			
+			
+			$data['_file']         = $file;
             $data['is_stl']        = strtolower($file->file_ext) == '.stl' ;
-            //$data['_file_content'] = file_get_contents($file->full_path, FILE_USE_INCLUDE_PATH);
-            
-            
-            
-           // print_r($file);
-           $js_in_page = $this->load->view('file/js_view', $data, TRUE);
-           $css_in_page = $this->load->view('file/css_view', '', TRUE);
+			
+			
+			/** IF NOT A STL FILE, GET GCODE MODEL INFO */
+			if(!$data['is_stl']){
+				
+				$data['dimesions'] = 'processing';
+				$data['filament'] = 'processing';
+				$data['number_of_layers'] = 'processing';
+				$data['estimated_time'] = 'processing';
+				
+			
+				if(is_array($attributes)){
+					$dimensions = $attributes['dimensions'];
+					
+					$x = number_format($dimensions['x'], 2, '.', '');
+					$y = number_format($dimensions['y'], 2, '.', '');
+					$z = number_format($dimensions['z'], 2, '.', '');
+					
+					$data['dimesions'] = $x.' x '.$y.' x '.$z.' mm';
+					$data['filament'] = number_format($attributes['filament'], 2, '.', '').' mm';
+					$data['number_of_layers'] = $attributes['number_of_layers'];
+					$data['estimated_time'] = $attributes['estimated_time'];
+					
+				}else{
+					
+					if(strtolower($file->file_ext) == '.gc'  || strtolower($file->file_ext) == '.gcode' && $file->attributes != 'Processing'){	
+						gcode_analyzer($file->id);
+					}
+					
+					
+				}
+			}
+			
+           	$js_in_page = $this->load->view('file/view/js', $data, TRUE);
+           	$css_in_page = $this->load->view('file/view/css', '', TRUE);
            
-           /** LAYOUT SETUP */
-           $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
-           $this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => '')); 
-           $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
+           	/** LAYOUT SETUP */
+           	$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
+           	$this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => '')); 
+           	$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
            
-           $this->layout->set_compress(false); 
+           	$this->layout->set_compress(false); 
             
         }
 
@@ -542,49 +597,110 @@ class Objectmanager extends Module {
 		if($action == 'preview'){
 			
 			
-			/** LOAD HELPER */
-            $this->load->helper('ft_file_helper');
-			$this->load->helper('smart_admin_helper');
-            
-            //carico X class database
+			//carico X class database
       		$this->load->database();
         	$this->load->model('files');
             $file = $this->files->get_file_by_id($file_id);
-			
 			$data['file']         = $file;
 			
-			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/modernizr.custom.93389.js', 'comment' => ''));
-			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/sugar-1.2.4.min.js', 'comment' => '')); 
-			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/Three.js', 'comment' => ''));
-			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/three.TrackballControls.js', 'comment' => ''));
-			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/gcode-parser.js', 'comment' => ''));  
-			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/gcode-model.js', 'comment' => ''));  
-			$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/renderer.js', 'comment' => ''));
-			//$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/three.TrackballControls.js', 'comment' => '')); 
 			
-			//krios
-			$attr['data-widget-fullscreenbutton'] = 'false';
-			$attr['data-widget-icon'] = 'fa fa-cube';
-			$widget_id = 'render_area'.time();
-			$_widget_preview = widget($widget_id, 'GCode Viewer',  $attr, '<div id="renderArea"></div>', false, true, true);
+			if(strtolower($file->file_ext) == '.stl'){
+				
+				
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/thingiview/Three.js', 'comment' => ''));
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/thingiview/plane.js', 'comment' => ''));
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/thingiview/thingiview.js', 'comment' => ''));
+				
+				$js_in_page  = $this->load->view('file/preview/stl/js', $data, TRUE);
+				$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+				
+				
+				
+				$action .= '/stl';
+				
+				
+				
+			}else{
+				
+				
+				
+				/** LOAD HELPER */
+	            $this->load->helper('ft_file_helper');
+				$this->load->helper('smart_admin_helper');
+	            
+	            
+				
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/modernizr.custom.93389.js', 'comment' => ''));
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/sugar-1.2.4.min.js', 'comment' => '')); 
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/Three.js', 'comment' => ''));
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/three.TrackballControls.js', 'comment' => ''));
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/gcode-parser.js', 'comment' => ''));  
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/gcode-model.js', 'comment' => ''));  
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/gcodeviewer/renderer.js', 'comment' => ''));
+				
+				
+				
+				
+				$attributes = json_decode($file->attributes, TRUE);
+				
+				$data_widget['dimesions'] = 'processing';
+				$data_widget['filament'] = 'processing';
+				$data_widget['number_of_layers'] = 'processing';
+				$data_widget['estimated_time'] = 'processing';
+				
+				
+				if(is_array($attributes)){
+							
+						$dimensions = $attributes['dimensions'];
+						$x = number_format($dimensions['x'], 2, '.', '');
+						$y = number_format($dimensions['y'], 2, '.', '');
+						$z = number_format($dimensions['z'], 2, '.', '');
+						
+						$data_widget['dimesions'] = $x.' x '.$y.' x '.$z.' mm';
+						$data_widget['filament'] = number_format($attributes['filament'], 2, '.', '').' mm';
+						$data_widget['number_of_layers'] = $attributes['number_of_layers'];
+						$data_widget['estimated_time'] = $attributes['estimated_time'];
+						
+				}else{
+						
+					if(strtolower($file->file_ext) == '.gc'  || strtolower($file->file_ext) == '.gcode' && $file->attributes != 'Processing'){	
+							gcode_analyzer($file->id);
+					}
+						
+				}
+				
+				
+				
+
+				$attr['data-widget-fullscreenbutton'] = 'false';
+				$attr['data-widget-icon'] = 'fa fa-cube';
+				$widget_id = 'render_area'.time();
+				$widget_content = $this->load->view('file/preview/gcode/widget', $data_widget, TRUE);
+				$_widget_preview = widget($widget_id, 'GCode Viewer',  $attr, $widget_content, false, false, true);
+				
+				$data['widget'] = $_widget_preview;
+				$data['widget_id'] = $widget_id;
+				
+				$css_in_page = $this->load->view('file/preview/gcode/css', '', TRUE);
+				$js_in_page  = $this->load->view('file/preview/gcode/js', $data, TRUE);
+				
+				$this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => '')); 
+				$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+				
+				
+				$this->layout->set_compress(false);
+				
+				$action .= '/gcode';
+				
+				
+				
+			}
 			
-			$data['widget'] = $_widget_preview;
-			$data['widget_id'] = $widget_id;
-			
-			$css_in_page = $this->load->view('file/css_preview', '', TRUE);
-			$js_in_page  = $this->load->view('file/js_preview', $data, TRUE);
-			
-			$this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => '')); 
-			$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
-			
-			
-			$this->layout->set_compress(false);
-			
-		}
-        
+		}        
         
 
-        $this->layout->view('file/'.$action, $data);
+		
+        $this->layout->view('file/'.$action.'/index', $data);
         
     }
     
@@ -653,7 +769,7 @@ class Objectmanager extends Module {
          
          
          
-        $_extension = str_replace('.', '', $_file->file_ext); 
+        $_extension = str_replace('.', '', strtolower($_file->file_ext)); 
         
 		
         switch($_extension){
@@ -745,9 +861,10 @@ class Objectmanager extends Module {
         $data['_file']    = $_file;
         $data['_presets'] = $_presets;
         
-        //$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
+		$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
+        $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
         
-       	//$this->layout->set_compress(false);
+       	$this->layout->set_compress(false);
         
         $js_in_page = $this->load->view('prepare/gcode/js', $data, TRUE);
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
@@ -771,13 +888,18 @@ class Objectmanager extends Module {
     	$this->load->database();
     	$this->load->model('files');
         $this->load->model('configuration');
+		$this->load->model('tasks');
+		
+		/** CHEK IF THERE IS AN OPEN TASK */	
+		$_task = $this->tasks->get_running('objectmanager', 'meshlab');
+		
         
         $_file = $this->files->get_file_by_id($file);
        
         $data['_object']  = $object;
         $data['_file']    = $_file;
-        
-        //$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
+        $data['_task']    = $_task;
+       
         
         $js_in_page = $this->load->view('prepare/stl/js', $data, TRUE);
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
@@ -904,10 +1026,89 @@ class Objectmanager extends Module {
        /** RETURN  */
        return $this->files->insert_file($data);
       
-      
-     
         
     }
+
+
+
+
+	public function slicer_config_upload(){
+
+		//carico file configurazione
+		$this->config->load('upload');
+
+		$upload_dir = $this->config->item('slicer_config_dir');
+		$accepted_files = "*";
+		$accepted_files = ".ini";
+		
+		
+		///var/www/fabui/slic3r/configs
+
+	
+		$config['upload_path'] = $upload_dir;
+		$config['allowed_types'] = '*';
+
+		
+		
+
+		//carico la libreria per la gestione dell'upload
+		$this->load->library('upload', $config);
+
+
+		if ( ! $this->upload->do_upload('file'))
+		{
+			$error = array('error' => $this->upload->display_errors());
+			$status = 'ko';
+		}
+		else
+		{
+			$data = $this->upload->data();
+			$status = 'ok';	
+			
+			$_response_items['file_path'] = $data['full_path'];
+			
+			
+			chmod($data['full_path'], 0775);
+            
+		}
+		
+		
+		
+		$_response_items['status'] = $status; 
+		echo json_encode($_response_items);
+		
+
+	}
+
+
+	public function download_slicer_config(){
+		
+		if($this->input->post()){
+			
+			$config = $this->input->post('dsc', FALSE);
+			$name   = trim($this->input->post('nsc'));
+			
+			$name = str_replace('-', '_', $name);
+			$name = str_replace(' ', '_', $name);
+			$name = str_replace('__', '_', $name);
+			
+			$name .= '.ini';
+			
+			
+			
+			$this->load->helper('download');
+			
+			
+			force_download($name, $config);
+			
+			
+		}
+		
+		
+	}
+
+
+
 
 
 

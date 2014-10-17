@@ -57,6 +57,7 @@ function create_gcode($_object, $_id_file,  $file, $configuration, $_output){
     $_monitor_file       = $_destination_folder.'slice_'.$id_task.'_'.$_time.'.monitor';
     $_trace_file         = $_destination_folder.'slice_'.$id_task.'_'.$_time.'.trace';
     $_debug_file         = $_destination_folder.'log.debug';
+	$_slicer_config      = $_destination_folder.'slice_config_'.$id_task.'_'.$_time.'.ini';
     
     mkdir($_destination_folder, 0777);
 	chmod($_destination_folder, 0777);            
@@ -66,33 +67,20 @@ function create_gcode($_object, $_id_file,  $file, $configuration, $_output){
     /** create print trace file */
     write_file($_trace_file, '', 'w');
     chmod($_trace_file, 0777);
+	
+	
+	/** CREATE TEMP SLICER CONFIG FILE */
+	 write_file($_slicer_config, $configuration, 'w');
+	 chmod($_slicer_config, 0777);
     
     
     /** START PROCESS */
-    $_command        = 'sudo python '.PYTHON_PATH.'slic3r_wrapper.py -t'.$_trace_file.' -l'.$_monitor_file.' -i'.$file.' -o'.$_destination_folder.$_output.' -c'.$configuration.' -k'.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
+    $_command        = 'sudo python '.PYTHON_PATH.'slic3r_wrapper.py -t'.$_trace_file.' -l'.$_monitor_file.' -i'.$file.' -o'.$_destination_folder.$_output.' -c'.$_slicer_config.' -k'.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
     $_output_command = shell_exec ( $_command );
-    $_slice_pid      = trim(str_replace('\n', '', $_output_command));
-    
-    /** UPDATE TASKS ATTRIBUTES */
-    $_attributes_items['pid']           =  $_slice_pid;
-    $_attributes_items['monitor']       =  $_monitor_file;
-    $_attributes_items['trace']         =  $_trace_file;
-    $_attributes_items['debug']         =  $_debug_file;
-    $_attributes_items['output']        =  $_destination_folder.$_output;
-    $_attributes_items['folder']        =  $_destination_folder;
-    $_attributes_items['id_object']     =  $_object;
-    $_attributes_items['id_file']       =  $_id_file;
-    $_attributes_items['id_new_file']   =  $_id_new_file;
-    $_attributes_items['configuration'] =  $configuration;
-    
-    
-    $_data_update['attributes']= json_encode($_attributes_items);
-    /** UPDATE TASK INFO TO DB */
-    $db->update('sys_tasks', array('column' => 'id', 'value' => $id_task, 'sign' => '='), $_data_update);
-    $db->close();
-    
-    
-    
+    $_wrapper_pid    = trim(str_replace('\n', '', $_output_command));
+    sleep(10);
+	
+
     $_json_monitor = file_get_contents($_monitor_file, FILE_USE_INCLUDE_PATH);
     $_monitor      = json_encode($_json_monitor);
     
@@ -101,17 +89,45 @@ function create_gcode($_object, $_id_file,  $file, $configuration, $_output){
         $_json_monitor = file_get_contents($_monitor_file, FILE_USE_INCLUDE_PATH);
         $_monitor      = json_encode($_json_monitor);   
     }
+	
+	
+	
+	$task = $db->query('select * from sys_tasks where id='.$id_task);
+	
+	
+	$_attributes_items = json_decode($task['attributes'], TRUE);
+	
+	
+    /** UPDATE TASKS ATTRIBUTES */
+    $_attributes_items['pid']           =  $_wrapper_pid;
+    $_attributes_items['monitor']       =  $_monitor_file;
+    $_attributes_items['trace']         =  $_trace_file;
+    $_attributes_items['debug']         =  $_debug_file;
+    $_attributes_items['output']        =  $_destination_folder.$_output;
+    $_attributes_items['folder']        =  $_destination_folder;
+    $_attributes_items['id_object']     =  $_object;
+    $_attributes_items['id_file']       =  $_id_file;
+    $_attributes_items['id_new_file']   =  $_id_new_file;
+    //$_attributes_items['configuration'] =  json_encode($configuration);
     
-    
-    
+     
+    $_data_update['attributes']= json_encode($_attributes_items);
+    /** UPDATE TASK INFO TO DB */
+    $db->update('sys_tasks', array('column' => 'id', 'value' => $id_task, 'sign' => '='), $_data_update);
+	$db->close();
+	
+
+	$_response_items['slicer_pid'] = $_attributes_items['slicer_pid'];
+	$_response_items['perl_pid']   = $_attributes_items['perl_pid'];
     $_response_items['monitor_json'] = $_monitor;
-    $_response_items['pid']          = $_slice_pid;
+    $_response_items['pid']          = $_wrapper_pid;
     $_response_items['monitor']      = $_monitor_file;
     $_response_items['trace']        = $_trace_file;
     $_response_items['command']      = $_command;
     $_response_items['monitor_uri']  = '/tasks/slice_'.$id_task.'_'.$_time.'/slice_'.$id_task.'_'.$_time.'.monitor';
     $_response_items['trace_uri']    = '/tasks/slice_'.$id_task.'_'.$_time.'/slice_'.$id_task.'_'.$_time.'.trace';
     $_response_items['id_new_file']  = $_id_new_file;
+	$_response_items['task_id']  = $id_task;
      
     sleep(1);
     /** RESPONSE */
@@ -172,7 +188,7 @@ function create_stl($_object, $_id_file,  $file, $_output){
     /** START PROCESS */
     $_command        = 'sudo python '.PYTHON_PATH.'meshlab_wrapper.py -t'.$_trace_file.' -l'.$_monitor_file.' -i'.$file.' -o'.$_destination_folder.$_new_output_name.' -s/root/meshlab_script.mlx -k'.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
     $_output_command = shell_exec ( $_command );
-    $_mesh_pid       = trim(str_replace('\n', '', $_output_command));
+    $_mesh_pid       = intval(trim(str_replace('\n', '', $_output_command)))+1;
     
     
     
@@ -203,7 +219,8 @@ function create_stl($_object, $_id_file,  $file, $_output){
         $_json_monitor = file_get_contents($_monitor_file, FILE_USE_INCLUDE_PATH);
         $_monitor      = json_encode($_json_monitor);   
     }
-    
+	
+	
     
     $_response_items['monitor_json'] = $_monitor;
     $_response_items['pid']          = $_mesh_pid;

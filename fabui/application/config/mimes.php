@@ -103,7 +103,9 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'gc'    => array('application/octet-stream', 'text/plain'),
 				'GCODE'    => array('application/octet-stream', 'text/plain'),				
 				'gcode'    => array('application/octet-stream', 'text/plain'),
-				'nc'    => array('application/octet-stream', 'text/plain')
+				'nc'    => array('application/octet-stream', 'text/plain'),
+				'NC'    => array('application/octet-stream', 'text/plain'),
+				'STL'   => array('application/vnd.ms-pki.stl', 'application/octet-stream', 'text/plain')
 			);
 
 

@@ -39,8 +39,13 @@
 */
 
 $route['default_controller'] = "dashboard";
-$route['404_override']       = '';
+$route['404_override']       = 'error/show_404';
 
+
+/** plugin route */
+$route['plugin/active/(:any)']   = "plugin/active/$1";
+$route['plugin/deactive/(:any)'] = "plugin/deactive/$1";
+$route['plugin/(:any)']          = "$1";
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

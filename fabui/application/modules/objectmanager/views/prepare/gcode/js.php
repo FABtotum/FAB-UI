@@ -17,14 +17,103 @@
     
     var output_file_id;
     
+    var editor;
+    var task_id = <?php echo $_task ? $_task['id'] : '""' ?>;
+    
+    var myDropzone;
+    var upload_file_path = "";
+    
+      $(function () {
+      	
+      	editor = ace.edit("slicer-config");
+      	editor.getSession().setMode("ace/mode/ini");
+      	editor.renderer.setShowPrintMargin(false);
+      	
+      	$("#preset-file").on('change', change_config);
+      	$(".stop").on('click', ask_stop);
+      	$("#download-slicer-config-button").on('click', function(){
+      		
+      		$("#dsc").val(editor.getValue());
+      		$("#nsc").val($("#preset-file option:selected").text());
+      		$("#download-slicer-config-form").submit();
+      		
+      	});
+      	
+      	$("#delete-slicer-config-button").on('click', ask_delete_config);
+      	
+      	
+      	Dropzone.options.mydropzone = {
+            
+            url: "<?php echo site_url('objectmanager/slicer_config_upload'); ?>",
+            dictResponseError: 'Error uploading file!',
+            acceptedFiles : '.ini',
+            autoProcessQueue: false,
+	        parallelUploads: 1,
+	        uploadMultiple: false,
+	        addRemoveLinks: true,
+            maxFiles: 1,
+            /** INIT FUNCTION */
+            init: function(){
+
+           		myDropzone = this;
+           		myDropzone.on("addedfile", function(file) {
+				   
+				});
+				 
+				myDropzone.on("complete", function(file) {
+				    
+				    var response = jQuery.parseJSON( file.xhr.response);
+				    
+				    $("#save-config").removeClass("disabled");
+            		$("#save-config").html('<i class="fa fa-save"></i> Save');
+				    
+				    if(response.status == 'ok'){
+				    	
+				    	upload_file_path = response.file_path;
+				    	myDropzone.removeAllFiles();
+				    	add_new_config();	
+				    }	    
+				    
+				});
+               
+            }
+       }
+       
+       $("#save-config").on('click', function(){
+       	
+       	
+       		$("#save-config").addClass("disabled");
+            $("#save-config").html('<i class="fa fa-save"></i> Saving');
+       		
+       		if(new_config_form_ok()){
+       			    			
+       			if(myDropzone.getQueuedFiles().length > 0){
+	                
+	                myDropzone.processQueue(); 
+                 
+                 }
+       			
+       		}
+       		
+       });
+       
+    
+      	
+      	
+		      	
+      	
+      });
+    
+    
     
     <?php if($_task): ?>
     	
     	resume();
     	
     	function resume(){
-    	
-    		<?php  $_task_attributes = json_decode($_task['attributes'], true) ; ?>
+    		
+    		
+    		<?php $_task_attributes = json_decode($_task['attributes'], true) ; ?>
     		
     		<?php $_json_monitor = json_decode(file_get_contents($_task_attributes['monitor']), true); ?>
     		
@@ -50,17 +139,17 @@
     				title: "This operation would take few minutes",
     				content: "Continue?",
     				buttons: '[No][Yes]'
-    			}, function(ButtonPressed) {
-    				if (ButtonPressed === "Yes") {
+    	}, function(ButtonPressed) {
+    		if (ButtonPressed === "Yes") {
                         
                         process();
     					
-    				}
-    				if (ButtonPressed === "No") {
+    		}
+    		if (ButtonPressed === "No") {
     
-    				}
+    		}
     
-    			});
+    	});
         
     });
     
@@ -68,6 +157,8 @@
     
     function process(){
             
+            
+            openWait('Initializing Slic3r');
             $("#procees-button").find("i").addClass('fa-spin');
             $("#procees-button").addClass('disabled');
             $("#procees-button").html($("#procees-button").html().replace('Process', 'Processing'));
@@ -77,7 +168,7 @@
         	$.ajax({
     			type: "POST",
     			url: "<?php echo module_url('objectmanager').'ajax/process.php' ?>/",
-                data: {type: 'gcode', file: file,  preset: $("#preset-file").val(), output: $("#output").val(), output_type: $("#output_type").val(), object : <?php echo $_object; ?>, id_file : <?php  echo $_file->id;?>},
+                data: {type: 'gcode', file: file,  preset: editor.getValue(), output: $("#output").val(), output_type: $("#output_type").val(), object : <?php echo $_object; ?>, id_file : <?php  echo $_file->id;?>},
                 dataType: 'json'
     		}).done(function(response) {
     		       
@@ -99,6 +190,8 @@
                    monitor_uri = response.monitor_uri;
                    time_left   = parseInt(monitor_json.slicing.stats.time_left);
                    
+                   task_id = response.task_id;
+                   
                    output_file_id = parseInt(response.id_new_file);
                    
                    interval_monitor   = setInterval(monitor, 1000);
@@ -106,6 +199,7 @@
                    interval_timer     = setInterval(timer, 1000);
                    $(".fab-buttons").addClass('disabled');
                    
+                   closeWait();
                    
     		});
         
@@ -178,11 +272,10 @@
         $.get( trace_uri , function( data ) {
             
             if(data != ''){
-                  
-         
-                
-                
-                $("#editor").html(data);
+
+               $("#editor").html(data);
+               var $t = $('#editor');
+               $t.animate({"scrollTop": $('#editor')[0].scrollHeight}, "slow");
                 
             }
         }).fail(function(){ 
@@ -220,6 +313,158 @@
     }
     
     
+    
+    function change_config(){
+    	
+    	
+    	var file = $("#preset-file").val();
+    	
+    	file = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/'+ file.replace('/var/www/', '');
+    	
+    	$.get( file, function( data ) {
+             
+             
+            editor.setValue(data);
+            editor.gotoLine(0);
+           
+             
+             
+         });
+    	
+    }
+    
+    
+    function ask_stop(){
+    	
+    	$.SmartMessageBox({
+    				title: "<i class='fa fa-warning'></i> Warning",
+    				content: "Do you want to stop the process?",
+    				buttons: '[No][Yes]'
+    	}, function(ButtonPressed) {
+			if (ButtonPressed === "Yes") {
+                stop();
+			}
+			if (ButtonPressed === "No") {
+
+			}
+    
+    	});
+    	
+    	
+    }
+    
+    
+    function stop(){
+    	
+    		openWait('Stopping process');
+    	
+        	$.ajax({
+    			type: "POST",
+    			url: "<?php echo module_url('objectmanager').'ajax/stop_process.php' ?>/",
+                data: {task_id : task_id},
+                dataType: 'json'
+    		}).done(function(response) {
+    		     
+    		     
+    		     waitTitle('Process stopped. Refreshing page');
+    		     setTimeout(function(){
+    		     	document.location.href=document.location.href;
+    		     }, 5000);
+    		    
+    		     
+    		});
+    	
+    }
+    
+    
+    function new_config_form_ok(){
+    	
+    	return $.trim($("#config-name").val()).length > 0;
+    	
+    }
+    
+    
+    function add_new_config(){
+    	
+    	
+    	$.ajax({
+    			type: "POST",
+    			url: "<?php echo module_url('objectmanager').'ajax/add_slice_config.php' ?>/",
+                data: {file : upload_file_path, name: $("#config-name").val(), description: $("#config-description").val()},
+                dataType: 'html'
+    		}).done(function(response) {
+    		     
+    		     
+    		    $("#preset-file").html(response);
+    		    $("#preset-file").trigger('change');
+    		    
+    		    $(".add-config-modal").modal("hide");
+    		    $("#config-name").val('');
+    		    $("#config-description").val('');
+    		    
+    		    
+    		    $.smallBox({
+    				title : "Success",
+    				content : "<i class='fa fa-check'></i> File config added",
+    				color : "#659265",
+    				iconSmall : "fa fa-thumbs-up bounce animated",
+                    timeout : 4000
+            	});
+    		     
+    		});
+    	
+    }
+    
+    
+    
+    function ask_delete_config(){
+    	
+    	$.SmartMessageBox({
+    				title: "<i class='fa fa-warning'></i>  Are you sure you want to delete the selected config?",
+    				content: "Note: there is no undo function",
+    				buttons: '[No][Yes]'
+    	}, function(ButtonPressed) {
+    		if (ButtonPressed === "Yes") {
+                        
+             	delete_slicer_config();        
+    					
+    		}
+    		if (ButtonPressed === "No") {
+    
+    		}
+    
+    	});
+    	
+    }
+    
+    
+    function delete_slicer_config(){
+    	
+    	openWait('Deleting file..');
+    	
+    	$.ajax({
+    			type: "POST",
+    			url: "<?php echo module_url('objectmanager').'ajax/delete_slice_config.php' ?>/",
+                data: {file : $("#preset-file option:selected").val()},
+                dataType: 'html'
+    		}).done(function(response) {
+    			
+    			$("#preset-file").html(response);
+    		    $("#preset-file").trigger('change');
+    		    
+    		    closeWait();
+    		    
+    		    $.smallBox({
+    				title : "Success",
+    				content : "<i class='fa fa-check'></i> File config deleted",
+    				color : "#659265",
+    				iconSmall : "fa fa-thumbs-up bounce animated",
+                    timeout : 4000
+            	});
+    		     
+    		});
+    	
+    }
     
     
     

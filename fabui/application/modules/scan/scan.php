@@ -181,7 +181,7 @@ class Scan extends Module {
 		*/
 		$this->layout->add_css_in_page(array('data'=> $this->load->view('index/css', '', TRUE), 'comment' => 'SCAN IN PAGE CSS'));
 
-        //$this->layout->set_compress(false);
+        $this->layout->set_compress(false);
 		$this->layout->view('index/index', $data);
 	}
 
@@ -196,7 +196,7 @@ class Scan extends Module {
 
         if ($this->input->is_ajax_request()) {
     		/** INIT */
-    		$mode = $this->input->post('mode');
+    		$mode = $this->input->post('mode', TRUE);
     		/**
     		 * LOAD DATABASE MODEL
     		*/
@@ -633,7 +633,7 @@ class Scan extends Module {
         /** LAUNCH SCAN COMMAND */
         $_command_scan = 'sudo python /var/www/fabui/python/r_scan.py -s'.$quality_values->slices.' -d'.$task_files['destination_folder'].' -l'.$task_files['scan_monitor_file'].' -i'.$quality_values->iso.' -b'.$quality_values->b.' -e'.$quality_values->e.' -w'.$quality_values->resolution->width.' -h'.$quality_values->resolution->height.'  2>'.$task_files['destination_folder'].$task_files['scan_debug_file'].'  > /dev/null & echo $!';
         $_output_scan  = shell_exec ( $_command_scan );
-		$_scan_pid     = trim(str_replace('\n', '', $_output_scan));
+		$_scan_pid     = intval(trim(str_replace('\n', '', $_output_scan)))+1;
         
         
         /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME */
@@ -647,7 +647,7 @@ class Scan extends Module {
         $_param_for_triangulation = '-mr';
         $_command_pprocessing     = 'sudo python /var/www/fabui/python/triangulation.py -i'.$task_files['destination_folder'].'images/ -o'.$task_files['destination_folder'].$task_files['pprocess_file'].' -s'.$quality_values->slices.' -b0 -e360 -w'.$quality_values->resolution->width.' -h'.$quality_values->resolution->height.' -z0 -a0 -l'.$task_files['destination_folder'].$task_files['pprocess_monitor_file'].' '.$_param_for_triangulation.' -t'.$id_task.' 2>'.$task_files['destination_folder'].$task_files['pprocess_debug_file'].' > /dev/null & echo $!';
         $_output_pprocessing      = shell_exec ( $_command_pprocessing );
-		$_pprocess_pid            = trim(str_replace('\n', '', $_output_pprocessing));
+		$_pprocess_pid            = intval(trim(str_replace('\n', '', $_output_pprocessing)))+1;
         
         
         /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME */
@@ -877,7 +877,7 @@ class Scan extends Module {
         /** LAUNCH SCAN COMMAND */
         $_command_scan = 'sudo python /var/www/fabui/python/p_scan.py -x'.$param['x1'].' -y'.$param['y1'].' -i'.$param['x2'].' -j'.$param['y2'].' -n'.$probe_quality['mm'].' -a'.$param['axis_increment'].' -b'.$param['start_degree'].' -e'.$param['end_degree'].' -l'.$task_files['scan_monitor_file'].' -d'.$task_files['destination_folder'].' -v1 -t'.$task_files['probing_trace_file'].' -k'.$id_task.' 2>'.$task_files['destination_folder'].$task_files['probing_debug_file'].'  > /dev/null & echo $!'; 
         $_output_scan  = shell_exec ( $_command_scan );
-		$_scan_pid     = trim(str_replace('\n', '', $_output_scan));
+		$_scan_pid     = intval(trim(str_replace('\n', '', $_output_scan)))+1;
         
         
          

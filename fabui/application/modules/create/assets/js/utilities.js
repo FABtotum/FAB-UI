@@ -1,7 +1,6 @@
 /**
  * CREATE MODULE UTILITIES FUNCTIONS
  */
-//init...
 var object;
 var file_selected;
 var stop_monitor = false;
@@ -58,10 +57,7 @@ function detail_files(object) {
 		html += '<tr>';
 		html += '<th></th>';
 		html += '<th>File</th>';
-		html += '<th>Type</th>';
-        html += '<th class="hidden-xs">Size</th>';
-        html += '<th class="hidden-xs">Full path</th>';
-		html += '<th class="hidden-xs"></th>';
+		html += '<th class="hidden-xs">Type</th>';
 		html += '</tr>';
 		html += '</thead>';
 
@@ -90,14 +86,11 @@ function detail_files(object) {
     							html += '<td><i class="fa fa-file-o"></i>  '
     									+ file.file_name + status + ' </td>';
                                 
-                                var icon_src = '<span class="icon-fab-additive"></span>';      
-                                        
-    							html += '<td>' + file.print_type + icon_src +' </td>';
-                                html += '<td class="hidden-xs">' + bytesToSize(file.file_size) + ' </td>';
-                                html += '<td class="hidden-xs">' + file.full_path + ' </td>';
-    							html += '<td class="hidden-xs"> </td>';
+                                var icon_src = '<span class="icon-fab-additive"></span>';          
+    							html += '<td class="hidden-xs">' + file.print_type + icon_src +' </td>';
+                              
     							html += '</tr>';
-                            //}
+                           
 
 						});
 
@@ -108,21 +101,16 @@ function detail_files(object) {
 
 		$('.obj-file').on('click', function() {
 			select_file($(this).val());
-			//detail_file(file_selected);
-			//detail_model(file_selected);			
-			//preview_file(file_selected);
 		});
         
         
          $('.file-row').click(function () {
             
-            //alert("CLICK");
             
-            //var _file = $(this).find(':first-child').find('input');
+            
+            
             $(this).find(':first-child').find('input').prop("checked", true);
            	select_file($(this).find(':first-child').find('input').val());
-            //_file.trigger('click');
-            
             
             
             /** LAOD INTERSTITIAL */
@@ -136,14 +124,33 @@ function detail_files(object) {
             }
             
             
-            
-             
+           try
+			{
+			   var attributes = JSON.parse(file_selected.attributes);
+			   
+			   var model_info_html = '<div class="well well-sm model-info margin-top-10">';
 
-
-            $("#step4").html('');
+			   var x = number_format(attributes.dimensions.x, 2, '.', '');
+			   var y = number_format(attributes.dimensions.y, 2, '.', '');
+			   var z = number_format(attributes.dimensions.z, 2, '.', '');
+			   
+			   model_info_html += '<h5>Model size: <span class="text-info">'+ x +' x '+ y +' x ' + z + ' mm</span></h5>';
+			   model_info_html += '<h5>Filament used: <span class="text-info">'+ number_format(attributes.filament, 2, '.', '') +' mm</span></h5>';
+			   model_info_html += '<h5>Estimated time print: <span class="text-info">'+ attributes.estimated_time+'</span></h5>';
+			   model_info_html += '<h5>Layers: <span class="text-info">'+ attributes.number_of_layers +'</span></h5>';
+			   
+			   model_info_html += '</div>';
+			   
+			   $(".model-info").remove();
+			   $('#files-container').append(model_info_html);
+			   
+			}
+			catch(e)
+			{
+			   
+			}
             
-            
-            
+           $("#step4").html('');
             
             $.ajax({
                 url : ajax_endpoint + 'ajax/'+ print_type + '.php',
@@ -272,12 +279,6 @@ function _trace() {
 			
 			$("#ace-editor").html(response);
 			$('#ace-editor').scrollTop(1E10);
-			
-			/*
-            editor.getSession().setValue(response);
-            editor.navigateLineEnd();
-            */
-
 		});
 
 	}
@@ -304,11 +305,11 @@ function _do_action(action, value) {
 	}).done(function(response) {
 		
 		$.smallBox({
-    				title : "Success",
-    				content : "<i class='fa fa-check'></i> "+ response.message,
-    				color : "#659265",
-    				iconSmall : "fa fa-thumbs-up bounce animated",
-                    timeout : 8000
+    		title : "Success",
+    		content : "<i class='fa fa-check'></i> "+ response.message,
+    		color : "#659265",
+    		iconSmall : "fa fa-thumbs-up bounce animated",
+            timeout : 8000
          });
 		
 
@@ -343,23 +344,21 @@ function ask_stop() {
 
 function stop_print(){
     
-    openWait('Stopping print');
+    openWait('Stopping print, please wait..');
     _do_action('stop', true);
     _stop_monitor();
     _stop_timer();
-    _stop_trace();
     stopped = 1;
-    _update_task();
-    interval_stop   = setInterval(_stopper, 1000);
+    
+    
+    setTimeout(_stopper, 30000);
 
 }
 
 
 function _stopper(){
-	elapsed_time_stop = (parseInt(elapsed_time_stop) + 1);
-    if(elapsed_time_stop == max_time_stop){
-        document.location.href = document.location.href;
-    }
+    waitContent('Refreshing page');
+    document.location.href = document.location.href;
 }
 
 /**
@@ -372,13 +371,13 @@ function _update_task() {
 	$.ajax({
         url : ajax_endpoint + 'ajax/update.php',
 		data : {
-            folder       : folder,
+            //folder       : folder,
             monitor_file : monitor_file,
 			id_task : id_task,
-			stopped : stopped,
+			//stopped : stopped,
 			estimated_time: array_estimated_time,
 			progress_steps: array_progress_steps,
-            stats_file : stats_file
+            //stats_file : stats_file
 		},
 		type : 'post',
 		dataType : 'json',
@@ -409,22 +408,20 @@ function _monitor_call(){
 			  async : true,
 			  //data : {id_task: id_task, file_monitor: monitor_file}
 		}).done(function(response) {
+			
+			
 
+			monitor_count++;
 			
 			monitor_response = response;
 			pid = response.print.pid;
 
-			//if pid > 0, so if process id exist, so if printer start to print
-			//if(pid > 0) {
-			 
-             
                 if(parseFloat(response.print.stats.percent) > 0){
                     
                   
-                     $( ".create-monitor" ).slideDown( "slow", function() {});
-                      
-                      $('#stop-button').removeClass('disabled');
-                      $('.controls').removeClass('disabled');
+                     $(".create-monitor" ).slideDown( "slow", function() {});
+                     $('#stop-button').removeClass('disabled');
+                     $('.controls').removeClass('disabled');
                     
                 }
 
@@ -439,34 +436,38 @@ function _monitor_call(){
 				$('#lines-progress').html(number_format(parseFloat(response.print.stats.percent), 2, ',', '.') + ' %');
 			
 				$('.progress-status').html(number_format(parseFloat(response.print.stats.percent), 2, ',', '.') + ' %');
-				//$('.progress-status').html(parseFloat(response.print.stats.percent).toFixed(2) + '%');
+				
                
                 $('#label-progress').html('(' +	number_format(parseFloat(response.print.stats.percent), 2, ',', '.') + ' % )');
                 
+                $("#temp1").val(parseInt(monitor_response.print.stats.extruder), {	animate: true });
+                $("#temp2").val(parseInt(monitor_response.print.stats.bed), {	animate: true });
+                $("#label-temp1").html(parseInt(monitor_response.print.stats.extruder));
+                $("#label-temp2").html(parseInt(monitor_response.print.stats.bed));
+                 
                 
-                 $("#temp1").val(parseInt(monitor_response.print.stats.extruder), {	animate: true });
-                 $("#temp2").val(parseInt(monitor_response.print.stats.bed), {	animate: true });
-                 $("#label-temp1").html(parseInt(monitor_response.print.stats.extruder));
-                 //$("#label-temp1-target").html(parseInt(monitor_response.print.stats.extruder_target));
-                 $("#label-temp2").html(parseInt(monitor_response.print.stats.bed));
-                 //$("#label-temp2-target").html(parseInt(monitor_response.print.stats.bed_target));
+               
                 
-                $("#label-temp1-target").html(extruder_target);
-                $("#label-temp2-target").html(bed_target);
-					
-				monitor_count++ ;
-				
-				
-			//}
-
+                if(parseInt(extruder_target) == 0){
+                	$("#label-temp1-target").html(parseInt(monitor_response.print.stats.extruder_target));
+                	extruder_target = parseInt(monitor_response.print.stats.extruder_target);
+                }else{
+                	$("#label-temp1-target").html(extruder_target);
+                }
+                
+                
+                 if(parseInt(bed_target) == 0){
+                	$("#label-temp2-target").html(parseInt(monitor_response.print.stats.bed_target));
+                	bed_target = parseInt(monitor_response.print.stats.bed_target);
+                }else{
+                	$("#label-temp2-target").html(bed_target);
+                }
+                
 			
 			//al primo giro
 			if(monitor_count == 1){
-				//aggiorno le info del task
-				_update_task();
 				
 				
-                
 
 				//progress_step = parseFloat(response.print.stats.percent);
 				progress_step = precise_round(response.print.stats.percent, precision);
@@ -474,8 +475,6 @@ function _monitor_call(){
 				
 				//if the process is already running
 				if(is_running == true){
-				
-					
 					current_estimated_time = parseFloat((eval(array_estimated_time.join('+')))/(eval(array_progress_steps.join('+')))).toFixed(0);
                     if(!isNaN(current_estimated_time)){				
 					   $('.estimated-time').html(_time_to_string(current_estimated_time));
@@ -571,7 +570,7 @@ var print_monitor = function (){
 		_stop_monitor();
 		_stop_timer();
 		_stop_trace();
-		_update_task();
+		//_update_task();
 		$('.controls').addClass('disabled');
 		$('.progress').removeClass('active');
 		$('.estimated-time').html('-');
@@ -580,7 +579,6 @@ var print_monitor = function (){
         $("#btn-next").trigger('click');
         unfreeze_menu();
         $("#wizard-buttons").hide();
-        
         
         				
 	}
@@ -594,7 +592,7 @@ var print_monitor = function (){
 function print_object(){
     
      $(".final-step-response").html("");
-     openWait('Initializiang print..');
+     openWait('Initializiang');
      
      var timestamp = new Date().getTime();
             
@@ -635,12 +633,12 @@ function print_object(){
 			$('#lines-progress').html(number_format(parseFloat(status.print.stats.percent), 2, ',', '.') + ' %');
 			$('.progress-status').html(	number_format(parseFloat(status.print.stats.percent), 2, ',', '.') + ' %');
             $('#label-progress').html('(' +	number_format(parseFloat(status.print.stats.percent), 2, ',', '.') + ' % )');
-            
     		
     		//azzero contatore monitor
     		monitor_count = 0;
     
     		//faccio partire il monitor 1000 = 1 secondo
+    		print_monitor();
     		interval_monitor = setInterval(print_monitor, monitor_timeout);
     		interval_timer   = setInterval(_timer, 1000);
     		
@@ -653,8 +651,6 @@ function print_object(){
     
     		
     		//freeze menu
-    		
-    		
     		//vado avanti negli step
     		$('#btn-next').trigger('click');
     		$('#status-icon').removeClass('hide');
@@ -662,8 +658,9 @@ function print_object(){
             closeWait();
             ticker_url = '';
             
-            //krios
+            
             $("#details").trigger('click');
+            $(".stop").removeClass('disabled');
             
             
             
@@ -738,10 +735,10 @@ function check_wizard(){
         
         $("#wizard-buttons").hide();
         
-        //$('#btn-next').hide();
+       
         
     }else{
-        //$("#wizard-buttons").show();
+        
     }
 
 }
@@ -792,6 +789,23 @@ function _controls_listener(obj){
 		    value = 'no';         
         }
     }
+    
+    
+    
+    if(obj.attr("id") == 'send-mail'){
+        
+        if(action == 'send-mail-true'){
+            obj.attr('data-action', 'send-mail-false');
+            obj.attr('title', "A mail will be send at the end of the print");
+            obj.removeClass('txt-color-red').addClass('txt-color-green');
+        }else{
+            obj.attr('data-action', 'send-mail-true');
+            obj.removeClass('txt-color-green').addClass('txt-color-red');
+        }
+        
+    }
+    
+    
 
     _do_action(action, value);
 }

@@ -2,6 +2,7 @@
 
 
 	var avatar;
+	var avatar_change = 0;
 	var theme_skin= '<?php echo $_SESSION['user']['theme-skin'] ?>';
 		
 	
@@ -9,6 +10,9 @@
 		
 		
 		 $("#uploadFile").on("change", function(){
+		 	
+		 	
+		 	avatar_change = 1;
 		 	
 	        var files = !!this.files ? this.files : [];
 	        if (!files.length || !window.FileReader) return; 
@@ -39,6 +43,7 @@
 		$("#remove-image").click(function() {
 			$("#uploadFile").val("");
 			avatar = '';
+			avatar_change = 1;
 			$("#img-preview").attr('src', '<?php echo base_url()."application/layout/assets/img/male.png"; ?>');
 		});
 		
@@ -207,7 +212,7 @@
 		
 		$.ajax({
           url: '<?php echo module_url('profile').'ajax/basic_info.php'; ?>',
-          data:{ first_name: $("#first_name").val(), last_name: $("#last_name").val(), email: $("#email").val(), avatar: avatar, theme_skin : theme_skin},
+          data:{ first_name: $("#first_name").val(), last_name: $("#last_name").val(), email: $("#email").val(), avatar: avatar, avatar_change: avatar_change, theme_skin : theme_skin, lock_screen : $("#lock_screen").val()},
           type: "POST"
 		}).done(function( html ) {
 			
@@ -231,6 +236,10 @@
 			
 			
 			$("#user_basic_info").html($("#first_name").val() + ' ' + $("#last_name").val());
+			
+			
+			max_idle_time = parseInt($("#lock_screen").val());
+
 		           
 		});
 		

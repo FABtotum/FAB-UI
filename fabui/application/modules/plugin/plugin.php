@@ -11,6 +11,8 @@ class Plugin extends Module {
 
 	public function index(){
 
+
+		
 		
 		$this->load->helper('ft_plugin_helper');
 		
@@ -75,6 +77,9 @@ class Plugin extends Module {
 		
 		$this->plugins->active($plugin);
 		
+		
+		$_SESSION['plugins'] = $this->plugins->get_activeted_plugins();
+		
 		redirect('plugin');
 		
 	}
@@ -89,12 +94,12 @@ class Plugin extends Module {
 		
 		$this->plugins->deactive($plugin);
 		
+		$_SESSION['plugins'] = $this->plugins->get_activeted_plugins();
+		
 		redirect('plugin');
 		
 	}
-
-
-
+	
 
 }
 

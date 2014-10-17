@@ -7,11 +7,11 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
 
 /** SAVE POST PARAMS */
-$_object_id  = $_POST['object'];
-$_file_id    = $_POST['file'];
-$_print_type = $_POST['print_type'];
-$_skip_abl   = $_POST['skip'] == 0 ? false : true;
-$_time       = $_POST['time'];
+$_object_id   = $_POST['object'];
+$_file_id     = $_POST['file'];
+$_print_type  = $_POST['print_type'];
+$_skip_abl    = $_POST['skip'] == 0 ? false : true;
+$_time        = $_POST['time'];
 $_calibration = $_POST['calibration'];
 
 
@@ -20,16 +20,19 @@ if($_print_type ==  'additive'){
 	
 	
 	$_macro_trace    = TEMP_PATH.'print_check_'.$_time.'.trace';
+	$do_macro        = TRUE;
 	
 	switch($_calibration){
 		
 		case 'homing':
 			$_macro_function = 'home_all';
 			$_macro_response = TEMP_PATH.'calibration_homing_'.$_time.'.log';
+			$do_macro        = FALSE;
 			break;
 		case 'abl':
 			$_macro_function = 'auto_bed_leveling';
 			$_macro_response = TEMP_PATH.'auto_bed_leveling'.$_time.'.log';
+			$do_macro        = TRUE;
 			break;
 		
 	}
@@ -42,25 +45,34 @@ if($_print_type ==  'additive'){
 	chmod($_macro_response, 0777);
 	
 	
-	/** START MACRO */
-	$_command_macro  = 'sudo python '.PYTHON_PATH.'gmacro.py '.$_macro_function.' '.$_macro_trace.' '.$_macro_response;
-	$_output_macro   = shell_exec ( $_command_macro );
-	$_pid_macro      = trim(str_replace('\n', '', $_output_macro));
 	
-	/** WAIT MACRO TO FINISH */
-	while(str_replace('<br>', '', file_get_contents($_macro_response)) == ''){   
-		sleep(0.5);
+	if($do_macro){
+		
+		
+		/** START MACRO */
+		$_command_macro  = 'sudo python '.PYTHON_PATH.'gmacro.py '.$_macro_function.' '.$_macro_trace.' '.$_macro_response;
+		$_output_macro   = shell_exec ( $_command_macro );
+		$_pid_macro      = trim(str_replace('\n', '', $_output_macro));
+		
+		/** WAIT MACRO TO FINISH */
+		while(str_replace('<br>', '', file_get_contents($_macro_response)) == ''){   
+			sleep(0.5);
+		}
+		
+		
+		/** CHECK MACRO RESPONSE */
+		if(str_replace('<br>', '', file_get_contents($_macro_response)) != 'true'){
+			header('Content-Type: application/json');
+			echo json_encode(array('response' => false, 'message' => str_replace(PHP_EOL, '<br>', file_get_contents($_macro_trace)), 'response_text' => file_get_contents($_macro_response)));
+			exit();
+		}
+		
 	}
 	
-	
-	/** CHECK MACRO RESPONSE */
-	if(str_replace('<br>', '', file_get_contents($_macro_response)) != 'true'){
-		header('Content-Type: application/json');
-		echo json_encode(array('response' => false, 'message' => str_replace(PHP_EOL, '<br>', file_get_contents($_macro_trace)), 'response_text' => file_get_contents($_macro_response)));
-		exit();
-	}
 	
 	file_put_contents($_macro_response, '');
+	
+	
 	
 	$_command_start_print_macro  = 'sudo python '.PYTHON_PATH.'gmacro.py start_print '.$_macro_trace.' '.$_macro_response;
 	$_output_start_print_macro   = shell_exec ( $_command_start_print_macro );
@@ -118,6 +130,7 @@ $_debug_file         = $_destination_folder.'print_'.$id_task.'_'.$_time.'.debug
 $_stats_file         = $_destination_folder.'print_'.$id_task.'_'.$_time.'_stats.json';
 $_uri_monitor        = '/tasks/print_'.$id_task.'_'.$_time.'/'.'print_'.$id_task.'_'.$_time.'.monitor';
 $_uri_trace          = '/tasks/print_'.$id_task.'_'.$_time.'/'.'print_'.$id_task.'_'.$_time.'.trace';
+//$_gcode_file         = $_destination_folder.'print_gcode_'.$id_task.'_'.$_time.'.gcode';
 
 mkdir($_destination_folder, 0777);            
 /** create print monitor file */
@@ -132,14 +145,20 @@ chmod($_trace_file, 0777);
 /** create print stats file */
 write_file($_stats_file, '', 'w');
 chmod($_stats_file, 0777);
+/** create temp gcode file */
+//write_file($_gcode_file, '', 'w');
+//chmod($_gcode_file, 0777);
 
 $_time_monitor = 2;
 
 
+//$gcode_data = optimize_gcode(file_get_contents($_file['full_path']));
+//file_put_contents($_gcode_file, $gcode_data);
+
 /** START PROCESS */
-$_command        = 'sudo python '.PYTHON_PATH.'gpusher.py '.$_file['full_path'] .' '.$_monitor_file .' '.$_data_file.' '.$_time_monitor.' '.$_trace_file.' '.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
+$_command        = 'sudo python '.PYTHON_PATH.'gpusher_fast.py '.$_file['full_path'].' '.$_monitor_file .' '.$_data_file.' '.$_time_monitor.' '.$_trace_file.' '.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
 $_output_command = shell_exec ( $_command );
-$_print_pid      = trim(str_replace('\n', '', $_output_command));
+$_print_pid      = intval(trim(str_replace('\n', '', $_output_command))) + 1;
 
 
 /** UPDATE TASKS ATTRIBUTES */
@@ -163,22 +182,7 @@ $db->close();
 
 
 sleep(2);
-//$_json_status = file_get_contents($_monitor_file, FILE_USE_INCLUDE_PATH);
 
-//$status  = json_decode($_json_status, TRUE);
-//$percent = isset($status['print']['stats']['percent']) ? floatval($status['print']['stats']['percent']) : floatVal(0);
-
-/** WAIT TRACE TO GET % > 0 
-while($percent <= 0.1){
-    sleep(2);
-    //write_file('/var/www/tasks/log.txt', 'entro ciclo'.PHP_EOL, 'a+');
-    $_json_status = file_get_contents($_monitor_file, FILE_USE_INCLUDE_PATH);
-    //write_file('/var/www/tasks/log.txt', $_json_status.PHP_EOL, 'a+');
-    $status  = json_decode($_json_status, TRUE);
-    $percent = isset($status['print']['stats']['percent']) ? floatval($status['print']['stats']['percent']) : floatval(0);
-     
-}
-*/
 $_json_status = file_get_contents($_monitor_file, FILE_USE_INCLUDE_PATH);
 $status = json_encode($_json_status);
 

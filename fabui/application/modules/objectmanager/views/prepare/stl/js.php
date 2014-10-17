@@ -17,6 +17,50 @@
     var time_left_saved = 0;
     
     var output_file_id;
+    var task_id = <?php echo $_task ? $_task['id'] : '""' ?>;
+    
+    
+    
+    
+    $(function () {
+    	
+    	
+    	
+    	
+    });
+    
+    <?php if($_task): ?>
+    
+    	resume();
+    	
+    	function resume(){
+    		
+    		<?php $_task_attributes = json_decode($_task['attributes'], true) ; ?>
+    		
+    		<?php $_json_monitor = json_decode(file_get_contents($_task_attributes['monitor']), true); ?>
+    		
+    		
+    		monitor_uri = '<?php echo str_replace('/var/www', '',  $_task_attributes['monitor']); ?>';
+    		trace_uri = '<?php echo str_replace('/var/www', '',  $_task_attributes['trace']); ?>';
+    		
+    		var now = new Date().getTime();
+    		now = (now / 1000);
+    		
+    		var started = <?php echo str_replace('', '', $_json_monitor['Meshing']['started']) ?>;
+    		elapsed_time = (now - started);
+    		
+    		interval_monitor   = setInterval(monitor, 1000);
+            interval_trace     = setInterval(trace, 3000);
+            interval_timer     = setInterval(timer, 1000);
+            
+            
+            
+    		
+    		
+    		
+    	}
+    
+    <?php endif; ?>
 
 
     $('#procees-button').on('click', function(){

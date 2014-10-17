@@ -23,6 +23,12 @@ chmod($_destination_response, 0777);
 
 $_macro_name = 'probe_setup_'.$_mode;
 
+
+if($_mode == 'prepare'){
+	$_command        = 'sudo python '.PYTHON_PATH.'gmacro.py  raise_bed '.$_destination_trace.' '.$_destination_response.' > /dev/null';
+	$_output_command = shell_exec ( $_command );	
+}
+
 /** EXEC COMMAND */
 $_command        = 'sudo python '.PYTHON_PATH.'gmacro.py '.$_macro_name.' '.$_destination_trace.' '.$_destination_response.' > /dev/null';
 $_output_command = shell_exec ( $_command );

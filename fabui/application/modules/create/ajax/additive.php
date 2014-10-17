@@ -44,8 +44,9 @@
     					<h1>
     						<span class="badge">2</span>
     					</h1>
-    					    					
-    					<h2>Open the front panel to engage extruder mode by pushing the button at the back wall inside of the FABtotum. If extruder mode is already engaged press OK to continue</h2>
+    					<h2>To engage the filament feeder push the small button under the building platform near the 4th axis chuck.</h2>
+    					<h2>Apply a good amount of force when pushing</h2>    					
+    					<h2>If extruder mode is already engaged press OK to continue</h2>
 
     				</div>
     			</div>
@@ -466,7 +467,8 @@
                 if(status == 200){
                     $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-check').addClass('txt-color-green');
                     $("#modal_link").html('Continue');
-                    $("#modal_link").attr('data-action', '');
+                    $("#modal_link").attr('data-action', '')
+                    $("#skip_engage").hide();
                     $('.check_result').html('');
                     
                     

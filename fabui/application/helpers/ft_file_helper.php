@@ -117,11 +117,17 @@ function clean_temp($mode = 'day', $max = 1){
         if($remove && !in_array($file, $files_to_take)){
             
             unlink($directory.$file);
-        }
-        
-        
+        }   
     }
-    
-    
 }
 
+
+
+
+function gcode_analyzer($file_id){
+	
+	
+	$command = 'sudo php /var/www/fabui/script/gcode_analyzer.php '.$file_id.' > /dev/null & echo $!';
+	shell_exec($command);
+	
+}

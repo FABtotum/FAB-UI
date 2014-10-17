@@ -74,6 +74,10 @@
 	    	$("#console").html('');
 	    });
 	    
+	    
+	    $("#clear-mdi").on('click', function(){
+	    	$("#mdi").val('');
+	    });
 	
 		$('.directions-container').on('keydown',function(e) {
 		      keyboard(e);
@@ -160,14 +164,12 @@
      	});
 	   	
 
+		pre_jog();
 		/** TICKER */
-    	interval_ticker   = setInterval(ticker, 1000);
-    	
-    	pre_jog();
+    	interval_ticker   = setInterval(ticker, 500);
     	
     	
-    	
-    	
+    	  	
     	
     	/** RESET CONTROLLER */
     	$("#reset-controller").on('click', ask_reset);
@@ -176,7 +178,6 @@
 		$("#z-step").spinner({
 				step : 0.01,
 				numberFormat : "n",
-				
 				min: 0
 		});
 		
@@ -191,7 +192,11 @@
 				step :50,
 				numberFormat : "n",
 				min: 0
-		});		
+		});
+		
+		
+		
+			
 		
 	});
 	
@@ -329,7 +334,7 @@
 	                });
 	            }
 	            
-	            write_to_console('Temperatures (M105)', '[Ext: ' + response.ext + ' / ' + response.ext_target   + ' ---  Bed: ' + parseInt(response.bed) + ' / ' + response.bed_target +  ']\n');
+	            write_to_console('Temperatures (M105) [Ext: ' + response.ext + ' / ' + response.ext_target   + ' ---  Bed: ' + parseInt(response.bed) + ' / ' + response.bed_target +  ']\n');
 	          
 	        });
 	}
@@ -361,6 +366,8 @@
 	
 	
 	function ticker(){
+		
+		
     
 	    if(ticker_url != ''){
 	        
@@ -390,6 +397,7 @@
 	            
 	  
 	    $(".btn").addClass('disabled');
+	    $(".status").html(' <i class="fa fa-spin fa-spinner fa-2x"></i>');
 	
 		$.ajax({
 			type: "POST",
@@ -397,18 +405,21 @@
 			data : {function: func, value: value, time: timestamp, step:$("#step").val(), z_step:$("#z-step").val(), feedrate: $("#feedrate").val()},
 			dataType: "json"
 		}).done(function( data ) {
-	        write_to_console(data.command, data.response);
+			
+	        write_to_console(data.response);
 	        $(".btn").removeClass('disabled');
 	        enable_save_position();
 	        ticker_url = '';
+	        $(".status").html(' ');
 		});
 		
 	}
 	
 	
-	function write_to_console(command, response){
+	function write_to_console(text){
 	
 	
+		/*
 	   	var text = '';
 	   	
 	   	if(command != ''){
@@ -417,7 +428,7 @@
 	   	
 	   	if(response != ''){
 	   		text += response;
-	   	}
+	   	}*/
 	   
 	   	$("#console").append(text);
 	   	$('#console').scrollTop(1E10);
@@ -442,20 +453,23 @@
 	
 	function pre_jog(){
 	    
-	    
+	    $(".status").html(' <i class="fa fa-spin fa-spinner fa-2x"></i>');
+	    $(".btn").addClass('disabled');
 	    var timestamp = new Date().getTime();        
 	    ticker_url = '/temp/pre_jog_' + timestamp + '.trace';
+	   
 	    
 	    $.ajax({
 	              url : '<?php echo module_url('jog').'ajax/pre_jog.php' ?>',
 				  dataType : 'json',
 				  type: 'post',
-				  async : true,
 	              data: {time : timestamp}
 			}).done(function(response) {
 			  
 	             ticker_url = '';
 	             refresh_temperature();
+	             $(".btn").removeClass('disabled');
+	             $(".status").html('');
 	        });
 	    
 	}
@@ -508,6 +522,8 @@
 		 
 		
 	}
+	
+		
 	
 	
 	

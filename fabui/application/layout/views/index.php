@@ -33,14 +33,11 @@
 					<div class="ajax-dropdown">
 						<!-- the ID links are fetched via AJAX to the ajax container "ajax-notifications" -->
 						<div class="btn-group btn-group-justified" data-toggle="buttons">
-							<label class="btn btn-default update-list active notification">
+							<label class="btn btn-default update-list  notification">
 								<input type="radio" name="activity" id="<?php echo site_url('controller/updates') ?>">
-								<span>Updates (0)</span>
+								<span>Updates (<?php echo isset($_SESSION['updates']['number']) ? $_SESSION['updates']['number']: 0 ?>)</span>
 							</label>
-							<label class="btn btn-default notification">
-								<input type="radio" name="activity" id="<?php echo site_url('controller/notifications') ?>">
-								notify (0)
-							</label>
+							
 							<label class="btn btn-default task-list notification">
 								<input type="radio"  name="activity" id="<?php echo module_url('controller').'ajax/tasks.php' ?>">
 								<span>Tasks (0)</span>
@@ -88,14 +85,15 @@
 				<!--
 				<div class="btn-header transparent pull-right">
 					<span>
-						<?php echo anchor( 'plugin', '<i class="icon-fab-plugin"></i>', 'title="Plugins" style="cursor: pointer !important"'); ?>
+						<?php echo anchor( 'plugin', '<i class="fa fa-plug"></i>', 'title="Plugins" style="cursor: pointer !important"'); ?>
 					</span>
 				</div>
 				-->
+				
 				<!-- LOGOUT BUTTON -->
 				<div id="logout" class="btn-header transparent pull-right">
 					<span>
-						<?php echo anchor( 'login/out', '<i class="fa fa-sign-out"></i>', 'title="Sign Out" style="cursor: pointer !important"'); ?>
+						<?php echo anchor( 'login/out', '<i class="fa fa-power-off"></i>', 'title="Power Off" data-user-name="'.$_SESSION['user']['first_name'].'" data-logout-msg="What do you want to do?" data-action="userLogout" style="cursor: pointer !important"'); ?>
 					</span>
 				</div>
 				<!-- multiple lang dropdown : find all flags in the image folder -->
@@ -203,23 +201,90 @@
 		<div class="page-footer">
 			<div class="row">
 				<div class="col-xs-12 col-sm-12">
-					<span class="txt-color-white pull-right">FAB UI <em class="font-xs txt-color-orangeDark">beta</em></span>
+					
+					
+					
+					<button data-toggle="modal" data-backdrop="static" data-target=".bug-modal" class="btn btn-xs bg-color-orange txt-color-white pull-right internet" style="margin-left: 5px;display:none" > 
+						<i class="fa fa-bug"></i>&nbsp;<span class="hidden-mobile">Report a bug</span>
+					</button>
+					<button data-toggle="modal" data-backdrop="static" data-target=".suggestion-modal" class="btn btn-xs bg-color-blue txt-color-white pull-right internet" style="display:none">
+						<i class="fa fa-stack-overflow"></i>&nbsp;<span class="hidden-mobile">Request for a feature</span>
+					</button>
+					<span class="txt-color-white ">FAB UI <em class="font-xs txt-color-orangeDark">beta</em></span>
 				</div>
 			</div>	
 
 		</div>
-		<form id="lock-screen-form" action="<?php echo site_url('login/lock')?>" method="POST"></form>
 		
+		<div class="modal fade suggestion-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+			<div class="modal-dialog  modal-lg">
+				<div class="modal-content">
+		      		<div class="modal-header">
+		      			<h4 class="modal-title"><i class="fa fa-stack-overflow"></i> Request for a feature</h4>
+		      		</div>
+		      		<div class="modal-body">
+		      			<div class="row">
+		      				<div class="col-md-12">
+		      					<h5>Help us to improve even more your FABtotum experience</h5>
+		      					<div class="form-group">
+		      						<input id="suggestion-title" class="form-control" type="text" placeholder="Subject">
+		      					</div>
+		      					<div class="form-group">
+		      						<textarea id="suggestion-text" class="form-control" placeholder="Content" rows="5"></textarea>
+		      					</div>
+		      				</div>
+		      			</div>
+		      		</div>
+		      		<div class="modal-footer">
+		      			<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      			<button id="send-suggestion" type="button" class="btn btn-primary"> <i class="fa fa-envelope-o"></i> Send </button>
+		      		</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="modal fade bug-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+			<div class="modal-dialog  modal-lg">
+				<div class="modal-content">
+		      		<div class="modal-header">
+		      			<h4 class="modal-title"><i class="fa fa-bug"></i> Report a bug</h4>
+		      		</div>
+		      		<div class="modal-body">
+		      			<div class="row">
+		      				
+		      				<div class="col-md-12">
+		      					<h6>Please first make sure FABUI is updated to the last version</h6>
+		      					<h5>Our support forum is now live. Visit <a target="_blank" href="http://support.fabtotum.com/tickets/">http://support.fabtotum.com/tickets/</a></h5>
+		      					<div class="form-group">
+		      						<input id="bug-title" class="form-control" type="text" placeholder="Subject">
+		      					</div>
+		      					<div class="form-group">
+		      						<textarea id="bug-text" class="form-control" placeholder="" rows="5"></textarea>
+		      					</div>
+		      				</div>
+		      			</div>
+		      		</div>
+		      		<div class="modal-footer">
+		      			<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      			<button id="send-bug" type="button" class="btn btn-primary"> <i class="fa fa-envelope-o"></i> Send </button>
+		      		</div>
+				</div>
+			</div>
+		</div>
+		
+		<form id="lock-screen-form" action="<?php echo site_url('login/lock')?>" method="POST"></form>
+		<div id="power-off-img" style="display:none;"><img class="img-responsive" src="/assets/img/power-off.png"></div>
 		<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
 		<!--<script data-pace-options='{ "restartOnRequestAfter": true }' src="<?php echo base_url() ?>/application/layout/assets/js/plugin/pace/pace.min.js">
 		</script>-->
 		<!-- JAVASCRIPT FILE INLCUSIONS -->
         <script type="text/javascript">
-            var number_updates = 0; 
+            var number_updates = <?php echo isset($_SESSION['updates']['number']) ? $_SESSION['updates']['number']: 0 ?>; 
             var number_tasks = 0;
             var number_notifications = 0;
             var sound_folder = '<?php echo base_url().'application/layout/assets/sound/' ?>';
-            var max_idle_time = 600;
+            var max_idle_time = <?php echo isset($_SESSION['user']['lock-screen']) ? $_SESSION['user']['lock-screen'] : 0 ?>;
         </script>
 		<?php echo $_js_files ?>
 		<!-- JAVASCRIPT IN PAGE -->

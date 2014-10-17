@@ -3,6 +3,7 @@
  * CodeIgniter
  *
  * An open source application development framework for PHP 5.1.6 or newer
+ * Edit by Krios Mane, add way to avoid XSS CLEAN for a single call
  *
  * @package		CodeIgniter
  * @author		ExpressionEngine Dev Team
@@ -72,6 +73,10 @@ class CI_Input {
 	 * @var array
 	 */
 	protected $headers			= array();
+	
+	
+	/** RAW POST KM*/
+	protected $_raw_post      = array();
 
 	/**
 	 * Constructor
@@ -84,6 +89,9 @@ class CI_Input {
 	public function __construct()
 	{
 		log_message('debug', "Input Class Initialized");
+		
+		/** RAW POST KM */
+		$this->_raw_post = $_POST;
 
 		$this->_allow_get_array	= (config_item('allow_get_array') === TRUE);
 		$this->_enable_xss		= (config_item('global_xss_filtering') === TRUE);
@@ -126,9 +134,17 @@ class CI_Input {
 		if ($xss_clean === TRUE)
 		{
 			return $this->security->xss_clean($array[$index]);
+		}else{
+			/** RAW POST KM */
+			if(isset($this->_raw_post[$index])){
+				return $this->_raw_post[$index];
+			}else{
+				return $array[$index];
+			}
+			
 		}
 
-		return $array[$index];
+		
 	}
 
 	// --------------------------------------------------------------------
@@ -171,9 +187,12 @@ class CI_Input {
 	*/
 	function post($index = NULL, $xss_clean = FALSE)
 	{
+		
+		
 		// Check if a field has been provided
 		if ($index === NULL AND ! empty($_POST))
 		{
+			
 			$post = array();
 
 			// Loop through the full _POST array and return it
@@ -183,7 +202,8 @@ class CI_Input {
 			}
 			return $post;
 		}
-
+		
+		
 		return $this->_fetch_from_array($_POST, $index, $xss_clean);
 	}
 

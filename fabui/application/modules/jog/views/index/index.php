@@ -1,10 +1,10 @@
 <div class="row">
-	<div class="col-xs-2 col-sm-2 col-md-1 col-lg-2">
+	<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-            <i class="icon-fab-jog fab-fw"></i>&nbsp;Jog
+            <i class="icon-fab-jog fab-fw"></i>&nbsp;Jog&nbsp;&nbsp;<span class="status"></span>
 		</h1>
 	</div>
-    <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 text-right margin-top-10">
+    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 text-right margin-top-10">
 		<div class="onoffswitch-container">
 			<span class="onoffswitch-title">Motors</span> 
 			<span class="onoffswitch">
@@ -41,49 +41,21 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-12">
         <div class="well ">
-            
-                <a rel="tooltip" id="home-all-axis" href="javascript:void(0)" type="button" class="btn btn-default">Home All axis</a>
-				<a rel="tooltip" id="zero-all"      href="javascript:void(0)" type="button" class="btn btn-default">Zero All</a>
-				<a rel="tooltip" id="position"      href="javascript:void(0)" type="button" class="btn btn-default">Position</a>
-				<a rel="tooltip" id="get-temp-ext"  href="javascript:void(0)" type="button" class="btn btn-default">Temperature</a>
-                <a rel="tooltip" id="bed-align"     href="javascript:void(0)" type="button" class="btn btn-default macro">Auto bed leveling</a>
+            	
+            	<div class="btn-group btn-group-justified" >
+	                <a id="home-all-axis"    href="javascript:void(0)" class="btn btn-default" title="Home all axis">Home All axis</a>
+					<a id="zero-all"         href="javascript:void(0)" class="btn btn-default" title="Zero All">Zero All</a>
+					<a id="position"         href="javascript:void(0)" class="btn btn-default" title="Position">Position</a>
+					<a id="get-temp-ext"     href="javascript:void(0)" class="btn btn-default" title="Temperature">Temperature</a>
+	                <a id="bed-align"        href="javascript:void(0)" class="btn btn-default macro" title="Auto Bed Leveling">ABL</a>
+	                <a id="reset-controller" href="javascript:void(0)" class="btn btn-default" title="Reset Controller">Reset controller</a>
+                </div>
 			
         </div>
     </div>
-    
-    <div class="col-sm-6">
-        
-        <div class="well">
-            
-            <div class="row">
-                <div class="col-sm-12">
-                	
-                	
-                	<a class="btn btn-default" href="javascript:void(0)" id="reset-controller">Reset controller</a>
-                	
-                	
-                	<!--
-                    <div class="btn-group margin-top-10">
-                        <a id="save-position" href="javascript:void(0)" type="button" class="btn btn-default">Save position</a>
-                    </div>
-                    
-                    <div class="btn-group margin-top-10 pull-right">
-                        <a  id="pos-1" href="javascript:void(0)" type="button" class="btn btn-default saved-position" data-code="" style="display:none;">Pos 1</a>
-                        <a  id="pos-2" href="javascript:void(0)" type="button" class="btn btn-default saved-position" data-code="" style="display:none;">Pos 2</a>
-                        <a  id="pos-3" href="javascript:void(0)" type="button" class="btn btn-default saved-position" data-code="" style="display:none;">Pos 3</a>
-                        <a  id="pos-4" href="javascript:void(0)" type="button" class="btn btn-default saved-position" data-code="" style="display:none;">Pos 4</a>
-                        <a  id="pos-5" href="javascript:void(0)" type="button" class="btn btn-default saved-position" data-code="" style="display:none;">Pos 5</a>
-                    </div>
-                   -->
-                </div>
-            </div>
-            
-        </div>
-    
-    </div>
-    
+   
 </div>
 
 
@@ -205,12 +177,12 @@
 									-->
 									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zdown">
 										<i class="fa fa-angle-double-up">
-										</i>&nbsp;Z -
+										</i>&nbsp;Z
 									</a>
 		                            <hr />
 									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zup">
 										<i class="fa fa-angle-double-down">
-										</i>&nbsp; Z +
+										</i>&nbsp; Z
 									</a>
 									<!--
 									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="5" data-attribute-function="zup">
@@ -281,7 +253,11 @@
         <div class="well">      
             <div class="row" style="margin-left:0px; margin-right: 0px;">
                 <div class="col-sm-6 margin-bottom-10">
-                    <p>MDI <a id="gcode-manual" data-toggle="modal" href="<?php echo site_url("jog/manual") ?>" data-target="#manula-modal" class="pull-right" href="javascript:void(0);">Help</a></p>
+                    <p>MDI 
+                    	<a id="gcode-manual" data-toggle="modal" href="<?php echo site_url("jog/manual") ?>" data-target="#manula-modal" class="pull-right" href="javascript:void(0);">Help</a>
+                    	<span class="pull-right"> | </span>
+                    	<a id="clear-mdi" class="pull-right" href="javascript:void(0);">Clear</a>
+                    </p>
                     <textarea class="form-control" id="mdi" style="height: 200px; text-transform: uppercase; resize: none"></textarea>
                     
                     <button id="run" type="button" class="btn btn-primary btn-sm btn-block">Run</button>
@@ -300,8 +276,6 @@
 <div class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true" id="manula-modal">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      
-
     </div>
   </div>
 </div>

@@ -87,7 +87,7 @@
 									Axis increment (number)
 								</label>
 								<label class="input">
-									<input id="axis-increment" type="text" value="0" />
+									<input id="axis-increment" type="text" value="0" readonly="readonly"/>
 								</label>
 							</section>
 							<div class="row">
@@ -96,7 +96,7 @@
 										Start degree
 									</label>
 									<label class="input">
-										<input id="start-degree" type="text" value="0" />
+										<input id="start-degree" type="text" value="0" readonly="readonly" />
 									</label>
 								</section>
 								<section class="col col-6">
@@ -104,7 +104,7 @@
 										End degree
 									</label>
 									<label class="input">
-										<input id="end-degree" type="text" value="0" />
+										<input id="end-degree" type="text" value="0" readonly="readonly" />
 									</label>
 								</section>
 							</div>

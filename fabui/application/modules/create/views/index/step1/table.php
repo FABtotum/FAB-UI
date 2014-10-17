@@ -1,3 +1,10 @@
+<div class="widget-body-toolbar">
+	<div class="row">
+		<div class="col-sm-12">
+			<a href="<?php  echo site_url('objectmanager/add')?>" class="btn btn-default pull-right"> Add new object</a>
+		</div>
+	</div>
+</div>
 <table class="table table-striped table-hover has-tickbox smart-form" id="objects_table">
 	<thead>
 		<tr>

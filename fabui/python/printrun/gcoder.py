@@ -19,6 +19,7 @@ import re
 import math
 import datetime
 import logging
+import json
 from array import array
 
 gcode_parsed_args = ["x", "y", "e", "f", "z", "i", "j"]
@@ -683,24 +684,37 @@ class LightGCode(GCode):
     line_class = LightLine
 
 def main():
-    if len(sys.argv) < 2:
-        print "usage: %s filename.gcode" % sys.argv[0]
+    if len(sys.argv) < 3:
+        print "usage: %s filename.gcode output_type" % sys.argv[0]
         return
-
-    print "Line object size:", sys.getsizeof(Line("G0 X0"))
-    print "Light line object size:", sys.getsizeof(LightLine("G0 X0"))
+    
+    output = sys.argv[2]
+    
     gcode = GCode(open(sys.argv[1], "rU"))
-
-    print "Dimensions:"
-    xdims = (gcode.xmin, gcode.xmax, gcode.width)
-    print "\tX: %0.02f - %0.02f (%0.02f)" % xdims
-    ydims = (gcode.ymin, gcode.ymax, gcode.depth)
-    print "\tY: %0.02f - %0.02f (%0.02f)" % ydims
-    zdims = (gcode.zmin, gcode.zmax, gcode.height)
-    print "\tZ: %0.02f - %0.02f (%0.02f)" % zdims
-    print "Filament used: %0.02fmm" % gcode.filament_length
-    print "Number of layers: %d" % gcode.layers_count
-    print "Estimated duration: %s" % gcode.estimate_duration()[1]
-
+    
+    xdims = gcode.width
+    ydims = gcode.depth
+    zdims = gcode.height
+    
+    #xdims = (gcode.xmin, gcode.xmax, gcode.width)
+    #ydims = (gcode.ymin, gcode.ymax, gcode.depth)
+    #zdims = (gcode.zmin, gcode.zmax, gcode.height)
+        
+    #output Console
+    if output=='t':
+        print "Line object size:", sys.getsizeof(Line("G0 X0"))
+        print "Light line object size:", sys.getsizeof(LightLine("G0 X0"))
+        print "Dimensions:"
+        print "\tX: %0.02f - %0.02f (%0.02f)" % xdims
+        print "\tY: %0.02f - %0.02f (%0.02f)" % ydims
+        print "\tZ: %0.02f - %0.02f (%0.02f)" % zdims
+        print "Filament used: %0.02fmm" % gcode.filament_length
+        print "Number of layers: %d" % gcode.layers_count
+        print "Estimated duration: %s" % gcode.estimate_duration()[1]
+    #output json
+    elif output=='j':
+        
+        print '{"dimensions": {"x" : "' +  str(xdims) +  '", "y": "' +str(ydims) +'", "z": "'+str(zdims) +'"}, "number_of_layers" : '+ str(gcode.layers_count) +', "filament": "'+ str(gcode.filament_length) +'", "estimated_time":"'+str(gcode.estimate_duration()[1])+'" }' 
+        
 if __name__ == '__main__':
     main()

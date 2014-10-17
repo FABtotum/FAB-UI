@@ -18,7 +18,6 @@ $db = new Database();
 /** GET RUNNING TASKS FROM DB  */ 
 $_tasks = $db->query('select * from sys_tasks where status = "running" or status is null');
 
-
 if($_tasks){
 	
 	
@@ -40,6 +39,12 @@ if($_tasks){
 	$db->close();
 
 }
+
+/** */
+/** FORCE RESET CONTROLLER */
+//$_command = 'sudo python /var/www/fabui/python/force_reset.py';
+//shell_exec($_command);
+
 
 ?>
 

@@ -12,7 +12,7 @@ function myfab_get_remote_version(){
     
     $context = stream_context_create(array('http'=> array('timeout' => 5)));
 	
-	$_remote_url = $CI->config->item('myfab_remote_version_url', 'myfab');
+	$_remote_url = $CI->config->item('fabui_remote_version_url', 'myfab');
 	
 	$_version = file_get_contents($_remote_url, false, $context);
 	
@@ -45,7 +45,7 @@ function marlin_get_remote_version(){
     
     $context = stream_context_create(array('http'=> array('timeout' => 5)));
 
-	$_remote_url = $CI->config->item('marlin_remote_version_url', 'myfab');
+	$_remote_url = $CI->config->item('fw_remote_version_url', 'myfab');
 	
 	$_version = file_get_contents($_remote_url, false, $context);
 
@@ -99,11 +99,11 @@ function myfab_update_list(){
         	
         	
         	if($myfab_update){
-        		array_push($_update_list, array('name' => 'myfab', 'url' => site_url('updates'), 'description' => 'A new update of myFab is avaiable!' ));
+        		array_push($_update_list, array('name' => 'fabui', 'url' => site_url('updates'), 'description' => 'A new update for FAB UI is avaiable!' ));
         	}
         	
         	if($marlin_update){
-        		array_push($_update_list, array('name' => 'marlin', 'url' => site_url('updates'), 'description' => 'A new update of Marlin is avaiable!' ));
+        		array_push($_update_list, array('name' => 'fw', 'url' => site_url('updates'), 'description' => 'A new update for Marlin Firmware is avaiable!' ));
         	}
     	
         }
@@ -138,6 +138,57 @@ function myfab_update_list(){
 
 function is_internet_avaiable(){
     return !$sock = @fsockopen('www.google.com', 80, $num, $error, 5) ? false : true;    
+}
+
+
+function fabui_changelog($version){
+	
+	$CI =& get_instance();
+	
+	//load configuration file
+	$CI->config->load('myfab', TRUE);
+	
+	
+	if(is_internet_avaiable()){
+		
+		
+		$context = stream_context_create(array('http'=> array('timeout' => 5)));
+		$_remote_url = $CI->config->item('fabui_remote_download_url', 'myfab');
+		$_fabui_changelog = $CI->config->item('fabui_changelog', 'myfab');
+	
+		return file_get_contents($_remote_url.$version.'/'.$_fabui_changelog, false, $context);
+		
+	}
+	
+	return "";
+	
+	
+}
+
+
+
+function fw_changelog($version){
+	
+	$CI =& get_instance();
+	
+	//load configuration file
+	$CI->config->load('myfab', TRUE);
+	
+	
+	if(is_internet_avaiable()){
+		
+		
+		$context = stream_context_create(array('http'=> array('timeout' => 5)));
+		$_remote_url = $CI->config->item('fw_remote_download_url', 'myfab');
+		$_fw_changelog = $CI->config->item('fw_changelog', 'myfab');
+	
+		return file_get_contents($_remote_url.$version.'/'.$_fw_changelog, false, $context);
+		
+	}
+	
+	return "";
+	
+	
 }
 
 

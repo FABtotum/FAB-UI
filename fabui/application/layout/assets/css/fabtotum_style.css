@@ -186,7 +186,25 @@
     float: right !important;
 }
 
-
 .login-info img {
 		border-left: 0px !important;
-	}
+}
+
+
+
+.updates-notify{
+	min-height: 50px;
+	height: 50px;
+	border: 1px solid black;
+	width: 100%;
+	position:fixed;
+	top:0px;
+	background: #efe1b3;
+	border-color: #dfb56c;
+}
+
+.update-notify-wrap{
+	padding: 0 25px;
+margin: 8px 0;
+text-align: center;
+}

@@ -20,6 +20,9 @@ try:
 except:
 	print "running headless..."
 	
+#debug	
+print os.getpid()
+
 #ncfile ='/var/www/fabui/python/gcode.nc'
 str_log=""
 received=0
@@ -38,6 +41,7 @@ resend=0
 started=last_update=time.time()
 completed_time=0
 resent=0
+completed=0
 
 #overrides & controls
 paused=False
@@ -46,20 +50,18 @@ killed=False
 
 	
 def printlog(percent,sent):
-	str_log='{"print":{"name": "'+ncfile+'","lines": "'+str(lenght)+'","started": "'+str(started)+'","paused": "'+str(paused)+'","completed": "'+str(EOF)+'","completed_time": "'+str(completed_time)+'","shutdown": "'+str(shutdown)+'","stats":{"percent":"'+str(percent)+'","line_number":'+str(sent)+',"extruder":'+str(ext_temp)+',"bed":'+str(bed_temp)+',"extruder_target":'+str(ext_temp_target)+',"bed_target":'+str(bed_temp_target)+'}}}'
+	str_log='{"print":{"name": "'+ncfile+'","lines": "'+str(lenght)+'","started": "'+str(started)+'","paused": "'+str(paused)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","shutdown": "'+str(shutdown)+'","stats":{"percent":"'+str(percent)+'","line_number":'+str(sent)+',"extruder":'+str(ext_temp)+',"bed":'+str(bed_temp)+',"extruder_target":'+str(ext_temp_target)+',"bed_target":'+str(bed_temp_target)+'}}}'
 	#write log
 	handle=open(logfile,'w+')
 	print>>handle, str_log
 	return	
 
 def trace(string):
-	try:
-		out_file = open(log_trace,"a+")
-		out_file.write(str(string) + "\n")
-		out_file.close()
-	except:
-		#headless
-		print string
+	out_file = open(log_trace,"a+")
+	out_file.write(str(string) + "\n")
+	out_file.close()
+	#headless
+	print string
 	return
 
 def checksum(gcode,num):
@@ -70,6 +72,30 @@ def checksum(gcode,num):
 		cs=cs ^ ord(char)
 	cs = cs & 0xff # Defensive programming...
 	return cs
+
+#OVERRIDE GCODE DESCRIPTION
+def override_description(command):
+	
+	command_splitted = command.split()
+	
+	code= command_splitted[0]
+	value= command_splitted[1]
+	value=value.replace("S", "");
+	
+	description=""
+	
+	if code=="M104":
+		description= "<strong>Extruder temperature set to "+value+" &deg;C</strong>"
+	elif code== "M140":
+		description= "<strong>Bed temperature set to "+value+" &deg;C</strong>"
+	elif code=="M220":
+		description="<strong>Speed set to "+value+"%</strong>"
+	elif code=="M3":
+		description="<strong>RPM speed set to "+value+"%</strong>"
+	else:
+		descritpion="description none"
+	return description
+
 	
 #usage: print checksum(gcode,1)
 
@@ -79,24 +105,29 @@ def sender():
 	global sent
 	global resend
 	global ovr_cmd
+	global EOF
 	
 	gcode_line=0
 	with open(ncfile, 'r+') as f:
-		# this reads in one line at a time from stdin
+		# this reads in one line at a time
+		trace("Print Started, now reaching temp")
 		for line in f:
+			if EOF==True:
+				break
 			line=line.rstrip()
 			gcode_line+=1
+			#print str(gcode_line)+ " -"+line+"-"
 			if not(line=="" or line[:1]==";"):
 				line=line.split(";")[0] #remove inline comm
 				#line is not empty or comment
-				while sent>received and sent>0:
+				while received<sent and sent>0 and EOF==False:
 					pass #wait!
 					
 				if resend>0:
 					#WIP
-					trace ("resending line...")
+					trace ("Checksum error.")
 			
-				if len(ovr_cmd)>0:
+				while len(ovr_cmd)>0 and received>=sent and EOF==False:
 					#execute the override comand as priority
 					override=ovr_cmd.pop(0)
 				
@@ -130,27 +161,35 @@ def sender():
 							trace("Auto-Shutdown has been revoked")
 							#will not shutdown the machine.
 							shutdown=False
+						
+						
 
 					else:
 						#gcode is executed ASAP
 						serial.write(override+"\r\n")
-						#trace("ovr_cmd sent: "+ str(override))
+						if override[:4]!="M105": #do not report temperature requests!
+							#trace("Override sent: "+ str(override))
+							trace(override_description(override))
 						sent+=1
-
-				else:					
-					#if received>sent: #buffer is empty, can send next line
-					sent += 1
-					serial.write(line[:-1]+"\r\n")
-					
-					#print str(gcode_line) +" "+ line[:-1]
-					#time.sleep(0.1)
+						
+				#Normal Gcode
+				#if received>sent: #buffer is empty, can send next line
+				serial.write(line+"\r\n")
+				#print str(gcode_line)+" SENT "+ str(line)
+				sent+=1
+				
+			else:
+				print "skipping "+str(gcode_line) +" , "+ str(line)
+	#print "Sender closed"				
 	EOF=True
+	
 		
 
 def listener():
 	global received
 	global sent
 	global resend
+	global EOF
 	
 	global ext_temp
 	global bed_temp
@@ -166,6 +205,7 @@ def listener():
 		
 		#if there is serial in:
 		#parse actions:
+		#print "rcv" + str(serial_in)
 		
 		##ok
 		if serial_in=="ok":
@@ -195,26 +235,33 @@ def listener():
 			received+=1
 			
 		## temp report (wait)	
-		if serial_in[:2]==" T:":	
+		if serial_in[:2]=="T:":	
 			#collected M109/M190 Snnn temp (Set temp and  wait until reached)
-			# T:187.1 E:0 B:59
+			#T:187.1 E:0 B:59
 			temps=serial_in.split(" ")
-			ext_temp=float(temps[0].split(":")[1])
-			bed_temp=float(temps[2].split(":")[1])
+			ext_temp=temps[0].split(":")[1]
+			bed_temp=temps[2].split(":")[1]
+			
+			#print "BED: "+str(bed_temp) + " EXT: "+ str(ext_temp)
 			#ok is sent separately.
 			
 		#clear everything not recognized.
 		serial_in=""
+	#print "listener closed"
 
+
+
+		
 def tracker():
 	global sent
 	global lenght
+	global EOF
+	
 	mtime=os.path.getmtime(comfile) #update override file mtime.
 	elapsed=0
 	last_update=0
 	
 	while not EOF:
-		
 		elapsed=time.time()-last_update
 		if elapsed>5:
 			#trace the progress
@@ -232,16 +279,23 @@ def tracker():
 				#append new command(s)
 				with open(comfile) as f:
 					for line in f:
-						ovr_cmd.append(line)
+						ovr_cmd.append(line.rstrip())
 						
 				#clear the override file
 				open(comfile, 'w').close() 
 				
-			##request temp status
-			ovr_cmd.append("M105")
+			
+			##request temp status once
+			if len(ovr_cmd)>0:
+				if ovr_cmd[len(ovr_cmd)-1]!="M105":
+					ovr_cmd.append("M105")
+			else:
+				ovr_cmd.append("M105")
+				
 			
 			#refresh counter
 			last_update=time.time()
+	#print "tracker closed"
 
 #MAIN			
 	
@@ -283,25 +337,28 @@ while not EOF:
 	pass
 	
 #completed:
+completed=1
 
+status="performed"
 #set the JSON job as completed
 if not killed:
 	#completed!
-	trace("Procedure Completed")
+	trace("Program Completed...")
 	completed_time=int(time.time())
 	printlog(100,lenght)
 else:
 	trace("Procedure Aborted")
 	completed_time=int(time.time())
 	printlog(progress,sent)
-	
+	status="stopped"
 
+trace("Now finalizing...")
 #finalize database-side operations
-call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print"], shell=True)
-
+call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print " +str(status)], shell=True)
 
 #shudown the printer if requested
 if shutdown:
+	trace("Shutting down...")
 	#enter sleep mode
 	call(['echo "M729">/dev/ttyAMA0'], shell=True)
 	time.sleep(10)
@@ -309,5 +366,16 @@ if shutdown:
 	call (['sudo shutdown -h now'], shell=True)
 
 #terminate operations
+tracker.join()
+#trace("tracker ok");
+
+sender.join()
+#trace("sender ok");
+
+listener.join()
+#trace("listener ok");
+
+trace("Done!");
+
 serial.close()
 sys.exit()

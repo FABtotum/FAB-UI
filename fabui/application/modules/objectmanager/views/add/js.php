@@ -29,7 +29,7 @@
                     	
                     	if(myDropzone.getQueuedFiles().length > 0){
                             
-                            openWait("Uploading e saving files..")
+                            openWait("Uploading and saving files..")
                             myDropzone.processQueue(); 
                         }else{
                         	
@@ -57,7 +57,7 @@
                         
                         if($("#object-form").valid()){
                             
-                            /*openWait("Uploading e saving files...2");*/
+                            /*openWait("Uploading and saving files...2");*/
                             $('#files').val(files.toString());
                             add_usb_files();
                             $("#object-form").submit();

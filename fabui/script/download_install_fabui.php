@@ -1,8 +1,8 @@
 <?php
 /** FIRST DOWNLOAD FILE */
 require_once '/var/www/fabui/ajax/config.php';
-require_once '/var/www/fabui/ajax/lib/database.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
+require_once FABUI_PATH.'ajax/lib/database.php';
+require_once FABUI_PATH.'ajax/lib/utilities.php';
 
 /** GET ARGS FROM COMMAND LINE */
 $_task_id = $argv[1];
@@ -87,7 +87,20 @@ if($do_update){
     $_monitor_items['install']['percent'] = 0;
     $_monitor_items['install']['completed'] = 0;
     write_monitor();
-    sleep(3);
+    sleep(2);
+	
+	
+	/** CHECK IF EXIST SCRIPT FILE TO EXEC */
+	if(file_exists($_folder.'temp/install.php')){
+		/** EXEC FILE */
+		$_command_exec = 'sudo php '.$_folder.'temp/install.php'; 
+		shell_exec($_command_exec);		
+	}
+	
+	
+	$_monitor_items['install']['percent'] = 25;
+    write_monitor();
+    sleep(2);
 	
 	
 	
@@ -134,14 +147,6 @@ if($do_update){
 	} 
 	 
 	
-	/** CHECK IF EXIST SCRIPT FILE TO EXEC */
-	if(file_exists($_folder.'temp/install.php')){
-		/** EXEC FILE */
-		$_command_exec = 'sudo php '.$_folder.'temp/install.php'; 
-		shell_exec($_command_exec);		
-	}
-	
-	
 	
 	
 	
@@ -177,9 +182,7 @@ if($do_update){
 	$_data_update['value'] = $_myfab_remote_version;
 	$db->update('sys_configuration', array('column' => 'sys_configuration.key', 'value' => 'fabui_version', 'sign' => '='), $_data_update);
 	$db->close();
-    
-    
-    
+	
     $_command_finalize = 'sudo php /var/www/fabui/script/finalize.php '.$_task_id.' update_fabui > /dev/null & echo $! ';
     shell_exec($_command_finalize);
     
@@ -248,7 +251,6 @@ function write_monitor(){
     
     global $_monitor_items;
     global $_monitor;
-    
     
     if(count($_monitor_items) > 0){
         write_file($_monitor, json_encode($_monitor_items), 'w');

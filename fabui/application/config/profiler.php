@@ -11,6 +11,14 @@
 |
 */
 
+$config['config']          = FALSE;
+$config['controller_info']         = FALSE;
+$config['get']         = FALSE;
+$config['http_headers']         = FALSE;
+$config['post']         = FALSE;
+$config['queries']         = FALSE;
+$config['uri_string']         = FALSE;
+$config['query_toggle_count']         = FALSE;
 
 
 /* End of file profiler.php */

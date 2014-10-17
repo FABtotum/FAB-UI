@@ -31,11 +31,18 @@ function precise_round(num,decimals) {
  */
 function _time_to_string(time) {
 
-	var hours = parseInt(time / 3600) % 24;
+	var hours   = parseInt(time / 3600) % 24;
 	var minutes = parseInt(time / 60) % 60;
 	var seconds = time % 60;
+	
+	var day = 86400;
 
-	return pad(precise_round(hours, 0)) + ":" + pad(precise_round(minutes, 0)) + ":" + pad(precise_round(seconds,0));
+	if(time < day){
+		return pad(precise_round(hours, 0)) + ":" + pad(precise_round(minutes, 0)) + ":" + pad(precise_round(seconds,0));
+	}else{
+		return '1 day';
+	}
+	
 }
 
 /**
@@ -56,17 +63,23 @@ function freeze_menu(except){
 	excepet_item_menu[1] = 'objectmanager';
 	excepet_item_menu[2] =  except;
 	
+	
+	
 	$( "#left-panel a" ).each( function( index, element ){
 		
 		var controller =  $( this ).attr('data-controller');
-		// se non � nella lista allora la rendo disabled
+		
+		
+		
+		// se non è nella lista allora la rendo disabled
 		if(excepet_item_menu.indexOf(controller) < 0){
+			
 			$(this).addClass('menu-disabled');
+			$(this).removeAttr('href');
 		}
 		//se corrisponde aggiungo punto esclamativo per notifica
 		if(controller == except){
 		  
-            
             if($(this).find('.freeze-menu').length <= 0){
                 $(this).append('<span class="badge bg-color-red pull-right inbox-badge freeze-menu">!</span>');
                 freezed = true;
@@ -81,11 +94,12 @@ function freeze_menu(except){
 /**
 *
 */
-function unfreeze_menu(){
+function unfreeze_menu (){
 	
 	
     $( "#left-panel a" ).each( function( index, element ){
         $(this).removeClass('menu-disabled');
+        $(this).attr('href', $(this).attr('data-href'));
     });
         
     $(".freeze-menu").remove();
@@ -125,11 +139,9 @@ function openWait(title){
         $(".wait-content").remove();
     }
     
-    
-    
     var src_html  = '<div class="white-popup animated bounceInDown">';    
-        src_html += '<h4 class="text-align-center wait-title">' + title +' </h4>';
-        src_html += '<h4 class="text-align-center"><i class="fa fa-spinner fa-spin"></i></h4>'
+        src_html += '<h2 class="text-align-center wait-title">' + title +' </h2>';
+        src_html += '<h4 class="text-align-center wait-spinner"><i class="fa fa-spinner fa-spin"></i></h4>'
         src_html += '<div class="wait-content"></div>';
         src_html += '</div>';
     
@@ -158,7 +170,7 @@ function waitTitle(title){
         $(".wait-title").html(title);
     }
 }
-
+ 
 
 function waitContent(content){
     if($(".wait-content").length > 0){
@@ -225,8 +237,6 @@ function safety(){
     				}
     				
     			});
-               
-                
              }
        });
    }
@@ -275,10 +285,29 @@ function set_tasks(data){
 }
 
 
-function set_updates(data){
+function set_updates(number){
     
-    number_updates = data.number;
-    $(".update-list").find('span').html('	Updates (' + data.number + ') ');
+    number_updates = number;
+    $(".update-list").find('span').html('	Updates (' + number + ') ');
+    
+    
+    if(number > 0){
+    	
+    	$("#left-panel").find('nav').find('ul').find('li').each(function(){
+           
+           
+          if($(this).find('a').attr("data-controller") == 'updates'){  	
+          	$(this).find('a').append('<span class="badge bg-color-red pull-right inbox-badge">'+ number +'</span>');
+          }
+            
+            
+        });
+    	
+    
+    }
+    
+   
+   
     
 }
 
@@ -320,18 +349,11 @@ function refresh_notifications(){
 
 
 
-/** CHECK UPDATES, TASKS, MENU  */
-
-
+/** CHECK TASKS, MENU  */
 function check_notifications(){
 	
-	
-	
-	//KRIOS
-	if(idleTime < max_idle_time){
-    
+	if(idleTime < max_idle_time || max_idle_time == 0){
 	    var timestamp = new Date().getTime();
-	    
 	    $.ajax({
 	            type: "POST",
 	            url: "/fabui/application/modules/controller/ajax/check_notifications.php?time="+timestamp,
@@ -339,7 +361,7 @@ function check_notifications(){
 	            cache : false
 	        }).done(function( data ) {
 	        	
-	            set_updates(data.updates);
+	            //set_updates(data.updates);
 	            set_tasks(data.tasks);
 	            update_notifications();
 	             
@@ -351,7 +373,8 @@ function check_notifications(){
 	        });
         
     }else{
-    	$("#lock-screen-form").submit();
+    	
+			$("#lock-screen-form").submit();	
     }
 }
 
@@ -359,21 +382,26 @@ function check_notifications(){
 /** ON LOAD */
 
 $(function() {
+	
+			
   // Handler for .ready() called.
   idleInterval = setInterval(timerIncrement, 1000);
   safety_interval= setInterval(safety, 3000); /* START TIMER... */
   check_notifications();
-  notifications_interval = setInterval(check_notifications, 5000);
+  notifications_interval = setInterval(check_notifications, 10000);
   $("#refresh-notifications").on('click', refresh_notifications);
+  check_for_updates();
+  
   
 
+  
 });
 
 
 
 $(".language").click(function () {
     
-    
+  
     var actual_lang = $("#actual_lang").val();
     var new_lang    = $(this).attr("data-value");
     
@@ -389,12 +417,164 @@ $(".language").click(function () {
 });
 
 
+
+/** MOUSE MOVE FOR LOCK SCREEN */
 $(document).mousemove(function(e){
       idleTime = 0;   
 });
 
-
+/** IDLE TIMER */
 function timerIncrement(){
 	idleTime++;
 }
 
+
+/** SHUTDOWN */
+function shutdown(){
+	openWait('Shutdown in progress');
+	
+	clearInterval(notifications_interval);
+    clearInterval(safety_interval);
+    clearInterval(idleInterval);
+	
+	
+	$.ajax({
+			type: "POST",
+			url: "/fabui/application/modules/controller/ajax/shutdown.php",
+            dataType: 'json'
+	}).done(function(response) {
+		
+		 
+		
+		setTimeout(function() {
+			
+			$(".wait-spinner").remove();	
+      		waitTitle('Now you can switch off the power');
+      		waitContent($("#power-off-img").html());
+			
+		}, 5000);
+		
+		
+      	  
+	});	
+}
+
+
+/** SHUTDOWN */
+function check_for_updates(){
+	
+	$.ajax({
+			type: "POST",
+			url: "/fabui/application/modules/controller/ajax/check_updates.php",
+            dataType: 'json'
+	}).done(function(response) {
+		
+      	   set_updates(response.updates.number);
+      	   update_notifications(); 
+	});	
+}
+
+
+/** SUGGESTION */
+$("#send-suggestion").on('click', function(){
+	
+	if($.trim($("#suggestion-text").val()) == ''){
+		return false;
+	}
+	
+	$(".modal-content").find(".btn").addClass('disabled');
+	$("#send-suggestion").html('<i class="fa fa-envelope-o"></i> Sending..');
+	
+	$.ajax({
+			type: "POST",
+			url: "/fabui/controller/suggestion",
+            dataType: 'json',
+            data: {text: $("#suggestion-text").val(), title: $("#suggestion-title").val()}
+	}).done(function(response) {
+		
+		$(".modal-content").find(".btn").removeClass('disabled');
+		$("#send-suggestion").html('<i class="fa fa-envelope-o"></i> Send');
+		
+		if(response.result == 1){
+			$("#suggestion-text").val('');
+			$("#suggestion-title").val('');
+			$(".suggestion-modal").modal("hide");
+			
+			
+			$.smallBox({
+				title : "Thanks",
+				content : "so much for taking the time to help improve FABUI .",
+				color : "#659265",
+				iconSmall : "fa fa-smile-o fa-2X",
+                timeout : 7000
+            });
+			
+		}else{
+			
+			$.smallBox({
+				title : "Warning",
+				content : "an error occurred, please try to send again",
+				color : "#C46A69",
+				iconSmall : "fa fa-warning shake animated",
+                timeout : 7000
+            });
+			
+		}
+		
+	});	
+	
+	
+});
+
+
+
+/** REPORT BUG */
+$("#send-bug").on('click', function(){
+	
+	if($.trim($("#bug-text").val()) == ''){
+		return false;
+	}
+	
+	$(".modal-content").find(".btn").addClass('disabled');
+	$("#send-bug").html('<i class="fa fa-envelope-o"></i> Sending..');
+	
+	$.ajax({
+			type: "POST",
+			url: "/fabui/controller/bug",
+            dataType: 'json',
+            data: {text: $("#bug-text").val(), title: $("#bug-title").val()}
+	}).done(function(response) {
+		
+		$(".modal-content").find(".btn").removeClass('disabled');
+		$("#send-bug").html('<i class="fa fa-envelope-o"></i> Send');
+		
+		if(response.result == 1){
+			$("#bug-text").val('');
+			$("#bug-title").val('');
+			$(".bug-modal").modal("hide");
+			
+			
+			$.smallBox({
+				title : "Thanks",
+				content : "so much for taking the time to help improve FABUI .",
+				color : "#659265",
+				iconSmall : "fa fa-smile-o fa-2X",
+                timeout : 7000
+            });
+			
+		}else{
+			
+			$.smallBox({
+				title : "Warning",
+				content : "an error occurred, please try to send again",
+				color : "#C46A69",
+				iconSmall : "fa fa-warning shake animated",
+                timeout : 7000
+            });
+			
+		}
+		
+	});	
+	
+	
+});

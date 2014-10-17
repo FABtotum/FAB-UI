@@ -1,7 +1,5 @@
 <?php
 session_start();
-//ob_start("ob_gzhandler");
-//ini_set('session.cookie_domain', '.fabui.com');
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
@@ -141,6 +139,7 @@ if (defined('ENVIRONMENT'))
 	// Set the current directory correctly for CLI requests
 	if (defined('STDIN'))
 	{
+		
 		chdir(dirname(__FILE__));
 	}
 

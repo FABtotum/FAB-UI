@@ -281,7 +281,6 @@ function ticker(){
     if(ticker_url != ''){
         
          $.get( ticker_url , function( data ) {
-            
             if(data != ''){
                 data = data.replace("\n", "<br>");
                 /*data = data.replace('<?php echo PHP_EOL; ?>', '<br>');*/
@@ -290,47 +289,8 @@ function ticker(){
        });
     }
 }
-    
-/*    
-function pre_print(){
-    
-    pre_print_trace        = '';
-    pre_print_response     = '';
-    pre_print_url_response = '';
-   
-    
-    $.ajax({
-		  url: ajax_endpoint + 'ajax/pre_print.php',
-		  dataType : 'json',
-          type: "POST", 
-		  async: true,
-          data : { file : file_selected.full_path},
-		  beforeSend: function( xhr ) {
-		  }
-	}).done(function(response) {
-	   
-        pre_print_trace        = response.check_trace;
-        pre_print_response     = response.check_response;
-        pre_print_url_response = response.url_check_response;
-        
-        var status = response.status;
-        
-        if(status == 200){
-            
-            $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-check').addClass('txt-color-green');           
-            
-        }else{
-            $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-warning').addClass('txt-color-red');
-            $('.res').html(response.trace);
-        }
-        
-        
-        
-	});
-}    
- */
- 
- 
+
+
     
 function manage_slide(e){
     
@@ -341,9 +301,7 @@ function manage_slide(e){
     }else{
     	
     	if(id == 'temp1'){
-    		
     		extruder_target = parseInt($(this).val());
-    		
     	}
     	
     	if(id == 'temp2'){

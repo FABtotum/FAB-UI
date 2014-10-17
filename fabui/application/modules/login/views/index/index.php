@@ -116,7 +116,7 @@
 									<section>
 										<label class="label">E-mail</label><label class="input"> <i
 											class="icon-append fa fa-user"></i>
-											<input type="email" name="email" value="<?php echo $email; ?>">
+											<input class="trigger" type="email" name="email" value="<?php echo $email; ?>">
 											<b class="tooltip tooltip-top-right"><i
 											class="fa fa-user txt-color-teal"></i> Please enter email
 											address/username</b> </label>
@@ -124,7 +124,7 @@
 									<section>
 										<label class="label">Password</label><label class="input"> <i
 											class="icon-append fa fa-lock"></i>
-											<input type="password"
+											<input type="password" class="trigger"
 											name="password">
 											<b class="tooltip tooltip-top-right"><i
 											class="fa fa-lock txt-color-teal"></i> Enter your password</b> </label>
@@ -244,6 +244,21 @@
 					}
 				});
 				
+				
+				
+				
+				
+				$( ".trigger").on('keydown',function(e) {
+				      if(e.which == 13) {
+				      	$("#login-button").trigger('click');
+				      }
+				});
+				
+				$( ".trigger").on('keypress',function(e) {
+				      if(e.which == 13) {
+				      	$("#login-button").trigger('click');
+				      }
+				});
 				
 				
 				$("#login-button").click(function(){

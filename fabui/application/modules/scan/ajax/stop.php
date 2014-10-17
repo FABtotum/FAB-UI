@@ -7,7 +7,6 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
 /** GET DATA FROM POST */
 $_task_id = $_POST['task_id'];
 
-
 /** LOAD DB */
 $db = new Database();
 
@@ -30,29 +29,13 @@ if(isset($_attributes['pprocess_pid'])){
 }
 
 
-/** EXEC MACRO END_SCAN --------------------------- */
-
-/** CREATE LOG FILES */
-$_time                 = time();
-$_destination_trace    = TEMP_PATH.'end_scan'.$_time.'.trace';
-$_destination_response = TEMP_PATH.'end_scan'.$_time.'.log';
-
-write_file($_destination_trace, '', 'w');
-chmod($_destination_trace, 0777);
-
-write_file($_destination_response, '', 'w');
-chmod($_destination_response, 0777);
-
-/** EXEC */      
-$_command        = 'sudo python '.PYTHON_PATH.'gmacro.py end_scan '.$_destination_trace.' '.$_destination_response;
-$_output_command = shell_exec ( $_command );
-
 
 /** FINALIZE  ---------------------------------------------- */
 $_command_finalize = 'sudo php '.FABUI_PATH.'script/finalize.php '.$_task_id. ' scan stopped';
 $_output_command   = shell_exec ( $_command_finalize );
 
 
+$_response_items['command'] = $_command;
 $_response_items['status'] = 'ok';
 
 header('Content-Type: application/json');

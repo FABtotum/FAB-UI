@@ -72,7 +72,9 @@
 	<?php foreach($mode_list as $mode): ?>
 	
 		<?php $configuration = json_decode($mode->values) ?>
-		<div class="col-sm-4">
+		
+		<?php if($mode->name != 'sweep'): ?>
+		<div class="col-sm-6">
 		
 			<div class="scan-mode  well well-sm text-center " data-id="<?php echo $mode->id; ?>" data-type="<?php echo $mode->name ?>" data-title="<?php echo $configuration->info->name ?>">
 			
@@ -88,7 +90,7 @@
 			
 			</div>
 		</div>
-	
+		<?php endif; ?>
 	
 	<?php endforeach; ?>
 

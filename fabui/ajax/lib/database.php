@@ -1,4 +1,14 @@
 <?php
+if(file_exists('/var/www/lib/log4php/Logger.php')){
+	
+	require_once '/var/www/lib/log4php/Logger.php';
+	Logger::configure('/var/www/fabui/config/log_database_config.xml');
+	
+}
+//require_once '/var/www/lib/log4php/Logger.php';
+/** INIT LOG */
+//Logger::configure('/var/www/fabui/config/log_database_config.xml');
+
 
 
 class Database {
@@ -10,7 +20,9 @@ class Database {
     protected $_db;
     protected $_result;
 	protected $_num_rows;
-    
+    protected $_log;
+	
+	
     /**
      * 
      * 
@@ -32,12 +44,19 @@ class Database {
         $this->_password = DB_PASSWORD;
         $this->_database = DB_DATABASE;
 		$this->_num_rows = 0;
+		
+		if(class_exists('Logger')){
+			$this->_log = Logger::getLogger(__CLASS__);
+		}
+		//
         
         $this->_db = new mysqli($this->_hostname, $this->_username, $this->_password, $this->_database);
         
         if (mysqli_connect_errno()) {
-            
-            echo "Errore in connessione al DBMS: ".mysqli_connect_error();
+        	
+			if(class_exists('Logger')){
+				$this->_log->error("Errore in connessione al DBMS: ".mysqli_connect_error());
+			}
             
         }
         
@@ -49,9 +68,25 @@ class Database {
      * 
     */
     public function query($query){
-       
+    	
+		
+		
         $this->_result = $this->_db->query($query);
         
+		
+		if(!$this->_result){
+			
+			if(class_exists('Logger')){
+				
+				$this->_log->error("Query failed: ".$query); 
+				$this->_log->error("Error message: ".$this->_db->error); 
+				return false;
+				
+			}
+			
+		}
+		
+		
         if(is_object($this->_result)){
         	
 			
@@ -78,8 +113,6 @@ class Database {
 				return false;
 			}
 
-            
-          
         }
     }
 
