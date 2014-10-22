@@ -6,7 +6,7 @@ include( "inc/header.php");
 		<div>
 			<form method="POST" id="wizard-1" novalidate="novalidate" class="lockscreen animated flipInY" action="install.php">
 				<div class="logo text-align-center">
-					<img src="/assets/img/logo_fabtotum.png" />
+					<img src="/assets/img/logo_1.png" />
 				</div>
 				<div>
 					<div class="row">
@@ -64,6 +64,44 @@ include( "inc/header.php");
 				</div>
 			</form>
 		</div>
+		
+		<div class="modal fade" id="password-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								&times;
+							</button>
+							<h4 class="modal-title" id="myModalLabel">Reset password</h4>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-md-12">
+									<p>Enter the email address you used when creating the account and click <strong>Send Email</strong>.<br> A message will be sent to that address containing a link to reset your password</p>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<input type="text" class="form-control" placeholder="example@fabtotum.com" required />
+									</div>
+									
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">
+								Cancel
+							</button>
+							<button type="button" id="send-mail" class="btn btn-primary">
+								Send Mail
+							</button>
+						</div>
+					</div><!-- /.modal-content -->
+				</div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+		
+		
 	</div>
 <?php 
 

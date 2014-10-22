@@ -18,6 +18,7 @@ define ("SERIAL_DEVICE_OPENED", 2);
  * @thanks Jim Wright for OSX cleanup/fixes.
  * @copyright under GPL 2 licence
  */
+
 class phpSerial
 {
 	var $_device = null;

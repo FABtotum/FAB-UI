@@ -39,6 +39,8 @@ while True:
 			#disable emergency mode
 			switch_safety(0,"ok")
 			emergency=False
+			#send M999 TO RESET!
+			
 			#DEBUG
 			#print("Safe")
 	

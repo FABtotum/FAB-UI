@@ -10,33 +10,18 @@
 <!-- CUSTOM NOTIFICATION -->
 <script src="/assets/js/notification/SmartNotification.min.js">
 </script>
-<!-- JARVIS WIDGETS <script src="/assets/js/smartwidgets/jarvis.widget.min.js"></script>
-<!-- EASY PIE CHARTS -->
-<script src="/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js">
-</script>
-<!-- SPARKLINES -->
-<script src="/assets/js/plugin/sparkline/jquery.sparkline.min.js">
-</script>
 <!-- JQUERY VALIDATE -->
 <script src="/assets/js/plugin/jquery-validate/jquery.validate.min.js">
 </script>
-<!-- JQUERY MASKED INPUT -->
-<script src="/assets/js/plugin/masked-input/jquery.maskedinput.min.js">
-</script>
-<!-- JQUERY SELECT2 INPUT -->
-<script src="/assets/js/plugin/select2/select2.min.js">
-</script>
-<!-- JQUERY UI + Bootstrap Slider -->
-<script src="/assets/js/plugin/bootstrap-slider/bootstrap-slider.min.js">
-</script>
+
 <!-- browser msie issue fix -->
 <script src="/assets/js/plugin/msie-fix/jquery.mb.browser.min.js">
 </script>
 <!-- FastClick: For mobile devices -->
-<script src="/assets/js/plugin/fastclick/fastclick.js">
+<script src="/assets/js/plugin/fastclick/fastclick.min.js">
 </script>
 <!-- FastClick: For mobile devices -->
-<script src="/assets/js/fabtotum.js">
+
 </script>
 <script src="/assets/js/plugin/bootstrap-wizard/jquery.bootstrap.wizard.min.js">
 </script>
@@ -46,7 +31,7 @@
 	</h1>
 <![endif]-->
 <!-- MAIN APP JS FILE -->
-<script src="/assets/js/app.js">
+<script src="/assets/js/app.min.js">
 </script>
 <script type="text/javascript">
 	
@@ -54,6 +39,8 @@
     runAllForms();
     
     var ask_wifi_password = false;
+    var wifi_password;
+    var wifi_ssid;
 
 	$(document).ready(function() {
 
@@ -88,9 +75,29 @@
 		$('.net').on('click', function() {
 
 			var tr = $(this).parent().parent().parent();
-			tr.find(':first-child').find('input').prop("checked", true);
-            ask_wifi_password = tr.find(':first-child').find('input').attr("data-password") == "true" ? true : false;
-
+			
+			var selected = tr.find(':first-child').find('input').prop("checked", true);
+			
+            ask_wifi_password = selected.attr('data-password') == 'true' ? true : false;
+            wifi_ssid = selected.attr('value');
+            
+            
+            
+            
+		});
+		
+		
+		$('input:radio').on('click', function() {
+			
+			
+			
+			var tr = $(this).parent().parent().parent();
+			
+			var selected = tr.find(':first-child').find('input').prop("checked", true);
+			
+            ask_wifi_password = selected.attr('data-password') == 'true' ? true : false;
+            wifi_ssid = selected.attr('value');
+			
 		});
 
 
@@ -146,8 +153,12 @@
 
 		$('#bootstrap-wizard-1').bootstrapWizard({
 			'tabClass': 'form-wizard',
+			'onPrevious': function(tab, navigation, index){
+				$(".next").find('a').html('Next');
+			},
 			'onNext': function(tab, navigation, index) {
 				var $valid = $("#wizard-1").valid();
+				$(".next").find('a').html('Next');
 				if (!$valid) {
 					$validator.focusInvalid();
 					return false;
@@ -156,37 +167,46 @@
 					$('#bootstrap-wizard-1').find('.form-wizard').children('li').eq(index - 1).addClass('complete');
 					$('#bootstrap-wizard-1').find('.form-wizard').children('li').eq(index - 1).find('.step').html('<i class="fa fa-check"></i>');
                     
+                    
+                    
+                    
+                    
                     if(index == 3){
-                       
-                       
-                        
+
                         if(ask_wifi_password == true){
                             
                             $.SmartMessageBox({
             					title : "Wifi",
             					content : "Please enter wifi password",
-            					buttons : "[Accept]",
+            					buttons : "[Submit]",
             					input : "password",
             					placeholder : "password"
             				}, function(ButtonPress, Value) {
-            					alert(ButtonPress + " " + Value);
+            					if(Value != ''){
+            						wifi_password = Value;
+            						ask_wifi_password = false;
+            						
+            						$("#net_password").val(wifi_password);
+            						$(".next").trigger('click');
+            						
+            					}
                                 return 0;
-                                
-                                
+
             				});
-                
                             return false;
                         }
-                        else{
-                          $(".next").removeClass('disabled');
-                          return true;
-                            
-                        }
+                     
+                      
+                       $(".next").find('a').attr('style', 'cursor: pointer !important;');
+                       $(".next").find('a').html('Install');		
+                       
                         
                     }
                     
                     if(index == 4){
-                       $("#wizard-1").submit(); 
+                       $("#wizard-1").submit();
+                       $(".next").find('a').html('Installing...');
+                       $("a").addClass('disabled'); 
                     }
 				}
 			},
@@ -198,6 +218,23 @@
                 return false;
             }
 		});
+		
+		
+		
+		
+		function check_connection(){
+			
+			
+			$.ajax({
+		          url: "ajax/wifi.php",
+		          data:{ssid: wifi_ssid, password: wifi_password},
+		          type: "POST"
+		        }).done(function( html ) {
+		           
+		        });
+			
+			
+		}
 
 
 

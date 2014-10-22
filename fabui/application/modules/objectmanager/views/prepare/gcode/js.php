@@ -31,6 +31,7 @@
       	
       	$("#preset-file").on('change', change_config);
       	$(".stop").on('click', ask_stop);
+      	$("#save-config").on('click', save_config);
       	$("#download-slicer-config-button").on('click', function(){
       		
       		$("#dsc").val(editor.getValue());
@@ -64,8 +65,8 @@
 				    
 				    var response = jQuery.parseJSON( file.xhr.response);
 				    
-				    $("#save-config").removeClass("disabled");
-            		$("#save-config").html('<i class="fa fa-save"></i> Save');
+				    $("#upload-config").removeClass("disabled");
+            		$("#upload-config").html('<i class="fa fa-save"></i> Save');
 				    
 				    if(response.status == 'ok'){
 				    	
@@ -79,29 +80,27 @@
             }
        }
        
-       $("#save-config").on('click', function(){
-       	
-       	
-       		$("#save-config").addClass("disabled");
-            $("#save-config").html('<i class="fa fa-save"></i> Saving');
+       $("#upload-config").on('click', function(){
        		
-       		if(new_config_form_ok()){
-       			    			
-       			if(myDropzone.getQueuedFiles().length > 0){
-	                
-	                myDropzone.processQueue(); 
-                 
-                 }
+       		if(myDropzone.getQueuedFiles().length > 0 && $("#config-name").val() != ''){
        			
+	       		$("#upload-config").addClass("disabled");
+	            $("#upload-config").html('<i class="fa fa-save"></i> Saving');
+	       		
+	       		if(new_config_form_ok()){
+	       			    			
+	       			if(myDropzone.getQueuedFiles().length > 0){
+		                
+		                myDropzone.processQueue(); 
+	                 
+	                 }
+	       			
+	       		}
+       		
        		}
        		
-       });
+      	});
        
-    
-      	
-      	
-		      	
-      	
       });
     
     
@@ -319,7 +318,7 @@
     	
     	var file = $("#preset-file").val();
     	
-    	file = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/'+ file.replace('/var/www/', '');
+    	file = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/'+ file.replace('/var/www/', '') + '?t=' + $.now();
     	
     	$.get( file, function( data ) {
              
@@ -417,22 +416,48 @@
     
     
     
+    function save_config(){
+    	
+    	
+    	$("#save-config").addClass('disabled');
+    	
+    	$.ajax({
+    			type: "POST",
+    			url: "<?php echo module_url('objectmanager').'ajax/save_slice_config.php' ?>/",
+                data: {file : $("#preset-file option:selected").val(), value: editor.getValue() },
+                dataType: 'html'
+    		}).done(function(response) {
+    		     
+    		     if(response == 1){
+    		     	$.smallBox({
+	    				title : "Success",
+	    				content : "<i class='fa fa-check'></i> File config saved",
+	    				color : "#659265",
+	    				iconSmall : "fa fa-thumbs-up bounce animated",
+	                    timeout : 4000
+	            	});
+    		     }
+    		     
+    		     $("#save-config").removeClass('disabled');
+    		});
+
+    }
+    
+    
+    
     function ask_delete_config(){
     	
     	$.SmartMessageBox({
-    				title: "<i class='fa fa-warning'></i>  Are you sure you want to delete the selected config?",
-    				content: "Note: there is no undo function",
-    				buttons: '[No][Yes]'
+    		title: "<i class='fa fa-warning'></i>  Are you sure you want to delete the selected config?",
+    		content: "Note: there is no undo function",
+    		buttons: '[No][Yes]'
     	}, function(ButtonPressed) {
-    		if (ButtonPressed === "Yes") {
-                        
+    		if (ButtonPressed === "Yes") {           
              	delete_slicer_config();        
-    					
     		}
     		if (ButtonPressed === "No") {
     
     		}
-    
     	});
     	
     }
@@ -443,31 +468,27 @@
     	openWait('Deleting file..');
     	
     	$.ajax({
-    			type: "POST",
-    			url: "<?php echo module_url('objectmanager').'ajax/delete_slice_config.php' ?>/",
-                data: {file : $("#preset-file option:selected").val()},
-                dataType: 'html'
-    		}).done(function(response) {
+    		type: "POST",
+    		url: "<?php echo module_url('objectmanager').'ajax/delete_slice_config.php' ?>/",
+            data: {file : $("#preset-file option:selected").val()},
+            dataType: 'html'
+    	}).done(function(response) {
     			
-    			$("#preset-file").html(response);
-    		    $("#preset-file").trigger('change');
+    		$("#preset-file").html(response);
+    		$("#preset-file").trigger('change');
     		    
-    		    closeWait();
+    		closeWait();
     		    
-    		    $.smallBox({
-    				title : "Success",
-    				content : "<i class='fa fa-check'></i> File config deleted",
-    				color : "#659265",
-    				iconSmall : "fa fa-thumbs-up bounce animated",
-                    timeout : 4000
-            	});
+    		$.smallBox({
+    			title : "Success",
+    			content : "<i class='fa fa-check'></i> File config deleted",
+    			color : "#659265",
+    			iconSmall : "fa fa-thumbs-up bounce animated",
+                timeout : 4000
+            });
     		     
-    		});
+    	});
     	
     }
     
-    
-    
-    
-
 </script>

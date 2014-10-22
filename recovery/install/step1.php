@@ -8,7 +8,8 @@
 	</h3>
 	<div class="row">
 		<p>
-			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, ue
+			Welcome to the installation wizard of the FABtotum User Interface.
+			Follow the steps and enter the data as promted
 		</p>
 	</div>
 </div>

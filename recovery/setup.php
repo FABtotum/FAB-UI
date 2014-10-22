@@ -85,7 +85,7 @@ $pass=$_POST['pass'];
 echo "NOW CONFIGURING:<br>Applying changes...<br>";
 
 //write config (call python script -must be in sudoers)
-$debug.= shell_exec("sudo python /var/www/python_api/connection_setup.py -n".$ssid." -p".$pass);
+$debug.= shell_exec("sudo python /var/www/fabui/python/connection_setup.py -n".$ssid." -p".$pass);
 
 //restart the nework
 sleep(3);

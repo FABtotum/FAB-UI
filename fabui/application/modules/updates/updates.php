@@ -118,6 +118,33 @@ class Updates extends Module {
         $this->layout->view('index/index', $data); 
         
     }
+
+
+
+	public function changelog($type, $version){
+		
+		$this->config->load('myfab', TRUE);
+		
+		
+		$_remote_url = $this->config->item($type.'_remote_download_url', 'myfab');
+		
+		$_changelog = $this->config->item($type.'_changelog', 'myfab');
+		
+		$_url =  $_remote_url.$version.'/'.$_changelog;
+		
+		
+		$ch = curl_init();
+		
+		curl_setopt($ch, CURLOPT_URL, $_url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$response = curl_exec($ch);
+		
+		echo $response;
+		 
+		 
+		
+	}
     
     
     

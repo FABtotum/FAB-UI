@@ -72,6 +72,8 @@ Thingiview = function(containerId) {
 
   	camera = new THREE.PerspectiveCamera(45, width/ height, 1, 100000);
   	camera.updateMatrix();
+  	
+  	camera.position.z = 300;
 
   	scene  = new THREE.Scene();
 
@@ -657,7 +659,7 @@ Thingiview = function(containerId) {
     } else {
       // set to any valid position so it doesn't fail before geometry is available
       camera.position.y = -70;
-      camera.position.z = 70;
+      camera.position.z = 300;
       camera.lookAt(new THREE.Vector3( camera.position.x, camera.position.y, 0 ));
     }
   }

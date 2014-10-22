@@ -56,4 +56,8 @@
 			</div>
 		</div>
 	</div>
+
+	
+	<input type="hidden" id="net_password" name='net_password' value=""> 
+	
 </div>

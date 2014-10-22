@@ -65,7 +65,7 @@
                     				<a rel="tooltip" title="Delete config" class="btn btn-default btn-xs pull-right txt-color-red " href="javascript:void(0);" id="delete-slicer-config-button"><i class="fa fa-trash "></i></a>
                     				<a data-toggle="modal" data-backdrop="static" data-target=".add-config-modal"  rel="tooltip" title="Add config" class="btn btn-default btn-xs pull-right txt-color-green " href="#"><i class="fa fa-plus"></i></a>
                     				<a rel="tooltip" title="Download config" class="btn btn-default btn-xs pull-right" id="download-slicer-config-button" href="javascript:void(0);"><i class="fa fa-download"></i></a>
-                    				<a rel="tooltip" title="Save config" class="btn btn-default btn-xs pull-right txt-color-blue" href="#"><i class="fa fa-save"></i></a>
+                    				<a rel="tooltip" title="Save config" class="btn btn-default btn-xs pull-right txt-color-blue" href="javascript:void(0);" id="save-config"><i class="fa fa-save"></i></a>
                     			</div>
                     		</div>
                     		<div class="row">
@@ -206,7 +206,7 @@
 	      		</div>
 	      		<div class="modal-footer">
 	      			<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-	      			<button id="save-config" type="button" class="btn btn-primary"> <i class="fa fa-save"></i> Save </button>
+	      			<button id="upload-config" type="button" class="btn btn-primary"> <i class="fa fa-save"></i> Save </button>
 	      		</div>
 			</div>
 		</div>

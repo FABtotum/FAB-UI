@@ -8,7 +8,7 @@ if(!file_exists($_image)){
 	write_file($_image, '', 'w');
 }
 chmod($_image, 0777);
-$_command = 'sudo raspistill -hf -vf -rot 90  --exposure off -awb sun -ISO 400 -w 768 -h 1024 -o '.$_image.'  -t 0';
+$_command = 'sudo raspistill -hf -rot 90  --exposure off -awb sun -ISO 800 -w 768 -h 1024 -o '.$_image.'  -t 0';
 shell_exec ( $_command );
 
 $_response_items['command'] = $_command;

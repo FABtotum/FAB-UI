@@ -4,7 +4,7 @@
 //ini_set('display_errors', '1');
 
 
-$cmd = "sudo /usr/bin/avrdude -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0  \ -U flash:w:/var/www/build/marlin.hex:i";
+$cmd = "sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0   -U flash:w:/var/www/build/Marlin.cpp.hex:i";
 
 
 $descriptorspec = array(

@@ -16,7 +16,7 @@ class Error extends Module {
 	}
 	
 	
-	
+
 	public function show_404(){
 		
 	

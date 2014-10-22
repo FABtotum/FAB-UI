@@ -35,7 +35,7 @@ $feedrate = $feedrate == '' ? $db_feedrate : $feedrate;
 /** MACRO */
 $_macro = false;
 
-$relative = '';
+$relative = 'G91';
 
 if($_SESSION['relative'] == false){
 	$relative = 'G91';
@@ -99,6 +99,7 @@ switch ($function){
 		$command_value = $_functions[$function]." ".$value;
 		break;
 	case 'mdi':
+		$_SESSION['relative'] == false;
 		$command_value = $_functions[$function].strtoupper($value); 
 		break;
 	case 'feed':
@@ -173,7 +174,10 @@ if(!$_macro){
 	foreach($temp as $com){
 		$response .= '<strong>'.$com.'</strong> : ';
 		$serial->sendMessage($com.PHP_EOL);
-		$response .= str_replace(PHP_EOL, '', $serial->readPort()).PHP_EOL;	
+		//$response .= str_replace(PHP_EOL, '', $serial->readPort()).PHP_EOL;
+		$reply = $serial->readPort();
+		
+		$response .= substr_replace($reply, "", -1).PHP_EOL;
 	}
 	
     $serial->serialflush();

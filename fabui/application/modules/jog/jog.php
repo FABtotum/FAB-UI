@@ -75,21 +75,14 @@ class Jog extends Module {
 		$data['_step']     = $this->configuration->get_config_value('step');
 		$data['_feedrate'] = $this->configuration->get_config_value('feedrate');
         
-        
-        
         $js_in_page  = $this->load->view('setup/js', '', TRUE);
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'JOG JS'));
-        
-        
         
         $this->layout->view('setup/index', $data);
     }
 	
 	
-	
-	
 	public function manual(){
-		
 		$this->load->view('manual/index_wip', '');
 	}
 

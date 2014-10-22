@@ -9,7 +9,7 @@ function check_install(){
    if($_install){
         header("Location: /recovery/install");
    }else{
-        header("Location: /myfabtotum");
+        header("Location: /fabui");
    }
     
 }

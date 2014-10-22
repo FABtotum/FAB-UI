@@ -116,9 +116,9 @@
 
 
 
-<!-- ONLY FOR STL FILE -->
-<?php //if(strtolower($file->file_ext) == '.stl'): ?>
-	<!--	
+<!-- ONLY FOR STL FILE 
+<?php if(strtolower($file->file_ext) == '.stl'): ?>
+		
 	<div class="row">
 		<div class="col-sm-6 text-center">
 			<div class="well">
@@ -136,6 +136,6 @@
 			</div>
 		</div>
 	</div>
-	-->
-<?php //endif; ?>
 
+<?php endif; ?>
+-->

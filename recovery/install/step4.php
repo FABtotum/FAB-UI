@@ -18,7 +18,7 @@
 		Your FABtotum is ready
 	</h4>
 	<h4 class="text-center">
-		Click next to finish
+		Click <strong>Install</strong> to finish
 	</h4>
 	<br>
 	<br>
