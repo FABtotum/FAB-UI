@@ -11,7 +11,8 @@ class Settings extends Module {
         if(is_printer_busy()){
             redirect('dashboard');
         }
-        
+		
+		
         $this->lang->load($_SESSION['language']['name'], $_SESSION['language']['name']);
 
 	}
@@ -164,6 +165,7 @@ class Settings extends Module {
 		$saved_wifi = json_decode($saved_wifi, true);
 		
 		
+		current_wlan();
         
         $_tab_header = $this->tab_header('network');
 		$data['wifi_saved']   = $saved_wifi;
@@ -248,6 +250,9 @@ class Settings extends Module {
 			case 'feeder':
 				$this->_maintenance_feeder();
 				break;
+			case 'bed-calibration':
+				$this->_bed_calibration();
+				break;
             default:
                 $_tab_header = $this->tab_header('maintenance');
                 $data['_breadcrumb']  = 'Maintenance';
@@ -330,6 +335,30 @@ class Settings extends Module {
 		
 		$js_in_page = $this->load->view('index/maintenance/probe-calibration/js', $data, TRUE);
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+		
+		
+		/** AVOID TO SEND ALWAYS G91 FOR EVERY MOVEMENT */
+		$_SESSION['relative'] = false;
+		
+		
+		$this->layout->view('index/index', $data);		
+	}
+	
+	
+	private function _bed_calibration(){
+		
+		
+		$_tab_header = $this->tab_header('maintenance');
+		 
+		$data['_breadcrumb']  = 'Maintenance > Bed Calibration';
+        $data['_tab_header']  = $_tab_header;
+        $data['_tab_content'] = $this->load->view('index/maintenance/bed-calibration/index', $data, TRUE);
+		
+		$js_in_page = $this->load->view('index/maintenance/bed-calibration/js', $data, TRUE);
+        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+		
+		
+		
 		
 		
 		/** AVOID TO SEND ALWAYS G91 FOR EVERY MOVEMENT */

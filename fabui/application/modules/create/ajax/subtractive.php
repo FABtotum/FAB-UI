@@ -106,7 +106,7 @@
 										<i class="fa fa-arrow-up fa-1x">
 										</i>
 									</a>
-									<a href="javascript:void(0)" data-attribue-direction="home" data-attribute-keyboard="101" class="btn btn-default btn-lg btn-circle btn-xl directions rotondo">
+									<a href="javascript:void(0)" id="zero-all"  class="btn btn-default btn-lg btn-circle btn-xl rotondo">
 										<i class="fa fa-bullseye">
 										</i>
 									</a>
@@ -331,7 +331,7 @@
     }
     
     function zero_all(){
-    	make_call("zero_all", true);
+    	make_call("zero_all_pre_mill", true);
     }
     
     

@@ -29,13 +29,13 @@ class Profile extends Module {
 		
 		
 		/** LOCK SCREEN OPTIONS */
-		$lock_screen_options['0'] = 'None';
-		$lock_screen_options['300'] = '5 mins'; 
-		$lock_screen_options['600'] = '10 mins';
-		$lock_screen_options['1200'] = '20 mins';
-		$lock_screen_options['1800'] = '30 mins';
-		$lock_screen_options['3600'] = '1 Hour';
-		 
+		$lock_screen_options['0']     = 'None';
+		$lock_screen_options['300']   = 'after 5 mins'; 
+		$lock_screen_options['600']   = 'after 10 mins';
+		$lock_screen_options['1200']  = 'after 20 mins';
+		$lock_screen_options['1800']  = 'after 30 mins';
+		$lock_screen_options['3600']  = 'after 1 Hour';
+		$lock_screen_options['28800'] = 'after 8 Hours'; 
 		
 		$data['lock_screen_options'] = $lock_screen_options;
 		$data['lock_screen'] = isset($_SESSION['user']['lock-screen']) ? $_SESSION['user']['lock-screen'] : '0';

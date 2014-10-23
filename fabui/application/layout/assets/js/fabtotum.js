@@ -142,7 +142,7 @@ function openWait(title){
     var src_html  = '<div class="white-popup animated bounceInDown">';    
         src_html += '<h2 class="text-align-center wait-title">' + title +' </h2>';
         src_html += '<h4 class="text-align-center wait-spinner"><i class="fa fa-spinner fa-spin"></i></h4>'
-        src_html += '<div class="wait-content"></div>';
+        src_html += '<div class="wait-content margin-top-10" style="display:none;"><pre></pre></div>';
         src_html += '</div>';
     
 	loading.open({
@@ -174,7 +174,10 @@ function waitTitle(title){
 
 function waitContent(content){
     if($(".wait-content").length > 0){
-        $(".wait-content").html(content);
+    	
+    	$(".wait-content").show();
+    	
+        $(".wait-content").find('pre').html(content);
     }
 }
 
@@ -217,15 +220,22 @@ function safety(){
    
    var timestamp = new Date().getTime();
    if(emergency == false){
-       $.get( "/temp/fab_ui_safety.json?time=" + timestamp , function( data ) {
+       $.get( "/temp/fab_ui_safety.json?time=" + jQuery.now() , function( data ) {
            
              if(parseInt(data.state.emergency) == 1 ) {
                 
-                 emergency = true;
+                emergency = true;
+                 
+                var error_message = data.state.status;
+                 
+                if(error_message == ''){
+                 	error_message = 'An error occured, please check head conncections and front panel';
+                }
+                
                 
                 $.SmartMessageBox({
-    				title: "Attention!",
-    				content: "<i class='fa fa-warning'></i> An error occured, please check head conncections and front panel and then press OK to continue or Ignore to disable this warning",
+    				//title: "Attention!",
+    				title: "<h4><span class='txt-color-orangeDark'><i class='fa fa-warning fa-2x'></i></span>&nbsp;&nbsp;" + error_message + "<br>&nbsp;Press OK to continue or Ignore to disable this warning</h4>",
     				buttons: '[OK][IGNORE]'
     			}, function(ButtonPressed) {
     				if (ButtonPressed === "OK") {

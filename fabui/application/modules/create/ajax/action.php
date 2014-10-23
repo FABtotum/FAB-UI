@@ -4,12 +4,12 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] .'/fabui/ajax/lib/utilities.php';
 
 /** SAVE DATA FROM POST */
-$_action = $_POST['action'];
-$_value = $_POST['value'];
-$_pid = $_POST['pid'];
+$_action    = $_POST['action'];
+$_value     = $_POST['value'];
+$_pid       = $_POST['pid'];
 $_data_file = $_POST['data_file'];
-$_id_task = $_POST['id_task']; 
-
+$_id_task   = $_POST['id_task']; 
+$_progress  = $_POST['progress'];
 switch($_action) {
 
 	case 'stop' :
@@ -73,7 +73,7 @@ if($_command != ''){
 
 
 
-if($_action == 'velocity' || $_action == 'send-mail-false' || $_action == 'send-mail-true'){
+if($_action == 'velocity' || $_action == 'send-mail-false' || $_action == 'send-mail-true' || $_action == 'rpm'){
 	
 	$db    = new Database();
 	$_task = $db->query('select * from sys_tasks where id='.$_id_task);
@@ -94,6 +94,9 @@ if($_action == 'velocity' || $_action == 'send-mail-false' || $_action == 'send-
 			$_column = 'mail';
 			$_value = 1;
 			break;
+		case 'rpm':
+			$_column = 'rpm';
+			break;
 		
 	}
 	
@@ -104,6 +107,20 @@ if($_action == 'velocity' || $_action == 'send-mail-false' || $_action == 'send-
     $db->close();  
 	
 }
+
+
+if($_action == 'stop' && ($_progress >= 0 && $_progress <= 0.1) ){
+	
+	
+	shell_exec('sudo kill '.$_pid);
+	
+	shell_exec('sudo php /var/www/fabui/script/finalize.php '.$_id_task.' print stopped');
+	
+	$_response_items['step']  = 'entrato qua';
+	
+	
+}
+
 
 $_response_items['status']  = 200;
 $_response_items['command'] = $_command;

@@ -29,6 +29,9 @@ Thingiloader = function(event) {
   };
 
   this.loadSTL = function(url) {
+  	
+  	
+  
     workerFacadeMessage({'status':'message', 'content':'Downloading ' + url});  
     var file = this.load_binary_resource(url);
     var reader = new BinaryReader(file);
@@ -297,7 +300,7 @@ Thingiloader = function(event) {
 
     // Load the number of vertices.
     var count = input.readUInt32();
-
+	
     // During the parse loop we maintain the following data structures:
     var vertices = [];   // Append-only list of all unique vertices.
     var vert_hash = {};  // Mapping from vertex to index in 'vertices', above.
@@ -306,6 +309,9 @@ Thingiloader = function(event) {
 
     for (var i = 0; i < count; i++) {
       if (i % 100 == 0) {
+      	
+      
+      	
         workerFacadeMessage({
             'status':'message',
             'content':'Parsing ' + (i+1) + ' of ' + count + ' polygons...'

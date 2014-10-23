@@ -24,7 +24,7 @@
                     <a href="<?php echo site_url('objectmanager/prepare/'.$first_box_action.'/'.$obj_id.'/'.$file->id); ?>"><?php echo $first_box_img ?></a>
                 </div>
                 <div class="col-sm-6 text-center">
-                    <h1 class="text-primary"><?php echo $first_box_title; ?></h1>
+                    <h1 class="text-primary"><a href="<?php echo site_url('objectmanager/prepare/'.$first_box_action.'/'.$obj_id.'/'.$file->id); ?>"><?php echo $first_box_title; ?></a></h1>
                     <h2><?php echo $first_box_desc; ?></h2>
                 </div>
             
@@ -116,7 +116,7 @@
 
 
 
-<!-- ONLY FOR STL FILE 
+<!-- ONLY FOR STL FILE -->
 <?php if(strtolower($file->file_ext) == '.stl'): ?>
 		
 	<div class="row">
@@ -128,7 +128,7 @@
 					</div>
 					<div class="col-sm-6">
 						<h1 class="text-primary"><a href="<?php  echo site_url('objectmanager/file/preview/'.$obj_id.'/'.$file->id)?>">STL Viewer</a></h1>
-						<h2>A web-based 3D viewer for GCode files.</h2>
+						<h2>A web-based 3D viewer for STL files.</h2>
 						
 					</div>
 				</div>
@@ -138,4 +138,4 @@
 	</div>
 
 <?php endif; ?>
--->
+

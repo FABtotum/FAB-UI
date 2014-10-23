@@ -60,6 +60,9 @@
     /** CALIBRATION */
 	var calibration = 'abl';
 	
+	/** PROGRESS */
+	var progress = 0;
+	
 	$(document).ready(function() {
 
 		
@@ -215,7 +218,7 @@
      	$("#rpm").noUiSlider({
 		        range: {'min': 6000, 'max' : 14000 },
                 /*range: [0, 100],*/
-                start: 6000,
+                start: <?php echo $_rpm != '' ? $_rpm : 6000 ?>,
 		        handles: 1,
                 connect: 'lower'
         });
@@ -296,8 +299,33 @@ function manage_slide(e){
     
     var id = $(this).attr('id');
     
+    
+    
+    
+   switch(id){
+   	
+   	case 'velocity':
+   		 $("#label-"+ id ).html('' + parseInt($(this).val()) + '%');
+   		 break;
+   	case 'temp1':
+   		extruder_target = parseInt($(this).val());
+   		$("#label-"+ id + '-target' ).html('' + parseInt($(this).val()) + '');
+   		break;
+   	case 'temp2':
+   		bed_target = parseInt($(this).val());
+   		$("#label-"+ id + '-target' ).html('' + parseInt($(this).val()) + '');
+   		break;
+   	case 'rpm':
+   		$("#label-"+ id ).html('' + parseInt($(this).val()) + '');
+   		break;
+   }
+    
+    
+    /*
     if(id == "velocity"){
+    	
         $("#label-"+ id ).html('' + parseInt($(this).val()) + '%');
+        
     }else{
     	
     	if(id == 'temp1'){
@@ -310,7 +338,7 @@ function manage_slide(e){
     	
         $("#label-"+ id + '-target' ).html('' + parseInt($(this).val()) + '');
     }
-    
+    */
     
 }
 

@@ -53,9 +53,10 @@ function scan_wlan(){
 	}
 	
 	
-	
-	foreach($_wlan_device['wlan0'] as $wlan){
-		array_push($_wlan_list, $wlan);
+	if (isset($_wlan_device['wlan0'])) {
+		foreach($_wlan_device['wlan0'] as $wlan){
+			array_push($_wlan_list, $wlan);
+		}
 	}
 	return $_wlan_list;
 	

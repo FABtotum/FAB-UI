@@ -46,6 +46,15 @@
                         <?php endif; ?>
                         
                         
+                        <?php if(strtolower($_file->file_ext) == '.stl' || strtolower($_file->file_ext) == '.gc' || strtolower($_file->file_ext) == '.gcode'): ?>
+                        	
+                        	<li>
+                        		<a href="<?php echo site_url("objectmanager/file/preview/".$_id_object."/".$_file->id) ?>"><i class="fa fa-eye fa-lg fa-fw txt-color-pink "></i>  Pre<u>v</u>iew</a>
+                        	</li>	
+                        	
+                        <?php endif; ?>
+                        
+                        
                         <li>
                             <a  href="<?php echo site_url("objectmanager/download/".$_file->id) ?>"><i class="fa fa-download fa-lg fa-fw txt-color-greenLight"></i> <u>D</u>ownload</a>
                         </li>

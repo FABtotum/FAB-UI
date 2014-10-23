@@ -76,6 +76,7 @@ $_functions["unit"]["mm"]   = "G21";
 $_functions["unit"]["inch"] = "G20";
 
 $_functions['zero_all'] = "G92 X0 Y0 Z0 E0";
+$_functions['zero_all_pre_mill'] = "G92 X0 Y0 Z0 E0".PHP_EOL."G90";
 
 $_functions['position'] = "M114";
 
@@ -105,6 +106,7 @@ switch ($function){
 	case 'feed':
 		break;
 	case 'zero_all':
+	case 'zero_all_pre_mill':
         //$_macro      = true;
         //$_macro_name = 'zero_all';
 		$command_value = $_functions[$function];

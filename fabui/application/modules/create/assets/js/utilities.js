@@ -297,7 +297,8 @@ function _do_action(action, value) {
 			pid : pid,
 			data_file : data_file,
 			action : action,
-			value : value
+			value : value, 
+			progress : progress
 		},
 		type : 'post',
 		dataType : 'json',
@@ -424,6 +425,8 @@ function _monitor_call(){
                      $('.controls').removeClass('disabled');
                     
                 }
+                
+                progress = response.print.stats.percent;
 
 				$('.total-lines'   ).html(response.print.lines);
 				$('.current-line'  ).html(response.print.stats.line_number);

@@ -42,7 +42,7 @@ function get_string_between($string, $start, $end){
 			}
 		}*/
     echo '</div><br>';
-	echo '<div align=center> <a href=http://'.$_SERVER['SERVER_ADDR'].'/fabui/><button>[fabui]</button></a> <a href=jog.php><button>[JOG]</button></a> <a href=setup.php><button>[Wlan CONFIG]</button></a> <a href=info.php?mode=net><button>[Network]</button></a> <a href=reboot.php><button>[REBOOT]</button></a> <a href=flash.php><button>[FLASH FW]</button></a> <a href=/phpmyadmin><button>[Database]</button></a> <a href=macrosim.php><button>[Macro sim]</button></a> <a href=/recovery/install><button>[Re-Install]</button></a><a href=/recovery/phpinfo.php><button>[PHPINFO]</button></a><a href=/recovery/shutdown.php><button>[SHUTDOWN]</button></a></div>';
+	echo '<div align=center> <a href=http://'.$_SERVER['SERVER_ADDR'].'/fabui/><button>[fabui]</button></a> <a href=jog.php><button>[JOG]</button></a> <a href=setup.php><button>[Wlan CONFIG]</button></a> <a href=info.php?mode=net><button>[Network]</button></a> <a href=reboot.php><button>[REBOOT]</button></a> <a href=flash.php><button>[FLASH FW]</button></a> <a href=flash_remote.php><button>[FLASH FW REMOTE]</button></a> <a href=/phpmyadmin><button>[Database]</button></a> <a href=macrosim.php><button>[Macro sim]</button></a> <a href=/recovery/install><button>[Re-Install]</button></a><a href=/recovery/phpinfo.php><button>[PHPINFO]</button></a><a href=/recovery/shutdown.php><button>[SHUTDOWN]</button></a></div>';
 
 include_once("footer.php");
 ?>

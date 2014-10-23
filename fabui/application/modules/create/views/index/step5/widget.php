@@ -44,7 +44,7 @@
 
 <div class="row create-monitor" style="display: none;">
 
-    <div class="col-md-4 col-lg-4" id="velocity-slider-container">
+    <div class="<?php echo $_file_type == 'additive' ? 'col-md-4 col-lg-4' : 'col-md-6 col-lg-6' ?> " id="velocity-slider-container">
         <div class="well well-sm text-center">
         	<h4>Speed <i class="fa fa-lg fa-fw fa-flash "></i></h4>
             <h5><span id="label-velocity"><?php echo $_velocity == '' ? 100 : $_velocity ?>%</span> </h5>
@@ -52,7 +52,7 @@
         </div>
     </div>
     
-    <div class="col-md-4 col-lg-4" id="ext-slider-container">
+    <div class="col-md-4 col-lg-4" id="ext-slider-container" style="<?php echo $_file_type == 'additive' ? '' : 'display:none;' ?>">
         <div class="well well-sm text-center">
         	<h4>Extruder <i class="fab-lg fab-fw icon-fab-term txt-color-red"></i></h4>
             <h5>actual:&nbsp;<span id="label-temp1"><?php echo $_temperature; ?></span>°C&nbsp;&nbsp;-&nbsp;&nbsp;target:<span id="label-temp1-target">&nbsp;<?php echo $_temperature_target ?></span>°C </h5>
@@ -61,7 +61,7 @@
     </div>
     
     
-    <div class="col-md-4 col-lg-4"  id="bed-slider-container">
+    <div class="col-md-4 col-lg-4"  id="bed-slider-container" style="<?php echo $_file_type == 'additive' ? '' : 'display:none;' ?>">
         <div class="well well-sm text-center">
         	<h4>Bed <i class="fab-lg fab-fw icon-fab-term txt-color-red"></i></h4>
             <h5>actual:&nbsp;<span id="label-temp2"><?php echo $_bed_temperature == '' ? 0 : $_bed_temperature; ?></span>°C&nbsp;&nbsp;-&nbsp;&nbsp;target:<span id="label-temp2-target">&nbsp;<?php echo $_bed_temperature_target ?></span> °C </h5>
@@ -69,9 +69,10 @@
         </div>
     </div>
     
-    <div class="col-md-6 col-lg-6" id="rpm-slider-container" style="display:none;">
+    <div class="col-md-6 col-lg-6" id="rpm-slider-container" style="<?php echo $_file_type != 'additive' ? '' : 'display:none;' ?>">
     	<div class="well well-sm text-center"  >
-            <h4>Motor RPMs: <label id="label-rpm"></label></h4>
+            <h4>Motor RPMs </h4>
+            <h5><span id="label-rpm"><?php echo $_rpm == '' ? 100 : $_rpm ?></span></h5>
             <div id="rpm" data-action="rpm" class="sliders margin-bottom-10"></div>
         </div>
     </div>

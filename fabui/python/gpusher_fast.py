@@ -76,12 +76,16 @@ def checksum(gcode,num):
 #OVERRIDE GCODE DESCRIPTION
 def override_description(command):
 	
-	command_splitted = command.split()
-	
-	code= command_splitted[0]
-	value= command_splitted[1]
-	value=value.replace("S", "");
-	
+	try:
+		command_splitted = command.split()
+		
+		code= command_splitted[0]
+		value= command_splitted[1]
+		value=value.replace("S", "");
+	except:
+		code=""
+		value=""
+		
 	description=""
 	
 	if code=="M104":
@@ -91,7 +95,7 @@ def override_description(command):
 	elif code=="M220":
 		description="<strong>Speed set to "+value+"%</strong>"
 	elif code=="M3":
-		description="<strong>RPM speed set to "+value+"%</strong>"
+		description="<strong>RPM speed set to "+value+"</strong>"
 	else:
 		descritpion="description none"
 	return description

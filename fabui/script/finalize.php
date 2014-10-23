@@ -109,14 +109,14 @@ function finalize_print($tid, $status){
 	
 	if($status == 'stopped'){
 		
-		sleep(2); //IF STATUS IS STOPPED I HAVE TO KILL PRINT PROCESS
+		//sleep(2); //IF STATUS IS STOPPED I HAVE TO KILL PRINT PROCESS
 		//shell_exec('sudo kill '.$attributes['pid']);
 		
 		//IF % PROGRESS IS < 0.5 FOR SECURITY REASON I RESET THE BOARD CONTROLLER
 		$monitor = json_decode(file_get_contents($attributes['monitor']), TRUE);
 		$percent = $monitor['print']['stats']['percent'];
 		
-		if($percent < 0.1){
+		if($percent < 0.5){
 			/** FORCE RESET CONTROLLER */
 			$_command = 'sudo python '.PYTHON_PATH.'force_reset.py';
 			shell_exec($_command);
@@ -145,15 +145,18 @@ function finalize_print($tid, $status){
 	chmod($_macro_end_print_response, 0777);
 	
 	
+	//UPDATE TASK
+	update_task($tid, $status);
+	
+	
 	//EXEC END MACRO
 	shell_exec('sudo python '.PYTHON_PATH.'gmacro.py '.$end_macro.' '.$_macro_end_print_trace.' '.$_macro_end_print_response.' > /dev/null &');
 	
 	$log->info('Task #'.$tid.' end macro: '.$end_macro);
 	
-	sleep(2);
+	//sleep(2);
 	
-	//UPDATE TASK
-	update_task($tid, $status);
+	
 	
 	
 	// SEND MAIL

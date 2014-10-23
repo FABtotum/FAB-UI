@@ -123,8 +123,8 @@ elif preset=="engage_4axis":
 	macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0,verbose=False)
 #jog_setup (operations before jogging)
 elif preset=="jog_setup":
-	trace ("preparing to jog",log_trace)
-	macro("M741","TRIGGERED",2,"Front panel door is not closed",1)
+	trace ("Preparing to jog",log_trace)
+	macro("M741","TRIGGERED",2,"Front panel door control",1)
 	macro("G91","ok",1,"Setting relative positioning",0.5)
 	macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0.5)
 	trace(macro("M105","ok T",2,"Getting nozzle temperatures",0.5, warning=True),log_trace)

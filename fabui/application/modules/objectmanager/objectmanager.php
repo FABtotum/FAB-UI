@@ -606,10 +606,24 @@ class Objectmanager extends Module {
 			
 			if(strtolower($file->file_ext) == '.stl'){
 				
+				$this->load->helper('smart_admin_helper');
+				
 				
 				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/thingiview/Three.js', 'comment' => ''));
 				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/thingiview/plane.js', 'comment' => ''));
 				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/thingiview/thingiview.js', 'comment' => ''));
+				
+				$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/colorpicker/bootstrap-colorpicker.min.js', 'comment' => ''));
+				
+				
+				$attr['data-widget-fullscreenbutton'] = 'false';
+				$attr['data-widget-icon'] = 'fa fa-cube';
+				$widget_id = 'render_area'.time();
+				$widget_content = $this->load->view('file/preview/stl/widget', '', TRUE);
+				$_widget_preview = widget($widget_id, 'Stl Viewer',  $attr, $widget_content, false, false, true);
+				
+				$data['widget'] = $_widget_preview;
+				$data['widget_id'] = $widget_id;
 				
 				$js_in_page  = $this->load->view('file/preview/stl/js', $data, TRUE);
 				$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));

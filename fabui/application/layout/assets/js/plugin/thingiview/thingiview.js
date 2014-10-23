@@ -3,6 +3,7 @@ Thingiview = function(containerId) {
   
   this.containerId  = containerId;
   var container     = document.getElementById(containerId);
+  var progressBar   = null;
   
   // var stats    = null;
   var camera   = null;
@@ -33,7 +34,6 @@ Thingiview = function(containerId) {
 
   var view         = null;
   var infoMessage  = null;
-  var progressBar  = null;
   var alertBox     = null;
   
   var timer        = null;
@@ -67,6 +67,8 @@ Thingiview = function(containerId) {
   var geometry;
 
   this.initScene = function() {
+    
+    
     container.style.position = 'relative';
     container.innerHTML      = '';
 
@@ -92,21 +94,10 @@ Thingiview = function(containerId) {
     pointLight.position.y = -25;
     pointLight.position.z = 10;
     scene.add(pointLight);
-	
-	/*
-    progressBar = document.createElement('div');
-    progressBar.style.position = 'absolute';
-    progressBar.style.top = '0px';
-    progressBar.style.left = '0px';
-    progressBar.style.backgroundColor = 'red';
-    progressBar.style.padding = '5px';
-    progressBar.style.display = 'none';
-    progressBar.style.overflow = 'visible';
-    progressBar.style.whiteSpace = 'nowrap';
-    progressBar.style.zIndex = 100;
-    container.appendChild(progressBar);
-    */
+   
+    progressBar = document.getElementById('pb');
     
+    /*
     alertBox = document.createElement('div');
     alertBox.id = 'alertBox';
     alertBox.style.position = 'absolute';
@@ -120,7 +111,8 @@ Thingiview = function(containerId) {
     alertBox.style.display = 'none';
     alertBox.style.zIndex = 100;
     container.appendChild(alertBox);
-    
+    */
+   
     materials[0] = new THREE.MeshLambertMaterial({id:"Standard", color:objectColor, shading: THREE.FlatShading});
     materials[1] = new THREE.MeshLambertMaterial({id:"Added", color:addedColor, opacity:addedOpacity, shading: THREE.FlatShading});
     materials[2] = new THREE.MeshLambertMaterial({id:"Removed", color:removedColor, opacity:removedOpacity, shading: THREE.FlatShading});
@@ -392,12 +384,15 @@ Thingiview = function(containerId) {
       if (scene && !plane) {
         loadPlaneGeometry();
       }
-      plane.material[0].opacity = 1;
+      plane.materials[0].opacity = 1;
       // plane.updateMatrix();
     } else {
       if (scene && plane) {
         // alert(plane.material[0].opacity);
-        plane.material[0].opacity = 0;
+        
+        
+        
+        plane.materials[0].opacity = 0;
         // plane.updateMatrix();
       }
     }
@@ -410,10 +405,13 @@ Thingiview = function(containerId) {
   }
 
   this.setRotation = function(rotate) {
+  	
+  
+  	
     rotation = rotate;
     
     if (rotate) {
-      rotateTimer = setInterval(rotateLoop, 1000/60);
+      rotateTimer = setInterval(rotateLoop, 1000/30);
     } else {
       clearInterval(rotateTimer);
       rotateTimer = null;
@@ -545,8 +543,10 @@ Thingiview = function(containerId) {
 
   this.setObjectColor = function(color) {
     objectColor = parseInt(color.replace(/\#/g, ''), 16);
+    
     if (materials[0]) {
       materials[0].color = objectColor;
+      //materials[0].color.setHex('0XCDFECD');// = objectColor;
     }
   }
   
@@ -672,6 +672,12 @@ Thingiview = function(containerId) {
     scope.setRotation(true);
     scope.centerCamera();
     log("finished loading " + geometry.faces.length + " faces.");
+    //log("passed here 1");
+    //KRIOS
+    progressBar.style.width = '100%';
+    progressBar.style.width = '100%';
+	progressBar.innerHTML = '100%';
+    
   }
 
   this.newWorker = function(cmd, param) {
@@ -689,8 +695,20 @@ Thingiview = function(containerId) {
 
         //scope.setRotation(false);
         //scope.setRotation(true);
-        log("finished loading " + geometry.faces.length + " faces.");
+        //log("finished loading " + geometry.faces.length + " faces.");
+        //log("passed here 2");
+        progressBar.style.width = '100%';
+        progressBar.innerHTML = '100%';
+		document.getElementById("percent").innerHTML = 'File loaded';
         scope.centerCamera();
+        //jQuery("#progress-status").slideUp('slow', function(){
+        	jQuery(".action-container").slideDown('slow', function() {
+        		
+        		
+        	});
+        	
+       // });
+        //document.getElementById("progress-status").style.display = '';
       } else if (event.data.status == "complete_points") {
         //progressBar.innerHTML = 'Initializing points...';
 
@@ -723,13 +741,19 @@ Thingiview = function(containerId) {
         log("finished loading " + event.data.content[0].length + " points.");
         // scope.centerCamera();
       } else if (event.data.status == "progress") {
+      	
+      	document.getElementById("percent").innerHTML = "Loading file: " + event.data.content;
+      	
+      	progressBar.style.width = event.data.content;
+      	progressBar.innerHTML = event.data.content;
+      	
         //progressBar.style.display = 'block';
         //progressBar.style.width = event.data.content;
         // log(event.data.content);
       } else if (event.data.status == "message") {
         //progressBar.style.display = 'block';
         //progressBar.innerHTML = event.data.content;
-        log(event.data.content);
+        //log(event.data.content);
       } else if (event.data.status == "alert") {
         scope.displayAlert(event.data.content);
       } else {
@@ -749,8 +773,8 @@ Thingiview = function(containerId) {
   this.displayAlert = function(msg) {
     msg = msg + "<br/><br/><center><input type=\"button\" value=\"Ok\" onclick=\"document.getElementById('alertBox').style.display='none'\"></center>"
     
-    alertBox.innerHTML = msg;
-    alertBox.style.display = 'block';
+    //alertBox.innerHTML = msg;
+    //alertBox.style.display = 'block';
     
     // log(msg);
   }
@@ -758,7 +782,7 @@ Thingiview = function(containerId) {
   function loadPlaneGeometry() {
     // TODO: switch to lines instead of the Plane object so we can get rid of the horizontal lines in canvas renderer... KRIOS
     //plane = new THREE.Mesh(new Plane(100, 100, 10, 10), new THREE.MeshBasicMaterial({color:0xafafaf,wireframe:true}));
-    plane = new THREE.Mesh(new Plane(214, 236, 10, 10), new THREE.MeshBasicMaterial({color:0xafafaf,wireframe:true})); 
+    plane = new THREE.Mesh(new Plane(214, 236, 5, 5), new THREE.MeshBasicMaterial({color:0xafafaf, wireframe:true})); 
     scene.add(plane);
   }
 

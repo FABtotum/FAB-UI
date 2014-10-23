@@ -6,6 +6,26 @@ import serial
 #realtime emergency management.
 #if GPIO Pin 5 is set to low , emergency mode will be triggered.
 
+def err_msg(code):
+	if code == 0:
+		msg="All Nominal"
+	elif code == 100:
+		msg= "Safety Lock engaged!"
+	elif code == 101:
+		msg= "Printer stopped due to errors"
+	elif code == 102:
+		msg= "Front panel is open, cannot continue"
+	elif code == 103:
+		msg= "Head not properly locked in place"
+	elif code == 104:
+		msg= "Extruder Temperature critical, shutting down"
+	elif code == 105:
+		msg= "Bed Temperature critical, shutting down"
+	else:
+		msg="dunno!"
+	return msg
+		
+		
 GPIO.cleanup()
 
 GPIO.setmode(GPIO.BCM)
@@ -15,23 +35,42 @@ emergency=False #default emergency flag
 
 safety_log_path="/var/www/temp/fab_ui_safety.json" #/var/www/temp
 
+
 def switch_safety(emergency,status):
 	status_string='{"state":{"emergency":"'+ str(emergency)+'","status":"'+ str(status)+'"}}'
 	safety= open(safety_log_path, 'w+')  
 	print>>safety, status_string
+	print "written" + str(emergency)
 	return
-	
-switch_safety(0,"ok")  #safety log = safe!
-#i=0
+switch_safety(0,"Ok")  #safety log = safe!
+
+port = '/dev/ttyAMA0'
+baud = 115200
+serial = serial.Serial(port, baud, timeout=0.6)
+
 while True:
-	if(GPIO.input(2) ==0):
+	if(GPIO.input(2) == 0):
 		#Pin is set as low, switch to emergency mode!
 		if not emergency:					
-		
-			switch_safety(1,"Emergency")
+			#read status
+			
+			serial.flushInput()
+			serial.write("M730\r\n")
+			time.sleep(0.5)
+			reply=serial.readline()
+
+			try:
+				code=float(reply.split("ERROR : ")[1].rstrip())
+			except:
+				code=100
+				
+			status=err_msg(code)
+			#print "[!] ("+str(code)+") "+str(status)
+			
+			#Write UI-Level emergency status JSON
+			switch_safety(1,status)
 			emergency=True
-			#DEBUG 
-			#print("Emergency")
+			
 			
 	if(GPIO.input(2) == 1):
 		#normal ops

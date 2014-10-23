@@ -63,6 +63,7 @@
 				}
 				
 				
+				openWait('Saving and restarting net');
 				$("#save-button").addClass('disabled');
 				$("#save-button").html('Saving and restarting net');
 				
@@ -78,6 +79,8 @@
 		            
 		            $("#save-button").removeClass('disabled');
 					$("#save-button").html('<i class="fa fa-save"></i> Save');
+					
+					closeWait();
 					
 					$.smallBox({
 		    				title : "Success",
