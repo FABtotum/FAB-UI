@@ -139,7 +139,7 @@ class Create extends Module {
 		$data_widget_step5['_velocity']         = $_running && isset($_attributes['speed']) ? $_attributes['speed'] : 100;
 		$data_widget_step5['_rpm']               = $_running && isset($_attributes['rpm']) ? $_attributes['rpm'] : 6000;
 		$data_widget_step5['_running']          = $_running;
-		$data_widget_step5['_file_type']        = $_running ? $_file->_print_type  : 'additive'; 
+		$data_widget_step5['_file_type']        = $_running ? $_file->print_type  : 'additive'; 
 		
 		
         
@@ -170,7 +170,7 @@ class Create extends Module {
 		$data['_running']     = $_running;
 		$data['_object_name'] = $_running ? ' > '.$_object->obj_name : '';
 		$data['_file_name']   = $_running ? ' > '.$_file->file_name : '';
-		$data['_file_type']   = $_running ? $_file->_print_type  : 'additive'; 
+		$data['_file_type']   = $_running ? $_file->print_type  : 'additive'; 
 
 		$data_js['_id_task']          = $_running ? $_task['id'] : 0;
 		$data_js['_pid']              = $_running ? $_attributes['pid'] : 0;
