@@ -28,23 +28,7 @@ JOG
 - Fixed an annoying bug that it was setting relative mode on movements 
 
 ================================================== ================
-FABUI 0.64 (23/10/2014)
 
-SETTINGS
-- Maintenance: added "Bed Calibration" procedure: now you can level the plane for an optimal printing conditions
-
-CREATE
-- Fixed erratic behaviour preparing mill
-- Fixed and improved "Stop" print function
-
-OBJECTMANAGER
-- Added STL file viewer 
-
-GENERAL
-- Implemented emergency error codes description
-- Fixed emergency dialog
-
-================================================== ================
 FABUI 0.63 (17/10/2014)
 
 SCAN
