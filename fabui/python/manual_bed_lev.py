@@ -33,7 +33,7 @@ screw_offset=[8.726,10.579,0]
 serial_reply=""
 
 #num of probes each point
-num_probes=1
+num_probes=4
 
 def trace(string):
 	global log_trace
