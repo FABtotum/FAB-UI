@@ -37,8 +37,6 @@
                         		
                         		<tbody>
                         	
-                        	
-                        	
 	                        	<?php foreach($wlan as $wl): ?>
 	                        		
 	                        		<tr class="<?php echo $wifi_saved['ssid'] == $wl['essid'] ? '' : '' ?>"> 
@@ -61,9 +59,7 @@
 											</div>
 										</td>
 									</tr>
-	                        		
-	                        		
-	                        		
+
 	                        		
 	                        	<?php endforeach; ?>
 	                        	
@@ -72,7 +68,7 @@
                         	
                         	</table>
                         	
-                        	
+ 
                         <?php endif; ?>
                         
                     </fieldset>

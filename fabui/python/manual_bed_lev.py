@@ -24,6 +24,7 @@ s_warning=s_error=s_skipped=0
 
 screw_turns=["" for x in range(4)]
 screw_height=["" for x in range(4)]
+screw_degrees=["" for x in range(4)]
 
 #points to probe
 probed_points=np.array([[5+17,5+61.5,0],[5+17,148.5+61.5,0],[178+17,148.5+61.5,0],[178+17,5+61.5,0]])
@@ -48,7 +49,8 @@ def printlog():
 	global logfile
 	global screw_turns
 	global screw_height
-	str_log='{"bed_calibration":{"t1": "'+str(screw_turns[0])+'","t2": "'+str(screw_turns[1])+'","t3": "'+str(screw_turns[2])+'","t4": "'+str(screw_turns[3])+'","s1": "'+str(screw_height[0])+'","s2": "'+str(screw_height[1])+'","s3": "'+str(screw_height[2])+'","s4": "'+str(screw_height[3])+'"}}'
+	global screw_degrees
+	str_log='{"bed_calibration":{"t1": "'+str(screw_turns[0])+'","t2": "'+str(screw_turns[1])+'","t3": "'+str(screw_turns[2])+'","t4": "'+str(screw_turns[3])+'","s1": "'+str(screw_height[0])+'","s2": "'+str(screw_height[1])+'","s3": "'+str(screw_height[2])+'","s4": "'+str(screw_height[3])+'","d1": "'+str(screw_degrees[0])+'","d2": "'+str(screw_degrees[1])+'","d3": "'+str(screw_degrees[2])+'","d4": "'+str(screw_degrees[3])+'"}}'
 	#write log
 	handle=open(logfile,'w+')
 	print>>handle, str_log
@@ -164,11 +166,10 @@ macro("M402","ok",2,"Retracting Probe (safety)",1, warning=True, verbose=False)
 macro("G27","ok",100,"Homing Z - Fast",0.1)	
 
 macro("G90","ok",5,"Setting abs mode",0.1, verbose=False)
-macro("G92 Z240","ok",5,"Setting correct Z",0.1, verbose=False)
+macro("G92 Z241.2","ok",5,"Setting correct Z",0.1, verbose=False)
 #M402 #DOUBLE SAFETY!
 macro("M402","ok",2,"Retracting Probe (safety)",1, verbose=False)	
 macro("G0 Z60 F5000","ok",5,"Moving to start Z height",10) #mandatory!
-
 
 for (p,point) in enumerate(probed_points):
 
@@ -208,8 +209,6 @@ for (p,point) in enumerate(probed_points):
 			
 		serial_reply=""
 		serial.flushInput()
-		
-
 		
 		#G0 Z40 F5000
 		macro("G0 Z50 F5000","ok",10,"Rising Bed",1, warning=True, verbose=False)
@@ -259,19 +258,20 @@ for (i,c) in enumerate(coeff):
 	coeff[i]=float(c)
 	#print coeff[i]
 
+#we retrieve the height of the probe.
+serial.flushInput()
+serial.write("M503\r\n")
+data=serial.read(1024)
+z_probe=float(data.split("Z Probe Length: ")[1].split("\n")[0])
 
-#height ovveride
-#if(fix_d <> 0):
-#	d_ovr = d
-#else:
-d_ovr = d
+d_ovr=d
 
 msg= "d_ovr="+str(d_ovr)
 #trace(msg) 
 #eq of a plane= ax +by +cz = d
 
-#print "Equation of the plane: \n "+ str(coeff[0]) +"x +"+ str(coeff[1]) +"y + "+ str(coeff[2]) +"z =" + str(d)
-
+msg= "Equation of the plane: \n "+ str(coeff[0]) +"x +"+ str(coeff[1]) +"y + "+ str(coeff[2]) +"z =" + str(d)
+trace(msg)
 #Calibration Points of the screws
 cal_point=np.array([[0-8.726,0-10.579,0],[0-8.726,257.5-10.579,0],[223-8.726,257.5-10.579,0],[223-8.726,0-10.579,0]])
 
@@ -280,28 +280,31 @@ for (p,point) in enumerate(cal_point):
 	#cal_point[p][0][1]  => point[1]  #Y coordinate of point 0
 
 	z=(-coeff[0]*point[0] - coeff[1]*point[1] +d)/coeff[2]
-	
+		
 	#difference from titled plane to straight plane
-	#D MUST BE FORCED TO A FIXED VALUE=37
-	diff=d_ovr-abs(z)
-	msg= "P "+str(p)+" : Z= " +str(z)
-	#trace(msg)
+	#distance=P2-P1
+	diff=-d_ovr-abs(z)
+	
+	#msg= "d :"+str(d)+", P :"+str(p)+" , Z:" +str(z) +" Diff: "+str(diff) +" d_ovr: "+str(d_ovr) 
+	msg= str(d_ovr)+ "-"+str(abs(z))+" = " + str(diff)
+	
+	trace(msg)
 	
 	#number of screw turns, pitch 0.5mm
-	turns=round(diff/0.5, 2)
+	turns=round(diff/0.5, 2) #
 	degrees= turns*360
+	degrees=int(5 * round(float(degrees)/5))  #lets round to upper 5
 	
 	screw_turns[idx]=turns
 	screw_height[idx]=diff
+	screw_degrees[idx]=degrees
+	
 	idx+=1
 	#print "Calculated=" + str(z) + " Difference " + str(diff) +" Turns: "+ str(turns) + " deg: " + str(degrees)
 
 #save everything
 printlog()
 
-
-
 #end
 trace("Done!")
-
 sys.exit()

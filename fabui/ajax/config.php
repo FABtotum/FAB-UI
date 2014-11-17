@@ -79,4 +79,17 @@ if(isset($_SERVER)){
 }
 
 
+
+defined('INSTAGRAM_FEED_URL')  ? null : define("INSTAGRAM_FEED_URL",      'http://www.fabtotum.com/instagram_feed.json');
+defined('INSTAGRAM_HASH_URL')  ? null : define("INSTAGRAM_HASH_URL",      'http://www.fabtotum.com/instagram_hash.json');
+defined('INSTAGRAM_FEED_JSON') ? null : define("INSTAGRAM_FEED_JSON",      TEMP_PATH.'instagram_feed.json');
+defined('INSTAGRAM_HASH_JSON') ? null : define("INSTAGRAM_HASH_JSON",      TEMP_PATH.'instagram_hash.json');
+
+defined('TWITTER_FEED_URL')  ? null : define("TWITTER_FEED_URL",      'http://www.fabtotum.com/twitter_feed.json');
+defined('TWITTER_FEED_JSON') ? null : define("TWITTER_FEED_JSON",      TEMP_PATH.'twitter.json');
+
+
+defined('WIZARD_FILE') ? null : define("WIZARD_FILE", WWW_PATH.'WIZARD');
+
+
 ?>

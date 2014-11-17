@@ -75,8 +75,12 @@
 
     
  .plane{
+ 	/*
     width: 223px;
     height: 235px;
+    */
+    width: 212px;
+    height: 232px;
     background-image: url("<?php echo base_url()."application/modules/scan/assets/img/working_plane_simple.png "  ?>");  
  }
 

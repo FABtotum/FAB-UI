@@ -1,11 +1,12 @@
 <?php
-
 class FT_Layout {
 
 
 	protected $_meta_tag = array();
 	
 	protected $_css_file = array();
+	
+	protected $_header_js_file = array();
 	protected $_js_file  = array();
 
 	protected $_css_in_page = array();
@@ -24,6 +25,9 @@ class FT_Layout {
 	protected $_ft_ob_level;
     
     protected $_compress = true;
+	
+	
+	protected $_setup_wizard = false;
 
 	
 	protected $_ci;
@@ -79,6 +83,14 @@ class FT_Layout {
 			$this->add_css_file($_css);
 		}
 		
+		
+		//add the default headr JS
+		foreach($layout['_header_js'] as $_js){
+		
+			$this->add_header_js_file($_js);
+		}
+		
+		
 		//add the default JS
 		foreach($layout['_js'] as $_js){
 		
@@ -88,6 +100,7 @@ class FT_Layout {
 		
 		unset($layout['_css']);
 		unset($layout['_js']);
+		unset($layout['_header_js']);
 		
 		//add js in page for the template
 		$this->add_js_in_page(array('data'=> $this->_ft_load(array('_ci_view' => 'js', '_ci_vars' => '' , '_ci_return' => TRUE)), 'Global Functions'));
@@ -167,36 +180,44 @@ class FT_Layout {
 		//layout title 
 		$data['_layout_title'] = $this->_layout_title;
 		
-		//carico i meta tag
+		//load meta tag
 		$data['_layout_meta_tag'] = $this->_load_meta_tag();
         
+		//load theme skin
         $data['_skin'] = $this->_load_skin();
         
+        //load language
         $data['_language'] = $_SESSION['language'];
 		
-		//carico i css per la pagina
+		//load css files
 		$data['_css_files'] = $this->_load_css();
 
-		//carico i js per la pagina
+		//load header js files
+		$data['_header_js_files']  = $this->_header_load_js();
+		
+		//load js files (included on the bottom of the page)
 		$data['_js_files']  = $this->_load_js();
 
-		//carico eventuale css in pagina
+		//load possible css in page
 		$data['_css_in_page'] = $this->_load_css_in_page();
 
-		//carico eventuale js in pagina
+		//load possible js in page
 		$data['_js_in_page'] = $this->_load_js_in_page();
 		
-		//menu items
+		//load menu
 		$data['_sidebar_menu_items'] = $this->_load_menu_items();
 		
-		//breadcrumbs
+		//load breadcrumb
 		$data['_breadcrumbs'] = $this->_load_bradcrumbs();
 
-		//prima carico il contenuto del modulo/plugin che chiamiamo controller_view
+		//load page (module/plugin) content
 		$data['_controller_view'] = $this->_ci->load->view($view, $vars, TRUE);
 		
-		//extra ribbon
+		//load possible ribbon
 		$data['_custom_ribbon'] = $this->_custom_ribbon;
+		
+		//load wizard
+		$data['_setup_wizard'] = $this->get_setup_wizard();
 
 
 		return $this->_ft_load(array('_ci_view' => 'index', '_ci_vars' => $this->_ci_object_to_array($data), '_ci_return' => $return));
@@ -354,136 +375,183 @@ class FT_Layout {
 	
 	
 	
+	
+	/**
+	 * SET page TITLE
+	 * @param $title
+	 * 
+	 */
 	public function set_layout_title($title){
 		$this->_layout_title = $title;
 	}
 	
 	
-	
+	/**
+	 * set custom ribbon
+	 * @parama $custom
+	 * 
+	 */
 	public function set_custom_ribbon($custom){
 		$this->_custom_ribbon = $custom;
 	}
 
 
 
+	/**
+	 * add css file
+	 * @param #css_file
+	 */
 	public function add_css_file($css_file){
-
 		$this->_css_file[] = $css_file;
-
-
 	}
 
-
+	
+	/**
+	 * add js file
+	 * @param $js_file
+	 */
 	public function add_js_file($js_file){
-
 		$this->_js_file[] = $js_file;
-
 	}
+	
+	
+	/**
+	 * add header js file
+	 * @param $js_file
+	 */
+	public function add_header_js_file($js_file){
+		$this->_header_js_file[] = $js_file;
+	}
+	
 
-
+	/**
+	 * add css in page
+	 * @param $css_in_page
+	 */
 	public function add_css_in_page($css_in_page){
-
 		$this->_css_in_page[] = $css_in_page;
 	}
 
 
-
+	/**
+	 * add js in page
+	 * @param $js_in_page
+	 */
 	public function add_js_in_page($js_in_page){
-		
 		$this->_js_in_page[] = $js_in_page;
-
 	}
 	
 	
+	/**
+	 * add item to menu
+	 * @param $item_menu
+	 */
 	public function add_item_menu($item_menu){
-		
 		$this->_item_menu[] = $item_menu;
-	
 	}
 	
 	
+	/**
+	 * add meta tag
+	 * @param $meta
+	 */
 	public function add_meta($meta){
 		$this->_meta_tag[] = $meta;
 	}
 
     
-    public function set_compress($bool){
-        
+	
+	/**
+	 * set page compression
+	 * @param $bool
+	 */
+    public function set_compress($bool){    
         $this->_compress = $bool;
-        
     }
+	
+	
+	/**
+	 * load possible css in page
+	 */
+	protected function _load_css_in_page(){
+		return $this->_load_object_in_page($this->_css_in_page);
+	}
 
 
+	protected function _load_js_in_page(){
+		return $this->_load_object_in_page($this->_js_in_page);
+	}
 
+
+	
+	/**
+	 * generate html for css files inclusion
+	 * @return $html
+	 */
 	protected function _load_css(){
 
         $html = '';
 
 		foreach($this->_css_file as $css){
-		  
 			if(isset($css['src']) && $css['src'] != ''){
-                
-               
 				if(isset($css['comment']) && $css['comment'] != '')
 					$html .= '<!-- '.$css['comment']. ' -->'.PHP_EOL;
-                
 				$_src = isset($css['external']) && $css['external'] == TRUE ?  $css['src'] : base_url().$css['src'].'?v='.$_SESSION['fabui_version'];
-
 				$html .= '<link rel="stylesheet" type="text/css" media="screen" href="'.$_src.'">'.PHP_EOL;
-                
 			}
-
 		}
-        
-        
 		return $html;
 
 	}
 
 
+	/**
+	 * generate html for js files inside <header>
+	 * @return $html
+	 */
+	protected function _header_load_js(){
+		$html = '<!-- JS HEADER -->';
+		foreach($this->_header_js_file as $js){
+			if(isset($js['src']) && $js['src'] != ''){
+				if(isset($js['comment'])&& $js['comment'] != '')
+					$html .= '<!-- '.$js['comment']. ' -->'.PHP_EOL;
+				$_src = isset($js['external']) && $js['external'] == TRUE ?  $js['src'] : base_url().$js['src'].'?v='.$_SESSION['fabui_version'];
+				$html .= '<script src="'.$_src.'"></script>'.PHP_EOL;
+			}
+
+		}
+		return $html;
+
+	}
+
+
+	/**
+	 * generate html for js files included on the bottom of the pages
+	 */
 	protected function _load_js(){
 		
 		$html = '';
-
 		foreach($this->_js_file as $js){
-		  
 			if(isset($js['src']) && $js['src'] != ''){
-					
 				if(isset($js['comment'])&& $js['comment'] != '')
 					$html .= '<!-- '.$js['comment']. ' -->'.PHP_EOL;
-
 				$_src = isset($js['external']) && $js['external'] == TRUE ?  $js['src'] : base_url().$js['src'].'?v='.$_SESSION['fabui_version'];
-                
 				$html .= '<script src="'.$_src.'"></script>'.PHP_EOL;
-
 			}
-
 		}
-
 
 		return $html;
 
 	}
 
 
-	protected function _load_css_in_page(){
-
-		return $this->_load_object_in_page($this->_css_in_page);
-
-	}
-
-
-	protected function _load_js_in_page(){
-
-		return $this->_load_object_in_page($this->_js_in_page);
-
-	}
-
-
+	
+	/**
+	 * generate html 
+	 */
 	protected function _load_object_in_page($data){
 
 		$html = '';
-
 		foreach($data as $item){
 
 			if(isset($item['data']) && $item['data'] != ''){
@@ -500,72 +568,78 @@ class FT_Layout {
 
 	
 	
+	/**
+	 * generate html for sidebar menu
+	 * @return $html
+	 */
 	protected function _load_menu_items(){
-		
-		
-
-		//modules sidebar menu
 		
 		$html = '';
 		
+		
 		foreach($this->_item_menu as $item){
 			
-			
-			
-			
-		 
 			$active = strtolower(get_class($this->_ci)) == $item['name'] ? 'active' : '';
-			
-			$html .= '<li class="'.$active.'">';
-			
-			
+	
+			$html .= '<li class="'.$active.'">';			
 			$block = isset($_item['block']) ? $_item['block'] : 1;
-			
 			
 			$href = $item['plugin'] ? site_url('plugin/'.$item['name']) : site_url($item['name']);
 			
+			if(isset($item['sons'])){
+				$href = '#';
+			}
+			
 			$link = '<a data-controller="'.$item["name"].'" data-block="'.$block.'" data-href="'.$href.'" href="'.$href.'">';
-			
-		
 			$html .= $link;
-			
 			$icon = '';
 			
 			if(isset($item['icon']) && $item['icon'] != '')
 				$icon .= $item['icon'];
 			
 			$html .= $icon;
-			
-			
 			$_label = isset($item['label']) && $item['label'] != '' ? $item['label'] : $item['name'];
-			
-			
 			$html .= ' <span class="menu-item-parent">'.ucfirst($_label).'</span>';
-			
-		
 			
 			$html .= '</a>';
 			
+			
+			//if are present sons
+			if(isset($item['sons'])){
+
+				$uri = $this->_ci->uri->segments;
+				$html.= '<ul>';
+				
+				foreach($item['sons'] as $son){
+					
+					$active = isset($uri[2]) && $uri[2] == $son['name'] ? 'active' : '';
+					$html .= '<li class="'.$active.'">';
+					$href = site_url($item['name'].'/'.$son['name']);
+					$html .= '<a data-href="'.$href.'"  href="'.$href.'">';
+					
+					if(isset($son['icon'])){
+						$html .= $son['icon'].' ';
+					}
+					
+					$html .= $son['label'];
+					$html .= '</a>';
+					$html .= '</li>';
+					
+				}
+				$html.= '</ul>';
+				
+			}
 			$html .= '</li>';
 			
 		}
-		
-		
-		
-		//plugin sidebar menu
-		
-		
-		
-		
-		
 		return $html;
 		
 	}
 	
 	
 	/**
-	 * 
-	 * @return string
+	 * generate html for breadcrumbs
+	 * @return $html
 	 */
 	protected function _load_bradcrumbs(){
 		
@@ -577,23 +651,14 @@ class FT_Layout {
 		foreach($uri as $item){
 			
 			if($item != 'index'){
-				
                 $tmp = explode('-', $item);
-                
-
                 $_crumb = '';
                 
                 foreach($tmp as $key){
-                    
                     $_crumb .= ucfirst($key).' ';
-                    
                 }
-                
-                                
-                
                 $html .= '<li>'.$_crumb.'</li>';
             }
-			
 		}
 		
 		
@@ -604,7 +669,10 @@ class FT_Layout {
 	}
 	
 	
-	
+	/**
+	 * generate html for meta tags
+	 * @return $html;
+	 */
 	protected function _load_meta_tag(){
 		
 		$html = '';
@@ -612,79 +680,51 @@ class FT_Layout {
 		foreach($this->_meta_tag as $meta){
 			
 			if(isset($meta['name']) && $meta['name'] != ''){
-				
-				
 				if(isset($meta['comment']) && $meta['comment'] != '')
 					$html .= '<!-- '.$meta['comment'].' -->'.PHP_EOL;
-				
-				
 				$content = isset($meta['content']) && $meta['content'] != '' ? $meta['content'] : '';
-				
 				$html .= '<meta name="'.$meta['name'].'" content="'.$content.'" />'.PHP_EOL;
 			}
 			
 		}
-		
 		return $html;
 		
 		
 	}
     
     
+	/**
+	 * load theme skin
+	 */
     protected function  _load_skin(){
         
-        
         if(isset($_SESSION['user']['theme-skin']) && $_SESSION['user']['theme-skin'] != ''){
-            
-            return $_SESSION['user']['theme-skin'];
-            
+            return $_SESSION['user']['theme-skin'];    
         }else{
         
             $this->_ci->load->database();
             $this->_ci->load->model('configuration');
-            
             $skin =  $this->_ci->configuration->get_config_value('theme_skin');
-            
             $_SESSION['theme-skin'] = $skin;
-            
-            /*
-            unset($this->_ci->database); 
-            unset($this->_ci->configuration);
-            unset($this->_ci->model);
-            */
             return $skin;
         }
-        
-        
     }
     
     
+	
+	/**
+	 * load language
+	 */
     protected function _load_language(){
-        
-        
         if(isset($_SESSION['language']) && $_SESSION['language'] != ''){
-            
             return $_SESSION['language'];
-            
         }else{
            
             $this->_ci->load->database();
             $this->_ci->load->model('configuration');
-            
-            
             $languages = json_decode($this->_ci->configuration->get_config_value('languages'),TRUE);
-            
             $language = $this->_ci->configuration->get_config_value('language');
-            
-            
             $_SESSION['language'] = $languages[$language];
-            
-            /*
-            unset($this->_ci->database); 
-            unset($this->_ci->configuration);
-            unset($this->_ci->model);
-            */
-            
             return $languages[$language];
         } 
         
@@ -692,11 +732,24 @@ class FT_Layout {
     }
 	
 	
+	/**
+	 * set if show wizard on first setup
+	 */
+	function set_setup_wizard($bool){	
+		$this->_setup_wizard = $bool;
+	}
 	
+	/**
+	 * get if show wizard on first setup
+	 */
+	function get_setup_wizard(){
+		return $this->_setup_wizard;
+	}
 	
-	
-	
-	
+
+	/**
+	 * compress html
+	 */
 	protected function _do_compression($string){
 		
 		$buffer = $string;
@@ -704,7 +757,7 @@ class FT_Layout {
         $_search = array('/ {2,}/', '/<!--.*?-->|\t|(?:\r?\n[ \t]*)+/s');
         $_replace = array(' ','');
         
-        return preg_replace($_search, $_replace, $buffer);
+        return trim(preg_replace($_search, $_replace, $buffer));
         
 	}
 	

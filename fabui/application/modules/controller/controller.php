@@ -160,9 +160,17 @@ class Controller extends Module {
 	}
 
 
-	public function shutdown(){
+
+	public function wizard(){
 		
-		echo BASEPATH;
+		$set = $this->input->post('set');
+		
+		$set = $set == 0 ? false : true;
+		
+		$_SESSION['ask_wizard'] = $set;
+		
+		
+		echo true;
 		
 	}
 

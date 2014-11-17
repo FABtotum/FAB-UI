@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="col-sm-6">
+	<div class="col-sm-8">
 		<div class="row">
 			<div class="col-sm-12">
 				<h2 class="text-primary">
@@ -10,57 +10,66 @@
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="well">
-                    <div class="row text-center">
-                        <img id="plane" src="/fabui/application/modules/scan/assets/img/working_plane.png" />
-                    </div>
                     <div class="row">
-    					<div class="smart-form">
-    						<fieldset style="background: transparent;">
-    							<div class="row">
-    								<label class="label">
-										Position (mm)
-									</label>
-    								<section>
-    									<label class="input">
-    										<span class="icon-prepend label-x1">
-    											X1
-    										</span>
-    										<input class="coordinates" id="x1" type="text">
-    									</label>
-    								</section>
-    								<section class="y-container">
-    									<label class="input">
-    										<span class="icon-prepend">
-    											Y1
-    										</span>
-    										<input class="coordinates" id="y1" type="text">
-    									</label>
-    								</section>
-    								<section>
-    									<label class="input">
-    										<span class="icon-prepend label-x2">
-    											X2
-    										</span>
-    										<input class="coordinates" id="x2" type="text">
-    									</label>
-    								</section>
-    								<section class="y-container">
-    									<label class="input">
-    										<span class="icon-prepend">
-    											Y2
-    										</span>
-    										<input class="coordinates" id="y2" type="text">
-    									</label>
-    								</section>
-    							</div>
-    						</fieldset>
-    					</div>
+                    	
+                    	<div class="col-sm-6 text-center">
+                    	
+                        	<img id="plane" src="/fabui/application/modules/scan/assets/img/working_plane.png" />
+                        
+                        </div>
+                        
+                        <div class="col-sm-6">
+                        	
+                        	<div class="smart-form">
+	    						<fieldset style="background: transparent;">
+	    							<div class="row">
+	    								<label class="label">
+											Position (mm)
+										</label>
+	    								<section>
+	    									<label class="input">
+	    										<span class="icon-prepend label-x1">
+	    											X1
+	    										</span>
+	    										<input class="coordinates" id="x1" type="text">
+	    									</label>
+	    								</section>
+	    								<section class="y-container">
+	    									<label class="input">
+	    										<span class="icon-prepend">
+	    											Y1
+	    										</span>
+	    										<input class="coordinates" id="y1" type="text">
+	    									</label>
+	    								</section>
+	    								<section>
+	    									<label class="input">
+	    										<span class="icon-prepend label-x2">
+	    											X2
+	    										</span>
+	    										<input class="coordinates" id="x2" type="text">
+	    									</label>
+	    								</section>
+	    								<section class="y-container">
+	    									<label class="input">
+	    										<span class="icon-prepend">
+	    											Y2
+	    										</span>
+	    										<input class="coordinates" id="y2" type="text">
+	    									</label>
+	    								</section>
+	    							</div>
+	    						</fieldset>
+	    					</div>
+                        	
+                        </div>
+                        
                     </div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="col-sm-6">
+	<div class="col-sm-4">
 		<div class="row">
 			<div class="col-sm-12">
 				<h2 class="text-primary">
@@ -139,13 +148,15 @@ probe_quality_info[<?php echo $quality['id'] ?>] = <?php echo $quality['values']
 
 /** PLANE COORDINATES */  
 var c = {"x":65,"y":64,"x2":152,"y2":164,"w":100,"h":100};
+var maxsize = {'w':212, 'h':232};
 var jcrop_api;     
 /**  JCROP */  
 $('#plane').Jcrop({
     bgFade: true,
-    allowSelect: false,
-    setSelect: [c.x,c.y,c.x2,c.y2],
-    onChange: setCoords,
+   // trueSize: [maxsize.w, maxsize.h],
+    //allowSelect: false,
+    //setSelect: [c.x,c.y,c.x2,c.y2],
+  
     onSelect: setCoords   
 },function(){
     jcrop_api = this;

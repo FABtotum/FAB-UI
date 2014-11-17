@@ -368,10 +368,41 @@ function setCoords(c)
     x2 = c.x2;
     y2 = c.y2;
     
+    
+    
+   
+    
+    var y_max = 235;
+    
+    y1 = y_max - y1;
+    y2 = y_max - y2;
+    
+    if(x1 < 32 ){
+    	x1 = 32;
+    	jcrop_api.setSelect([x1 ,y1, x2,y2]);
+    	return;
+    }
+    
+    
+    if(y2 < 66){
+    	y2 = 66;
+    	jcrop_api.setSelect([x1 ,y1, x2,y2]);
+    	return;
+    }
+    
+ 
+    if(y1 >175){
+    	
+    	y1 = 175;
+    	jcrop_api.setSelect([x1 ,y1, x2,y2]);
+    	return;
+    }
+    
+    
     $('#x1').val(x1);
-    $('#y1').val(y1);
+    $('#y1').val(y2);
     $('#x2').val(x2);
-    $('#y2').val(y2);
+    $('#y2').val(y1);
    
 };
 

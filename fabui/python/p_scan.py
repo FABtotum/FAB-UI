@@ -117,15 +117,16 @@ output_file= destination + "cloud.asc"	 #output file
 #j				#t
 #n
 
-#job stats
+#job stats calc
 if (end==0 and begin==0 and deg==0):
 	a_axis=False #4th axis is not involved
 	slices=1
 else:
-	a_axis=True #4th axis is not involved
+	a_axis=True #4th axis is involved
 	slices= int(abs(end-begin)/deg) #number of 4 axis slices
 	
 tot_probes=(((x1-x)*probe_density)*((y1-y)*probe_density))*slices
+
 
 def printlog(percent,num):		
 	str_log='{"scan":{"name": "'+name+'","pid": "'+str(myPID)+'","started": "'+str(started)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","stats":{"percent":"'+str(percent)+'","probe":"'+str(probe_num)+'","tot_probes":"'+str(tot_probes)+'","slice_number":'+str(i)+',"tot_slices":'+str(slices)+'}}}'
@@ -152,7 +153,6 @@ def rotate_y_axis(point,angle):
 	#End rotation matrix definition------------------------
 	return np.dot(point,rotation_matrix_y)
 	
-	
 def rotate_x_axis(point,angle):
 	#Rotation matrix definition---------------------------
 	rotation_matrix_x = np.zeros(shape=(4,4))
@@ -176,31 +176,22 @@ def convert_cloud(points):
 def probe(x,y):
 	global points_on_plane
 	serial_reply=""
-	serial.flushInput()		   #clean buffer
-	probe_point= "G30\r\n" #probing comand
-	serial.write(probe_point)
-	time.sleep(0.5) #give it some to to start  
+
+	serial.flushInput()
+	serial.write("G30\r\n")
+	
 	probe_start_time = time.time()
 	while not serial_reply[:22]=="echo:endstops hit:  Z:":
-	
+		serial_reply=serial.readline().rstrip()	
 		#issue G30 Xnn Ynn and waits reply.
-		#Expected reply
-		#endstops hit:  Z: 0.0000	
-		#couldn't probe point: = 
-		if (time.time() - probe_start_time>90):  #timeout management
-			#10 seconds passed, no contact
-			trace_msg="Could not probe "+str(x)+ "," +str(y) + " / " + str(deg) + " degrees"			
-			trace(trace_msg)
-			#change safe-Z
-			return False #leave the function,keep probing
-		
-		serial_reply=serial.readline().rstrip()
-		#add safety timeout, exception management
-		time.sleep(0.1) #wait
+		if (time.time() - probe_start_time>90):  
+			#timeout management
+			trace("Could not probe this point")
+			return False
+			break	
 		pass
 		
 	#get the z position
-	#print serial_reply
 	z=float(serial_reply.split("Z:")[1].strip())
 	
 	new_point = [x,y,z,1]
@@ -217,8 +208,6 @@ baud = 115200
 
 #initialize serial
 serial = serial.Serial(port, baud, timeout=0.6)
-serial.flushInput()
-
 time.sleep(0.5) 						#sleep a while
 serial.flushInput()						#clean buffer
 	
@@ -253,8 +242,8 @@ time.sleep(1)											#take its time to move
 #MAIN PROBING LOOP
 while (i <= slices) :
 
-	#lower the probe
-	serial.write('G0 Z140\r\n') #safe Z!!!!
+	#do each planar scan
+	serial.write('G0 Z140\r\n') #center Z (collimation pstn)
 	time.sleep(2) 				#take some time to move
 	serial.flushInput()		   	#clean buffer
 	
@@ -266,67 +255,68 @@ while (i <= slices) :
 	ys=np.arange(y,y1,1/probe_density)
 	
 	d_zeta=0
-
 	
 	for y_pos in ys:
 		for x_pos in xs:
 			
 			#Adaptive controls (min 2 points collected, first is Null)
-			print "----------"
+			#print "----------"
 			if len(points_on_plane)>=3:
 				
 				if probes_to_skip>0:
 					probes_to_skip-=1
-					print "SKIPPED "+str(probes_to_skip) + " REMAINING"
+					#print "SKIPPED "+str(probes_to_skip) + " REMAINING"
 					probe_num+=1
 					continue
 		
 			trace("probing point "+str(probe_num) +" of "+str(tot_probes))
 
 			#take its time to move to probe position			
-			serial.write('G0 X' + str(x_pos) + ' Y' +str(y_pos) + ' F20000\r\n')	#go to probing pos
+			serial.write('G0 X' + str(x_pos) + ' Y' +str(y_pos) + ' F15000\r\n')	#go to probing pos
 			time.sleep(0.5)
 			
 			#probe point in x_pos,y_pos
 			if probe(x_pos,y_pos):
+			
+				safe_z=original_safe_z+points_on_plane[-1][2]
 				#of successful, try adaptive density - Experimental
 				if len(points_on_plane)>=3:	
 					#density control					
 					d_zeta=(points_on_plane[-2][2]-points_on_plane[-1][2])
-					if abs(d_zeta)<0.08:
+					if abs(d_zeta)<0.05:
 						#skip probe if object has been very flat recently.
 						if skips<=6:
-							skips+=1	#mx 6 skips				
-					else:
-						
+							skips+=1	#max 6 skips				
+					else:		
 						if skips>=0:
 							skips-=2    #min 0 skip
 					
 					probes_to_skip=skips
 					#print "probes_to_skip: " + str(probes_to_skip)
+					
 					slope=d_zeta/(1/probe_density)
-					print "Slope= " +str(slope) + "last_Z= " +str(points_on_plane[-1][2]) + " SafeZ: " + str(safe_z)
-					print "DENSITY" +str(probe_density)
+					
+					#print "Slope= " +str(slope) + "last_Z= " +str(points_on_plane[-1][2]) + " SafeZ: " + str(safe_z)
+					#print "DENSITY" +str(probe_density)
 					
 					
-				#safe_z adaptive control CURRENTLY DISABLED
-			
-				if abs(d_zeta/(1/probe_density))>0.5 or points_on_plane[-1][2]>(safe_z/3):
+				#safe_z adaptive control		
+				if abs(d_zeta/(1/probe_density))>1 or points_on_plane[-1][2]>(safe_z/3):
 					#if slope>45° or 1/3rd of Safe_z has been reached, trigger adaptive behaviour
 					if skips>0:
 						step=skips
 					else:
 						step=1
 					#points_on_plane[-1][2] // LAST Z is contained here
-					safe_z=original_safe_z+points_on_plane[-1][2] #-float(d_zeta*(1/probe_density)*step)
-					print "CHANGING SAFE Z: " + str(safe_z)
-					
-			print "SAFE Z:" + str(safe_z)
-			serial.write('G91\r\n') #rel
-			#serial.write('G0 Z'+str(safe_z)+'\r\n') #move to safe Z ADAPTIVE
-			serial.write('G0 Z0\r\n') #move to safe Z=max heigh 
-			serial.write('G90\r\n') #abs
-
+					safe_z=original_safe_z+points_on_plane[-1][2] 
+					#safe_z=-float(d_zeta*(1/probe_density)*step)
+					#print "CHANGING SAFE Z: " + str(safe_z)
+			if safe_z <36:
+				safe_z=original_safe_z+36 #probe lenght + safe z
+				
+			#print "SAFE Z:" + str(safe_z)
+			serial.write('G0 Z'+str(safe_z)+' F1500\r\n') #move to safe Z ADAPTIVE
+			
 			serial.flushInput()						#clean buffer
 			time.sleep(0.5)
 			

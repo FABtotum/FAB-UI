@@ -210,9 +210,14 @@
 		$("#save-button").html('Saving..');
 		
 		
+		
+		
 		$.ajax({
           url: '<?php echo module_url('profile').'ajax/basic_info.php'; ?>',
-          data:{ first_name: $("#first_name").val(), last_name: $("#last_name").val(), email: $("#email").val(), avatar: avatar, avatar_change: avatar_change, theme_skin : theme_skin, lock_screen : $("#lock_screen").val()},
+          data:{ first_name: $("#first_name").val(), last_name: $("#last_name").val(), email: $("#email").val(), avatar: avatar, 
+          			avatar_change: avatar_change, theme_skin : theme_skin, lock_screen : $("#lock_screen").val(), 
+          			header_fixed: $('#smart-fixed-header').prop('checked'), navigation_fixed: $('#smart-fixed-navigation').prop('checked'),
+          			ribbon_fixed: $('#smart-fixed-ribbon').prop('checked'), footer_fixed: $('#smart-fixed-footer').prop('checked')},
           type: "POST"
 		}).done(function( html ) {
 			

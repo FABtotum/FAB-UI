@@ -47,5 +47,10 @@ $route['plugin/active/(:any)']   = "plugin/active/$1";
 $route['plugin/deactive/(:any)'] = "plugin/deactive/$1";
 $route['plugin/(:any)']          = "$1";
 
+$route['maintenance/4-axis'] = "maintenance/fourthaxis";
+$route['maintenance/self-test'] = "maintenance/selftest";
+$route['maintenance/bed-calibration'] = "maintenance/bedcalibration";
+$route['maintenance/probe-calibration'] = "maintenance/probecalibration";
+$route['maintenance/first-setup'] = "maintenance/firstsetup";
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

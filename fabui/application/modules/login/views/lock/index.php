@@ -36,6 +36,12 @@
 
 		<!-- #GOOGLE FONT -->
 		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">
+		
+		
+		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-2.1.1.min.js"></script>
+		<!-- BOOTSTRAP JS -->
+		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-ui-1.10.3.min.js"></script>
+
 
 
 	
@@ -85,16 +91,15 @@
 
 		</div>
 
+
+		
 		<!--================================================== -->	
-
+		<script src="<?php echo base_url() ?>application/layout/assets/js/app.config.js"></script>
 		<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
-		<script src="<?php echo base_url() ?>application/layout/assets/js/js/plugin/pace/pace.min.js"></script>
-
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/pace/pace.min.js"></script>
+	
 	    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
-		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-2.0.2.min.js"></script>
-		<!-- BOOTSTRAP JS -->
-		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-ui-1.10.3.min.js"></script>
-
+		
 		<!-- JS TOUCH : include this plugin for mobile drag / drop touch events 		
 		<script src="js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script> -->
 

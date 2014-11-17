@@ -63,6 +63,9 @@
 	/** PROGRESS */
 	var progress = 0;
 	
+	
+	var isEngageFeeder = 0;
+	
 	$(document).ready(function() {
 
 		
@@ -282,14 +285,23 @@
 function ticker(){
     
     if(ticker_url != ''){
-        
-         $.get( ticker_url , function( data ) {
-            if(data != ''){
-                data = data.replace("\n", "<br>");
-                /*data = data.replace('<?php echo PHP_EOL; ?>', '<br>');*/
-                waitContent(data);
-            }
-       });
+    	
+    	
+    	
+    	$.ajax({
+			type: 'GET',
+			url: ticker_url,
+		}).done(function(data, statusText, xhr) {
+			
+			if(xhr.status == 200){
+				data = data.replace("\n", "<br>");
+				waitContent(data);
+			
+			}
+			
+		});	
+    	
+    	
     }
 }
 

@@ -18,7 +18,7 @@
     				</div>
     				<div class="col-sm-6 text-center">
     					<h1>
-    						<span class="badge">1</span>
+    						<span class="badge bg-color-blue txt-color-white">1</span>
     					</h1>
     					<h2>Make sure the feeder is engaged</h2>
     					<h2>Close the cover</h2>
@@ -42,7 +42,7 @@
     				</div>
     				<div class="col-sm-6 text-center">
     					<h1>
-    						<span class="badge">2</span>
+    						<span class="badge bg-color-blue txt-color-white">2</span>
     					</h1>
     					<h2>To engage the filament feeder push the small button under the building platform near the 4th axis chuck.</h2>
     					<h2>Apply a good amount of force when pushing</h2>    					
@@ -73,7 +73,7 @@
                     <div class="col-sm-6 text-center">
                     
                         <h1>
-            				<span class="badge">3</span>
+            				<span class="badge bg-color-blue txt-color-white">3</span>
             			</h1>
                         
             			<h2>
@@ -100,7 +100,7 @@
                     <div class="col-sm-6 text-center">
                     
                         <h1>
-            				<span class="badge">4</span>
+            				<span class="badge bg-color-blue txt-color-white">4</span>
             			</h1>
                         
             			<h2>
@@ -202,7 +202,7 @@
 								</label>
 							</div>
 						 </div>
-						 <p>Probes the working plane to auto-correct movements to account for unknown straight plane (SUGGESTED)</p>
+						 <p>Probes the working plane to auto-correct movements to account for not leveled bed (SUGGESTED)</p>
 					</div>
 					
 				</div>
@@ -389,7 +389,6 @@
         
         function pre_print(){
             
-            
             openWait('Checking printer');
             $("#res-icon").removeClass('fa-warning fa-check txt-color-green txt-color-red fa-spinner fa-spin');
             $("#res-icon").addClass('fa-spinner fa-spin');
@@ -404,7 +403,7 @@
         		  dataType : 'json',
                   type: "POST", 
         		  async: true,
-                  data : { file : file_selected.full_path, time : timestamp, type: 'additive' }
+                  data : { file : file_selected.full_path, time : timestamp, type: 'additive', engage_feeder: isEngageFeeder }
         	}).done(function(response) {
                 
                 var status = response.status;
@@ -474,7 +473,10 @@
                     
                     $("#engaege_step1").hide();
                     $("#engaege_step2").show();
-                    $('#modal_link').html('Ok');  
+                    $('#modal_link').html('Ok');
+                    
+                    isEngageFeeder = 1;
+                      
                     
                 }else{
                     $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-warning').addClass('txt-color-red');
@@ -488,7 +490,9 @@
 						color : "#C46A69",
 						icon : "fa fa-warning",
 		                timeout: 15000
-		            }); 
+		            });
+		            
+		            isEngageFeeder = 0; 
 		                    
                     
                     	

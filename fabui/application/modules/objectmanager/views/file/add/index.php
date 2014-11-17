@@ -8,7 +8,7 @@
 	</div>
 	<div class="col-xs-6 col-sm-8 col-md-8 col-lg-8 text-align-right">
 		<div class="page-title">
-			<a href="<?php  echo site_url('objectmanager/edit/'.$_object_id)?>" class="btn btn-default"> Back to object</a>
+			<a href="<?php  echo site_url('objectmanager/edit/'.$_object_id)?>" class="btn btn-primary"> Back to object</a>
 		</div>
 	</div>
 </div>
@@ -70,11 +70,7 @@
         
 			
 			<div class="form-actions">
-				<button class="btn btn-primary btn-lg" id="save-object">
-					<i class="fa fa-save">
-					</i>
-					Save
-				</button>
+				<button class="btn btn-primary btn-lg" id="save-object"> <i class="fa fa-save"></i>&nbsp;Save</button>
 			</div>
 		</div>
 	</div>

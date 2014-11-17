@@ -58,7 +58,7 @@
 	                    </td>
 	                    <td class="text-right">
 	                    	<?php if($internet): ?>
-                            <a class="btn btn-default btn-sm download download-myfab" download-item="fabui">
+                            <a class="btn btn-primary btn-default btn-sm download download-myfab" download-item="fabui">
                                <i class="fa fa-refresh"></i> Update
                             </a>
                              <a class="btn btn-default btn-sm delete" style="display: <?php echo $running == true && $update_type == 'fabui' ? '' : 'none' ?>;">
@@ -91,8 +91,8 @@
                         </td>
                         <td class="text-right">
                         	<?php if($internet): ?>
-                            <a class="btn btn-default btn-sm download download-marlin" download-item="marlin">
-                                <i class="fa fa-refresh"></i> Update
+                            <a class="btn btn-primary btn-default btn-sm download download-marlin" download-item="marlin">
+                                <i class="fa  fa-refresh"></i> Update
                             </a>
                              <a class="btn btn-default btn-sm delete" style="display: <?php echo $running == true && $update_type == 'marlin' ? '' : 'none' ?>">
                                <i class="fa fa-times"></i>

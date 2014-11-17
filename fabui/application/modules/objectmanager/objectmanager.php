@@ -979,8 +979,7 @@ class Objectmanager extends Module {
     /** */
     function copy_from_usb($file){
        
-       //TO DO ---> MOVE FROM USB TO UPLOAD FOLDER
-       //TO DO ---> INSERT RECORD TO TB FILE
+       
        
        /** LOAD FILE HELPER */
        $this->load->helper('file');
@@ -1108,14 +1107,8 @@ class Objectmanager extends Module {
 			
 			$name .= '.ini';
 			
-			
-			
 			$this->load->helper('download');
-			
-			
 			force_download($name, $config);
-			
-			
 		}
 		
 		

@@ -1,7 +1,7 @@
 <div class="widget-body-toolbar">
 	<div class="row">
 		<div class="col-sm-12">
-			<a href="<?php  echo site_url('objectmanager/file/add/'.$_id_object)?>" class="btn btn-default pull-right"> Add Files</a>
+			<a href="<?php  echo site_url('objectmanager/file/add/'.$_id_object)?>" class="btn btn-primary pull-right"> Add Files</a>
 		</div>
 	</div>
 </div>

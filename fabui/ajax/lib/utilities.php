@@ -427,6 +427,9 @@ function clean_temp(){
 	
 	$files_to_take[] = 'picture.jpg';
 	$files_to_take[] = 'fab_ui_safety.json';
+	$files_to_take[] = 'instagram_feed.json';
+	$files_to_take[] = 'instagram_hash.json';
+	$files_to_take[] = 'twitter.json';
 	
 	foreach($files as $file){
 		

@@ -205,7 +205,7 @@ function finalize_print($tid, $status){
 	//WAIT FOR THE UI TO FINALIZE THE PROCESS
 	sleep(7);
 	//REMOVE ALL TEMPORARY FILES
-	shell_exec('sudo rm -rf '.$attributes['folder']); 
+	//shell_exec('sudo rm -rf '.$attributes['folder']); 
 	$log->info('Task #'.$tid.' end finalizing');
 	
 	
@@ -604,7 +604,7 @@ function finalize_general($tid,$type,$status){
 
 	//UPDATE TASK
 	update_task($tid, $status);
-	sleep(10);
+	sleep(5);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']);
 	$log->info('Task #'.$tid.' end finalizing');

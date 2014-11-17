@@ -1,12 +1,11 @@
-import time
+import re
+a="G01 Z1234 X123 Y293 F23100"
 
-start = time.clock()
+m = re.search('Z(.+?) ', a)
+if m:
+	found = m.group(1)
+	print found 
+	found = float(found)+1.5
+	b=re.sub('Z.*? ','F'+str(found)+' ',a, flags=re.DOTALL)
+	print b
 
-time.sleep(10);
-
-end = time.clock()
-
-
-diff = end-start
-
-print "%.2gs" % (diff)

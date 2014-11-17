@@ -367,20 +367,8 @@
 	
 	function ticker(){
 		
-		
-    
 	    if(ticker_url != ''){
-	        
-	         $.get( ticker_url , function( data ) {
-	            
-	            if(data != ''){
-	               $("#console").html(data);
-	               $('#console').scrollTop(1E10);
-	              
-	            }
-	       }).fail(function(){ 
-	           
-	        });
+			getTrace(ticker_url, 'GET', $("#console"));
 	    }
 	}
 	

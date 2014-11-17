@@ -1,38 +1,17 @@
-<!--==================================================-->
-<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices) <script data-pace-options='{ "restartOnRequestAfter": true }' src="js/plugin/pace/pace.min.js"></script>-->
-<!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
-<script src="/assets/js/libs/jquery-2.0.2.min.js" ></script>
-<script src="/assets/js/libs/jquery-ui-1.10.3.min.js"></script>
-<!-- JS TOUCH : include this plugin for mobile drag / drop touch events <script src="/assets/js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script> -->
-<!-- BOOTSTRAP JS -->
-<script src="/assets/js/bootstrap/bootstrap.min.js">
-</script>
-<!-- CUSTOM NOTIFICATION -->
-<script src="/assets/js/notification/SmartNotification.min.js">
-</script>
-<!-- JQUERY VALIDATE -->
-<script src="/assets/js/plugin/jquery-validate/jquery.validate.min.js">
-</script>
-
-<!-- browser msie issue fix -->
-<script src="/assets/js/plugin/msie-fix/jquery.mb.browser.min.js">
-</script>
-<!-- FastClick: For mobile devices -->
-<script src="/assets/js/plugin/fastclick/fastclick.min.js">
-</script>
-<!-- FastClick: For mobile devices -->
-
-</script>
-<script src="/assets/js/plugin/bootstrap-wizard/jquery.bootstrap.wizard.min.js">
-</script>
+<script src="/assets/js/app.config.js?"></script>
+<script src="/assets/js/bootstrap/bootstrap.min.js"></script>
+<script src="/assets/js/notification/SmartNotification.min.js"></script>
+<script src="/assets/js/plugin/jquery-validate/jquery.validate.min.js"></script>
+<script src="/assets/js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
+<script src="/assets/js/plugin/fastclick/fastclick.min.js"></script>
+<script src="/assets/js/plugin/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
 <!--[if IE 7]>
 	<h1>
 		Your browser is out of date, please update your browser by going to www.microsoft.com/download
 	</h1>
 <![endif]-->
 <!-- MAIN APP JS FILE -->
-<script src="/assets/js/app.min.js">
-</script>
+<script src="/assets/js/app.min.js"></script>
 <script type="text/javascript">
 	
     
@@ -235,12 +214,6 @@
 			
 			
 		}
-
-
-
-
-
-
 
 	});
 </script>

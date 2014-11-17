@@ -52,7 +52,7 @@ if(@fsockopen('www.google.com', 80, $num, $error, 5)){
 	
 	echo "Flash done!".PHP_EOL;
 	
-	shell_exec('sudo rm '.$destination);
+	//shell_exec('sudo rm '.$destination);
 
 }else{
 	echo "No internet connectivity".PHP_EOL;

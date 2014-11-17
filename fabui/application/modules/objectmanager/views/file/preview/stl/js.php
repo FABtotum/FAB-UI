@@ -53,8 +53,10 @@
     	
     	thingiview.setObjectMaterial($(this).attr("data-action"));
     	
-    	$(".material").removeClass('active');
-    	$(this).addClass('active');
+    	
+    	
+    	$(".material").removeClass('active btn-primary').addClass('btn-default');
+    	$(this).addClass('active').addClass('btn-primary');
     	
     	
     }
@@ -65,8 +67,10 @@
   		var rotate = $(this).attr('data-action') == 'on';
   		thingiview.setRotation(rotate);
   		
-  		$(".rotation").removeClass('active');
-    	$(this).addClass('active');
+  		
+    	
+    	$(".rotation").removeClass('active btn-primary').addClass('btn-default');
+    	$(this).addClass('active').addClass('btn-primary');
   	}
   	
   	
@@ -75,8 +79,8 @@
   		var plane = $(this).attr('data-action') == 'show';
   		thingiview.setShowPlane(plane);
   		
-  		$(".plane").removeClass('active');
-    	$(this).addClass('active');
+  		$(".plane").removeClass('active btn-primary').addClass('btn-default');
+    	$(this).addClass('active').addClass('btn-primary');
   	}
   	
        

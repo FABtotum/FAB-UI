@@ -181,7 +181,7 @@ class Scan extends Module {
 		*/
 		$this->layout->add_css_in_page(array('data'=> $this->load->view('index/css', '', TRUE), 'comment' => 'SCAN IN PAGE CSS'));
 
-        $this->layout->set_compress(false);
+        //$this->layout->set_compress(false);
 		$this->layout->view('index/index', $data);
 	}
 
@@ -873,6 +873,11 @@ class Scan extends Module {
 		$probe_quality = $probe_quality['values'];
         
         
+		//$y_max = 235;
+		
+		//$param['y1'] = $y_max - $param['y1'];
+		//$param['y2'] = $y_max - $param['y2'];
+		
         
         /** LAUNCH SCAN COMMAND */
         $_command_scan = 'sudo python /var/www/fabui/python/p_scan.py -x'.$param['x1'].' -y'.$param['y1'].' -i'.$param['x2'].' -j'.$param['y2'].' -n'.$probe_quality['mm'].' -a'.$param['axis_increment'].' -b'.$param['start_degree'].' -e'.$param['end_degree'].' -l'.$task_files['scan_monitor_file'].' -d'.$task_files['destination_folder'].' -v1 -t'.$task_files['probing_trace_file'].' -k'.$id_task.' 2>'.$task_files['destination_folder'].$task_files['probing_debug_file'].'  > /dev/null & echo $!'; 

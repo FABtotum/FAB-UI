@@ -3,6 +3,7 @@ import os,sys,time
 import serial
 from threading import Thread
 from subprocess import call
+import re
 
 #process params
 try:
@@ -42,6 +43,7 @@ started=last_update=time.time()
 completed_time=0
 resent=0
 completed=0
+z_override=0
 
 #overrides & controls
 paused=False
@@ -50,7 +52,7 @@ killed=False
 
 	
 def printlog(percent,sent):
-	str_log='{"print":{"name": "'+ncfile+'","lines": "'+str(lenght)+'","started": "'+str(started)+'","paused": "'+str(paused)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","shutdown": "'+str(shutdown)+'","stats":{"percent":"'+str(percent)+'","line_number":'+str(sent)+',"extruder":'+str(ext_temp)+',"bed":'+str(bed_temp)+',"extruder_target":'+str(ext_temp_target)+',"bed_target":'+str(bed_temp_target)+'}}}'
+	str_log='{"print":{"name": "'+ncfile+'","lines": "'+str(lenght)+'","started": "'+str(started)+'","paused": "'+str(paused)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","shutdown": "'+str(shutdown)+'","stats":{"percent":"'+str(percent)+'","line_number":'+str(sent)+',"extruder":'+str(ext_temp)+',"bed":'+str(bed_temp)+',"extruder_target":'+str(ext_temp_target)+',"bed_target":'+str(bed_temp_target)+',"z_override":'+str(z_override)+'}}}'
 	#write log
 	handle=open(logfile,'w+')
 	print>>handle, str_log
@@ -110,6 +112,7 @@ def sender():
 	global resend
 	global ovr_cmd
 	global EOF
+	global z_override
 	
 	gcode_line=0
 	with open(ncfile, 'r+') as f:
@@ -155,6 +158,22 @@ def sender():
 							if paused:
 								trace("Resuming print")
 								paused=False
+								
+						if override=="!z_plus":	
+							z_override +=0.1
+							serial.write("G91\r\n") 
+							serial.write("G0 Z+0.1\r\n")  #move up
+							serial.write("G90\r\n") 
+							sent+=3
+							trace("Z height incresed by 0.1 mm")
+
+						if override=="!z_minus":	
+							z_override -=0.1						
+							serial.write("G91\r\n") 
+							serial.write("G0 Z-0.1\r\n")  #move down
+							serial.write("G90\r\n") 
+							sent+=3
+							trace("Z height decreased by 0.1 mm")
 											
 						if override=="!shutdown_on":
 							#will shutdown the machine after the print ends
@@ -165,8 +184,6 @@ def sender():
 							trace("Auto-Shutdown has been revoked")
 							#will not shutdown the machine.
 							shutdown=False
-						
-						
 
 					else:
 						#gcode is executed ASAP
@@ -178,6 +195,19 @@ def sender():
 						
 				#Normal Gcode
 				#if received>sent: #buffer is empty, can send next line
+				
+				#Z override calculation
+				if z_override!=0:
+					#check if line is a z change.
+					#G1 Z0.100 F15000.000
+					z_str = re.search('Z(.+?) ', line)
+					if z_str:
+						z_c = z_str.group(1)
+						z_c = float(z_c)+z_override
+						#update Z coords.
+						line =re.sub('Z.*? ','Z'+str(z_c)+' ',line, flags=re.DOTALL)
+						#trace(line)
+					
 				serial.write(line+"\r\n")
 				#print str(gcode_line)+" SENT "+ str(line)
 				sent+=1
@@ -379,7 +409,7 @@ sender.join()
 listener.join()
 #trace("listener ok");
 
-trace("Done!");
+#trace("Done!");
 
 serial.close()
 sys.exit()

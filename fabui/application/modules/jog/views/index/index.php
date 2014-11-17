@@ -45,12 +45,12 @@
         <div class="well ">
             	
             	<div class="btn-group btn-group-justified" >
-	                <a id="home-all-axis"    href="javascript:void(0)" class="btn btn-default" title="Home all axis">Home All axis</a>
-					<a id="zero-all"         href="javascript:void(0)" class="btn btn-default" title="Zero All">Zero All</a>
-					<a id="position"         href="javascript:void(0)" class="btn btn-default" title="Position">Position</a>
-					<a id="get-temp-ext"     href="javascript:void(0)" class="btn btn-default" title="Temperature">Temperature</a>
-	                <a id="bed-align"        href="javascript:void(0)" class="btn btn-default macro" title="Auto Bed Leveling">ABL</a>
-	                <a id="reset-controller" href="javascript:void(0)" class="btn btn-default" title="Reset Controller">Reset controller</a>
+	                <a id="home-all-axis"    href="javascript:void(0)" class="btn btn-primary " title="Home all axis">Home All axis</a>
+					<a id="zero-all"         href="javascript:void(0)" class="btn btn-primary " title="Zero All">Zero All</a>
+					<a id="position"         href="javascript:void(0)" class="btn btn-primary " title="Position">Position</a>
+					<a id="get-temp-ext"     href="javascript:void(0)" class="btn btn-primary " title="Temperature">Temperature</a>
+	                <a id="bed-align"        href="javascript:void(0)" class="btn btn-primary  macro" title="Auto Bed Leveling">ABL</a>
+	                <a id="reset-controller" href="javascript:void(0)" class="btn btn-primary " title="Reset Controller">Reset controller</a>
                 </div>
 			
         </div>
@@ -221,6 +221,14 @@
                                         <div class="smart-form">
                                             <fieldset>
                                               
+                                              
+                                              	<div class="row">
+                                              		<section class="col col-3"></section>
+                                              		<section class="col col-6">
+                                              			<label class="label text-center">Step (mm)</label>
+                                              		</section>
+                                              		<section class="col col-3"></section>
+                                              	</div>
                                                 <div class="row">
                                                     <section class="col col-3">
                                                         <button data-action="-" type="button" class="btn btn-default btn-sm btn-block extruder-e-action">

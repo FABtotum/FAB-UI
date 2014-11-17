@@ -1,6 +1,6 @@
 <?php
 /** FORCE RESET CONTROLLER */
-$_command = 'sudo python /var/www/fabui/python/gmacro.py shutdown'; 
+$_command = 'sudo python /var/www/fabui/python/gmacro.py shutdown > /dev/null'; 
 shell_exec($_command);
 
 

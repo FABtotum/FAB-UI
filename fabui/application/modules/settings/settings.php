@@ -25,8 +25,10 @@ class Settings extends Module {
         $this->load->database();
         $this->load->model('configuration');
 		
+		$this -> config->load('fabtotum', TRUE);
 		
-		$_units = json_decode(file_get_contents('/var/www/fabui/config/config.json'), TRUE);
+		
+		$_units = json_decode(file_get_contents($this->config->item('fabtotum_config_units', 'fabtotum')), TRUE);
         
         $data['_standby_color'] = $_units['color'];
         
@@ -124,9 +126,7 @@ class Settings extends Module {
             
             $file_content = $this->input->post('file_content');
             file_put_contents($this->config->item('script_boot', 'myfab'), $file_content, FILE_USE_INCLUDE_PATH); 
-            
-            
-            
+
         }
         
         
@@ -151,12 +151,7 @@ class Settings extends Module {
         
         /** LOAD HELPERS */
         $this->load->helper("os_helper");
-       
-        //print_r(scan_wlan());
-        //print_r(wlan());
-        
-        //print_r(lan());
-        
+       	 
         $this->load->database();
 		$this->load->model('configuration');
 		
@@ -252,6 +247,12 @@ class Settings extends Module {
 				break;
 			case 'bed-calibration':
 				$this->_bed_calibration();
+				break;
+			case '4axis':
+				$this->_maintenance_4axis();
+				break;
+			case 'first-setup':
+				$this->_first_setup();
 				break;
             default:
                 $_tab_header = $this->tab_header('maintenance');
@@ -367,6 +368,54 @@ class Settings extends Module {
 		
 		$this->layout->view('index/index', $data);		
 	}
+
+
+	function _maintenance_4axis(){
+		
+		$_tab_header = $this->tab_header('maintenance');
+		 
+		$data['_breadcrumb']  = 'Maintenance > Engage 4th Axis';
+        $data['_tab_header']  = $_tab_header;
+        $data['_tab_content'] = $this->load->view('index/maintenance/4axis/index', $data, TRUE);
+		
+		$js_in_page = $this->load->view('index/maintenance/4axis/js', $data, TRUE);
+        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+		
+		$this->layout->view('index/index', $data);	
+		
+	}
+	
+	
+	function _first_setup(){
+		
+		
+		$_tab_header = $this->tab_header('maintenance');
+		
+		
+		$data['step1'] = $this->load->view('index/maintenance/first-setup/step1/index', '', TRUE);
+		$data['step2'] = $this->load->view('index/maintenance/first-setup/step2/index', '', TRUE);
+		$data['step3'] = $this->load->view('index/maintenance/first-setup/step3/index', '', TRUE);
+		$data['step4'] = $this->load->view('index/maintenance/first-setup/step4/index', '', TRUE);
+		$data['step5'] = $this->load->view('index/maintenance/first-setup/step5/index', '', TRUE);
+		
+		 
+		$data['_breadcrumb']  = 'Maintenance > First Setup';
+        $data['_tab_header']  = $_tab_header;
+        $data['_tab_content'] = $this->load->view('index/maintenance/first-setup/index', $data, TRUE);
+		
+		
+		
+		$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/fuelux/wizard/wizard.min.js', 'comment' => ''));
+		
+		$js_in_page = $this->load->view('index/maintenance/first-setup/js', $data, TRUE);
+        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
+		
+		
+		$this->layout->set_setup_wizard(FALSE);
+		
+		$this->layout->view('index/index', $data);	 
+		
+	}
     
     
     
@@ -378,15 +427,11 @@ class Settings extends Module {
         //$_tabs[] = array('name' => 'jog',         'label'=>'Jog',         'url' => site_url('settings/jog'),         'icon' => 'fab-lg fab-fw icon-fab-jog');
         //$_tabs[] = array('name' => 'plugin',    'label'=>'Plugin',   'url' => site_url('settings/plugin'),   'icon' => 'fab-lg fab-fw icon-fab-plugin');
         
-		$_tabs[] = array('name' => 'maintenance', 'label'=>'Maintenance', 'url' => site_url('settings/maintenance'), 'icon' => 'fa fa-lg fa-fw fa-wrench');
+		//$_tabs[] = array('name' => 'maintenance', 'label'=>'Maintenance', 'url' => site_url('settings/maintenance'), 'icon' => 'fa fa-lg fa-fw fa-wrench');
         $_tabs[] = array('name' => 'network',     'label'=>'Network',     'url' => site_url('settings/network'),     'icon' => 'fa fa-lg fa-fw fa-sitemap');
 		$_tabs[] = array('name' => 'advanced',    'label'=>'Advanced',    'url' => site_url('settings/advanced'),    'icon' => 'fa fa-lg fa-fw fa-briefcase');
         
-        
-        
-        
-        
-        
+
         $data['_current'] = $current;
         $data['_tabs']    = $_tabs;
         

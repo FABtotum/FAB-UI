@@ -34,7 +34,7 @@ switch($_action) {
 		break;
 	case 'velocity' :
 		$_command = 'M220 S' . $_value;
-		$_message = 'Command for the speed sent. Value: '.$_value;
+		$_message = 'Speed changed to '.$_value.'%';
 		break;
 	case 'light-on' :
 		$_command = 'M706 S255';
@@ -62,6 +62,14 @@ switch($_action) {
 	case 'send-mail-false':
 		$_command = '';
 		$_message = 'No mail will be send at the end of the print';
+		break;
+	case 'zup':
+		$_command = '!z_plus';
+		$_message = 'Command for moving down the bed sent';
+		break;
+	case 'zdown':
+		$_command = '!z_minus';
+		$_message = 'Command for moving up the bed sent';
 		break;
 		
 }

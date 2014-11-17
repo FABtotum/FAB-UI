@@ -53,7 +53,9 @@ class Jog extends Module {
         $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.css', 'comment' => 'javascript for the noUISlider'));
         //$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
         $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/knob/jquery.knob.min.js', 'comment'=>'KNOB'));
-
+		
+		//$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/fuelux/spinbox/spinbox.js', 'comment'=>'SPINBOX'));
+		//$this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/fuelux/spinbox/spinbox.css', 'comment'=>'SPINBOX'));
         //$this->layout->set_compress(false);
 		
 		
@@ -83,7 +85,18 @@ class Jog extends Module {
 	
 	
 	public function manual(){
-		$this->load->view('manual/index_wip', '');
+		
+		//carico X class database
+		$this->load->database();
+		$this->load->model('codes');
+		
+		$g_codes = $this->codes->get_all('G');
+		$m_codes = $this->codes->get_all('M');
+		
+		$data['gcodes'] = $g_codes;
+		$data['mcodes'] = $m_codes;
+		
+		$this->load->view('manual/index', $data);
 	}
 
 

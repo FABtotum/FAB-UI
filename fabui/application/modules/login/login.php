@@ -53,9 +53,41 @@ class Login extends Module {
 		$this->load->database();
 		$this->load->model('configuration');
 		
+		$this->load->helper('ft_date_helper');
+		$this->load->helper('update_helper');
+		
+		$this -> config->load('fabtotum', TRUE);
+
+		$url = $this-> config -> item('fabtotum_suggestions_url', 'fabtotum');
+		
 		
 		$data['fabui_version'] = $this->configuration->get_config_value('fabui_version');
         $data['fw_version']    = $this->configuration->get_config_value('fw_version');
+		
+		
+		if(file_exists($this->config->item('fabtotum_instagram_hash', 'fabtotum'))){
+			
+			$instagram_hash = json_decode(file_get_contents($this->config->item('fabtotum_instagram_hash', 'fabtotum')), true); 
+			$data['instagram_hash'] = $instagram_hash;
+			
+		}
+		
+		
+		
+		if(file_exists($this->config->item('fabtotum_instagram_feed', 'fabtotum'))){
+			
+			$instagram_feed = json_decode(file_get_contents($this->config->item('fabtotum_instagram_feed', 'fabtotum')), true); 
+			$data['instagram_feed'] = $instagram_feed;
+			
+		}
+		
+		if(file_exists($this->config->item('fabtotum_twitter_feed', 'fabtotum'))){
+			
+			$twitter_feed = json_decode(file_get_contents($this->config->item('fabtotum_twitter_feed', 'fabtotum'))); 
+			$data['twitter_feed'] = $twitter_feed;
+			
+		}
+		
 		
 		
 		
@@ -98,10 +130,12 @@ class Login extends Module {
 				$_user_session['avatar']     = $_settings['avatar'];
 				$_user_session['theme-skin'] = $_settings['theme-skin'];
 				$_user_session['lock-screen'] = isset($_settings['lock-screen']) ? $_settings['lock-screen'] : 0;
+				$_user_session['layout'] = isset($_settings['layout']) ? $_settings['layout'] : '';
                
                 $_SESSION['user']      = $_user_session;
                 $_SESSION['logged_in'] = TRUE;
                 $_SESSION['type']      = 'fabtotum';
+				$_SESSION['ask_wizard'] = TRUE;
                 
                
 			  	/** LOAD HELPER */

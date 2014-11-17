@@ -8,7 +8,7 @@
 	<div class="col-xs-6 col-sm-8 col-md-8 col-lg-8 text-align-right">
 		<div class="page-title">
 			<a href="<?php  echo site_url('objectmanager')?>"
-				class="btn btn-default"> <i class="icon-fab-manager"></i> Back to objects
+				class="btn btn-primary"> <i class="icon-fab-manager"></i> Back to objects
 			</a>
 		</div>
 	</div>

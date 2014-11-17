@@ -10,6 +10,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
     include_once ('/var/www/fabui/ajax/lib/utilities.php');
 	
 	
+	
     $_first_name   = $_POST['first_name'];
     $_last_name    = $_POST['last_name'];
     $_email        = $_POST['email'];
@@ -50,7 +51,8 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 	$_settings['theme-skin'] = 'smart-style-0';
 	$_settings['avatar']     = '';
 	$_settings['token']      = '';
-	$_settings['lock-screen'] = 0; 
+	$_settings['lock-screen'] = 0;
+	$_settings['layout']      = '';  
 	
 	$_user_data['first_name'] = $_first_name;
 	$_user_data['last_name']  = $_last_name;

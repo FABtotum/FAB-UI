@@ -6,8 +6,8 @@
 	</div>
 	<div class="col-xs-6 col-sm-8 col-md-8 col-lg-8 text-align-right">
 		<div class="page-title">
-			<a href="<?php  echo site_url('objectmanager/manage/'.$_object_id.'/'.$_file->id)?>" class="btn btn-default"> <i class="fa fa-th-large"></i> Manage</a>
-			<a href="<?php  echo site_url('objectmanager/edit/'.$_object_id)?>" class="btn btn-default"> <i class="icon-fab-manager"></i> Back to object</a>
+			<a href="<?php  echo site_url('objectmanager/manage/'.$_object_id.'/'.$_file->id)?>" class="btn btn-primary"> <i class="fa fa-th-large"></i> Manage</a>
+			<a href="<?php  echo site_url('objectmanager/edit/'.$_object_id)?>" class="btn btn-primary"> <i class="icon-fab-manager"></i> Back to object</a>
 		</div>
 	</div>
 </div>
@@ -82,11 +82,7 @@
 	                </fieldset>
                 </div>
                 <div class="form-actions">
-						<button class="btn btn-primary" id="submit" >
-							<i class="fa fa-save">
-							</i>
-							Submit
-						</button>
+						<button class="btn btn-primary" id="submit" ><i class="fa fa-save"></i>&nbsp;Save</button>
 				</div>
                 <input type="hidden" name="file_content" id="file_content" />
             </form>

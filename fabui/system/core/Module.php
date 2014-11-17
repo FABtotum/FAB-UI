@@ -88,6 +88,8 @@ class Module extends CI_Controller {
         if(strtolower(get_class($CI)) != 'login'){
             is_logged_in();
         }
+		
+		$this->layout->set_setup_wizard(need_setup_wizard());
         
 
 	}

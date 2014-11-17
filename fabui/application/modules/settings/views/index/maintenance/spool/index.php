@@ -4,14 +4,14 @@
     
         <div class="col-sm-6">
             <div class="well">
-                <h2 class="text-center">Load Filament</h2>
-                <h2 class="text-center"><a data-action='load' href="javascript:void(0);" class="btn btn-default btn-circle btn-lg choice-button"><i class="fa fa-chevron-down"></i></a></h2>
+                <h3 class="text-center text-primary">Load Filament</h3>
+                <h2 class="text-center"><a data-action='load' href="javascript:void(0);" class="btn btn-default btn-primary btn-circle btn-lg choice-button"><i class="fa fa-chevron-down"></i></a></h2>
             </div>
         </div>
         <div class="col-sm-6">
             <div class="well">
-            <h2 class="text-center">Unload Filament</h2>
-            <h2 class="text-center"><a data-action='unload' href="javascript:void(0);" class="btn btn-default btn-circle btn-lg choice-button"><i class="fa fa-chevron-down"></i></a></h2>
+            <h3 class="text-center text-primary">Unload Filament</h3>
+            <h2 class="text-center"><a data-action='unload' href="javascript:void(0);" class="btn btn-default btn-primary btn-circle btn-lg choice-button"><i class="fa fa-chevron-down"></i></a></h2>
             </div>
         </div>
     </div>
@@ -21,7 +21,7 @@
     <div class="row margin-top-10 re-choice" style="display: none;">
     
         <div class="col-sm-12">
-            <h2 class="text-center"><a data-action='unload' href="javascript:void(0);" class="btn btn-default btn-circle btn-lg re-choice-button"><i class="fa fa-chevron-up"></i></a></h2>
+            <h2 class="text-center"><a data-action='unload' href="javascript:void(0);" class="btn btn-default btn-primary btn-circle btn-lg re-choice-button"><i class="fa fa-chevron-up"></i></a></h2>
         </div>
         
     </div>
@@ -40,7 +40,7 @@
                     </div>
                     
                     <div class="col-sm-6 text-center">
-                        <h1><span class="badge">1</span></h1>
+                        <h1><span class="badge bg-color-blue txt-color-white">1</span></h1>
                         <h1 class="text-primary">Open the left cover panel</h1>
                         <h2>Side covers are attached to main body magnetically. Pull the left side panel confidently in order to gain access to spool space inside</h2>
                     </div>
@@ -64,7 +64,7 @@
                     </div>
                     
                     <div class="col-sm-6 text-center">
-                        <h1><span class="badge">2</span></h1>
+                        <h1><span class="badge bg-color-blue txt-color-white">2</span></h1>
                         <h1 class="text-primary">Insert the filament</h1>
                         <h2>Side covers are attached to main body magnetically. Pull the left side panel confidently in order to gain access to spool space inside</h2>
                     </div>
@@ -95,7 +95,7 @@
                     </div>
                     
                     <div class="col-sm-6 text-center">
-                        <h1><span class="badge">1</span></h1>
+                        <h1><span class="badge bg-color-blue txt-color-white">1</span></h1>
                         <h1 class="text-primary">Open the left cover panel</h1>
                         <h2>Side covers are attached to main body magnetically. Pull the left side panel confidently in order to gain access to spool space inside</h2>
                     </div>
@@ -119,7 +119,7 @@
                     </div>
                     
                     <div class="col-sm-6 text-center">
-                        <h1><span class="badge">2</span></h1>
+                        <h1><span class="badge bg-color-blue txt-color-white">2</span></h1>
                         <h1 class="text-primary">Unload filament</h1>
                         <h2>Press start and assist the filament by gently pulling it out of the tube until the procedure has been completed</h2>
                     </div>
@@ -140,7 +140,7 @@
     <div class="row margin-top-10 start" style="display: none;"> 
     
         <div class="col-sm-12">
-            <h2 class="text-center"><a  href="javascript:void(0);" class="btn btn-default  btn-lg start-button">Start</a></h2>
+            <h2 class="text-center"><a  href="javascript:void(0);" class="btn btn-default btn-primary  btn-lg start-button">Start</a></h2>
         </div>
         
     </div>

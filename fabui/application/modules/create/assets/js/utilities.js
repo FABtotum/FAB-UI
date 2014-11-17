@@ -350,8 +350,6 @@ function stop_print(){
     _stop_monitor();
     _stop_timer();
     stopped = 1;
-    
-    
     setTimeout(_stopper, 30000);
 
 }
@@ -595,10 +593,9 @@ var print_monitor = function (){
 function print_object(){
     
      $(".final-step-response").html("");
-     openWait('Initializiang');
+     openWait('Starting');
      
-     var timestamp = new Date().getTime();
-            
+     var timestamp = new Date().getTime();    
      ticker_url = '/temp/print_check_' + timestamp + '.trace';
 
 	$.ajax({
@@ -624,7 +621,6 @@ function print_object(){
             uri_trace    = response.uri_trace;
             stats_file   = response.stats;
             folder       = response.folder;
-            
             
             var status = JSON.parse(response.status);
             status = jQuery.parseJSON(status);

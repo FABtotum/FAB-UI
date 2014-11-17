@@ -148,6 +148,42 @@
 													name="theme_skin" value="smart-style-3">
 													<span> Google Skin </span> </label>
 											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-4' ? 'checked="checked"' : '' ?>
+													name="theme_skin" value="smart-style-4">
+													<span> PixelSmash </span> </label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-5' ? 'checked="checked"' : '' ?>
+													name="theme_skin" value="smart-style-5">
+													<span> Glass </span> </label>
+											</div>
+										</div>
+									</div>
+								</fieldset>
+								
+								<fieldset>
+									<div class="form-group">
+										<label class="col-md-1 control-label">Layout</label>
+										<div class="col-md-11">
+											<label class="checkbox-inline">
+												  <input type="checkbox" id="smart-fixed-header" class="checkbox style-0"  <?php echo strpos($_SESSION['user']['layout'], 'fixed-header') !== false ? 'checked="checked"' : ''; ?> >
+												  <span>Fixed Header</span>
+											</label>
+											<label class="checkbox-inline">
+												  <input type="checkbox" id="smart-fixed-navigation" class="checkbox style-0" <?php echo strpos($_SESSION['user']['layout'], 'fixed-navigation') !== false ? 'checked="checked"' : ''; ?>>
+												  <span>Fixed Navigation</span>
+											</label>
+											<label class="checkbox-inline">
+												  <input type="checkbox" id="smart-fixed-ribbon" class="checkbox style-0" <?php echo strpos($_SESSION['user']['layout'], 'fixed-ribbon') !== false ? 'checked="checked"' : ''; ?>>
+												  <span>Fixed Ribbon</span>
+											</label>
+											<label class="checkbox-inline">
+												  <input type="checkbox" id="smart-fixed-footer" class="checkbox style-0" <?php echo strpos($_SESSION['user']['layout'], 'fixed-page-footer') !== false ? 'checked="checked"' : ''; ?>>
+												  <span>Fixed Footer</span>
+											</label>
 										</div>
 									</div>
 								</fieldset>
@@ -160,6 +196,7 @@
 										</div>
 									</div>
 								</fieldset>
+								
 							</div>
 						</div>
 					</div>

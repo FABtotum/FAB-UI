@@ -7,17 +7,36 @@
         </div>
     </div>
     
+    <!--
     <div class="col-md-4 col-lg-4">
         <div class="well well-sm text-center">
             <p>Estimated Time</p>
             <h4 class="estimated-time"> Processing.. </h4>
         </div>
     </div>
-    
+    -->
     <div class="col-md-4 col-lg-4">
         <div class="well well-sm text-center">
-            <p>Estimated Time left</p>
+            <p>Time left</p>
             <h4 class="estimated-time-left"> Processing.. </h4>
+        </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-4">
+        <div class="well  ">
+        	
+        	
+        		<a rel="tooltip" data-action="zup"   title="Change Z height: + 0.1mm" href="javascript:void(0)" class="btn btn-default controls" ><i class="fa fa-angle-double-down"></i>&nbsp;Z</a>
+        		<a rel="tooltip" data-action="zdown" title="Change Z height: - 0.1mm" href="javascript:void(0)" class="btn btn-default controls" style="margin-left:5px;"><i class="fa fa-angle-double-up"></i>&nbsp;Z</a>
+        		
+        	
+        	
+            
+                 <a rel="tooltip" title="Stop print process" href="javascript:void(0);"  data-action="stop"      class="btn btn-default txt-color-red          <?php echo $_running ? '' : 'disabled' ?> stop pull-right" id="stop-button"> <i title="Stop"   class="fa fa-stop fa-lg"></i> </a>
+				 <!--<a title="Pause"  href="javascript:void(0);"  data-action="pause"  class="btn btn-default txt-color-red controls <?php echo $_running ? '' : 'disabled' ?> pull-right"> <i title="Pause" class="fa fa-pause fa-lg"></i> </a>-->
+				 <a rel="tooltip" title="Turn On/Off the lights" id="light-switch" href="javascript:void(0);"  data-action="light-on"  class="btn btn-default txt-color-red controls <?php echo $_running ? '' : 'disabled' ?> pull-right"> <i title="Lights" class="fa fa-lightbulb-o fa-lg"></i> </a>
+				 <a rel="tooltip" title="Send mail" id="send-mail" href="javascript:void(0);"  data-action="<?php echo $mail == 1 ? 'send-mail-false' : 'send-mail-true' ?>"  class="btn btn-default <?php echo $mail == 1 ? 'txt-color-green' : 'txt-color-red'; ?> controls <?php echo $_running ? '' : 'disabled' ?> pull-right"> <i title="Lights" class="fa fa-envelope fa-lg"></i> </a>
+              
         </div>
     </div>
 
@@ -44,7 +63,7 @@
 
 <div class="row create-monitor" style="display: none;">
 
-    <div class="<?php echo $_file_type == 'additive' ? 'col-md-4 col-lg-4' : 'col-md-6 col-lg-6' ?> " id="velocity-slider-container">
+    <div class="<?php echo trim($_file_type) == 'additive' ? 'col-md-4 col-lg-4' : 'col-md-6 col-lg-6' ?> " id="velocity-slider-container">
         <div class="well well-sm text-center">
         	<h4>Speed <i class="fa fa-lg fa-fw fa-flash "></i></h4>
             <h5><span id="label-velocity"><?php echo $_velocity == '' ? 100 : $_velocity ?>%</span> </h5>

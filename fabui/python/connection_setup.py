@@ -3,7 +3,7 @@ import os, sys, getopt
 usage='sudo python connection_setup.py -n<networkname> -p<password>'
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:],"hn:p:",["network=","password="])
+    opts, args = getopt.getopt(sys.argv[1:],"hn:p:e:",["network=","password=", "ethernet="])
 except getopt.GetoptError:
     #Error handling for unknown or incorrect number of options
     print usage
@@ -15,7 +15,9 @@ for opt, arg in opts:
    elif opt in ("-n", "--network"):
       ssid = arg
    elif opt in ("-p", "--password"):
-      password = arg
+       password = arg
+   elif opt in ("-e", "--ethernet"):
+      ethernet = arg
 	  
 #prepare config
 
@@ -25,7 +27,7 @@ iface lo inet loopback
 allow-hotplug eth0
 	auto eth0
 	iface eth0 inet static
-	address 169.254.1.2
+	address """+ethernet+"""
 	netmask 255.255.0.0
 
 allow-hotplug wlan0

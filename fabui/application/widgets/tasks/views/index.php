@@ -40,6 +40,9 @@
                         case 'settings':
                             $_status_icon = 'fa fa-cogs';
                             break;
+						case 'maintenance':
+                            $_status_icon = 'fa fa-wrench';
+                            break;
                     }   
 
                     $_status = '';
@@ -117,6 +120,9 @@
                             break;
                         case 'settings':
                             $_status_icon = 'fa fa-cogs';
+                            break;
+                       	case 'maintenance':
+                            $_status_icon = 'fa fa-wrench';
                             break;
                     }   
 

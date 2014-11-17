@@ -6,8 +6,8 @@
 	</div>
 	<div class="col-xs-6 col-sm-8 col-md-8 col-lg-8 text-align-right">
 		<div class="page-title">
-            <a href="<?php  echo site_url('objectmanager/file/view/'.$obj_id.'/'.$file->id)?>" class="btn btn-default"><i class="fa fa-file"></i> Edit</a>&nbsp;&nbsp;
-			<a href="<?php  echo site_url('objectmanager/edit/'.$obj_id)?>" class="btn btn-default"><i class="icon-fab-manager"></i> Back to object</a>
+            <a href="<?php  echo site_url('objectmanager/file/view/'.$obj_id.'/'.$file->id)?>" class="btn btn-primary"><i class="fa fa-file"></i> Edit</a>&nbsp;&nbsp;
+			<a href="<?php  echo site_url('objectmanager/edit/'.$obj_id)?>" class="btn btn-primary"><i class="icon-fab-manager"></i> Back to object</a>
 		</div>
 	</div>
 </div>

@@ -31,7 +31,7 @@ class Dashboard extends Module {
 		 * LAYOUT
 		*/
 		$this->layout->add_css_file(array('src'=>'application/modules/dashboard/assets/css/dashboard.css', 'comment'=>'dashboard css'));
-		$this->layout->add_js_file(array('src'=>'application/modules/dashboard/assets/js/dashboard.js', 'comment'=>'dashboard js'));
+		//$this->layout->add_js_file(array('src'=>'application/modules/dashboard/assets/js/dashboard.js', 'comment'=>'dashboard js'));
 
 
         $_block_1 = array();
@@ -55,11 +55,21 @@ class Dashboard extends Module {
       
         
 		
-        
-        //$this->lang->load('english', 'english');
-        //$this->load->helper('language');
-        //echo ">>>>".lang('logout');
-        
+		
+		
+		/** CHECK FOR WIZARD COMPLETE SESSION */
+		if(isset($_SESSION['wizard_completed']) && $_SESSION['wizard_completed'] = true){
+			
+			$data['wizard_complete'] = true;
+			unset($_SESSION['wizard_completed']);
+			
+		}
+		
+		
+		$js_in_page = $this->load->view('index/js', $data, TRUE);
+        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
+		
+		
         //$this->layout->set_compress(false);
 		$this->layout->view('index/template/'.$_template, $data);
 		

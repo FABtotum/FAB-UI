@@ -7,7 +7,7 @@
 	<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
 		<div class="page-title pull-right">
 			<a href="<?php  echo site_url('objectmanager/add')?>"
-				class="btn btn-default">Add new</a>
+				class="btn btn-primary">Add new</a>
 		</div>
 	</div>
 </div>

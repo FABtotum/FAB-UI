@@ -8,6 +8,7 @@ $_time = $_POST['time'];
 $_type = isset($_POST['type']) ? $_POST['type'] : '';
 
 
+
 $_destination_trace    = TEMP_PATH.'check_'.$_time.'.trace';
 $_destination_response = TEMP_PATH.'response_'.$_time.'.log';
 
@@ -22,7 +23,13 @@ chmod($_destination_response, 0777);
 if($_type == 'additive'){
 	
 	
-	$_raise_bed = 'sudo python '.PYTHON_PATH.'gmacro.py raise_bed /var/www/temp/move_up.trace  /var/www/temp/move_up.log > /dev/null';
+	$_engage_feeder = isset($_POST['engage_feeder']) && $_POST['engage_feeder'] == 1 ? true : false;
+	
+	
+	$_raise_bed_macro = $_engage_feeder == true ? 'raise_bed_no_g27' : 'raise_bed';
+	
+	
+	$_raise_bed = 'sudo python '.PYTHON_PATH.'gmacro.py '.$_raise_bed_macro.' /var/www/temp/move_up.trace  /var/www/temp/move_up.log > /dev/null';
 	$_output_command = shell_exec ( $_raise_bed );
 	/** SLEEP 1 SEC */
 	sleep(1);

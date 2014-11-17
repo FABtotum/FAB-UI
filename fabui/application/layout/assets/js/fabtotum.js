@@ -403,6 +403,8 @@ $(function() {
   check_for_updates();
   
   
+  check_for_wizard_setup();
+  
 
   
 });
@@ -588,3 +590,62 @@ $("#send-bug").on('click', function(){
 	
 	
 });
+
+
+/**
+ *
+ */
+
+function check_for_wizard_setup(){
+	
+	
+	setTimeout(function(){
+		if(setup_wizard){
+					
+			$.smallBox({
+				title : "Wizard Setup",
+				content : "It seems that you still did not complete the first recommended setup:<ul><li>Manual Bed Calibration</li><li>Probe Lenght Calibration</li><li>Engage Feeder</li></ul><br>Without a proper calibration you will not be able to use the FABtotum correctly<br>Do you want to do it now?<br><br><p class='text-align-right'><a href='/fabui/maintenance/first-setup' class='btn btn-primary btn-sm'>Yes</a> <a href='javascript:void(0);' class='btn btn-danger btn-sm'>No</a> <a href='javascript:dont_ask_wizard();' class='btn btn-warning btn-sm'>Don't ask me anymore</a> </p>",
+				color : "#296191",
+				//timeout: 8000,
+				//color : "#C79121",
+				icon : "fa fa-warning swing animated"
+			});
+
+				
+		}
+	}, 1000);
+}
+
+
+
+function dont_ask_wizard(){
+	
+	$.ajax({
+			type: "POST",
+			url: "/fabui/controller/wizard",
+            dataType: 'json',
+            data: {set: 0}
+	}).done(function(response) {
+		
+	});	
+	
+}
+
+
+
+/** GET TRACE */
+function getTrace(url, type, contenitor){
+	
+	$.ajax({
+			type: type,
+			url: url,
+	}).done(function(data, statusText, xhr) {
+		
+		if(xhr.status == 200){
+			contenitor.html(data);
+			$('#console').scrollTop(1E10);
+		}
+		
+	});	
+}
+

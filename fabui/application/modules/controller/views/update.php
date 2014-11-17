@@ -10,6 +10,5 @@
 			</span>
 		</span>
 	</li>
-
 	<?php endforeach; ?>
 </ul>

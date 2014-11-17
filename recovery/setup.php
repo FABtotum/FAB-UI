@@ -12,6 +12,52 @@ include_once("header.php");
 //selecting  a wifi network(or skip)
 
 
+
+
+
+$interfaces = file_get_contents('/etc/network/interfaces');
+
+
+
+$wlan_section = strstr($interfaces, 'allow-hotplug wlan0');
+
+
+$temp = explode(PHP_EOL, $wlan_section);
+
+$wlan_ssid = '';
+$wlan_password = '';
+
+foreach ($temp as $line) {
+
+	if (strpos(ltrim($line), '-ssid') !== false) {
+		$wlan_ssid = trim(str_replace('"', '', str_replace('-ssid', '', strstr(ltrim($line), '-ssid'))));
+	}
+
+	if (strpos(ltrim($line), '-psk') !== false) {
+		$wlan_password = trim(str_replace('"', '', str_replace('-psk', '', strstr(ltrim($line), '-psk'))));
+	}
+}
+
+
+$interfaces = str_replace($wlan_section, '', $interfaces);
+
+$eth_section = strstr($interfaces, 'allow-hotplug eth0');
+
+$temp = explode(PHP_EOL, $eth_section);
+
+$address = '';
+
+foreach($temp as $line){
+	
+	if (strpos(ltrim($line), 'address') !== false) {
+		$address = str_replace('"', '', str_replace('address', '', strstr(ltrim($line), 'address')));
+	}
+	
+}
+
+
+
+
 function list_connections(){
 //shell exec : iwlist wlan0 scan (list available connections)
 $scanresult=shell_exec("sudo iwlist wlan0 scan");
@@ -85,7 +131,7 @@ $pass=$_POST['pass'];
 echo "NOW CONFIGURING:<br>Applying changes...<br>";
 
 //write config (call python script -must be in sudoers)
-$debug.= shell_exec("sudo python /var/www/fabui/python/connection_setup.py -n".$ssid." -p".$pass);
+$debug.= shell_exec("sudo python /var/www/fabui/python/connection_setup.py -n".$ssid." -p".$pass." -e".$address);
 
 //restart the nework
 sleep(3);
