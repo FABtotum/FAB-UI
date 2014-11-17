@@ -4,6 +4,41 @@ FAB-UI
 the FABtotum User Interface Repo
 
 
+FABUI 0.655 (14/11/2014)
+
+- Fixed some missing plugins dependencies
+
+create
+- added new feature to raise or lower the bed during printing (realtime z override)
+
+general
+- moved "maintenance" from settings as a single module with its own menu
+- added calibration wizard for the first setup
+- all plugins and frameworks of the ui updated to their latest version
+- added twitter and instagram feeds on login
+
+maintenance
+- bed calibration: Bug "140 turns" fixed
+- added "4 axis" to disengage the extruder manually
+
+jog
+- manual: Improved mcode and gcode search
+
+scan
+- added memory optimization during rotative laserscanning
+- added dynamic z height correction during probing (drastically reduces probing times by adapting to the object height.)
+- corrected xy coordinates in the probing preparation menu
+
+profile
+- added "pixels smash" theme skin
+- added "glass" theme skin
+- added new layouts: Fixed header - fixed navigation - fixed ribbon - fixed footer
+
+recovery
+-[devs] added macro simulator to simulate actions from the macro python script
+-added "eth config" to manually change the dhcp server address in lan mode.
+
+
 FABUI 0.64 (23/10/2014)
 
 SETTINGS
