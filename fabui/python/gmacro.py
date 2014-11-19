@@ -197,7 +197,7 @@ elif preset=="auto_bed_leveling":
 #r_scan rotative scan preset
 elif preset=="r_scan":
 	trace("Initializing Rotative Laser scanner",log_trace)
-	trace ("checking panel door status and bed inserted",log_trace,verbose=False)
+	trace ("checking panel door status and bed inserted",log_trace)
 	macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
 	macro("M744","open",1,"Building plane (must be removed)",0.1)
 	macro("M744","TRIGGERED",1,"Spool panel closed",0.1, warning=True)
