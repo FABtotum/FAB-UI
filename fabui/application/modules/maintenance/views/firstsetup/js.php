@@ -500,7 +500,7 @@
                 }else{
                    
                     $.smallBox({
-						title : "Warnign",
+						title : "Warning",
 						content: response.trace,
 						color : "#C46A69",
 						icon : "fa fa-warning",
