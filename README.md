@@ -1,9 +1,36 @@
 FAB-UI
-======
-
+=====
 the FABtotum User Interface Repo
 
+FABUI 0.7 (4/12/2014)
 
+SCAN
+- Fixed end scan procedure
+- Minor bugfixes
+	
+CREATE
+- Fixed wrong behavior of the wizard buttons after calling "Engage Feeder" procedure
+- Fixed additive print end procedure
+- Added Tips system during print. For example a tip message will appear if the print seems to start slowly
+- Fixed and improved some UI experience
+- Minor bugfixes
+
+MAINTENANCE
+- First Setup: fixed bug on bed leveling which prevented to continue with the wizard
+
+SETTINGS
+- General : added option (for experts users only) that permits to avoid safety front door lock (need firmware version 1.0.006)
+- Network : added ethernet static ip address configurator
+- Network : improved wifi network settings section. Avoided some ambiguous button behaviors
+
+PLUGIN
+Realeased first beta version of "Plugin" module. With this first version is possible to upload and install a plugin
+
+GENERAL
+- Minor bugfixes
+
+
+================================================== ================
 FABUI 0.655 (14/11/2014)
 
 - Fixed some missing plugins dependencies
