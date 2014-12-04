@@ -28,6 +28,8 @@ Realeased first beta version of "Plugin" module. With this first version is poss
 
 GENERAL
 - Minor bugfixes
+
+
 ================================================== ================
 FABUI 0.655 (14/11/2014)
 
