@@ -17,9 +17,10 @@ except:
 try:
 	# =str(sys.argv[4]) 	 #open slot
 	log_trace=str(sys.argv[5])	#trace log file
-	task_id=str(sys.argv[6])	#task ID	
+	task_id=str(sys.argv[6])	#task ID
+	print_type=str(sys.argv[7])	
 except:
-	print "running headless..."
+	print "running with no UI..."
 	
 #debug	
 print os.getpid()
@@ -27,8 +28,16 @@ print os.getpid()
 #ncfile ='/var/www/fabui/python/gcode.nc'
 str_log=""
 received=0
+
 sent=0
-ext_temp=bed_temp=ext_temp_target=bed_temp_target=0
+ext_temp=bed_temp=0
+
+#default starting temps (for UI feedback only)
+ext_temp_target=180
+bed_temp_target=60
+
+tip=False
+tipMessage=""
 
 #file
 EOF=False
@@ -52,7 +61,13 @@ killed=False
 
 	
 def printlog(percent,sent):
-	str_log='{"print":{"name": "'+ncfile+'","lines": "'+str(lenght)+'","started": "'+str(started)+'","paused": "'+str(paused)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","shutdown": "'+str(shutdown)+'","stats":{"percent":"'+str(percent)+'","line_number":'+str(sent)+',"extruder":'+str(ext_temp)+',"bed":'+str(bed_temp)+',"extruder_target":'+str(ext_temp_target)+',"bed_target":'+str(bed_temp_target)+',"z_override":'+str(z_override)+'}}}'
+	global bed_temp_target	
+	global ext_temp_target
+	global ext_temp
+	global bed_temp
+	global tip
+	global tipMessage
+	str_log='{"print":{"name": "'+ncfile+'","lines": "'+str(lenght)+'","started": "'+str(started)+'","paused": "'+str(paused)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","shutdown": "'+str(shutdown)+'", "tip":{"show":"'+str(tip)+'", "message":"'+str(tipMessage)+'"}, "stats":{"percent":"'+str(percent)+'","line_number":'+str(sent)+',"extruder":'+str(ext_temp)+',"bed":'+str(bed_temp)+',"extruder_target":'+str(ext_temp_target)+',"bed_target":'+str(bed_temp_target)+',"z_override":'+str(z_override)+'}}}'
 	#write log
 	handle=open(logfile,'w+')
 	print>>handle, str_log
@@ -99,9 +114,8 @@ def override_description(command):
 	elif code=="M3":
 		description="<strong>RPM speed set to "+value+"</strong>"
 	else:
-		descritpion="description none"
+		description="description none"
 	return description
-
 	
 #usage: print checksum(gcode,1)
 
@@ -113,6 +127,8 @@ def sender():
 	global ovr_cmd
 	global EOF
 	global z_override
+	global bed_temp_target	
+	global ext_temp_target
 	
 	gcode_line=0
 	with open(ncfile, 'r+') as f:
@@ -207,7 +223,19 @@ def sender():
 						#update Z coords.
 						line =re.sub('Z.*? ','Z'+str(z_c)+' ',line, flags=re.DOTALL)
 						#trace(line)
-					
+
+				if gcode_line<30:
+					#UPDATE TARGET TEMP, only for early printing stage.
+					if line[0:4]=="M109":
+						#M109 S nozzle
+						ext_temp_target=line.split("S")[1].strip()
+						print "nozzle temp set to "+ str(ext_temp_target)
+					if line[0:4]=="M190":
+						#M190 S bed
+						bed_temp_target=line.split("S")[1].strip()
+						print "bed temp set to "+ str(bed_temp_target)			
+				
+				#Send the line
 				serial.write(line+"\r\n")
 				#print str(gcode_line)+" SENT "+ str(line)
 				sent+=1
@@ -229,6 +257,9 @@ def listener():
 	global bed_temp
 	global ext_temp_target
 	global bed_temp_target
+	
+	global tip
+	global tipMessage
 	
 	serial_in=""	
 	while not EOF:
@@ -259,11 +290,13 @@ def listener():
 			#Collected M105: Get Extruder & bed Temperature (reply)
 			#EXAMPLE:
 			#ok T:219.7 /220.0 B:26.3 /0.0 T0:219.7 /220.0 @:35 B@:0
-			
+			#trace(serial_in);
 			temps=serial_in.split(" ")
 			ext_temp=float(temps[1].split(":")[1])
 			ext_temp_target=float(temps[2].split("/")[1])
-
+			print ext_temp_target
+			
+			
 			bed_temp=float(temps[3].split(":")[1])
 			bed_temp_target=float(temps[4].split("/")[1])
 			received+=1
@@ -272,6 +305,7 @@ def listener():
 		if serial_in[:2]=="T:":	
 			#collected M109/M190 Snnn temp (Set temp and  wait until reached)
 			#T:187.1 E:0 B:59
+			#print serial_in
 			temps=serial_in.split(" ")
 			ext_temp=temps[0].split(":")[1]
 			bed_temp=temps[2].split(":")[1]
@@ -281,21 +315,43 @@ def listener():
 			
 		#clear everything not recognized.
 		serial_in=""
+		
+	if(sent>20 and bed_temp < 45):
+		tip=True
+		tipMessage="the bed is cooling check connections"
+	elif(sent>20 and bed_temp > 45):
+		tip=False
+		tipMessage=""
+		
 	#print "listener closed"
-
-
-
 		
 def tracker():
 	global sent
 	global lenght
 	global EOF
+	global tip
+	global tipMessage
 	
 	mtime=os.path.getmtime(comfile) #update override file mtime.
 	elapsed=0
 	last_update=0
+
+	started=time.time()
 	
 	while not EOF:
+
+		if (time.time()-started>100 and sent<20):
+			tip=True
+			tipMessage="TIP: If the job hasn't started yet, check bed and head connections."
+			#trace("<strong class='warning'>TIP: If the job hasn't started yet, check bed and head connections.</strong>")
+			started=time.time()
+			#trace("--> in " + str(sent))
+		elif(sent>20):
+			tip=False
+			tipMessage=""
+			#started=time.time()
+			#trace("--> out " + str(sent))
+			
 		elapsed=time.time()-last_update
 		if elapsed>5:
 			#trace the progress
@@ -387,6 +443,9 @@ else:
 	status="stopped"
 
 trace("Now finalizing...")
+#serial.flushInput()
+if print_type == "additive":
+	serial.write("G90\r\nG0 X210 Y210 Z240 F10000") #Setting Absolute movement and moving to safe zone
 #finalize database-side operations
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print " +str(status)], shell=True)
 
@@ -401,15 +460,18 @@ if shutdown:
 
 #terminate operations
 tracker.join()
+#trace("Tracker.join")
 #trace("tracker ok");
 
 sender.join()
+#trace("Sender.join")
 #trace("sender ok");
-
 listener.join()
+#trace("Listener.join")
 #trace("listener ok");
 
 #trace("Done!");
 
 serial.close()
+#trace("Serial Close")
 sys.exit()

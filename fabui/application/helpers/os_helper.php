@@ -82,11 +82,20 @@ function scan_wlan() {
 				if (!empty($_wlan_device[$device][$cell][strtolower($feld)]))
 					$_wlan_device[$device][$cell][strtolower($feld)] .= "\n";
 				// Leer- und "-Zeichen rausschmeissen - ESSID steht immer in ""
+				/*
+				echo $device.PHP_EOL;
+				echo $cell.PHP_EOL;
+				echo $feld.PHP_EOL;
+				echo "--".PHP_EOL;
+				*/
+				
 				@$_wlan_device[$device][$cell][strtolower($feld)] .= trim(str_replace('"', '', substr($zeile, $doppelp_pos + 1)));
 			}
 
 		}
 	}
+	
+	
 
 	if (isset($_wlan_device['wlan0'])) {
 
@@ -193,6 +202,7 @@ function wlan() {
 
 }
 
+/*
 function current_wlan() {
 
 	$network_interfaces = '/etc/network/interfaces';
@@ -225,4 +235,125 @@ function current_wlan() {
 
 	return false;
 
+}
+*/
+
+/**
+ * Return network configuration - ETHERNET AND WLAN
+ * 
+ */
+function networkConfiguration() {
+	
+	
+	$CI =& get_instance();
+	$CI->config->load('fabtotum', TRUE);
+	
+	$interfaces = file_get_contents($CI->config->item('fabtotum_network_interfaces', 'fabtotum'));
+
+	$wlan_section = strstr($interfaces, 'allow-hotplug wlan0');
+
+	$temp = explode(PHP_EOL, $wlan_section);
+
+	$wlan_ssid = '';
+	$wlan_password = '';
+
+	foreach ($temp as $line) {
+
+		if (strpos(ltrim($line), '-ssid') !== false) {
+			$wlan_ssid = trim(str_replace('"', '', str_replace('-ssid', '', strstr(ltrim($line), '-ssid'))));
+		}
+
+		if (strpos(ltrim($line), '-psk') !== false) {
+			$wlan_password = trim(str_replace('"', '', str_replace('-psk', '', strstr(ltrim($line), '-psk'))));
+		}
+	}
+
+	$interfaces = str_replace($wlan_section, '', $interfaces);
+
+	$eth_section = strstr($interfaces, 'allow-hotplug eth0');
+
+	$temp = explode(PHP_EOL, $eth_section);
+
+	$address = '';
+
+	foreach ($temp as $line) {
+
+		if (strpos(ltrim($line), 'address') !== false) {
+			$address = str_replace('"', '', str_replace('address', '', strstr(ltrim($line), 'address')));
+		}
+
+	}
+	
+	return array('eth' => trim($address), 'wifi'=>array('ssid'=>trim($wlan_ssid), 'password'=>trim($wlan_password)));
+
+}
+
+
+
+/**
+ * Set Network Configuration
+ */
+function setNetworkConfiguration($eth, $wifi){
+	
+	
+	
+	$CI =& get_instance();
+	$CI->config->load('fabtotum', TRUE);
+	
+	
+	$interfaces_file = $CI->config->item('fabtotum_network_interfaces', 'fabtotum');
+	
+	$new_configuration =  'auto lo'.PHP_EOL;
+	$new_configuration .= 'iface lo inet loopback'.PHP_EOL.PHP_EOL;
+	$new_configuration .= 'allow-hotplug eth0'.PHP_EOL;
+	$new_configuration .= '    auto eth0'.PHP_EOL;
+	$new_configuration .= '    iface eth0 inet static'.PHP_EOL;
+	$new_configuration .= '    address '.$eth.PHP_EOL;
+	$new_configuration .= '    netmask 255.255.0.0'.PHP_EOL.PHP_EOL;
+	$new_configuration .= 'allow-hotplug wlan0'.PHP_EOL;
+	$new_configuration .= '    auto wlan0'.PHP_EOL;
+	$new_configuration .= '    iface wlan0 inet dhcp'.PHP_EOL;
+	$new_configuration .= '    wpa-ssid "'.$wifi['ssid'].'"'.PHP_EOL;
+	$new_configuration .= '    wpa-psk "'.$wifi['password'].'"'.PHP_EOL;
+	
+	
+	$backup_command = 'sudo cp /etc/network/interfaces '.$interfaces_file.'.sav';
+	shell_exec($backup_command);
+	
+	shell_exec('sudo chmod 666 '.$interfaces_file);
+	
+	file_put_contents($interfaces_file, $new_configuration);
+	
+	shell_exec('sudo chmod 644 '.$interfaces_file);
+	
+	shell_exec('sudo /etc/init.d/networking restart');
+	
+	
+}
+
+
+/**
+ * Set Ethernet static IP address
+ */
+function setEthIP($ip){
+	
+	$ip = '169.254.1.'.$ip;	 	
+	$networkConfiguration = networkConfiguration();
+	setNetworkConfiguration($ip, $networkConfiguration['wifi']);
+}
+
+
+
+/**
+ * Set Wlan 
+ */
+function setWifi($ssid, $password){
+	
+	$networkConfiguration = networkConfiguration();
+	setNetworkConfiguration($networkConfiguration['eth'], array('ssid' => $ssid, 'password'=>$password));
+	
+	shell_exec("sudo ifdown wlan0");
+	sleep(3);
+	shell_exec("sudo ifup wlan0"); 
+	
 }

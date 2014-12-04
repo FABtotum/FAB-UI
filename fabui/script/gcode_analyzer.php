@@ -6,8 +6,6 @@ require_once '/var/www/fabui/ajax/lib/utilities.php';
 /** GET ARGS FROM COMMAND LINE */
 $file_id = $argv[1];
 
-
-
 /** LOAD DB */
 $db = new Database();
 

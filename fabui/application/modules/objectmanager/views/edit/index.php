@@ -7,7 +7,7 @@
 	</div>
 </div>
 <div class="row">
-	<div class="col-sm-6">
+	<div class="col-sm-4">
 		<div class="well">
 			<form class="form-horizontal" action="<?php echo site_url('objectmanager/edit/'.$_object->id) ?>" method="POST">
 				<fieldset>
@@ -43,7 +43,7 @@
 		</div>
 	</div>
 	
-	<div class="col-sm-6">
+	<div class="col-sm-8">
 		
 		<section id="widget-grid">
 	<div class="row">

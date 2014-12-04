@@ -100,7 +100,7 @@ function finalize_print($tid, $status){
 	//CHECK IF TASK WAS ALREARDY FINALIZED
 	if($task['status'] == 'stopped' || $task['status'] == 'performed'){
 		$log->info('Task #'.$tid.' already finalized. Exit');
-		exit;
+		return;
 	}
 	
 	
@@ -154,7 +154,7 @@ function finalize_print($tid, $status){
 	
 	$log->info('Task #'.$tid.' end macro: '.$end_macro);
 	
-	//sleep(2);
+	sleep(2);
 	
 	
 	
@@ -205,7 +205,7 @@ function finalize_print($tid, $status){
 	//WAIT FOR THE UI TO FINALIZE THE PROCESS
 	sleep(7);
 	//REMOVE ALL TEMPORARY FILES
-	//shell_exec('sudo rm -rf '.$attributes['folder']); 
+	shell_exec('sudo rm -rf '.$attributes['folder']); 
 	$log->info('Task #'.$tid.' end finalizing');
 	
 	
@@ -545,6 +545,11 @@ function finalize_general($tid,$type,$status){
 	        $id_obj = $db->insert('sys_objects', $_obj_data);
 	    }
 		
+		
+		if(!isset($attributes['pprocess_file'])){
+			$attributes['pprocess_file'] = 'cloud_'.$tid.'.asc';
+		}
+		
 		// INSERT ASC FILE RECORD TO DB
 	    $_data_file['file_name']   = $attributes['pprocess_file'];
 		$_data_file['file_type']   = 'application/octet-stream';
@@ -606,7 +611,7 @@ function finalize_general($tid,$type,$status){
 	update_task($tid, $status);
 	sleep(5);
 	//REMOVE ALL TEMPORARY FILES
-	shell_exec('sudo rm -rf '.$attributes['folder']);
+	//shell_exec('sudo rm -rf '.$attributes['folder']);
 	$log->info('Task #'.$tid.' end finalizing');
 	
 	

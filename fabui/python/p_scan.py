@@ -31,7 +31,7 @@ begin=0
 end=0
 
 #safety
-safe_z=original_safe_z=4.5
+safe_z=original_safe_z=6
 probes_to_skip=0
 
 #adaptive control
@@ -107,7 +107,7 @@ started=float(time.time())	#start counting
 
 #compose destination
 scan_dir=destination+"images/"  #May come handy in the future for texture storage!
-output_file= destination + "cloud.asc"	 #output file
+output_file= destination + "cloud_"+str(task_id)+".asc"	 #output file
 
 #SYS ARG PARAMS
 #plane	Aaxis	logs
@@ -125,7 +125,7 @@ else:
 	a_axis=True #4th axis is involved
 	slices= int(abs(end-begin)/deg) #number of 4 axis slices
 	
-tot_probes=(((x1-x)*probe_density)*((y1-y)*probe_density))*slices
+tot_probes=((abs(x1-x)*probe_density)*(abs(y1-y)*probe_density))*slices
 
 
 def printlog(percent,num):		
@@ -328,7 +328,7 @@ while (i <= slices) :
 			serial.write('M401\r\n')	#renew probe position in case it got moved.
 	
 	
-	points_on_plane=np.delete(points_on_plane, 0, 0)
+	#points_on_plane=np.delete(points_on_plane, 0, 0)
 	#rotate the acquired cloud points.
 	if a_axis and i>1:
 		a_offset=-float((i-1)*deg)

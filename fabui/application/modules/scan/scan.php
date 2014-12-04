@@ -880,7 +880,7 @@ class Scan extends Module {
 		
         
         /** LAUNCH SCAN COMMAND */
-        $_command_scan = 'sudo python /var/www/fabui/python/p_scan.py -x'.$param['x1'].' -y'.$param['y1'].' -i'.$param['x2'].' -j'.$param['y2'].' -n'.$probe_quality['mm'].' -a'.$param['axis_increment'].' -b'.$param['start_degree'].' -e'.$param['end_degree'].' -l'.$task_files['scan_monitor_file'].' -d'.$task_files['destination_folder'].' -v1 -t'.$task_files['probing_trace_file'].' -k'.$id_task.' 2>'.$task_files['destination_folder'].$task_files['probing_debug_file'].'  > /dev/null & echo $!'; 
+        $_command_scan = 'sudo python /var/www/fabui/python/p_scan.py -x'.$param['x1'].' -y'.$param['y2'].' -i'.$param['x2'].' -j'.$param['y1'].' -n'.$probe_quality['mm'].' -a'.$param['axis_increment'].' -b'.$param['start_degree'].' -e'.$param['end_degree'].' -l'.$task_files['scan_monitor_file'].' -d'.$task_files['destination_folder'].' -v1 -t'.$task_files['probing_trace_file'].' -k'.$id_task.' 2>'.$task_files['destination_folder'].$task_files['probing_debug_file'].'  > /dev/null & echo $!'; 
         $_output_scan  = shell_exec ( $_command_scan );
 		$_scan_pid     = intval(trim(str_replace('\n', '', $_output_scan)))+1;
         

@@ -1,3 +1,11 @@
+<div class="row tip" style="display: none;">
+	<div class="col-sm-12">
+		<div class="alert alert-warning fade in">
+			<i class="fa-fw fa fa-warning"></i> <strong class="tip tip-message"></strong>
+		</div>
+	</div>	
+</div>
+
 <div class="row create-monitor" style="display: none;">
 
     <div class="col-md-4 col-lg-4">
@@ -28,10 +36,6 @@
         	
         		<a rel="tooltip" data-action="zup"   title="Change Z height: + 0.1mm" href="javascript:void(0)" class="btn btn-default controls" ><i class="fa fa-angle-double-down"></i>&nbsp;Z</a>
         		<a rel="tooltip" data-action="zdown" title="Change Z height: - 0.1mm" href="javascript:void(0)" class="btn btn-default controls" style="margin-left:5px;"><i class="fa fa-angle-double-up"></i>&nbsp;Z</a>
-        		
-        	
-        	
-            
                  <a rel="tooltip" title="Stop print process" href="javascript:void(0);"  data-action="stop"      class="btn btn-default txt-color-red          <?php echo $_running ? '' : 'disabled' ?> stop pull-right" id="stop-button"> <i title="Stop"   class="fa fa-stop fa-lg"></i> </a>
 				 <!--<a title="Pause"  href="javascript:void(0);"  data-action="pause"  class="btn btn-default txt-color-red controls <?php echo $_running ? '' : 'disabled' ?> pull-right"> <i title="Pause" class="fa fa-pause fa-lg"></i> </a>-->
 				 <a rel="tooltip" title="Turn On/Off the lights" id="light-switch" href="javascript:void(0);"  data-action="light-on"  class="btn btn-default txt-color-red controls <?php echo $_running ? '' : 'disabled' ?> pull-right"> <i title="Lights" class="fa fa-lightbulb-o fa-lg"></i> </a>
@@ -50,8 +54,8 @@
             <h2>Progress <span id="label-progress"><?php echo $_progress_percent != '' ? '( '.$_progress_percent.'% )': ''; ?></span></h2>
             <div class="bar-holder">
                 <div class="progress">
-    				<div id="lines-progress" class="progress-bar bg-color-blue" aria-valuetransitiongoal="0" aria-valuenow="0" style="width:<?php echo str_replace(',', '.', $_progress_percent).'%'; ?>;">
-                    <?php echo $_progress_percent != '' ? $_progress_percent.'%' : ''; ?></div>
+    				<div id="lines-progress" class="progress-bar bg-color-blue" aria-valuetransitiongoal="<?php echo str_replace(',', '.', $_progress_percent); ?>"></div>
+                    
                 </div>
             </div>
             

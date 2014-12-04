@@ -69,6 +69,13 @@
 					</span>
 				</div>
 				<!-- END PROFILE BUTTON -->
+				<!-- PLUGIN BUTTON -->
+				<div class="btn-header transparent pull-right">
+					<span>
+						<?php echo anchor( 'plugin', '<i class="icon-fab-plugin"></i>', 'title="Plugins" style="cursor: pointer !important"'); ?>
+					</span>
+				</div>
+				<!-- END PLUGIN BUTTON -->
 				<!-- LOGOUT BUTTON -->
 				<div id="logout" class="btn-header transparent pull-right">
 					<span>
@@ -135,7 +142,7 @@
 					<button data-toggle="modal" data-backdrop="static" data-target=".suggestion-modal" class="btn btn-xs bg-color-blue txt-color-white pull-right internet" style="display:none">
 						<i class="fa fa-stack-overflow"></i>&nbsp;<span class="hidden-mobile">Request for a feature</span>
 					</button>
-					<span class="txt-color-white ">FAB UI <em class="font-xs txt-color-orangeDark">beta</em></span>
+					<span class="txt-color-white ">FAB UI <em class="font-xs txt-color-orangeDark">beta</em> v.<?php echo $_SESSION['fabui_version'] ?></span>
 				</div>
 			</div>
 		</div>

@@ -13,11 +13,11 @@ AddDefaultCharset UTF-8
     </filesMatch>
     
     # 1 Mese = 2419200s
-    <filesMatch "\.(css|js|pdf|flv|jpg|jpeg|png|gif|swf)$">
+    <filesMatch "\.(css|js|pdf|flv|jpg|jpeg|png|gif|swf|gcode|gc)$">
         Header set Cache-Control "max-age=29030400, public"
     </filesMatch>
     
-    <FilesMatch "\.(bmp|css|flv|gif|ico|jpg|jpeg|js|pdf|png|svg|swf|tif|tiff)$">
+    <FilesMatch "\.(bmp|css|flv|gif|ico|jpg|jpeg|js|pdf|png|svg|swf|tif|tiff|gcode|gc)$">
     Header set Last-Modified "Mon, 29 Dec 2014 00:00:00 GMT"
     
     </FilesMatch>

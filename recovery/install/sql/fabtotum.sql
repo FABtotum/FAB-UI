@@ -66,7 +66,7 @@ INSERT INTO `sys_configuration` (`id`, `key`, `value`) VALUES
 (18, 'language', 'english'),
 (19, 'languages', '{"english":{"code":"us","description":"English","name":"english"},"italian":{"code":"it","description":"Italiano","name":"italian"},"german":{"code":"de","description":"Deutsch","name":"german"}}'),
 (20, 'fw_version', ''),
-(21, 'fabui_version', '0.655'),
+(21, 'fabui_version', '0.7'),
 (22, 'wifi', '{"ssid":"","password":"","ip":""}');
 
 -- --------------------------------------------------------
@@ -515,7 +515,7 @@ INSERT INTO `sys_codes` (`id`, `type`, `code`, `label`, `description`) VALUES
 (151, 'M', 790, 'M790', 'read Head capability: wattage (0-200W)'),
 (152, 'M', 791, 'M791', 'read Head capability: axis (number of axis)'),
 (153, 'M', 792, 'M792', 'read Head capability: servo (number of axis)');
-
+(154, 'M', 732, 'M732 S<FLAG>', 'Code for enable/disable the operations kill on door opening permanently (M732 S0->disable(unsafe),M732 S1->enable(safe)');
 
 
 

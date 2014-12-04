@@ -6,7 +6,7 @@
 	</div>
 	<div class="col-xs-6 col-sm-8 col-md-8 col-lg-8 text-align-right">
 		<div class="page-title">
-			
+			<a href="<?php  echo site_url('create?obj='.$_object_id.'&file='.$file->id)?>" class="btn btn-primary"> <i class="fab-lg fab-fw icon-fab-print"></i> Print</a>
 		</div>
 	</div>
 </div>

@@ -140,7 +140,7 @@ class Create extends Module {
 		$data_widget_step5['_rpm']               = $_running && isset($_attributes['rpm']) ? $_attributes['rpm'] : 6000;
 		$data_widget_step5['_running']          = $_running;
 		$data_widget_step5['_file_type']        = $_running ? trim($_file->print_type)  : 'additive'; 
-		
+		$data_widget_step5['mail']                 = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : 0;
 		
 		
 		
@@ -187,8 +187,12 @@ class Create extends Module {
         $data_js['_uri_trace']        = $_running ? $_attributes['uri_trace'] : '' ;
 		$data_js['_seconds']          = $_running ? (time() - intval($_monitor_encoded->print->started)) : 0;
 
-		$data_js['_estimated_time']   = $_running && is_array($_stats) ? 'new Array("'.implode('","', $_stats['estimated_time']).'")' : 'new Array()';
-		$data_js['_progress_steps']   = $_running && is_array($_stats) ? 'new Array("'.implode('","', $_stats['progress_steps']).'")' : 'new Array()';
+		//$data_js['_estimated_time']   = $_running && is_array($_stats) ? 'new Array('.implode(',', $_stats['estimated_time']).')' : 'new Array()';
+		//$data_js['_progress_steps']   = $_running && is_array($_stats) ? 'new Array('.implode(',', $_stats['progress_steps']).')' : 'new Array()';
+		
+		$data_js['_estimated_time']   = $_running && is_array($_stats) ? 'FixedQueue(10, ['.implode(',', $_stats['estimated_time']).'])' : 'FixedQueue(10, [])';
+		$data_js['_progress_steps']   = $_running && is_array($_stats) ? 'FixedQueue(10, ['.implode(',', $_stats['progress_steps']).'])' : 'FixedQueue(10, [])';
+		
         $data_js['ext_temp']          = $_running ? $_monitor_encoded->print->stats->extruder : 0;
         $data_js['bed_temp']          = $_running ? $_monitor_encoded->print->stats->bed : 0;
 		$data_js['ext_target']        = $_running ? $_monitor_encoded->print->stats->extruder_target : 0;
@@ -215,8 +219,13 @@ class Create extends Module {
         
         $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.min.js', 'comment' => 'javascript for the noUISlider'));
         $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.css', 'comment' => 'javascript for the noUISlider'));
+		
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
 
-
+		
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/fixed_queue.js', 'comment' => ''));
+		
+		
         //$this->layout->add_js_file(array('src'=>'application/layout/assets/js/jquery.livequery.js', 'comment' => 'javascript for the Jquery Live'));
         $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
 		
@@ -237,6 +246,109 @@ class Create extends Module {
 		$this->layout->view('index/index', $data);
 
 	}
+
+
+
+	/** show additive o subtractive preparation print */
+	public function show($type){
+		$this->load->view('index/ajax/'.$type);	
+	}
+	
+	
+	
+	
+	public function start(){
+		
+		
+		$this->output->set_content_type('application/json');
+		
+		if(!$this->input->post()){
+			show_404('', FALSE);
+		}
+		
+		$this->load->helper('file');
+		
+		/** GET DATA FROM INPUT POST */	
+		$_object_id   = $this->input->post('object');
+		$_file_id     = $this->input->post('file');
+		$_print_type  = $this->input->post('print_type');
+		$_skip_abl    = $this->input->post('skip');
+		$_time        = $this->input->post('time');
+		$_calibration = $this->input->post('calibration');
+		
+		$_skip_abl    = $_skip_abl == 0 ? false : true;
+		
+		//if is additive print
+		if($_print_type ==  'additive'){
+			
+			$_macro_trace = TEMPPATH.'print_check_'.$_time.'.trace';
+			$do_macro     = TRUE;
+			
+			switch($_calibration){
+		
+				case 'homing':
+					$_macro_function = 'home_all';
+					$_macro_response = TEMPPATH.'calibration_homing_'.$_time.'.log';
+					$do_macro        = FALSE;
+					break;
+				case 'abl':
+					$_macro_function = 'auto_bed_leveling';
+					$_macro_response = TEMPPATH.'auto_bed_leveling'.$_time.'.log';
+					$do_macro        = TRUE;
+					break;
+				
+			}
+			
+			
+			/** CRAETE TEMPORARY FILES */
+			write_file($_macro_trace, '', 'w');
+			chmod($_macro_trace, 0777);
+		
+			write_file($_macro_response, '', 'w');
+			chmod($_macro_response, 0777);
+			
+			
+			if($do_macro){
+		
+		
+				/** START MACRO */
+				$_command_macro  = 'sudo python '.PYTHONPATH.'gmacro.py '.$_macro_function.' '.$_macro_trace.' '.$_macro_response;
+				$_output_macro   = shell_exec ( $_command_macro );
+				$_pid_macro      = trim(str_replace('\n', '', $_output_macro));
+				
+				/** WAIT MACRO TO FINISH */
+				while(str_replace('<br>', '', file_get_contents($_macro_response)) == ''){   
+					sleep(0.5);
+				}
+				
+				
+				/** CHECK MACRO RESPONSE */
+				if(str_replace('<br>', '', file_get_contents($_macro_response)) != 'true'){
+					//header('Content-Type: application/json');
+					echo json_encode(array('response' => false, 'message' => str_replace(PHP_EOL, '<br>', file_get_contents($_macro_trace)), 'response_text' => file_get_contents($_macro_response)));
+					exit();
+				}		
+			}	
+		}
+		
+		
+		
+		// load database class
+		$this->load->database();
+		$this->load->model('tasks');
+		$this->load->model('files');
+		
+		$_file = $this->files->get_file_by_id($_file_id);
+		
+		
+		
+		
+		
+		
+	}
+	
+	
+	
 
 
 

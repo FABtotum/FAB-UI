@@ -24,6 +24,16 @@ function openGCodeFromPath(path) {
     closeWait();  
     scene.add(object);
     
+    try {
+    
+    	localStorage.setItem('last-loaded', path);
+    	localStorage.setItem('last-imported', gcode);
+    
+    }catch(e){ 
+ 		 localStorage.removeItem('last-loaded');
+ 		 localStorage.removeItem('last-imported');
+    }
+    
   });
 }
 
@@ -34,7 +44,25 @@ function openGCodeFromText(gcode) {
   }
   object = createObjectFromGCode(gcode);
   scene.add(object);
+  closeWait(); 
 
+}
+
+
+
+function openGcode(uri_file){
+	
+	if(supportsLocalStorage() && uri_file == localStorage.getItem('last-loaded')){
+		openGCodeFromText(localStorage.getItem('last-imported'));
+	}else{
+		openGCodeFromPath(uri_file);
+	}
+	
+}
+
+
+function supportsLocalStorage() {
+  return typeof(Storage)!== 'undefined';
 }
 
 
@@ -61,7 +89,11 @@ $(function() {
 	scene = createScene($('#renderArea'));
 	 
 	openWait('Loading GCode file');
-	openGCodeFromPath(uri_file);
+	/*openGCodeFromPath(uri_file);*/
+	
+	
+	openGcode(uri_file);
+	
   
  
 });

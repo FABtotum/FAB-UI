@@ -304,6 +304,8 @@
 	require BASEPATH.'core/'.ucfirst($RTR->fetch_type()).'.php';
 
 	
+	
+	
 	include(APPPATH.$RTR->fetch_type().'s/'.$RTR->fetch_class().'/'.$RTR->fetch_class().'.php');
 
 	// Set a mark point for benchmarking

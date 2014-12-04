@@ -75,6 +75,15 @@ if (defined('ENVIRONMENT'))
  *
  */
 	$application_folder = 'application';
+	
+	
+	
+	
+	$python_folder = 'python';
+	$script_folder = 'script';
+	$tasks_folder  = '../tasks';
+	$temp_folder   = '../temp';
+	$plugin_folder = 'application/plugins';
 
 /*
  * --------------------------------------------------------------------
@@ -147,7 +156,7 @@ if (defined('ENVIRONMENT'))
 	{
 		$system_path = realpath($system_path).'/';
 	}
-
+	
 	// ensure there's a trailing slash
 	$system_path = rtrim($system_path, '/').'/';
 
@@ -156,7 +165,61 @@ if (defined('ENVIRONMENT'))
 	{
 		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
 	}
+	
+	/** Set python folder */
+	if (realpath($python_folder) !== FALSE)
+	{
+		$python_folder = realpath($python_folder).'/';
+	}
+	
+	// ensure there's a trailing slash
+	$python_folder = rtrim($python_folder, '/').'/';
+	
+	
+	/** Set script folder */
+	if (realpath($script_folder) !== FALSE)
+	{
+		$script_folder = realpath($script_folder).'/';
+	}
+	
+	// ensure there's a trailing slash
+	$script_folder = rtrim($script_folder, '/').'/';
+	
+	
+	
+	/** Set tasks folder */
+	if (realpath($tasks_folder) !== FALSE)
+	{
+		$tasks_folder = realpath($tasks_folder).'/';
+	}
+	
+	// ensure there's a trailing slash
+	$tasks_folder = rtrim($tasks_folder, '/').'/';
+	
+	
+	/** Set temp folder */
+	if (realpath($temp_folder) !== FALSE)
+	{
+		$temp_folder = realpath($temp_folder).'/';
+	}
+	
+	// ensure there's a trailing slash
+	$temp_folder = rtrim($temp_folder, '/').'/';
+	
+	
+	/** Set Plugin folder */
+	if (realpath($plugin_folder) !== FALSE)
+	{
+		$plugin_folder = realpath($plugin_folder).'/';
+	}
+	
+	// ensure there's a trailing slash
+	$plugin_folder = rtrim($plugin_folder, '/').'/';
 
+	
+	
+	
+	
 /*
  * -------------------------------------------------------------------
  *  Now that we know the path, set the main path constants
@@ -171,7 +234,21 @@ if (defined('ENVIRONMENT'))
 
 	// Path to the system folder
 	define('BASEPATH', str_replace("\\", "/", $system_path));
-
+	
+	// Path to python folder
+	define('PYTHONPATH', str_replace("\\", "/", $python_folder));
+	
+	// Path to script folder
+	define('SCRIPTPATH', str_replace("\\", "/", $script_folder));
+	
+	// Path to tasks temporary folder
+	define('TASKSPATH', str_replace("\\", "/", $tasks_folder));
+	
+	// Path to temp folder
+	define('TEMPPATH', str_replace("\\", "/", $temp_folder));
+	
+	define('PLUGINSPATH', str_replace("\\", "/", $plugin_folder));
+	
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));
 
@@ -193,6 +270,12 @@ if (defined('ENVIRONMENT'))
 
 		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
+
+
+	
+	
+	
+
 
 /*
  * --------------------------------------------------------------------

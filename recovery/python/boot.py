@@ -34,9 +34,17 @@ config = json.load(json_f)
 ser.write("M701 S"+str(config['color']['r'])+"\r\n")
 ser.write("M702 S"+str(config['color']['g'])+"\r\n")
 ser.write("M703 S"+str(config['color']['b'])+"\r\n")
+#SAFETY
+
+try:
+    safety_door = config['safety']['door']
+except KeyError:
+    safety_door = 1
+
+ser.write("M732 S"+str(safety_door)+"\r\n")
 
 #ENABLE SAFETY 
-call (["sudo python /var/www/recovery/python/safety.py"], shell=True) #the script will run forever.
+call (["sudo python /var/www/recovery/python/safety.py > /var/log/safety.log"], shell=True) #the script will run forever.
 
 #clean the buffer and leave
 serial.flush()

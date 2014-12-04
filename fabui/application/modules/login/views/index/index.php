@@ -324,8 +324,9 @@
 							
 							<ul class="list-unstyled blog-photos margin-bottom-30">
 								<?php foreach($instagram_hash['data'] as $img): ?>
+								
 								<li>
-									<a data-link="<?php echo $img['link']?>" class="intagram-image-hash" title="<span><?php echo $img['caption']['text'] ?></span> <span><?php echo "<a target='_blank' class='link' href='".$img['link']."'>".$img['link']."</a></span>" ?>" href="<?php echo $img['images']['standard_resolution']['url'] ?> ">
+									<a data-link="<?php echo $img['link']?>" class="intagram-image-hash" title="<span><?php echo '@'.$img['user']['username'].' - '.$img['caption']['text'] ?></span> <span><?php echo "<a target='_blank' class='link' href='".$img['link']."'>".$img['link']."</a></span>" ?>" href="<?php echo $img['images']['standard_resolution']['url'] ?> ">
 										<img src="<?php echo $img['images']['thumbnail']['url']; ?>" >
 									</a>
 								</li>

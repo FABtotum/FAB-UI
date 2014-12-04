@@ -70,21 +70,26 @@ function detail_files(object) {
                            // if(jQuery.inArray( file.file_ext, printable_files) >= 0 ){
                             
                                 var extended_class = '';
-                                var status = '<i class="fa fa-check pull-right"></i>';
+                                var status = '<i class="icon-fab-printable pull-right"></i>';
+                                var icon_type = 'fa-cubes txt-color-blue';
                                 
                                 if(file.file_ext == '.stl' ){
                                     extended_class = 'warning';
-                                    status        = '<i class="fa fa-warning pull-right"></i>';
+                                    status        = '<i class="icon-fab-not-printable pull-right"></i>';
+                                    var icon_type = 'fa-file-text-o txt-color-red';
                                 }
                                 
+                               	
+                               	//fa fa-file-text-o
+                               	
                                
                             
     							html += '<tr class="file-row '+ extended_class +'" data-id="' + file.id + '">';
     							html += '<td><label class="radio"><input class="obj-file" value="'
     									+ file.id
     									+ '" type="radio" name="file-selected"><i></i> </label></td>';
-    							html += '<td><i class="fa fa-file-o"></i>  '
-    									+ file.file_name + status + ' </td>';
+    							html += '<td><strong><i class="fa '+icon_type+'"></i>  '
+    									+ file.file_name + status + '</strong> </td>';
                                 
                                 var icon_src = '<span class="icon-fab-additive"></span>';          
     							html += '<td class="hidden-xs">' + file.print_type + icon_src +' </td>';
@@ -106,10 +111,11 @@ function detail_files(object) {
         
          $('.file-row').click(function () {
             
-            
-            
-            
             $(this).find(':first-child').find('input').prop("checked", true);
+            
+            $(".files-table tbody tr").removeClass('success');
+            $(this).addClass('success');
+            
            	select_file($(this).find(':first-child').find('input').val());
             
             
@@ -120,29 +126,52 @@ function detail_files(object) {
             /** MODAL IF IS STL FILE */
             if(file_selected.file_ext == '.stl'){
                 $('#myModal').modal('show');
+                 $("#btn-next").addClass("disabled");
+               
             }else{
+            	 $("#btn-next").removeClass("disabled");
             }
             
             
            try
 			{
-			   var attributes = JSON.parse(file_selected.attributes);
 			   
-			   var model_info_html = '<div class="well well-sm model-info margin-top-10">';
-
-			   var x = number_format(attributes.dimensions.x, 2, '.', '');
-			   var y = number_format(attributes.dimensions.y, 2, '.', '');
-			   var z = number_format(attributes.dimensions.z, 2, '.', '');
+			  $(".model-info").remove();
+			  
+			  if(file_selected.attributes != '' && file_selected.attributes != 'Processing'){
+			  	
+			  	var attributes = JSON.parse(file_selected.attributes);
 			   
-			   model_info_html += '<h5>Model size: <span class="text-info">'+ x +' x '+ y +' x ' + z + ' mm</span></h5>';
-			   model_info_html += '<h5>Filament used: <span class="text-info">'+ number_format(attributes.filament, 2, '.', '') +' mm</span></h5>';
-			   model_info_html += '<h5>Estimated time print: <span class="text-info">'+ attributes.estimated_time+'</span></h5>';
-			   model_info_html += '<h5>Layers: <span class="text-info">'+ attributes.number_of_layers +'</span></h5>';
-			   
-			   model_info_html += '</div>';
-			   
-			   $(".model-info").remove();
-			   $('#files-container').append(model_info_html);
+				var model_info_html = '<div class="alert alert-success fade in model-info margin-top-10 info">';
+	
+				var x = number_format(attributes.dimensions.x, 2, '.', '');
+				var y = number_format(attributes.dimensions.y, 2, '.', '');
+				var z = number_format(attributes.dimensions.z, 2, '.', '');
+				   
+				model_info_html += '<h6>Model size: <span class="text-info">'+ x +' x '+ y +' x ' + z + ' mm</span></h6>';
+				model_info_html += '<h6>Filament used: <span class="text-info">'+ number_format(attributes.filament, 2, '.', '') +' mm</span></h6>';
+				model_info_html += '<h6>Estimated time print: <span class="text-info">'+ attributes.estimated_time+'</span></h6>';
+				model_info_html += '<h6>Layers: <span class="text-info">'+ attributes.number_of_layers +'</span></h6>';
+				   
+				model_info_html += '</div>';
+				 
+				 
+				
+			  }else{
+			  	
+			  	
+			  	var message = file_selected.attributes != 'Processing' ? 'No information avaiable for this file' : 'Processing informations..';
+			  	
+			  	var model_info_html = '<div class="alert alert-warning fade in model-info margin-top-10 info">';
+			  	
+			  	model_info_html += '<strong><i class="fa fa-warning"></i> '+message+' </strong>';
+			  	
+			  	model_info_html += '</div>';
+			  	
+			  }
+			  
+			  $('#files-container').append(model_info_html);	
+			  
 			   
 			}
 			catch(e)
@@ -153,7 +182,8 @@ function detail_files(object) {
            $("#step4").html('');
             
             $.ajax({
-                url : ajax_endpoint + 'ajax/'+ print_type + '.php',
+               /* url : ajax_endpoint + 'ajax/'+ print_type + '.php',*/
+              	url: '/fabui/create/show/' + print_type,
                 cache: false
             })
               .done(function( html ) {
@@ -376,7 +406,7 @@ function _update_task() {
 			//stopped : stopped,
 			estimated_time: array_estimated_time,
 			progress_steps: array_progress_steps,
-            //stats_file : stats_file
+            stats_file : stats_file
 		},
 		type : 'post',
 		dataType : 'json',
@@ -413,6 +443,7 @@ function _monitor_call(){
 			monitor_count++;
 			
 			monitor_response = response;
+			
 			pid = response.print.pid;
 
                 if(parseFloat(response.print.stats.percent) > 0){
@@ -465,90 +496,20 @@ function _monitor_call(){
                 }
                 
 			
-			//al primo giro
-			if(monitor_count == 1){
-				
-				
-
-				//progress_step = parseFloat(response.print.stats.percent);
-				progress_step = precise_round(response.print.stats.percent, precision);
-				second_for_step = elapsed_time;
-				
-				//if the process is already running
-				if(is_running == true){
-					current_estimated_time = parseFloat((eval(array_estimated_time.join('+')))/(eval(array_progress_steps.join('+')))).toFixed(0);
-                    if(!isNaN(current_estimated_time)){				
-					   $('.estimated-time').html(_time_to_string(current_estimated_time));
-                    }
-					estimated_time_left = (parseInt(current_estimated_time) - parseInt(elapsed_time)); //stima secondi rimasti = stima secondi totali - elapsed_time dall'inizio della stampa
-					estimated_time_left = Math.abs(estimated_time_left);
-					
-				}else{
-					
-					$('.estimated-time').html('-');
-					$('.estimated-time-left').html('-');
-					
-				}
-
-				
-			}
-			
 			if(response.print.completed == 1){
 				print_finished = true;
 				
 			}
 
 
-			/**
-			* CALCULING ESTIMATED TIME LEFT
-			**/
+			_update_task();
 			
 			
-			if(precise_round(response.print.stats.percent, precision) >= 1){
-				
+			estimated_time_left = ((elapsed_time / response.print.stats.percent) * 100) - elapsed_time;
 			
-				//se cambia la percentuale verifico di quanta � cambiata ne calcolo il tempo e faccio una stima di quanto ci si mette a completare tutto al 100%
-				if(progress_step != precise_round(response.print.stats.percent, precision)){
-	
-					
-					var second_for_this_step            = (elapsed_time - second_for_step);
-					var progress_for_this_step          = precise_round(Math.abs(precise_round(response.print.stats.percent, 2) - progress_step), precision);
-					var estimated_seconds_for_all_steps = precise_round(parseFloat((second_for_this_step * 100) / progress_for_this_step), precision); 
-	
-	
-					//calcolo la media ponderata per la stima del tempo totale di stampa
-	                
-	                if(!isNaN(progress_for_this_step)){
-	                    array_progress_steps.push(progress_for_this_step);
-	                }
-	                
-	                var print_estimated_time = precise_round(Math.abs(estimated_seconds_for_all_steps * progress_for_this_step), precision);
-					
-	                if(!isNaN(print_estimated_time)){
-	                    array_estimated_time.push(print_estimated_time);
-	                }
-	                
-					//array_estimated_time.push(precise_round(Math.abs(estimated_seconds_for_all_steps * progress_for_this_step), precision));
-					
-					current_estimated_time = precise_round(parseFloat((eval(array_estimated_time.join('+')))/(eval(array_progress_steps.join('+')))), 0);
-	                				
-					estimated_time_left = (parseInt(current_estimated_time) - parseInt(elapsed_time)); //stima secondi rimasti = stima secondi totali - elapsed_time dall'inizio della stampa
-					estimated_time_left = Math.abs(estimated_time_left);
-					
-					
-	                if(!isNaN(current_estimated_time)){
-					    $('.estimated-time').html(_time_to_string(current_estimated_time));
-	                }
-	
-					
-					progress_step   = precise_round(response.print.stats.percent, precision);
-					second_for_step = elapsed_time;
-					
-					_update_task();
-	
-				}
+			tip(monitor_response.print.tip.show, monitor_response.print.tip.message);
 			
-			}
+			
 			
 		});
 
@@ -557,6 +518,20 @@ function _monitor_call(){
 	
 }
 
+
+function tip(show, message){
+	
+	
+	show = show == 'True' ? true : false;
+	
+	if(show){
+		$(".tip-message").html(message);
+		$(".tip").show();
+	}else{
+		$(".tip").hide();
+	}
+	
+}
 
 /**
  * 
@@ -600,7 +575,8 @@ function print_object(){
 
 	$.ajax({
 		  //url: ajax_endpoint + '/do_print/' + object.object.id + '/' + file_selected.id,
-          url : ajax_endpoint + 'ajax/create.php',
+         url : ajax_endpoint + 'ajax/create.php',
+         // url: '/fabui/create/start',
 		  type: 'POST',
           dataType : 'json',
 		  async : true,
@@ -682,7 +658,9 @@ function print_object(){
 $('.obj').click(function () {
     
     
-    $(this).find(':first-child').find('input').prop("checked", true)
+    $(this).find(':first-child').find('input').prop("checked", true);
+    $("#objects_table tbody tr").removeClass('success');
+    $(this).addClass('success');
     var id = $(this).attr("data-id");
 	
 	$.ajax({

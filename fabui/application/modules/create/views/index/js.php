@@ -67,6 +67,11 @@
 	var isEngageFeeder = 0;
 	
 	$(document).ready(function() {
+		
+		
+		$('.progress-bar').progressbar({
+			display_text : 'fill'
+		});
 
 		
  	  $('#objects_table').dataTable({

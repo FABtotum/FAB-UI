@@ -31,6 +31,7 @@ class Settings extends Module {
 		$_units = json_decode(file_get_contents($this->config->item('fabtotum_config_units', 'fabtotum')), TRUE);
         
         $data['_standby_color'] = $_units['color'];
+		$data['_safety_door']     = isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
         
         /** LOAD TAB HEADER */
         $_tab_header = $this->tab_header();
@@ -148,6 +149,9 @@ class Settings extends Module {
     
     
     function network(){
+    	
+		
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
         
         /** LOAD HELPERS */
         $this->load->helper("os_helper");
@@ -156,31 +160,84 @@ class Settings extends Module {
 		$this->load->model('configuration');
 		
 		$saved_wifi = $this->configuration->get_config_value('wifi');
-        
 		$saved_wifi = json_decode($saved_wifi, true);
 		
 		
-		current_wlan();
-        
+		$networkConfiguration = networkConfiguration();
+		
+		$ethEndIp = explode('.', $networkConfiguration['eth']);
+		$ethEndIp = end($ethEndIp);
+
+
+		//current_wlan();
+        $data['ethEndIp'] = $ethEndIp;
         $_tab_header = $this->tab_header('network');
 		$data['wifi_saved']   = $saved_wifi;
         $data['_breadcrumb']  = 'Network';
         $data['_tab_header']  = $_tab_header;
 		$data['lan']         = lan();
 		$data['con_wlan']    = wlan();
-		$data['wlan']        = scan_wlan(); 
+		$data['wlan']        = scan_wlan();
+		$data['networkConfiguration'] = $networkConfiguration;
+		
+		
+		
+		
+		$data['imOnCable']   = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : false;
+		 
         $data['_tab_content'] = $this->load->view('index/network/index', $data, TRUE);
-       
+		
         $js_in_page = $this->load->view('index/network/js', $data, TRUE);
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
 		
-		
-		
-		
-		
-		$this->layout->set_compress(false);
+		//$this->layout->set_compress(false);
         $this->layout->view('index/index', $data);
     }
+
+
+
+	public function seteth(){
+		
+		
+		$number = $this->input->post('number');
+		 /** LOAD HELPERS */
+        $this->load->helper("os_helper");
+		
+		setEthIP($number);
+		
+		echo true;
+	}
+	
+	
+	public function setwifi(){
+		
+		
+		$net      = $this->input->post('net');
+		$password = $this->input->post('password');
+		
+		/** LOAD HELPERS */
+        $this->load->helper("os_helper"); 
+		
+		//$net = str_replace('wifi-', '', $net);
+		
+		setWifi($net, $password);
+		
+		$wlan = wlan();
+		$wlan_ip = isset($wlan['ip']) ? $wlan['ip'] : '';
+		
+		$this->load->database();
+		$this->load->model('configuration');
+	
+		/** SAVE NEW WIFI CONFIGURATION TO DB */
+		$this->configuration->save_confi_value('wifi', json_encode(array('ssid' => $net, 'password' => $password, 'ip' =>$wlan_ip)));
+		
+		$response_items['wlan_ip'] = $wlan_ip;
+		echo json_encode($response_items);
+		
+		
+		
+		
+	}
     
     
     

@@ -210,8 +210,6 @@
 			}
 			
 			
-			
-			
 			$(".todo").html(data);
 			
 			var reds = 0;
@@ -226,7 +224,7 @@
 				}
 				
 				if($(this).hasClass('warning')){
-					orangess++;
+					oranges++;
 				}
 				
 				if($(this).hasClass('success')){
@@ -237,10 +235,24 @@
 			});
 			
 			
+			/*
+			console.log(reds);
+			console.log(oranges);
+			console.log(greens);
+			*/
 			
+			/*
 			if(reds > 0){
+				
 				$(".bed-leveling-next").addClass('disabled');
 			}
+			
+			if(greens == 4){
+				$(".bed-leveling-next").removeClass('disabled');
+			}
+			*/
+			
+			
 			
 			/*
 			if(reds == 0){
@@ -252,6 +264,20 @@
 			
 			check_wizard();
 			*/
+			
+			
+			
+			
+			if(reds > 0){
+				isStep2Ok = false;
+			}
+			
+			if(greens == 4 || reds == 0){
+				isStep2Ok = true;
+			}
+			
+			check_wizard();
+			
 			
 			
 		});

@@ -223,7 +223,7 @@ class Objectmanager extends Module {
 
 	public function delete($obj_id){
 
-		//se la chiamata � di tipo ajax allora posso fare...
+		//if is only an ajax call request
 		if($this->input->is_ajax_request()){
 				
 			//carico X class database

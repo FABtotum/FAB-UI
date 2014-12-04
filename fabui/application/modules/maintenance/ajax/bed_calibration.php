@@ -53,7 +53,7 @@ $screws[3] = array('t' => $_response['bed_calibration']['t4'], 's' => $_response
 		
 		<tr class="<?php echo  get_row_color($screws[$i]['s'])?>">
 			<td class="text-center"><span class="badge  badge <?php echo get_color($screws[$i]['s']); ?>"><?php echo($i + 1); ?></span></td>
-			<td><?php echo get_rotation_number($screws[$i]['t']); ?>  - Direction:  <i class="fa <?php echo get_direction($screws[$i]['s']) ?> "></i> <?php //echo round($screws[$i]['s'],3) ?></td>
+			<td><?php echo get_rotation_number($screws[$i]['t']); ?>  <?php echo get_direction($screws[$i]['s']) ?></td>
 		</tr>
 	<?php endfor; ?>	
 	</tbody> 
@@ -118,11 +118,21 @@ function get_color($value) {
 
 function get_direction($value) {
 
-	if ($value > 0) {
-		return 'fa-rotate-right';
-	} else {
-		return 'fa-rotate-left';
+	
+	if($value == 0){
+		return '';
 	}
+	
+	$class = '';
+	
+	if ($value > 0) {
+		$class =  'fa-rotate-right';
+	} else {
+		$class = 'fa-rotate-left';
+	}
+	
+	
+	return '- Direction:  <i class="fa '.$class.'"></i>';
 
 }
 

@@ -126,7 +126,7 @@ function save(){
         url : '<?php echo module_url('settings').'ajax/general.php' ?>',
 		  dataType : 'json',
 		  type: 'post',
-          data: {red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val()},
+          data: {red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val(), safety_door: $('[name="safety-door"]:checked').val()},
           dataType: 'json'
 		}).done(function(response) {
 			

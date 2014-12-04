@@ -137,7 +137,8 @@ function myfab_update_list(){
 
 
 function is_internet_avaiable(){
-    return !$sock = @fsockopen('www.google.com', 80, $num, $error, 5) ? false : true;    
+		
+	return !$sock = @fsockopen('www.google.com', 80, $num, $error, 5) ? false : true;    
 }
 
 

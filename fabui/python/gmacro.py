@@ -159,8 +159,9 @@ elif preset=="end_print_additive":
 	serial.flush()
 	#note: movement here is done so it works with AUTO positioning (additive mode).
 	trace("Terminating...",log_trace)
-	macro("G90","ok",100,"Set Absolute movement",0.1,verbose=False)
-	macro("G0 X210 Y210 Z240 F10000","ok",100,"Moving to safe zone",0.1,verbose=False) #right top, normally Z=240mm
+	#macro("G90","ok",100,"Set Absolute movement",0.1,verbose=False)
+	#macro("G90","ok",2,"Set Absolute movement",1)
+	#macro("G0 X210 Y210 Z240 F10000","ok",100,"Moving to safe zone",0.1,verbose=False) #right top, normally Z=240mm
 	macro("M104 S0","ok",50,"Shutting down Extruder",1)
 	macro("M140 S0","ok",50,"Shutting down Heated Bed",1)
 	macro("M220 S100","ok",20,"reset speed override",0.1)
@@ -197,7 +198,7 @@ elif preset=="auto_bed_leveling":
 #r_scan rotative scan preset
 elif preset=="r_scan":
 	trace("Initializing Rotative Laser scanner",log_trace)
-	trace ("checking panel door status and bed inserted",log_trace)
+	trace ("checking panel door status and bed inserted",log_trace,verbose=False)
 	macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
 	macro("M744","open",1,"Building plane (must be removed)",0.1)
 	macro("M744","TRIGGERED",1,"Spool panel closed",0.1, warning=True)
@@ -276,7 +277,7 @@ elif preset=="load_spool":
 	trace("Loading Spool : Procedure Started.",log_trace)
 	macro("G90","ok",2,"set abs position",0)
 	macro("G27","ok",100,"zeroing Z axis",1)
-	macro("G0 X120 Y120 Z150 F1000","ok",3,"Moving to Safe Zone",0.1)
+	macro("G0 X120 Y120 Z150 F1000","ok",10,"Moving to Safe Zone",0.1)
 	macro("M302 S0","ok",5,"Enabling Cold extrusion",0.1,verbose=False)
 	macro("M83","ok",5,"setting relative estrusion mode",0.1,verbose=False)
 	macro("G92 E0","ok",5,"setting extruder position to 0",0.1,verbose=False)

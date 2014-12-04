@@ -3,56 +3,36 @@
 		<div class="col-md-12">
 			<div class="well no-border">
 				<form class="form-horizontal" action="<?php echo site_url('settings') ?>" method="post">
-					<!--
+					
 					<fieldset>
+						
 						<legend>
-							Theme
+							Safety
 						</legend>
+						
 						<div class="form-group"> 
 							<label class="col-md-1 control-label">
-								Skin
+								Door
 							</label>
 							<div class="col-md-11">
 								<div class="radio">
 									<label>
-										<input type="radio" class="radiobox style-0" <?php echo $_theme_skin=='smart-style-0' ? 'checked="checked"' : '' ?>
-										name="theme_skin" value="smart-style-0">
-										<span>
-											Default
-										</span>
+										<input type="radio" class="radiobox style-0" name="safety-door" value="1" <?php echo $_safety_door == '1' ? 'checked="checked"' : '' ?>>
+										<span>On</span>
 									</label>
 								</div>
 								<div class="radio">
 									<label>
-										<input type="radio" class="radiobox style-0" <?php echo $_theme_skin=='smart-style-1' ? 'checked="checked"' : '' ?>
-										name="theme_skin" value="smart-style-1">
-										<span>
-											Dark Elegance
-										</span>
+										<input type="radio" class="radiobox style-0" name="safety-door" value="0" <?php echo $_safety_door == '0' ? 'checked="checked"' : '' ?>>
+										<span>Off</span>
 									</label>
 								</div>
-								<div class="radio">
-									<label>
-										<input type="radio" class="radiobox style-0" <?php echo $_theme_skin=='smart-style-2' ? 'checked="checked"' : '' ?>
-										name="theme_skin" value="smart-style-2">
-										<span>
-											Ultra Light
-										</span>
-									</label>
-								</div>
-								<div class="radio">
-									<label>
-										<input type="radio" class="radiobox style-0" <?php echo $_theme_skin=='smart-style-3' ? 'checked="checked"' : '' ?>
-										name="theme_skin" value="smart-style-3">
-										<span>
-											Google Skin
-										</span>
-									</label>
-								</div>
+								
+								
 							</div>
 						</div>
 					</fieldset>
-					-->
+					
 					<fieldset>
 						<legend>
 							Lighting
