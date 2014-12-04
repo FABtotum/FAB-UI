@@ -1,9 +1,9 @@
 FAB-UI
-======
-
+=====
 the FABtotum User Interface Repo
 
 FABUI 0.7 (4/12/2014)
+
 SCAN
 - Fixed end scan procedure
 - Minor bugfixes
