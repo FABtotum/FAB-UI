@@ -220,8 +220,8 @@ for (p,point) in enumerate(probed_points):
 	
 	#trace("Mean ="+ str(probed_points[p,2]))
 	
-	#msg="Point " +str(p+1)+ "/"+ str(len(probed_points)) + " , Z= " +str(probed_points[p,2])
-	#trace(msg)
+	msg="Point " +str(p+1)+ "/"+ str(len(probed_points)) + " , Z= " +str(probed_points[p,2])
+	trace(msg)
 	
 	macro("M402","ok",2,"Raising Probe",1, warning=True, verbose=False)	
 	
@@ -283,7 +283,7 @@ for (p,point) in enumerate(cal_point):
 		
 	#difference from titled plane to straight plane
 	#distance=P2-P1
-	diff=-d_ovr-abs(z)
+	diff=abs(-d_ovr)-abs(z)
 	
 	#msg= "d :"+str(d)+", P :"+str(p)+" , Z:" +str(z) +" Diff: "+str(diff) +" d_ovr: "+str(d_ovr) 
 	msg= str(d_ovr)+ "-"+str(abs(z))+" = " + str(diff)
