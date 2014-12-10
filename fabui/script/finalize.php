@@ -611,7 +611,7 @@ function finalize_general($tid,$type,$status){
 	update_task($tid, $status);
 	sleep(5);
 	//REMOVE ALL TEMPORARY FILES
-	//shell_exec('sudo rm -rf '.$attributes['folder']);
+	shell_exec('sudo rm -rf '.$attributes['folder']);
 	$log->info('Task #'.$tid.' end finalizing');
 	
 	

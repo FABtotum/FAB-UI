@@ -88,6 +88,9 @@ defined('INSTAGRAM_HASH_JSON') ? null : define("INSTAGRAM_HASH_JSON",      TEMP_
 defined('TWITTER_FEED_URL')  ? null : define("TWITTER_FEED_URL",      'http://www.fabtotum.com/twitter_feed.json');
 defined('TWITTER_FEED_JSON') ? null : define("TWITTER_FEED_JSON",      TEMP_PATH.'twitter.json');
 
+defined('FAQ_URL')  ? null : define("FAQ_URL", 'http://www.fabtotum.com/faq.json');
+defined('FAQ_JSON') ? null : define("FAQ_JSON", TEMP_PATH.'faq.json');
+
 
 defined('WIZARD_FILE') ? null : define("WIZARD_FILE", WWW_PATH.'WIZARD');
 

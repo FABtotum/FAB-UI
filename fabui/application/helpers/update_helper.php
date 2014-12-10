@@ -9,12 +9,16 @@ function myfab_get_remote_version(){
 	//load configuration file
 	$CI->config->load('myfab', TRUE);
     
-    
-    $context = stream_context_create(array('http'=> array('timeout' => 5)));
-	
 	$_remote_url = $CI->config->item('fabui_remote_version_url', 'myfab');
 	
-	$_version = file_get_contents($_remote_url, false, $context);
+	$ch = curl_init($_remote_url);
+	
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	
+	$_version = curl_exec($ch);
+	$info = curl_getinfo($ch);
+	curl_close($ch);
 	
 	return $_version;
 	
@@ -42,14 +46,17 @@ function marlin_get_remote_version(){
 
 	//load configuration file
 	$CI->config->load('myfab', TRUE);
-    
-    $context = stream_context_create(array('http'=> array('timeout' => 5)));
 
 	$_remote_url = $CI->config->item('fw_remote_version_url', 'myfab');
+    
+    $ch = curl_init($_remote_url);
 	
-	$_version = file_get_contents($_remote_url, false, $context);
-
-    //echo 'remote url: '.$_remote_url;
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	
+	$_version = curl_exec($ch);
+	$info = curl_getinfo($ch);
+	curl_close($ch);
     
     
 
@@ -153,12 +160,19 @@ function fabui_changelog($version){
 	if(is_internet_avaiable()){
 		
 		
-		$context = stream_context_create(array('http'=> array('timeout' => 5)));
 		$_remote_url = $CI->config->item('fabui_remote_download_url', 'myfab');
 		$_fabui_changelog = $CI->config->item('fabui_changelog', 'myfab');
-	
-		return file_get_contents($_remote_url.$version.'/'.$_fabui_changelog, false, $context);
 		
+		$ch = curl_init($_remote_url.$version.'/'.$_fabui_changelog);
+		
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		
+		$changelog = curl_exec($ch);
+		$info = curl_getinfo($ch);
+		curl_close($ch);
+		
+		return $changelog;	
 	}
 	
 	return "";
@@ -172,18 +186,24 @@ function fw_changelog($version){
 	
 	$CI =& get_instance();
 	
-	//load configuration file
 	$CI->config->load('myfab', TRUE);
 	
 	
 	if(is_internet_avaiable()){
 		
-		
-		$context = stream_context_create(array('http'=> array('timeout' => 5)));
 		$_remote_url = $CI->config->item('fw_remote_download_url', 'myfab');
 		$_fw_changelog = $CI->config->item('fw_changelog', 'myfab');
-	
-		return file_get_contents($_remote_url.$version.'/'.$_fw_changelog, false, $context);
+		
+		$ch = curl_init($_remote_url.$version.'/'.$_fw_changelog);
+		
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		
+		$changelog = curl_exec($ch);
+		$info = curl_getinfo($ch);
+		curl_close($ch);
+		
+		return $changelog;
 		
 	}
 	

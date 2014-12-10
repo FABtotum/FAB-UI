@@ -19,8 +19,9 @@ if ( ! function_exists('installed_plugins'))
 		
 		foreach($_plugins_folders as $_key => $_value){
 			
-			$_installed_plugins[] = array('plugin'=>$_key, 'folder' => APPPATH.'plugins/'.$_key);
-			
+			if(is_dir(APPPATH.'plugins/'.$_key)){
+				$_installed_plugins[] = array('plugin'=>$_key, 'folder' => APPPATH.'plugins/'.$_key);
+			}			
 		}
 		
 		return $_installed_plugins;

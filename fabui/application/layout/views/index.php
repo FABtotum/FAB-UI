@@ -62,6 +62,17 @@
 					</span>
 				</div>
 				<!-- end collapse menu button -->
+				
+				
+				<!-- SUPPORT BUTTON -->
+				<div class="btn-header transparent pull-right">
+					<span>
+						<?php echo anchor( 'support', '<i class="fa fa-life-ring"></i>', 'title="Support" style="cursor: pointer !important"'); ?>
+					</span>
+				</div>
+				<!-- END SUPPORT BUTTON -->
+				
+				
 				<!-- PROFILE BUTTON -->
 				<div class="btn-header transparent pull-right">
 					<span>

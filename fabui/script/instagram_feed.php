@@ -4,30 +4,43 @@ require_once '/var/www/fabui/ajax/lib/utilities.php';
 
 if (is_internet_avaiable()) {
 
-	// Create a stream
-	$opts = array('http' => array('method' => "GET"));
+	$ch = curl_init(INSTAGRAM_FEED_URL);
 
-	$context = stream_context_create($opts);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-	$instagram_feed = file_get_contents(INSTAGRAM_FEED_URL, false, $context);
-	$info_header = $http_response_header;
+	$instagram_feed = curl_exec($ch);
+	$info = curl_getinfo($ch);
+	curl_close($ch);
 
-	if ($info_header[0] == 'HTTP/1.1 200 OK') {
-
+	if ($info['http_code'] == 200) {
+			
 		$fp = fopen(INSTAGRAM_FEED_JSON, 'w');
-		fwrite($fp, $instagram_feed);
-		fclose($fp);
-
+	 	fwrite($fp, $instagram_feed);
+	 	fclose($fp);
 	}
+	
+	
+	// ===========================================================
+	
+	
+	
+	$ch = curl_init(INSTAGRAM_HASH_URL);
 
-	$instagram_hash = file_get_contents(INSTAGRAM_HASH_URL, false, $context);
-	$info_header = $http_response_header;
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-	if ($info_header[0] == 'HTTP/1.1 200 OK') {
+	$instagram_hash = curl_exec($ch);
+	$info = curl_getinfo($ch);
+	curl_close($ch);
+
+	if ($info['http_code'] == 200) {
+			
 		$fp = fopen(INSTAGRAM_HASH_JSON, 'w');
-		fwrite($fp, $instagram_hash);
-		fclose($fp);
+	 	fwrite($fp, $instagram_hash);
+	 	fclose($fp);
 	}
+
 
 }
 ?>
