@@ -87,7 +87,7 @@ if preset=="check_pre_print":
 	
 #pre_SCAN CHECK (SAFETY)
 elif preset=="check_pre_scan":
-	trace ("Preparing the FABtotum to scan",log_trace)
+	trace("Preparing the FABtotum to scan",log_trace)
 	macro("M741","TRIGGERED",2,"Front panel door control",0.1)
 	#macro("M744","open",1,"Building plane control",0.1)
 	macro("M744","TRIGGERED",1,"Spool panel control",1, warning=True)
@@ -105,7 +105,7 @@ elif preset=="check_pre_scan":
 		
 #engage feeder (require manual intervention)
 elif preset=="engage_feeder":
-	trace ("Engaging 3D-Printer Feeder",log_trace)
+	trace("Engaging 3D-Printer Feeder",log_trace)
 	macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
 	macro("M744","TRIGGERED",1,"Spool panel control",1, warning=True)
 	macro("G27 Z240","ok",100,"zeroing Z axis",0.1,verbose=False)
@@ -120,7 +120,7 @@ elif preset=="engage_feeder":
 	
 elif preset=="engage_4axis":
 	#Used for Jog
-	trace ("Engaging 4th Axis",log_trace)
+	trace("Engaging 4th Axis",log_trace)
 	macro("G27","ok",100,"Zeroing Z axis",1)
 	macro("G91","ok",2,"Setting Relative position",1,verbose=False)
 	macro("G0 Z+"+str(feeder_disengage_offset)+" F300","ok",5,"Engaging 4th Axis motion",1)
@@ -198,7 +198,7 @@ elif preset=="auto_bed_leveling":
 #r_scan rotative scan preset
 elif preset=="r_scan":
 	trace("Initializing Rotative Laser scanner",log_trace)
-	trace ("checking panel door status and bed inserted",log_trace,verbose=False)
+	trace("checking panel door status and bed inserted",log_trace)
 	macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
 	macro("M744","open",1,"Building plane (must be removed)",0.1)
 	macro("M744","TRIGGERED",1,"Spool panel closed",0.1, warning=True)
