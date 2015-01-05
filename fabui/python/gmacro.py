@@ -8,6 +8,12 @@ import json
 json_f = open("/var/www/fabui/config/config.json")
 units = json.load(json_f)
 #process params
+
+try:
+    safety_door = units['safety']['door']
+except KeyError:
+    safety_door = 0
+
 try:
 	preset=str(sys.argv[1])  #param for the gcode to execute
 	log_trace=str(sys.argv[2]) #param for the log file
@@ -73,6 +79,9 @@ def macro(code,expected_reply,timeout,error_msg,delay_after,warning=False,verbos
 		s_skipped+=1
 		return False
 	return serial_reply
+
+
+
 port = '/dev/ttyAMA0'
 baud = 115200
 serial = serial.Serial(port, baud, timeout=0.5)
@@ -81,14 +90,16 @@ serial.flushInput()
 #pre_print CHECK (SAFETY)
 if preset=="check_pre_print":
 	trace("Checking safety measures",log_trace)
-	macro("M741","TRIGGERED",2,"Front panel door control",0.1)
+	if(safety_door == 1):
+		macro("M741","TRIGGERED",2,"Front panel door control",0.1)
 	macro("M744","TRIGGERED",1,"Building plane inserted correctly",0.1, warning=True)
 	macro("M744","TRIGGERED",1,"Spool panel control",0.1, warning=True)
 	
 #pre_SCAN CHECK (SAFETY)
 elif preset=="check_pre_scan":
 	trace("Preparing the FABtotum to scan",log_trace)
-	macro("M741","TRIGGERED",2,"Front panel door control",0.1)
+	if(safety_door == 1):
+		macro("M741","TRIGGERED",2,"Front panel door control",0.1)
 	#macro("M744","open",1,"Building plane control",0.1)
 	macro("M744","TRIGGERED",1,"Spool panel control",1, warning=True)
 	macro("G90","ok",2,"Setting absolute positioning mode",1)
@@ -106,10 +117,11 @@ elif preset=="check_pre_scan":
 #engage feeder (require manual intervention)
 elif preset=="engage_feeder":
 	trace("Engaging 3D-Printer Feeder",log_trace)
-	macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
+	if(safety_door == 1):
+		macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
 	macro("M744","TRIGGERED",1,"Spool panel control",1, warning=True)
 	macro("G27 Z240","ok",100,"zeroing Z axis",0.1,verbose=False)
-	macro("G28 X0 Y0","ok",3,"Setting Z position",0.1,verbose=False)
+	macro("G28 X0 Y0","ok",100,"Setting Z position",0.1,verbose=False)
 	macro("G91","ok",2,"Set relative movement",0.1,verbose=False)
 	#go to fixed position, so feeder botton can be pushed.
 	macro("G0 Z-4 F1000","ok",3,"Setting Z position",0.1,verbose=False)
@@ -199,7 +211,8 @@ elif preset=="auto_bed_leveling":
 elif preset=="r_scan":
 	trace("Initializing Rotative Laser scanner",log_trace)
 	trace("checking panel door status and bed inserted",log_trace)
-	macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
+	if(safety_door == 1):
+		macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
 	macro("M744","open",1,"Building plane (must be removed)",0.1)
 	macro("M744","TRIGGERED",1,"Spool panel closed",0.1, warning=True)
 	macro("M701 S0","ok",2,"turning off lights",0.1,verbose=False)
@@ -214,7 +227,8 @@ elif preset=="r_scan":
 elif preset=="s_scan":
 	trace("Initializing Sweeping Laserscanner",log_trace)
 	trace ("checking panel door status and bed inserted",log_trace)
-	macro("M741","TRIGGERED",2,"Front panel door control",0.1)
+	if(safety_door == 1):
+		macro("M741","TRIGGERED",2,"Front panel door control",0.1)
 	macro("M744","open",2,"Building plane removed!",0.1,warning=True)
 	macro("M744","TRIGGERED",1,"Spool panel is not closed!",0.1, warning=True)
 	macro("M701 S0","ok",2,"turning off lights",0.1)
@@ -228,7 +242,8 @@ elif preset=="s_scan":
 #p_scan preset
 elif preset=="p_scan":
 	trace("Initializing Probing procedure",log_trace)
-	macro("M741","TRIGGERED",2,"Front panel door control",0.1,warning=True)
+	if(safety_door == 1):
+		macro("M741","TRIGGERED",2,"Front panel door control",0.1,warning=True)
 	macro("M402","ok",2,"Raising Probe",0)
 	macro("M744","open",2,"Building plane is absent",0.1, warning=True)
 	macro("M744","TRIGGERED",2,"Spool panel",0.1, warning=True)
@@ -316,8 +331,9 @@ elif preset=="shutdown":
 #probe calibration
 elif preset=="probe_setup_prepare":
 	trace("Preparing Calibration procedure",log_trace)
-	macro("M104 S200","ok",90,"Heating extruder",1)
-	macro("M140 S70", "ok",90,"Heating Bed - fast ",20)
+	trace("This operation would take a while",log_trace)
+	macro("M104 S200","ok",90,"Heating extruder",1, verbose=True)
+	macro("M140 S70", "ok",90,"Heating Bed - fast ",20, verbose=True)
 	macro("G91","ok",2,"Relative mode",1)
 	macro("G0 X17 Y61.5 F6000","ok",2,"Offset",1)
 	macro("G90","ok",2,"Abs_mode",1)
