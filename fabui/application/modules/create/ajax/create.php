@@ -36,6 +36,7 @@ if($_print_type ==  'additive'){
 			break;
 		
 	}
+
 	
 	/** CRAETE TEMPORARY FILES */
 	write_file($_macro_trace, '', 'w');

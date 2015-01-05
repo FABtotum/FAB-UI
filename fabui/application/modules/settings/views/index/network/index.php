@@ -38,7 +38,7 @@
         			
         			<div class="well no-border">
         				
-        				<form id="eth-form" class="form-inline">
+        				<div id="eth-form" class="form-inline">
         					<fieldset>
         						<legend><i class="fa fa-sitemap"></i> &nbsp; <label class="text-primary">Set ethernet static IP address</label></legend>
         						
@@ -54,16 +54,17 @@
 									<i class="fa fa-save"></i> Save
 								</button>
 							</div>
-        				</form>
+        				</div>
         			</div>
         			
         			
         			
         		</div>
         		
+        		
 				<div class="tab-pane active" id="wifi">
 		            <div class="well no-border">
-		                <form id="advanced-form" class="form-horizontal" action="<?php echo site_url('settings/network') ?>" method="post">
+		                <div id="advanced-form" class="form-horizontal" action="<?php echo site_url('settings/network') ?>" method="post">
 		                    <fieldset>
 		                    	<legend><i class="fa fa-wifi"> </i> &nbsp; <label class="text-primary">Available networks in range</label></legend>
 		                        
@@ -88,12 +89,20 @@
 		                        			<?php $count = 1; ?>
 		                        			<?php foreach($wlan as $wl): ?>
 		                        				
-		                        				<tr data-count="<?php echo $count; ?>" data-password="<?php echo $wl['encryption key'] == 'on' ? 'true' : 'false'; ?>">
+		                        				<tr data-count="<?php echo $count; ?>" data-address="<?php echo $wl['address']; ?>"  data-password="<?php echo $wl['encryption key'] == 'on' ? 'true' : 'false'; ?>">
 		                        				
 		                        					<td width="30%">
-		                        						<a href="javascript:void(0);"><i class="fa fa-chevron-right  arrow"></i></a>
-		                        						<?php echo $wl['encryption key'] == 'on' ? '&nbsp;<i class="fa fa-lock"></i>' : '' ?>
+		                        						<?php if($wl['encryption key'] == 'on' ): ?>
+		                        							<a href="javascript:void(0);"><i class="fa fa-chevron-right  arrow"></i></a>&nbsp;
+		                        							<i class="fa fa-lock"></i>
+		                        						<?php endif; ?>
+		                        					
 		                        						&nbsp;<strong id="net_<?php echo $count?>"><?php echo $wl['essid'] ?></strong>
+		                        						<?php if($networkConfiguration['wifi']['ssid'] == $wl['essid']): ?>
+		                        						
+		                        							<i class="fa fa-check pull-right actual-wifi"></i>
+		                        						
+		                        						<?php endif; ?>
 		                        					</td>
 		                        					<td class="hidden-xs">
 		                        						<div class="progress">
@@ -119,7 +128,7 @@
 							</div>
 		                    <input id="net_password" name="net_password" value="" type="hidden">
 		                    
-		               </form>
+		               </div>
 		                
 		            </div>
                 </div>
@@ -128,4 +137,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> 

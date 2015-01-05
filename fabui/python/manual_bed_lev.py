@@ -4,6 +4,7 @@ import sys, os
 import serial
 from subprocess import call
 import numpy as np
+import json
 
 #Args
 try:
@@ -160,8 +161,17 @@ baud = 115200
 serial = serial.Serial(port, baud, timeout=0.6)
 serial.flushInput()
 
+json_f = open("/var/www/fabui/config/config.json")
+config = json.load(json_f)
 
-macro("M741","TRIGGERED",2,"Front panel door control",1, verbose=False)	
+try:
+    safety_door = config['safety']['door']
+except KeyError:
+    safety_door = 0
+
+if(safety_door == 1):
+	macro("M741","TRIGGERED",2,"Front panel door control",1, verbose=False)
+	
 macro("M402","ok",2,"Retracting Probe (safety)",1, warning=True, verbose=False)	
 macro("G27","ok",100,"Homing Z - Fast",0.1)	
 

@@ -160,28 +160,34 @@ class Plugin extends Module {
 			$this -> load -> library('upload', $config);
 
 			if (!$this -> upload -> do_upload('plugin-file')) {
-
+						
 				$data['error'] = strip_tags($this -> upload -> display_errors());
-			} else {
-
+				
+			} else { // if uploaded with success
+	
 				$file_data = array('upload_data' => $this -> upload -> data());
 				
-				
-
 				$zip = new ZipArchive;
 
 				$file = $file_data['upload_data']['full_path'];
 
 				chmod($file, 0777);
-
+				
+				// unzip uploaded file
 				if ($zip -> open($file) === TRUE) {
+						
 					$zip -> extractTo(TEMPPATH . $file_data['upload_data']['raw_name']);
 					$zip -> close();
 
-					if (file_exists(TEMPPATH . $file_data['upload_data']['raw_name'] . '/' . $file_data['upload_data']['raw_name'])) {
-
+					$temp_plugin_path = TEMPPATH . $file_data['upload_data']['raw_name'] . '/' . $file_data['upload_data']['raw_name'];
+					
+					if (file_exists($temp_plugin_path) && file_exists($temp_plugin_path.'/'.$file_data['upload_data']['raw_name'].'.php')) {
+						
+						// if the structure of the plugin is valid
+						
 						$_command_copy = 'sudo cp -rvf ' . TEMPPATH . $file_data['upload_data']['raw_name'] . '/' . $file_data['upload_data']['raw_name'] . ' ' . PLUGINSPATH;
 						shell_exec($_command_copy);
+						
 						$data['installed'] = true;
 						$data['file_name'] = $file_data['upload_data']['file_name'];
 

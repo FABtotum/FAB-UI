@@ -135,8 +135,8 @@
     $('#procees-button').on('click', function(){
         
         $.SmartMessageBox({
-    				title: "This operation would take few minutes",
-    				content: "Continue?",
+    				title: "<i class='fa fa-warning txt-color-orange'></i> This operation would take few minutes",
+    				content: "<br>Continue?",
     				buttons: '[No][Yes]'
     	}, function(ButtonPressed) {
     		if (ButtonPressed === "Yes") {

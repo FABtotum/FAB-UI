@@ -120,8 +120,6 @@ function finalize_print($tid, $status){
 			/** FORCE RESET CONTROLLER */
 			$_command = 'sudo python '.PYTHON_PATH.'force_reset.py';
 			shell_exec($_command);
-			//sleep(1);
-			
 			$log->info('Task #'.$tid.' reset controller');
 		}
 		
@@ -151,6 +149,14 @@ function finalize_print($tid, $status){
 	
 	//EXEC END MACRO
 	shell_exec('sudo python '.PYTHON_PATH.'gmacro.py '.$end_macro.' '.$_macro_end_print_trace.' '.$_macro_end_print_response.' > /dev/null &');
+	
+	
+	if($percent < 0.5 && $status=='stopped'){
+			/** FORCE RESET CONTROLLER */
+			$_command = 'sudo python '.PYTHON_PATH.'force_reset.py';
+			shell_exec($_command);
+			//$log->info('Task #'.$tid.' reset controller');
+		}
 	
 	$log->info('Task #'.$tid.' end macro: '.$end_macro);
 	
@@ -338,7 +344,7 @@ function finalize_self_test($tid, $status){
 	update_task($tid, $status);
 	
 	//SLEEP MORE TO LET THE UI REFRESH	
-	sleep(10);
+	sleep(5);
 	
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']); 
@@ -611,7 +617,7 @@ function finalize_general($tid,$type,$status){
 	update_task($tid, $status);
 	sleep(5);
 	//REMOVE ALL TEMPORARY FILES
-	//shell_exec('sudo rm -rf '.$attributes['folder']);
+	shell_exec('sudo rm -rf '.$attributes['folder']);
 	$log->info('Task #'.$tid.' end finalizing');
 	
 	

@@ -59,9 +59,44 @@ class Maintenance extends Module {
 	public function selftest(){
 		
 		
+		/** INIT DB & MODELS */
+		$this->load->database();
+		$this->load->model('tasks');
+		
+		/**
+		 * LOAD HELPERS
+		*/
+		$this->load->helper('os_helper');
+		
+		$_task = $this->tasks->get_running('maintenance', 'self_test');
+		
+		$_running = $_task ? true : false;
 		
 		
-		$js_in_page = $this->load->view('selftest/js', '', TRUE); 
+		if($_running){
+			
+			/** GET TASK ATTRIBUTES */
+		  	$_attributes = json_decode($_task['attributes'], TRUE);
+			
+			if(exist_process($_attributes['pid'])){
+				
+				
+				$data['monitor_file'] = $_attributes['uri_monitor'];
+				$data['trace_file'] = $_attributes['uri_trace'];
+			
+			}else{
+				
+				$_running = false;
+				$this->tasks->delete($_task['id']);
+				
+			}
+		}
+		
+		
+		
+		$data['running'] = $_running;
+		
+		$js_in_page = $this->load->view('selftest/js', $data, TRUE); 
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
 
         $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 

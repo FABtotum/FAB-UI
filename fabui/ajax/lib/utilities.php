@@ -430,6 +430,7 @@ function clean_temp(){
 	$files_to_take[] = 'instagram_feed.json';
 	$files_to_take[] = 'instagram_hash.json';
 	$files_to_take[] = 'twitter.json';
+	$files_to_take[] = 'faq.json';
 	
 	foreach($files as $file){
 		

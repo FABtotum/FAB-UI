@@ -36,7 +36,7 @@ var gc_code_object;
 /**/
 var model;
 
-
+var not_printable = [".stl", ".asc"];
 
 /**
  * 
@@ -67,23 +67,18 @@ function detail_files(object) {
 				.each(
 						files,
 						function(index, file) {
-                           // if(jQuery.inArray( file.file_ext, printable_files) >= 0 ){
-                            
+                         
                                 var extended_class = '';
                                 var status = '<i class="icon-fab-printable pull-right"></i>';
                                 var icon_type = 'fa-cubes txt-color-blue';
                                 
-                                if(file.file_ext == '.stl' ){
+                                if(not_printable.indexOf(file.file_ext) > -1){
                                     extended_class = 'warning';
                                     status        = '<i class="icon-fab-not-printable pull-right"></i>';
                                     var icon_type = 'fa-file-text-o txt-color-red';
                                 }
                                 
-                               	
-                               	//fa fa-file-text-o
-                               	
-                               
-                            
+                                
     							html += '<tr class="file-row '+ extended_class +'" data-id="' + file.id + '">';
     							html += '<td><label class="radio"><input class="obj-file" value="'
     									+ file.id
@@ -123,10 +118,12 @@ function detail_files(object) {
             
             print_type = file_selected.print_type != '' ? file_selected.print_type : 'additive';
             
-            /** MODAL IF IS STL FILE */
-            if(file_selected.file_ext == '.stl'){
+            /** MODAL IF IS NOT PRINTABLE FILE */
+            if(not_printable.indexOf(file_selected.file_ext) > -1){
+                process_type = file_selected.file_ext.replace('.', '');
+                
                 $('#myModal').modal('show');
-                 $("#btn-next").addClass("disabled");
+                $("#btn-next").addClass("disabled");
                
             }else{
             	 $("#btn-next").removeClass("disabled");
@@ -357,13 +354,10 @@ function ask_stop() {
 		buttons: '[No][Yes]'
 	}, function(ButtonPressed) {
 	   
-		if (ButtonPressed === "Yes") {
+		if(ButtonPressed === "Yes") {
 		  
           stop_print();
           
-		}
-		if (ButtonPressed === "No") {
-           
 		}
 
 	});

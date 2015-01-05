@@ -592,7 +592,7 @@ if ( ! function_exists('_parse_attributes'))
 
 
 /**
- * Base URL
+ * module URL
  * 
  * Create a local URL based on your basepath.
  * Segments can be passed in as a string or an array, same as site_url
@@ -635,6 +635,27 @@ if ( ! function_exists('widget_url'))
 	}
 }
 
+
+/**
+ * plugin URL
+ * 
+ * Create a local URL based on your basepath.
+ * Segments can be passed in as a string or an array, same as site_url
+ * or a URL to a file can be passed in, e.g. to an image file.
+ *
+ * @access	public
+ * @param string
+ * @return	string
+ */
+if ( ! function_exists('plugin_url'))
+{
+	function plugin_url($plugin)
+	{
+        
+		$CI =& get_instance();
+		return $CI->config->base_url().APPPATH.'plugins/'.$plugin.'/';
+	}
+}
 
 
 

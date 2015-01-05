@@ -4,8 +4,6 @@ require_once '/var/www/fabui/ajax/lib/database.php';
 require_once '/var/www/fabui/ajax/lib/utilities.php';
 
 /** INITIALIZE  */
-
-
 /** WAIT UNTIL MYSQL SERVER START */
 while(strpos(shell_exec('sudo  /etc/init.d/mysql status'), 'Server version') === false ){
 	sleep(1);
@@ -28,8 +26,7 @@ if($_tasks){
 		$_tasks[] = $_temp;
 		
 	}
-	
-	
+		
 	foreach($_tasks as $_task){
 		
 		$_data_update['status'] = 'removed';
@@ -39,11 +36,6 @@ if($_tasks){
 	$db->close();
 
 }
-
-/** */
-/** FORCE RESET CONTROLLER */
-//$_command = 'sudo python /var/www/fabui/python/force_reset.py';
-//shell_exec($_command);
 
 
 ?>

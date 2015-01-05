@@ -86,6 +86,10 @@ class Login extends Module {
 			$twitter_feed = json_decode(file_get_contents($this->config->item('fabtotum_twitter_feed', 'fabtotum'))); 
 			$data['twitter_feed'] = $twitter_feed;
 			
+			
+			
+			
+			
 		}
 		
 		
@@ -195,7 +199,9 @@ class Login extends Module {
         foreach($_SESSION as $key => $value){
             unset($_SESSION[$key]);    
         }
-		  
+		
+		
+		session_destroy();
 		redirect('login');
 	}
 	

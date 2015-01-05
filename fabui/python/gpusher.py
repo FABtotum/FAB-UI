@@ -250,8 +250,6 @@ p.disconnect()
 #finalize database-side operations
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print " + status +" "], shell=True)
 
-
-
 #shudown the printer if requested
 if shutdown:
 	call(['echo "M729">/dev/ttyAMA0'], shell=True)

@@ -11,6 +11,11 @@ shell_exec($_command);
 shell_exec('sudo shutdown now');
 $_response_items['status'] = true;
 
+
+
+//close session
+session_destroy();
+
 header('Content-Type: application/json');
 echo json_encode($_response_items);
 

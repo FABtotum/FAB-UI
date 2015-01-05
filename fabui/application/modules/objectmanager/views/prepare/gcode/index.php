@@ -5,8 +5,8 @@
     
     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-align-right">
 		<div class="page-title">
-			<a href="<?php  echo site_url('objectmanager/manage/'.$_object.'/'.$_file->id)?>" class="btn btn-default fab-buttons <?php echo $_task ? 'disabled' : ''; ?>"> <i class="fa fa-th-large"></i> Manage</a>&nbsp;&nbsp;
-			<a href="<?php  echo site_url('objectmanager/edit/'.$_object)?>" class="btn btn-default  fab-buttons <?php echo $_task ? 'disabled' : ''; ?>"> <i class="icon-fab-manager"></i> Back to object</a>
+			<a href="<?php  echo site_url('objectmanager/manage/'.$_object.'/'.$_file->id)?>" class="btn btn-primary fab-buttons <?php echo $_task ? 'disabled' : ''; ?>"> <i class="fa fa-th-large"></i> Manage</a>&nbsp;&nbsp;
+			<a href="<?php  echo site_url('objectmanager/edit/'.$_object)?>" class="btn btn-primary  fab-buttons <?php echo $_task ? 'disabled' : ''; ?>"> <i class="icon-fab-manager"></i> Back to object</a>
 		</div>
 	</div>
     
@@ -14,6 +14,8 @@
 <div class="row setting" style="<?php echo $_task ? 'display:none;' : ''; ?>">
     <div class="col-sm-12">
         <div class="well">
+            
+            <h5>This experimental feature takes the selected <strong>STL</strong> file and turns it into a printable model (additive manufacturing only).</h5>
             
             <form class="form-horizontal">
                 
@@ -24,7 +26,7 @@
                     
                     <div class="form-group">
                         
-                        <label class="col-md-1 control-label">Output</label>
+                        <label class="col-md-1 control-label">Output file name</label>
                         <div class="col-md-11">
                             <input id="output" class="form-control" type="text" value="<?php echo $_file->raw_name; ?>" />
                         </div>
@@ -90,11 +92,11 @@
 
 <div class="row monitor" style="<?php echo $_task ? '' : 'display:none;'; ?>">
 	<div class="col-sm-12">
-		<a rel="tooltip" title="Stop slicing process" class="pull-right btn btn-default stop"><i class="fa fa-stop txt-color-red"></i></a>
+		<a rel="tooltip" title="Stop slicing process" class="pull-right btn btn-danger stop"><i class="fa fa-stop"></i> Stop </a>
 	</div>
 </div>
 
-<div class="row monitor" style="<?php echo $_task ? '' : 'display:none;'; ?>">
+<div class="row monitor margin-top-10" style="<?php echo $_task ? '' : 'display:none;'; ?>">
 	<div class="col-sm-12">
 		<div class="well">
 			<div class="row">

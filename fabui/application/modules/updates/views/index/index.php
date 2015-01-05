@@ -109,7 +109,6 @@
 
 <?php if($internet): ?>
 
-
     <div class="row progress-container" style="display: none;">
             <div class="col-sm-12">
                 <div class="well">
