@@ -2,28 +2,28 @@
 <html lang="en-us" id="extr-page">
 	<head>
 		<meta charset="utf-8" />
-		<title>FAB UI</title>
+		<title>FAB UI - Login </title>
 		<meta name="description" content="" />
 		<meta name="author" content="" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 		<meta name="HandheldFriendly" content="True" />
-		<!-- Basic Styles -->
+		
+		<link rel="shortcut icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon"/>
+		<link rel="icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon" />
+		
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/bootstrap.min.css"/>
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/font-awesome.min.css"/>
-		<!-- SmartAdmin Styles : Please note (smartadmin-production.css) was created using LESS variables -->
+		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/smartadmin-production-plugins.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/smartadmin-production.min.css"/>
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/smartadmin-skins.min.css" />
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/js/plugin/magnific-popup/magnific-popup.css" />
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/demo.min.css"/>
-		<!-- FAVICONS -->
-		<link rel="shortcut icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon"/>
-		<link rel="icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon" />
-		<!-- GOOGLE FONT -->
+		
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fonts.css" />
-
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fabtotum_style.css" />
 
-		<!--<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/lockscreen.css" />-->
+		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-2.1.1.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-ui-1.10.3.min.js"></script>
 
 		<style>
 			.blog-photos li {
@@ -119,9 +119,9 @@
 				border-color: #3498db;
 				border-top-color: #3498db;
 			}
-			
-			.link{
-				color:white;
+
+			.link {
+				color: white;
 				font-weight: bold;
 			}
 
@@ -250,106 +250,117 @@
 					</div>
 				</div>
 
-
-
 				<?php if(is_internet_avaiable()): ?>
-				
+
 				<hr>
 
 				<div class="row">
 
 					<div class="col-xs-12 col-sm-12 col-md-7 col-lg-8">
-						
-						
+
 						<?php if(isset($twitter_feed)): ?>
+
+						<h3 class="text-primary text-center"><i class="fa fa-twitter"></i> Latest Tweet</h3>
+						<div class="blog-twitter">
+
+							<?php foreach($twitter_feed as $tweet): ?>
+
+							<?php if($tweet->in_reply_to_user_id == ''): ?>
+
+							<?php
 							
-							<h3 class="text-primary text-center"><i class="fa fa-twitter"></i> Latest Tweet</h3>
-							<div class="blog-twitter">
+							
+							$image_url = "";
+							
+							if(isset($tweet->entities->media)){
 								
-								<?php foreach($twitter_feed as $tweet): ?>
-									
-									
-								<?php
-
-										$created = get_time_past(strtotime($tweet -> created_at));
-										$text = $tweet -> text;
-										$user_mentions = $tweet -> entities -> user_mentions;
-										$urls = $tweet -> entities -> urls;
-										$hashtags = $tweet -> entities -> hashtags;
-
-										$now = time();
-
-										foreach ($user_mentions as $user) {
-
-											$text = str_replace("@" . $user -> screen_name, "<a target='_blank' href='https://twitter.com/" . $user -> screen_name . "'>@" . $user -> screen_name . "</a>", $text);
-
-										}
-
-										foreach ($urls as $url) {
-
-											$text = str_replace($url -> url, "<a target='_blank' href='" . $url -> url . "'>" . $url -> url . "</a>", $text);
-
-										}
-
-										foreach ($hashtags as $hash) {
-
-											$text = str_replace("#" . $hash -> text, "<a target='_blank' href='https://twitter.com/search?q=" . $hash -> text . "'>#" . $hash -> text . "</a>", $text);
-
-										}
-								?>
-									
-									<div class="blog-twitter-inner">
-										<i class="fa fa-twitter"></i>&nbsp;&nbsp;<a target="_blank"
-											href="https://twitter.com/Fabtotum">@Fabtotum</a>
-										<?php echo $text?>
-										<br>
-										
-										<span class="twitter-time"><span class="fa fa-clock-o"></span> <?php echo $created ?> ago</span>
-									</div>
-									
-									
-								<?php endforeach; ?>	
 								
+								if($tweet->entities->media[0]->type == 'photo'){
+									
+									$image_url = $tweet->entities->media[0]->media_url;
+								}
+								
+								
+							}
+							
+							$created = get_time_past(strtotime($tweet -> created_at));
+							$text = $tweet -> text;
+							$user_mentions = $tweet -> entities -> user_mentions;
+							$urls = $tweet -> entities -> urls;
+							$hashtags = $tweet -> entities -> hashtags;
+
+							$now = time();
+
+							foreach ($user_mentions as $user) {
+
+								$text = str_replace("@" . $user -> screen_name, "<a target='_blank' href='https://twitter.com/" . $user -> screen_name . "'>@" . $user -> screen_name . "</a>", $text);
+
+							}
+
+							foreach ($urls as $url) {
+
+								$text = str_replace($url -> url, "<a target='_blank' href='" . $url -> url . "'>" . $url -> url . "</a>", $text);
+
+							}
+
+							foreach ($hashtags as $hash) {
+
+								$text = str_replace("#" . $hash -> text, "<a target='_blank' href='https://twitter.com/search?q=" . $hash -> text . "'>#" . $hash -> text . "</a>", $text);
+
+							}
+							?>
+
+							<div class="blog-twitter-inner">
+								<i class="fa fa-twitter"></i>&nbsp;&nbsp;<a target="_blank"
+								href="https://twitter.com/Fabtotum">@Fabtotum</a>
+								<?php echo $text?>
+								<div class="margin-top-10">
+									<a href="javascript:void(0);"><i class="fa fa-clock-o"></i> <?php echo $created ?> ago</a>
+									<?php if($image_url != ''): ?>
+										<a style="margin-left:10px;" data-link="<?php echo $image_url; ?>" href="<?php echo $image_url; ?>" class="twitter-image "><i class="fa fa-photo txt-color-blue"></i></a> 
+									<?php endif; ?>
+								</div>
+
 							</div>
-							
+
+							<?php endif; ?>
+							<?php endforeach; ?>
+
+						</div>
+
 						<?php endif; ?>
-						
-						
+
 					</div>
 					<div class="col-xs-12 col-sm-12 col-md-5 col-lg-4 text-center">
-						
+
 						<?php if(isset($instagram_hash)): ?>
-							
-							<h3 class="text-primary"><i class="fa fa-instagram"></i> Latest #fabtotum</h3>
-							
-							<ul class="list-unstyled blog-photos margin-bottom-30">
-								<?php foreach($instagram_hash['data'] as $img): ?>
-								
-								<li>
-									<a data-link="<?php echo $img['link']?>" class="intagram-image-hash" title="<span><?php echo '@'.$img['user']['username'].' - '.$img['caption']['text'] ?></span> <span><?php echo "<a target='_blank' class='link' href='".$img['link']."'>".$img['link']."</a></span>" ?>" href="<?php echo $img['images']['standard_resolution']['url'] ?> ">
-										<img src="<?php echo $img['images']['thumbnail']['url']; ?>" >
-									</a>
-								</li>
-								<?php endforeach; ?>
-	
-							</ul>
+
+						<h3 class="text-primary"><i class="fa fa-instagram"></i> Latest #fabtotum</h3>
+
+						<ul class="list-unstyled blog-photos margin-bottom-30">
+							<?php foreach($instagram_hash['data'] as $img): ?>
+
+							<li>
+								<a data-link="<?php echo $img['link']?>" class="intagram-image-hash" title="<span><?php echo '@'.$img['user']['username'].' - '.$img['caption']['text'] ?></span> <span><?php echo "<a target='_blank' class='link' href='".$img['link']."'>".$img['link']."</a></span>" ?>" href="<?php echo $img['images']['standard_resolution']['url'] ?> "> <img src="<?php echo $img['images']['thumbnail']['url']; ?>" > </a>
+							</li>
+							<?php endforeach; ?>
+
+						</ul>
 						<?php endif; ?>
-						
+
 						<?php if(isset($instagram_feed)): ?>
-							
-							<h3 class="text-primary"><i class="fa fa-instagram"></i> Latest from <a href="http://instagram.com/fabtotum" target="_blank">@fabtotum</a></h3>
-							
-							<ul class="list-unstyled blog-photos margin-bottom-30 pull-right">
-								<?php foreach($instagram_feed['data'] as $img): ?>
-	
-								<li>
-									<a data-link="<?php echo $img['link']?>" class="intagram-image-feed" title="<span><?php echo $img['caption']['text'] ?></span> <span><?php echo "<a target='_blank' class='link' href='".$img['link']."'>".$img['link']."</a></span>" ?>" href="<?php echo $img['images']['standard_resolution']['url'] ?> ">
-										<img src="<?php echo $img['images']['thumbnail']['url']; ?>" >
-									</a>
-								</li>
-								<?php endforeach; ?>
-	
-							</ul>
+
+						<h3 class="text-primary"><i class="fa fa-instagram"></i> Latest from <a href="http://instagram.com/fabtotum" target="_blank">@fabtotum</a></h3>
+
+						<ul class="list-unstyled blog-photos margin-bottom-30 pull-right">
+							<?php foreach($instagram_feed['data'] as $img): ?>
+
+							<li>
+								<a data-link="<?php echo $img['link']?>" class="intagram-image-feed" title="<span><?php echo $img['caption']['text'] ?></span> <span><?php echo "<a target='_blank' class='link' href='".$img['link']."'>".$img['link']."</a></span>" ?>" href="<?php echo $img['images']['standard_resolution']['url'] ?> "> <img src="<?php echo $img['images']['thumbnail']['url']; ?>" > </a>
+							</li>
+							<?php endforeach; ?>
+
+						</ul>
 						<?php endif; ?>
 
 					</div>
@@ -385,225 +396,225 @@
 									</div>
 								</div>
 								<div class="modal-footer">
-									<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-									<button type="button" id="send-mail" class="btn btn-primary">Send Mail</button>
+									<button type="button" class="btn btn-default" data-dismiss="modal">
+										Cancel
+									</button>
+									<button type="button" id="send-mail" class="btn btn-primary">
+										Send Mail
+									</button>
 								</div>
 							</div><!-- /.modal-content -->
 						</div><!-- /.modal-dialog -->
 					</div><!-- /.modal -->
 
 				</div>
-				
+
 				<?php endif; ?>
-				
-				<div id="power-off-img" style="display:none;"><img class="img-responsive" src="/assets/img/power-off.png">
-				</div>
-				<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
-				<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/pace/pace.min.js"></script>
-				<!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
-				<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-2.1.1.min.js"></script>
-				<!-- BOOTSTRAP JS -->
-				<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-ui-1.10.3.min.js"></script>
-				<script src="<?php echo base_url() ?>application/layout/assets/js/app.config.js"></script>
-				<script src="<?php echo base_url() ?>application/layout/assets/js/bootstrap/bootstrap.min.js"></script>
-				
 
-				<script src="<?php echo base_url() ?>application/layout/assets/js/notification/SmartNotification.min.js"></script>
+			</div>
 
-				<!-- JQUERY VALIDATE -->
-				<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/jquery-validate/jquery.validate.min.js"></script>
-				<!-- browser msie issue fix -->
-				<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
-				<!-- SmartClick: For mobile devices -->
+		</div>
 
-				<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js"></script>
-				<script src="<?php echo base_url() ?>application/layout/assets/js/fabtotum.js"></script>
-
-				<!--[if IE 7]>
-				<h1>
-				Your browser is out of date, please update your browser by going to www.microsoft.com/download
-				</h1>
-				<![endif]-->
-				<!-- MAIN APP JS FILE -->
-				<script src="<?php echo base_url() ?>application/layout/assets/js/app.min.js"></script>
-
-				<script type="text/javascript">
-					
-					var max_idle_time = 0;
-					var number_tasks = 0;
-					var number_updates = 0;
-					var number_notifications  = 0;
-					var setup_wizard = false;
-				
-
-					runAllForms();
-					
-					$(function() {
-						
-						clearInterval(idleInterval);
-						clearInterval(safety_interval);
-						clearInterval(notifications_interval);
-						
-					
-						
-						
-						$('.intagram-image-hash').magnificPopup({
-							type:'image'
-						});
-						
-						$('.intagram-image-feed').magnificPopup({
-							type:'image'
-						});
-						
-						
-
-						$(".power-off").on('click', ask_power_off);
-
-						$("#forget-password").on('click', password_modal);
-						$("#send-mail").on('click', send_mail);
-
-						$("#login-form").validate({
-	
-							rules : {
-								email : {
-								required : true,
-								email : true
-								},
-								password : {
-								required : true
-								}
-							},
-							messages : {
-								email : {
-								required : 'Please enter your email address',
-								email : 'Please enter a VALID email address'
-								},
-								password : {
-								required : 'Please enter your password'
-								}
-							},
-							errorPlacement : function(error, element) {
-							error.insertAfter(element.parent());
-							}
-						});
-
-						$( ".trigger").on('keydown',function(e) {
-							if(e.which == 13) {
-							$("#login-button").trigger('click');
-							}
-						});
-
-						$( ".trigger").on('keypress',function(e) {
-							if(e.which == 13) {
-							$("#login-button").trigger('click');
-							}
-						});
-
-						$("#login-button").click(function(){
-
-							var $valid = $("#login-form").valid();
-	
-							if(!$valid){
+		<div id="power-off-img" style="display:none;"><img class="img-responsive" src="/assets/img/power-off.png"></div>
 		
-								return false;
-							}
+		<script src="<?php echo base_url() ?>application/layout/assets/js/app.config.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/pace/pace.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/bootstrap/bootstrap.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/notification/SmartNotification.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/jquery-validate/jquery.validate.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/fastclick/fastclick.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/app.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/demo.min.js?"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/fabtotum.js"></script>
+
+		<!--[if IE 7]>
+		<h1>
+		Your browser is out of date, please update your browser by going to www.microsoft.com/download
+		</h1>
+		<![endif]-->
+		<!-- MAIN APP JS FILE -->
+		<script src="<?php echo base_url() ?>application/layout/assets/js/app.min.js"></script>
+
+		<script type="text/javascript">
+
+			var max_idle_time = 0;
+var number_tasks = 0;
+var number_updates = 0;
+var number_notifications  = 0;
+var setup_wizard = false;
+var fabui = false;
+
+runAllForms();
+
+	$(function() {
 	
-							$("#login-button").addClass('disabled');
-							
-							$("#login-button").html('Login..');
-							
-							$("#login-form").submit();
-	
-						});
-	
-						if (!are_cookies_enabled()) {
-							$("#cookies").slideDown('slow', function() {
-							});
-						}
-	
-					});
-
-					function are_cookies_enabled() {
-						
-						var cookieEnabled = (navigator.cookieEnabled) ? true : false;
-
-						if ( typeof navigator.cookieEnabled == "undefined" && !cookieEnabled) {
-							document.cookie = "testcookie";
-							cookieEnabled = (document.cookie.indexOf("testcookie") != -1) ? true : false;
-						}
-						return (cookieEnabled);
-					}
-
-					function password_modal() {
-
-						$('#password-modal').modal({
-							keyboard : false
-						});
-
-					}
-
-					function send_mail(){
-
-						$("#error-message").hide();
-						$("#send-mail").addClass('disabled');
-						$("#send-mail").html('Sending...');
-	
-						$.ajax({
-							url: "<?php echo site_url('login/reset_mail') ?>",
-							data: {email: $("#mail-for-reset").val()},
-							type: 'POST',
-							dataType : 'json'
-							}).done(function( response ) {
-	
-								$("#send-mail").removeClass('disabled');
-								$("#send-mail").html('Send Mail');
+		clearInterval(idleInterval);
+		clearInterval(safety_interval);
+		clearInterval(notifications_interval);
 		
-								if(response.user == 0){
-									$("#error-message").show();
-									return false;
-								}
+		$('.intagram-image-hash').magnificPopup({
+			type:'image'
+		});
 		
-								if(response.user == 1){
+		$('.twitter-image').magnificPopup({
+			type:'image'
+		});
 		
-									$("#error-message").hide();
+		$('.intagram-image-feed').magnificPopup({
+			type:'image'
+		});
+		
+		$(".power-off").on('click', ask_power_off);
+		
+		$("#forget-password").on('click', password_modal);
+		$("#send-mail").on('click', send_mail);
+		
+		$("#login-form").validate({
+		
+			rules : {
+			email : {
+			required : true,
+			email : true
+			},
+			password : {
+			required : true
+			}
+			},
+			messages : {
+			email : {
+			required : 'Please enter your email address',
+			email : 'Please enter a VALID email address'
+			},
+			password : {
+			required : 'Please enter your password'
+			}
+			},
+			errorPlacement : function(error, element) {
+			error.insertAfter(element.parent());
+			}
+		});
+		
+		$( ".trigger").on('keydown',function(e) {
+			if(e.which == 13) {
+				$("#login-button").trigger('click');
+			}
+		});
+		
+		$( ".trigger").on('keypress',function(e) {
+			if(e.which == 13) {
+				$("#login-button").trigger('click');
+			}
+		});
+		
+		$("#login-button").click(function(){
+		
+		var $valid = $("#login-form").valid();
+		
+			if(!$valid){
+				return false;
+			}
 			
-									if(response.sent == 1){
+			$("#login-button").addClass('disabled');
 			
-										$('#password-modal').modal('hide')
+			$("#login-button").html('Login..');
 			
-										$.smallBox({
-										title : "Success",
-										content : "<i class='fa fa-check'></i>A message was be sent to that address containing a link to reset your password ",
-										color : "#659265",
-										iconSmall : "fa fa-thumbs-up bounce animated",
-										timeout : 4000
-										});
-			
-									}
+			$("#login-form").submit();
 		
-								}
+		});
+		
+		if (!are_cookies_enabled()) {
+		$("#cookies").slideDown('slow', function() {
+		});
+		}
 	
-							});
+	});
 
-						}
+function are_cookies_enabled() {
 
-						function ask_power_off(){
+var cookieEnabled = (navigator.cookieEnabled) ? true : false;
 
-						$.SmartMessageBox({
-							title: "Shutdown now ?",
-							buttons: '[No][Yes]'
-							}, function(ButtonPressed) {
+if ( typeof navigator.cookieEnabled == "undefined" && !cookieEnabled) {
+document.cookie = "testcookie";
+cookieEnabled = (document.cookie.indexOf("testcookie") != -1) ? true : false;
+}
+return (cookieEnabled);
+}
 
-								if (ButtonPressed === "Yes") {
+function password_modal() {
+
+$('#password-modal').modal({
+keyboard : false
+});
+
+}
+
+function send_mail(){
+
+$("#error-message").hide();
+$("#send-mail").addClass('disabled');
+$("#send-mail").html('Sending...');
+
+$.ajax({
+url: "<?php echo site_url('login/reset_mail') ?>
+	",
+	data: {email: $("#mail-for-reset").val()},
+	type: 'POST',
+	dataType : 'json'
+	}).done(function( response ) {
+
+	$("#send-mail").removeClass('disabled');
+	$("#send-mail").html('Send Mail');
+
+	if(response.user == 0){
+	$("#error-message").show();
+	return false;
+	}
+
+	if(response.user == 1){
+
+	$("#error-message").hide();
+
+	if(response.sent == 1){
+
+	$('#password-modal').modal('hide')
+
+	$.smallBox({
+	title : "Success",
+	content : "<i class='fa fa-check'></i>A message was be sent to that address containing a link to reset your password ",
+	color : "#659265",
+	iconSmall : "fa fa-thumbs-up bounce animated",
+	timeout : 4000
+	});
+
+	}
+
+	}
+
+	});
+
+	}
+
+	function ask_power_off(){
+
+	
+
+			$.SmartMessageBox({
+				title: "Shutdown now ?",
+				buttons: '[No][Yes]'
+				}, function(ButtonPressed) {
+			
+				if (ButtonPressed === "Yes") {
+			
+				shutdown();
+				}
+				if (ButtonPressed === "No") {
+			
+				}
 		
-								shutdown();
-								}
-								if (ButtonPressed === "No") {
-		
-								}
-
-							});
-						}
-				</script>
+			});
+	}
+		</script>
 	</body>
 </html>

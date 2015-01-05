@@ -14,10 +14,9 @@ if (is_internet_avaiable()) {
 	curl_close($ch);
 
 	if ($info['http_code'] == 200) {
+		
+		write_file(FAQ_JSON, $faq_json, 'w');
 			
-		$fp = fopen(FAQ_JSON, 'w');
-	 	fwrite($fp, $faq_json);
-	 	fclose($fp);
 	}
 
 }

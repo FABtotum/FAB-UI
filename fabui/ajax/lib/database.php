@@ -55,10 +55,12 @@ class Database {
         if (mysqli_connect_errno()) {
         	
 			if(class_exists('Logger')){
-				$this->_log->error("Errore in connessione al DBMS: ".mysqli_connect_error());
+				$this->_log->error("Error connecting to the database: ".mysqli_connect_error());
 			}
             
         }
+		
+		$this->_db->set_charset("utf8");
         
     }
     

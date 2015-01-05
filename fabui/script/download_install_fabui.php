@@ -190,7 +190,7 @@ if($do_update){
   
 
 }else{
-    echo "don't update".PHP_EOL;
+    echo "can't update this way".PHP_EOL;
 }
 
 
@@ -244,6 +244,7 @@ function extract_zip($source, $destination){
 	}
 	
 }
+
 
 
 

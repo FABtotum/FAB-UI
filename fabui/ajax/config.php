@@ -74,7 +74,7 @@ define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
 
-if(isset($_SERVER)){
+if(isset($_SERVER['HTTP_HOST'])){
 	defined("SITE_URL") ? null : define("SITE_URL", 'http://'.$_SERVER['HTTP_HOST'].'/fabui/');
 }
 

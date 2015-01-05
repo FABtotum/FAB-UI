@@ -380,11 +380,13 @@
 	    
 	    if(func == 'home_all_axis' || func == 'bed-align'){
 	    	$("#console").html('');
-	         ticker_url = '/temp/jog_' + timestamp + '.trace'; 
+	         ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/jog_' + timestamp + '.trace'; 
 	    }
 	            
 	  
 	    $(".btn").addClass('disabled');
+	    $("#reset-controller").removeClass('disabled');
+	    
 	    $(".status").html(' <i class="fa fa-spin fa-spinner fa-2x"></i>');
 	
 		$.ajax({
@@ -444,7 +446,7 @@
 	    $(".status").html(' <i class="fa fa-spin fa-spinner fa-2x"></i>');
 	    $(".btn").addClass('disabled');
 	    var timestamp = new Date().getTime();        
-	    ticker_url = '/temp/pre_jog_' + timestamp + '.trace';
+	    ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/pre_jog_' + timestamp + '.trace';
 	   
 	    
 	    $.ajax({

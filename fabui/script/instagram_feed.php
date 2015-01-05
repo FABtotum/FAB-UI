@@ -14,17 +14,14 @@ if (is_internet_avaiable()) {
 	curl_close($ch);
 
 	if ($info['http_code'] == 200) {
-			
-		$fp = fopen(INSTAGRAM_FEED_JSON, 'w');
-	 	fwrite($fp, $instagram_feed);
-	 	fclose($fp);
+		
+		write_file(INSTAGRAM_FEED_JSON, $instagram_feed, 'w');
 	}
 	
 	
 	// ===========================================================
 	
-	
-	
+
 	$ch = curl_init(INSTAGRAM_HASH_URL);
 
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
@@ -35,10 +32,7 @@ if (is_internet_avaiable()) {
 	curl_close($ch);
 
 	if ($info['http_code'] == 200) {
-			
-		$fp = fopen(INSTAGRAM_HASH_JSON, 'w');
-	 	fwrite($fp, $instagram_hash);
-	 	fclose($fp);
+		write_file(INSTAGRAM_HASH_JSON, $instagram_hash, 'w');
 	}
 
 

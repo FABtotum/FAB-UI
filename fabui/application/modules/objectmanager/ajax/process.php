@@ -235,6 +235,7 @@ function create_stl($_object, $_id_file,  $file, $_output){
     $_response_items['id_file'] = $_id_file;
     $_response_items['file'] = $file;
     $_response_items['output'] = $_output;
+	$_response_items['task_id'] = $id_task;
     
     
     sleep(1);

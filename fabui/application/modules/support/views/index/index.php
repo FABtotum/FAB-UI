@@ -38,34 +38,47 @@
 	</div>
 		
 </div>
-<div class="row">
-	<h2 class="row-seperator-header"><i class="fa fa-question-circle "></i> FAQs </h2>
-</div>
-<?php $count_group = 1; ?>
-<?php foreach($faq as $group): ?>
-<div class="row">
-	<div class="col-sm-12">
-		<h6 class=""><i class="fa fa-info-circle"></i> <?php echo $group['title']; ?></h6>
-		<div class="panel-group smart-accordion-default" id="accordion_<?php echo $count_group; ?>">
-			
-			
-			<?php $count_item = 1; ?>
-			<?php foreach($group['faq'] as $item): ?>
-			
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion_<?php echo $count_group; ?>" href="#collapse_<?php echo $count_group.'_'.$count_item ?>" class="collapsed"> <i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> <?php echo $item['question'] ?> </a></h4>
-				</div>
-				<div id="collapse_<?php echo $count_group.'_'.$count_item ?>" class="panel-collapse collapse">
-					<div class="panel-body">
-						<p><?php echo $item['answer']; ?></p>
-					</div>
-				</div>
-			</div>
-			<?php $count_item++; ?>
-			<?php endforeach; ?>
+
+<?php if(isset($no_faq)): ?>
+	
+	<div class="row">
+		<div class="alert alert-warning fade in">
+			<i class="fa-fw fa fa-warning"></i>
+			<strong>Warning </strong> FAQs not avaiables. Please check internet connectivity, <a href="<?php echo site_url("settings/network") ?>">reconnect</a> and try again
 		</div>
 	</div>
-</div>
-<?php $count_group++; ?>
-<?php endforeach; ?>
+	
+<?php else: ?>
+	
+	<div class="row">
+		<h2 class="row-seperator-header"><i class="fa fa-question-circle "></i> FAQs </h2>
+	</div>
+	
+	<?php $count_group = 1; ?>
+	<?php foreach($faq as $group): ?>
+	<div class="row">
+		<div class="col-sm-12">
+			<h6 class=""><i class="fa fa-info-circle"></i> <?php echo $group['title']; ?></h6>
+			<div class="panel-group smart-accordion-default" id="accordion_<?php echo $count_group; ?>">
+				
+				<?php $count_item = 1; ?>
+				<?php foreach($group['faq'] as $item): ?>
+				
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion_<?php echo $count_group; ?>" href="#collapse_<?php echo $count_group.'_'.$count_item ?>" class="collapsed"> <i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> <?php echo $item['question'] ?> </a></h4>
+					</div>
+					<div id="collapse_<?php echo $count_group.'_'.$count_item ?>" class="panel-collapse collapse">
+						<div class="panel-body">
+							<p><?php echo $item['answer']; ?></p>
+						</div>
+					</div>
+				</div>
+				<?php $count_item++; ?>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</div>
+	<?php $count_group++; ?>
+	<?php endforeach; ?>
+<?php endif; ?>

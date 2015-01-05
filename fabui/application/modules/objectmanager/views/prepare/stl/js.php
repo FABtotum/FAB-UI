@@ -23,11 +23,10 @@
     
     
     $(function () {
-    	
-    	
-    	
-    	
+    	$("#stop-process").on('click', ask_stop);
     });
+    
+    
     
     <?php if($_task): ?>
     
@@ -53,6 +52,8 @@
             interval_trace     = setInterval(trace, 3000);
             interval_timer     = setInterval(timer, 1000);
             
+            $("#stop-process").show();
+            
             
             
     		
@@ -66,8 +67,8 @@
     $('#procees-button').on('click', function(){
         
         $.SmartMessageBox({
-    				title: "This operation would take few minutes",
-    				content: "Continue?",
+    				title: "<i class='fa fa-warning txt-color-orange'></i> This operation would take few minutes",
+    				content: "<br>Continue?",
     				buttons: '[No][Yes]'
     			}, function(ButtonPressed) {
     				if (ButtonPressed === "Yes") {
@@ -75,10 +76,6 @@
                         process();
     					
     				}
-    				if (ButtonPressed === "No") {
-    
-    				}
-    
         });
         
     });
@@ -91,6 +88,7 @@
             $("#procees-button").find("i").addClass('fa-spin');
             $("#procees-button").addClass('disabled');
             $("#procees-button").html($("#procees-button").html().replace('Process', 'Processing'));
+            
             
             var file = '<?php echo $_file->full_path; ?>';
             
@@ -113,11 +111,16 @@
                     });
                     
                     
+                    
+                    
+                    
                     var monitor_json = JSON.parse(response.monitor_json);
                     monitor_json     = jQuery.parseJSON(monitor_json);
                    
+                   	
                     trace_uri   = response.trace_uri;
                     monitor_uri = response.monitor_uri;
+                    task_id     = response.task_id;
                     time_left   = parseInt(monitor_json.Meshing.stats.time_left);
                    
                     output_file_id = parseInt(response.id_new_file);
@@ -126,6 +129,7 @@
                     interval_trace     = setInterval(trace, 3000);
                     interval_timer     = setInterval(timer, 1000);
                     
+                    $("#stop-process").show();
                     
                     
                    
@@ -232,6 +236,44 @@
             $('.estimated-time-left').html(_time_to_string(time_left));
         }
     
+    }
+    
+    
+    function ask_stop(){
+    	
+    	
+    	$.SmartMessageBox({
+    		title: "<i class='fa fa-warning txt-color-orange'></i> Do you really want to stop the process?",
+    		buttons: '[No][Yes]'
+    	}, function(ButtonPressed) {
+			if (ButtonPressed === "Yes") {    
+	            stop_process();
+			}
+        });
+    	
+    	
+    }
+    
+    function stop_process(){
+    	
+    	
+    	openWait('Stopping process, please wait..');
+    	
+    	clearInterval(interval_monitor);
+        clearInterval(interval_trace);
+        clearInterval(interval_timer);
+    	
+    	
+    	$.ajax({
+    			type: "POST",
+    			url: "<?php echo module_url('objectmanager').'ajax/stop_process.php' ?>/",
+                data: {task_id: task_id},
+                dataType: 'json'
+    		}).done(function(response) {
+    		    	waitTitle("Reload page");    
+                   	document.location.href=document.location.href;
+    		});
+    	
     }
     
     

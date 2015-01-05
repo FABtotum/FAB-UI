@@ -18,6 +18,7 @@ if($file){
 	/** COMMAND */
 	$command = 'sudo python '.PYTHON_PATH.'printrun/gcoder.py '.$file_path.' j';
 	$response = shell_exec($command);
+
 	
 	/** UPDATE TASK */
 	$_data_update = array();

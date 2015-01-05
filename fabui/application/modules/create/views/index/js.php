@@ -58,13 +58,15 @@
     
     
     /** CALIBRATION */
-	var calibration = 'abl';
+	var calibration = 'homing';
 	
 	/** PROGRESS */
 	var progress = 0;
 	
 	
 	var isEngageFeeder = 0;
+	
+	var process_type;
 	
 	$(document).ready(function() {
 		
@@ -143,7 +145,7 @@
 		
         /** PROCESS STL TO GCODE BUTTON */
         $('#process-button').on('click', function(){
-            document.location.href = '<?php echo base_url("objectmanager/prepare") ?>/stl/' + object.object.id + '/' + file_selected.id + '?return=1' ;
+            document.location.href = '<?php echo base_url("objectmanager/prepare") ?>/'+ process_type + '/' + object.object.id + '/' + file_selected.id + '?return=1' ;
         });
 
 		

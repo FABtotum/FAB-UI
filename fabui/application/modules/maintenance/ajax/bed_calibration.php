@@ -53,7 +53,7 @@ $screws[3] = array('t' => $_response['bed_calibration']['t4'], 's' => $_response
 		
 		<tr class="<?php echo  get_row_color($screws[$i]['s'])?>">
 			<td class="text-center"><span class="badge  badge <?php echo get_color($screws[$i]['s']); ?>"><?php echo($i + 1); ?></span></td>
-			<td><?php echo get_rotation_number($screws[$i]['t']); ?>  <?php echo get_direction($screws[$i]['s']) ?></td>
+			<td><strong><?php echo get_rotation_number($screws[$i]['t']); ?> <?php echo get_direction($screws[$i]['s']) ?></strong></td>
 		</tr>
 	<?php endfor; ?>	
 	</tbody> 
@@ -118,48 +118,58 @@ function get_color($value) {
 
 function get_direction($value) {
 
-	
-	if($value == 0){
-		return '';
-	}
-	
+
 	$class = '';
 	
 	if ($value > 0) {
-		$class =  'fa-rotate-right';
+		$class = 'fa-rotate-right';
 	} else {
 		$class = 'fa-rotate-left';
 	}
-	
 	
 	return '- Direction:  <i class="fa '.$class.'"></i>';
 
 }
 
-function get_rotation_number($value) {
 
+function get_rotation_number($value){
+			
 	$value = abs(floatval($value));
-
-	if ($value < 1) {
-
-		if ($value == 0) {
-			return '<i class="fa fa-check"></a>';
+	
+	$temp = explode('.', $value);
+	
+	$turns_number = $temp[0];
+	
+	$degrees = round((floatval(floatval('0.'.$temp[1]) * 360)));
+	
+	
+	if($turns_number >= 1){
+		
+		$label_time = $turns_number > 1 ? 'times' : 'time';
+		
+		$message = "Turn ".$turns_number." ".$label_time;
+		
+		if($degrees > 0){
+			
+			$message .= ' and '.$degrees.' degrees';
+			
 		}
-
-		return 'Turn for ' . round(($value * 360)) . ' degrees';
-
-	} else {
-		$temp = explode('.', $value);
-		$number = $temp[0];
-
-		$degree_val = '0.' . $temp[1];
-
-		$degree = (floatval($degree_val * 360));
-
-		$label_time = $number > 1 ? 'times' : 'time';
-
-		return "Turn " . $number . " " . $label_time . " and " . $degree . " degrees";
+		
+				
+	}else{
+		
+		
+		$message = 'Turn for ' . $degrees . ' degrees';
+		
+		if($degrees == 0){
+		
+			$message = '';
+				
+		}
+		
 	}
-
+	
+	return $message;
+	
 }
 ?>

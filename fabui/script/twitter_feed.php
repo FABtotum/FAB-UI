@@ -16,10 +16,8 @@ if (is_internet_avaiable()) {
 	curl_close($ch);
 
 	if ($info['http_code'] == 200) {
-			
-		$fp = fopen(TWITTER_FEED_JSON, 'w');
-	 	fwrite($fp, $twitter_feed);
-	 	fclose($fp);
+		
+		write_file(TWITTER_FEED_JSON, $twitter_feed, 'w');
 	}
 	
 }

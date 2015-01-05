@@ -223,6 +223,7 @@
 		<!-- END POWER OFF IMG -->
 		<!-- JAVASCRIPT VARS -->
 		<script type="text/javascript">
+			var fabui = true;
 			var number_updates = 0;
 			var number_tasks = 0;
 			var number_notifications = 0;

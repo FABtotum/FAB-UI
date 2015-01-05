@@ -14,8 +14,8 @@
 | path to your installation.
 |
 */
+
 $config['base_url']	= 'http://'.$_SERVER['HTTP_HOST'].'/fabui/';
-//$config['base_url']	= 'http://192.168.0.113/fabui/';
 /*
 |--------------------------------------------------------------------------
 | Index File

@@ -11,6 +11,14 @@
 
     $(function () {       
         $("#start").on('click', self_test);
+        
+        
+        <?php if($running): ?>
+        
+       	resume();
+        
+        <?php endif; ?>
+        
     });
     
     
@@ -38,8 +46,8 @@
             
             monitor_file     = response.json_uri;
             trace_file       = response.trace_uri;
-            interval_monitor = setInterval(do_monitor, 1000);
-            interval_trace   = setInterval(do_trace, 1000);
+            interval_monitor = setInterval(do_monitor, 250);
+            interval_trace   = setInterval(do_trace, 250);
             $("#editor").slideDown('slow', function () {});
                
         });
@@ -60,7 +68,7 @@
             
             
             $("#start").removeClass("disabled");
-            $("#send-report").removeAttr("disabled")
+            $("#send-report").removeAttr("disabled");
             
         }
         
@@ -87,7 +95,8 @@
         
         $.ajax({
 		      url: monitor_file,
-			  dataType: 'json'
+			  dataType: 'json',
+			  cache: false
         }).done(function( response ) {
                
               finished = parseInt(response.finish) == 1 ? true : false; 
@@ -101,7 +110,8 @@
         
         $.ajax({
 		      url: trace_file,
-			  dataType: 'text'
+			  dataType: 'text',
+			  cache: false
         }).done(function( response ) {
             
           
@@ -112,5 +122,14 @@
         });
         
     }
-
+    
+    <?php if($running): ?>
+	    function resume(){
+	        monitor_file     = "<?php echo $monitor_file; ?>";
+	        trace_file       = "<?php echo $trace_file; ?>";
+	        interval_monitor = setInterval(do_monitor, 250);
+	        interval_trace   = setInterval(do_trace, 250);
+	        $("#editor").slideDown('slow', function () {});
+	    } 
+	<?php endif; ?>
 </script>

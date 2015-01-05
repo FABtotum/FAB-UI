@@ -1,6 +1,21 @@
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-4">
         <h1 class="page-title txt-color-blueDark"><i class="fa icon-fab-manager fab-fw fa-fw "></i> Objectmanager > <span>ASC</span> > <span>STL</span></h1>
+    </div>
+    
+    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 text-align-right">
+		<div class="page-title">
+			<a href="<?php  echo site_url('objectmanager/manage/'.$_object.'/'.$_file->id)?>" class="btn btn-primary fab-buttons <?php echo $_task ? 'disabled' : ''; ?>"> <i class="fa fa-th-large"></i> Manage</a>&nbsp;&nbsp;
+			<a href="<?php  echo site_url('objectmanager/edit/'.$_object)?>" class="btn btn-primary  fab-buttons <?php echo $_task ? 'disabled' : ''; ?>"> <i class="icon-fab-manager"></i> Back to object</a>
+		</div>
+	</div>
+    
+</div>
+
+
+<div class="row">
+	 <div class="col-sm-12">
+    	<a style="display:none;" id="stop-process" class="btn btn-danger pull-right margin-bottom-10"> <i class="fa fa-stop"></i> Stop</a>
     </div>
 </div>
 
@@ -8,16 +23,15 @@
     <div class="col-sm-12">
         <div class="well">
         
+        	<h5>This experimental feature takes the selected cloud data and process it into a solid <strong>STL</strong> file that can be printed</h5>
             <form class="form-horizontal">
             
                 <fieldset>
                 
-                    <legend><?php echo $_file->raw_name; ?></legend>
-                    
-                    
+                    <legend><?php echo $_file->raw_name; ?></legend>    
                     <div class="form-group">
                     
-                        <label class="col-md-1 control-label">Output</label>
+                        <label class="col-md-1 control-label">Output file name</label>
                         <div class="col-md-11">
                             <div class="input-group">
                                 <input id="output" class="form-control" type="text" value="<?php echo $_file->raw_name; ?>" />
@@ -27,11 +41,7 @@
                         </div>
                     </div>
                     
-                    
-                    
-                
                 </fieldset>
-                
                 <div class="form-actions">
 					<button class="btn btn-primary" type="button" id="procees-button">
 						<i id="procees-button-icon" class="fa fa-cogs"></i> Process

@@ -4,6 +4,7 @@
     
     var row_selected = 0;
     var need_password = false;
+    var address = '';
     
     $(document).ready(function() {
     	
@@ -38,8 +39,10 @@
 	 		return false;
 	 	}
 	 	
-	 	
+	 	/** disable all systems call */
+	 	do_system_call = false;
 	 	openWait('Saving and restarting net');
+	 	
 		$("#wifi-save-button").addClass('disabled');
 	 	
 	 	var wifi_ssid = $("#net_" + row_selected).text();
@@ -49,28 +52,72 @@
 	 	$.ajax({
 		        type: "POST",
 		        url : "<?php echo site_url('settings/set-wifi'); ?>",
-		        data: { net: wifi_ssid, password: wifi_password },
+		        data: { net: wifi_ssid, password: wifi_password, address: address },
 		        dataType: 'json'
 		}).done(function( response ) {
-		        	
-        	$("#wifi-ip").html(response.wlan_ip);
-        	$("#wifi-ip").attr('href','http://' + response.wlan_ip);
-        	$("#wifi-ssid-label").html(wifi_ssid);
+		    
+		    var title = '';
+		    var content = '';
+		    var color = '';
+		    var icon = '';
+		     
+		    
+		    $('.actual-wifi').remove();
+		    
+		     
+		    if(response.response == 'OK'){
+		    	
+		    	reset_table();
+		    	var counter = 1;
+		    	
+		    	$( "table > tbody > tr" ).each(function( index ) {
+	 		
+				  	if(counter == row_selected){
+				  		
+				  		$(this).find('td:first').append('<i class="fa fa-check pull-right actual-wifi"></i>');
+				  	}
+				  	
+				  	counter++;
+				  	
+				});
+		    	
+		    	
+	        	$("#wifi-ip").html(response.wlan_ip);
+	        	$("#wifi-ip").attr('href','http://' + response.wlan_ip);
+	        	$("#wifi-ssid-label").html(wifi_ssid);
+	            
+	            title = 'Success';
+	            content = 'Network settings saved';
+	            color = '#659265';
+	            icon = 'fa-check';
+	            
+	            				
+            }else{
+            	
+            	title = 'Warning';
+	            content = 'Check the password  or check the network avaiability';
+	            color = '#C46A69';
+	            icon = 'fa-warning';
+            	
+            } 
             
+
+            closeWait();
+            
+            $.smallBox({
+	    			title : title,
+	    			content : "<i class='fa" + icon +"'></i> " + content,
+	    			color : color,
+	    			iconSmall : "fa fa-thumbs-up bounce animated",
+	                timeout : 5000
+	        });
+            
+            $("#wifi-save-button").removeClass('disabled');
             $("#save-button").removeClass('disabled');
 			$("#save-button").html('<i class="fa fa-save"></i> Save');
 			
-			closeWait();
-			
-			$.smallBox({
-    				title : "Success",
-    				content : "<i class='fa fa-check'></i> Network settings saved",
-    				color : "#659265",
-    				iconSmall : "fa fa-thumbs-up bounce animated",
-                    timeout : 4000
-            });
-            
-            $("#wifi-save-button").removeClass('disabled');
+			/** enable system call */
+			do_system_call = true;
             
 		                
 		 });
@@ -134,24 +181,37 @@
 	 function click_row(){
 	 	
 	 	
+	 	reset_table();
+	 	
 	 	var class_selected = 'success';
 	 	
 	 	need_password = false;
 	 	
 	 	var needPassword = $(this).attr('data-password') == 'true' ? true : false;
+	 	
+	 	address = $(this).attr('data-address');
+	 	
 	 		 	
 	 	$( "table > tbody > tr" ).each(function( index ) {
-		  	
-		  	
+	 		
 		  	if(!$(this).hasClass('details')){
 		  		$(this).removeClass(class_selected);
 		  	}
 		  	
 		});
 		
-	 	if(!needPassword) return;
+		
+		
+		var dataCount = $(this).attr('data-count');
+		
+	 	if(!needPassword){
+	 		row_selected = parseInt(dataCount);
+	 		$(this).addClass(class_selected);
+	 		$('.details').hide();
+	 		return;
+	 	}
 	 	
-	 	var dataCount = $(this).attr('data-count');
+	 	
 	 	
 	 	/* check if is open */
 	 	var open = $(this).next().is('.details') && $(this).next().is(':visible');
@@ -201,6 +261,26 @@
 		
 	 }
 	
+	
+	function reset_table(){
+		
+		
+		var class_selected = 'success';
+		
+		$(".table").find('.details').hide();
+		$(".table").find('.arrow').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+		
+		$( "table > tbody > tr" ).each(function( index ) {
+		  	
+		  	if(!$(this).hasClass('details')){
+		  		$(this).removeClass(class_selected);
+		  	}
+		  	
+		});
+		
+		
+		
+	}
 	
 	
 	

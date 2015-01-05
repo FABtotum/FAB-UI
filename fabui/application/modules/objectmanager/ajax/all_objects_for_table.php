@@ -41,7 +41,7 @@ $db->close();
 
 $_rows = array();
 
-//$_objects = array_merge($_private_objects, $_public_objects);
+
 
 foreach($_objects as $obj){
     
@@ -85,7 +85,7 @@ foreach($_objects as $obj){
 
 }
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 echo minify(json_encode(array('aaData' => $_rows)));
 
 

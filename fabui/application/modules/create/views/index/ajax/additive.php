@@ -174,12 +174,12 @@
 						 <div class="form-group">
 						 	<div class="radio">
 								<label>
-									<input type="radio" class="radiobox choose-calibration"  name="calibration" value="homing">
+									<input type="radio" class="radiobox choose-calibration" checked="checked"  name="calibration" value="homing">
 									<span>Simple homing</span> 
 								</label>
 							</div>
 						 </div>
-						 <p>Quickly home all axis. Works well with a well calibrated working plane.</p>
+						 <p>Quickly home all axis. Works well with a well calibrated working plane. (SUGGESTED)</p>
 					</div>
 				</div>
 				
@@ -197,12 +197,12 @@
 						 <div class="form-group">
 						 	<div class="radio">
 								<label>
-									<input type="radio" class="radiobox choose-calibration" checked="checked" name="calibration" value="abl"> 
+									<input type="radio" class="radiobox choose-calibration"  name="calibration" value="abl"> 
 									<span>Auto bed leveling</span> 
 								</label>
 							</div>
 						 </div>
-						 <p>Probes the working plane to auto-correct movements to account for not leveled bed (SUGGESTED)</p>
+						 <p>Probes the working plane to auto-correct movements to account for not leveled bed </p>
 					</div>
 					
 				</div>

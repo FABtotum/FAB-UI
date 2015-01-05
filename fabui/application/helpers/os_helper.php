@@ -82,12 +82,6 @@ function scan_wlan() {
 				if (!empty($_wlan_device[$device][$cell][strtolower($feld)]))
 					$_wlan_device[$device][$cell][strtolower($feld)] .= "\n";
 				// Leer- und "-Zeichen rausschmeissen - ESSID steht immer in ""
-				/*
-				echo $device.PHP_EOL;
-				echo $cell.PHP_EOL;
-				echo $feld.PHP_EOL;
-				echo "--".PHP_EOL;
-				*/
 				
 				@$_wlan_device[$device][$cell][strtolower($feld)] .= trim(str_replace('"', '', substr($zeile, $doppelp_pos + 1)));
 			}
@@ -100,6 +94,23 @@ function scan_wlan() {
 	if (isset($_wlan_device['wlan0'])) {
 
 		foreach ($_wlan_device['wlan0'] as $wlan) {
+			
+			
+			$wlan['type'] = 'OPEN';
+			
+			if(isset($wlan['ie'])){
+				
+				if(strpos(isset($wlan['ie']), 'WPA2') === false){
+					$wlan['type'] = 'WPA2';
+				}else if(strpos(isset($wlan['ie']), 'WPA') === false){
+					$wlan['type'] = 'WPA';
+				}else if(strpos(isset($wlan['ie']), 'WEP') === false){
+					$wlan['type'] = 'WEP';
+				}
+				
+				
+			}
+			
 			array_push($_wlan_list, $wlan);
 		}
 
@@ -202,42 +213,6 @@ function wlan() {
 
 }
 
-/*
-function current_wlan() {
-
-	$network_interfaces = '/etc/network/interfaces';
-
-	$wlan = array();
-
-	if (search('allow-hotplug wlan0', $network_interfaces)) {
-
-		$content = file_get_contents($network_interfaces);
-
-		$wlan_string = strstr($content, 'allow-hotplug wlan0');
-
-		$temp = explode(PHP_EOL, $wlan_string);
-
-		foreach ($temp as $line) {
-
-			if (strpos(ltrim($line), '-ssid') !== false) {
-				$wlan['ssid'] = str_replace('"', '', str_replace('-ssid', '', strstr(ltrim($line), '-ssid')));
-			}
-
-			if (strpos(ltrim($line), '-psk') !== false) {
-				$wlan['password'] = str_replace('"', '', str_replace('-psk', '', strstr(ltrim($line), '-psk')));
-			}
-
-		}
-
-		return $wlan;
-
-	}
-
-	return false;
-
-}
-*/
-
 /**
  * Return network configuration - ETHERNET AND WLAN
  * 
@@ -256,16 +231,33 @@ function networkConfiguration() {
 
 	$wlan_ssid = '';
 	$wlan_password = '';
+	
+	$wifi_type = 'OPEN';
 
 	foreach ($temp as $line) {
 
 		if (strpos(ltrim($line), '-ssid') !== false) {
 			$wlan_ssid = trim(str_replace('"', '', str_replace('-ssid', '', strstr(ltrim($line), '-ssid'))));
+			$wifi_type = 'WPA2';
 		}
 
 		if (strpos(ltrim($line), '-psk') !== false) {
 			$wlan_password = trim(str_replace('"', '', str_replace('-psk', '', strstr(ltrim($line), '-psk'))));
+			$wifi_type = 'WPA2';
 		}
+		
+		//======================================================================================================
+		
+		if (strpos(ltrim($line), '-essid') !== false) {
+			$wlan_ssid = trim(str_replace('"', '', str_replace('-essid', '', strstr(ltrim($line), '-essid'))));
+		}
+		
+		if (strpos(ltrim($line), '-key') !== false) {
+			$wlan_password = trim(str_replace('"', '', str_replace('-key', '', strstr(ltrim($line), '-key'))));
+			$wifi_type = 'WEP';
+		}
+		
+
 	}
 
 	$interfaces = str_replace($wlan_section, '', $interfaces);
@@ -284,7 +276,7 @@ function networkConfiguration() {
 
 	}
 	
-	return array('eth' => trim($address), 'wifi'=>array('ssid'=>trim($wlan_ssid), 'password'=>trim($wlan_password)));
+	return array('eth' => trim($address), 'wifi'=>array('ssid'=>trim($wlan_ssid), 'password'=>trim($wlan_password), 'type' => $wifi_type));
 
 }
 
@@ -313,10 +305,25 @@ function setNetworkConfiguration($eth, $wifi){
 	$new_configuration .= 'allow-hotplug wlan0'.PHP_EOL;
 	$new_configuration .= '    auto wlan0'.PHP_EOL;
 	$new_configuration .= '    iface wlan0 inet dhcp'.PHP_EOL;
-	$new_configuration .= '    wpa-ssid "'.$wifi['ssid'].'"'.PHP_EOL;
-	$new_configuration .= '    wpa-psk "'.$wifi['password'].'"'.PHP_EOL;
 	
+	switch($wifi['type']){
+		
+		case 'OPEN':
+			$new_configuration .= '    wireless-essid '.$wifi['ssid'].''.PHP_EOL;
+			$new_configuration .= '    wireless-mode managed'.PHP_EOL;
+			break;
+		case 'WEP':
+			$new_configuration .= '    wireless-essid '.$wifi['ssid'].''.PHP_EOL;
+			$new_configuration .= '    wireless-key '.$wifi['password'].''.PHP_EOL;
+			break;
+		case 'WPA':
+		case 'WPA2':
+			$new_configuration .= '    wpa-ssid "'.$wifi['ssid'].'"'.PHP_EOL;
+			$new_configuration .= '    wpa-psk "'.$wifi['password'].'"'.PHP_EOL;
+			break;
+	}
 	
+		
 	$backup_command = 'sudo cp /etc/network/interfaces '.$interfaces_file.'.sav';
 	shell_exec($backup_command);
 	
@@ -326,7 +333,7 @@ function setNetworkConfiguration($eth, $wifi){
 	
 	shell_exec('sudo chmod 644 '.$interfaces_file);
 	
-	shell_exec('sudo /etc/init.d/networking restart');
+	//shell_exec('sudo /etc/init.d/networking restart');
 	
 	
 }
@@ -340,6 +347,8 @@ function setEthIP($ip){
 	$ip = '169.254.1.'.$ip;	 	
 	$networkConfiguration = networkConfiguration();
 	setNetworkConfiguration($ip, $networkConfiguration['wifi']);
+	
+	$response = shell_exec("sudo service networking reload");
 }
 
 
@@ -347,13 +356,17 @@ function setEthIP($ip){
 /**
  * Set Wlan 
  */
-function setWifi($ssid, $password){
+function setWifi($ssid, $password, $type="WPA"){
 	
 	$networkConfiguration = networkConfiguration();
-	setNetworkConfiguration($networkConfiguration['eth'], array('ssid' => $ssid, 'password'=>$password));
-	
-	shell_exec("sudo ifdown wlan0");
-	sleep(3);
-	shell_exec("sudo ifup wlan0"); 
+	setNetworkConfiguration($networkConfiguration['eth'], array('ssid' => $ssid, 'password'=>$password, 'type'=>$type));
+		
+	$response = shell_exec("sudo service networking reload");
+
+	if (strpos($response, 'PING') !== false || strpos($response, 'errors') !== false) {
+			return false;
+	}else{
+		return true;
+	}
 	
 }

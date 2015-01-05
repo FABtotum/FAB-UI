@@ -19,7 +19,7 @@ $_colors['b'] = $_blue;
 $_units = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);
 
 /** SET NEW COLOR */
-$_units['color'] = $_colors;
+$_units['color']          = $_colors;
 $_units['safety']['door'] = $_safety_door;
 file_put_contents(FABUI_PATH.'config/config.json', json_encode($_units));
 
@@ -35,7 +35,7 @@ $serial->confStopBits(1);
 $serial->deviceOpen();
 
 // safety door 
-$_command = 'M732 S'.$$_safety_door;
+$_command = 'M732 S'.$_safety_door;
 
 $serial->sendMessage($_command."\r\n");
 $response = $serial->readPort();

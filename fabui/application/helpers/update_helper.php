@@ -58,8 +58,7 @@ function marlin_get_remote_version(){
 	$info = curl_getinfo($ch);
 	curl_close($ch);
     
-    
-
+   
 	return $_version;
 
 }

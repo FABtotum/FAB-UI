@@ -181,8 +181,6 @@ class Settings extends Module {
 		$data['networkConfiguration'] = $networkConfiguration;
 		
 		
-		
-		
 		$data['imOnCable']   = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : false;
 		 
         $data['_tab_content'] = $this->load->view('index/network/index', $data, TRUE);
@@ -214,24 +212,39 @@ class Settings extends Module {
 		
 		$net      = $this->input->post('net');
 		$password = $this->input->post('password');
-		
+		$address  = $this->input->post('address');
 		/** LOAD HELPERS */
         $this->load->helper("os_helper"); 
 		
-		//$net = str_replace('wifi-', '', $net);
+		$wlans = scan_wlan();
 		
-		setWifi($net, $password);
+		$type = '';
 		
-		$wlan = wlan();
-		$wlan_ip = isset($wlan['ip']) ? $wlan['ip'] : '';
+		foreach($wlans as $wl){
+			if($wl['address'] == $address){
+				$type = $wl['type'];
+			}
+		}
 		
-		$this->load->database();
-		$this->load->model('configuration');
-	
-		/** SAVE NEW WIFI CONFIGURATION TO DB */
-		$this->configuration->save_confi_value('wifi', json_encode(array('ssid' => $net, 'password' => $password, 'ip' =>$wlan_ip)));
 		
-		$response_items['wlan_ip'] = $wlan_ip;
+		if(setWifi($net, $password, $type)){
+		
+			$wlan = wlan();
+			$wlan_ip = isset($wlan['ip']) ? $wlan['ip'] : '';
+			
+			$this->load->database();
+			$this->load->model('configuration');
+		
+			/** SAVE NEW WIFI CONFIGURATION TO DB */
+			$this->configuration->save_confi_value('wifi', json_encode(array('ssid' => $net, 'password' => $password, 'ip' =>$wlan_ip)));
+			
+			$response_items['wlan_ip'] = $wlan_ip;
+			$response_items['response'] = 'OK';
+		
+		}else{
+			$response_items['response'] = 'KO';
+		}
+		
 		echo json_encode($response_items);
 		
 		
@@ -268,213 +281,8 @@ class Settings extends Module {
         
     }
     
-    
-    
-     function plugin(){
-        
-       
-        $_tab_header = $this->tab_header('plugin');
-        
-  
-        
-        $data['_tab_header']  = $_tab_header;
-        $data['_tab_content'] = $this->load->view('index/plugin/index', $data, TRUE);
-
-        $this->layout->view('index/index', $data);
-        
-    }
-    
-    
-    
-    function maintenance($mode = 'index'){
-        
-        
-        switch($mode){    
-            case 'spool':
-                $this->_maintenance_spool();
-                break;
-            case 'self-test':
-                $this->_maintenance_self_test();
-                break;
-			case 'probe-calibration':
-				$this->_probe_calibration();
-				break;
-			case 'feeder':
-				$this->_maintenance_feeder();
-				break;
-			case 'bed-calibration':
-				$this->_bed_calibration();
-				break;
-			case '4axis':
-				$this->_maintenance_4axis();
-				break;
-			case 'first-setup':
-				$this->_first_setup();
-				break;
-            default:
-                $_tab_header = $this->tab_header('maintenance');
-                $data['_breadcrumb']  = 'Maintenance';
-                $data['_tab_header']  = $_tab_header;
-                $data['_tab_content'] = $this->load->view('index/maintenance/'.$mode.'/index.php', $data, TRUE);
-                $this->layout->view('index/index', $data);
-                break;
-        }
-        
-    }
-    
-    
-    
-    private function _maintenance_feeder(){
-        
-        
-        $_tab_header = $this->tab_header('maintenance'); 
-        
-        $data['_breadcrumb']  = 'Maintenance > Feeder';
-        $data['_tab_header']  = $_tab_header;
-        $data['_tab_content'] = $this->load->view('index/maintenance/feeder/index.php', $data, TRUE);
-        
-        $js_in_page = $this->load->view('index/maintenance/feeder/js', $data, TRUE);
-        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
 
 
-       
-        $this->layout->view('index/index', $data);
-        
-    }
-	
-	
-	
-	private function _maintenance_spool(){
-        
-        
-        $_tab_header = $this->tab_header('maintenance'); 
-        
-        $data['_breadcrumb']  = 'Maintenance > Spool';
-        $data['_tab_header']  = $_tab_header;
-        $data['_tab_content'] = $this->load->view('index/maintenance/spool/index.php', $data, TRUE);
-        
-        $js_in_page = $this->load->view('index/maintenance/spool/js', $data, TRUE);
-        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
-
-
-        $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
-        $this->layout->view('index/index', $data);
-        
-    }
-	
-    
-    private function _maintenance_self_test(){
-        
-        
-        $_tab_header = $this->tab_header('maintenance');
-        
-        $data['_breadcrumb']  = 'Maintenance > Self Test';
-        $data['_tab_header']  = $_tab_header;
-        $data['_tab_content'] = $this->load->view('index/maintenance/self-test/index', $data, TRUE);
-        
-        $js_in_page = $this->load->view('index/maintenance/self-test/js', $data, TRUE);
-        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
-
-        $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
-        $this->layout->view('index/index', $data);
-        
-    }
-    
-	
-	
-	private function _probe_calibration(){
-		
-		
-		$_tab_header = $this->tab_header('maintenance');
-		 
-		$data['_breadcrumb']  = 'Maintenance > Probe Calibration';
-        $data['_tab_header']  = $_tab_header;
-        $data['_tab_content'] = $this->load->view('index/maintenance/probe-calibration/index', $data, TRUE);
-		
-		$js_in_page = $this->load->view('index/maintenance/probe-calibration/js', $data, TRUE);
-        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
-		
-		
-		/** AVOID TO SEND ALWAYS G91 FOR EVERY MOVEMENT */
-		$_SESSION['relative'] = false;
-		
-		
-		$this->layout->view('index/index', $data);		
-	}
-	
-	
-	private function _bed_calibration(){
-		
-		
-		$_tab_header = $this->tab_header('maintenance');
-		 
-		$data['_breadcrumb']  = 'Maintenance > Bed Calibration';
-        $data['_tab_header']  = $_tab_header;
-        $data['_tab_content'] = $this->load->view('index/maintenance/bed-calibration/index', $data, TRUE);
-		
-		$js_in_page = $this->load->view('index/maintenance/bed-calibration/js', $data, TRUE);
-        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
-		
-		
-		
-		
-		
-		/** AVOID TO SEND ALWAYS G91 FOR EVERY MOVEMENT */
-		$_SESSION['relative'] = false;
-		
-		
-		$this->layout->view('index/index', $data);		
-	}
-
-
-	function _maintenance_4axis(){
-		
-		$_tab_header = $this->tab_header('maintenance');
-		 
-		$data['_breadcrumb']  = 'Maintenance > Engage 4th Axis';
-        $data['_tab_header']  = $_tab_header;
-        $data['_tab_content'] = $this->load->view('index/maintenance/4axis/index', $data, TRUE);
-		
-		$js_in_page = $this->load->view('index/maintenance/4axis/js', $data, TRUE);
-        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
-		
-		$this->layout->view('index/index', $data);	
-		
-	}
-	
-	
-	function _first_setup(){
-		
-		
-		$_tab_header = $this->tab_header('maintenance');
-		
-		
-		$data['step1'] = $this->load->view('index/maintenance/first-setup/step1/index', '', TRUE);
-		$data['step2'] = $this->load->view('index/maintenance/first-setup/step2/index', '', TRUE);
-		$data['step3'] = $this->load->view('index/maintenance/first-setup/step3/index', '', TRUE);
-		$data['step4'] = $this->load->view('index/maintenance/first-setup/step4/index', '', TRUE);
-		$data['step5'] = $this->load->view('index/maintenance/first-setup/step5/index', '', TRUE);
-		
-		 
-		$data['_breadcrumb']  = 'Maintenance > First Setup';
-        $data['_tab_header']  = $_tab_header;
-        $data['_tab_content'] = $this->load->view('index/maintenance/first-setup/index', $data, TRUE);
-		
-		
-		
-		$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/fuelux/wizard/wizard.min.js', 'comment' => ''));
-		
-		$js_in_page = $this->load->view('index/maintenance/first-setup/js', $data, TRUE);
-        $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
-		
-		
-		$this->layout->set_setup_wizard(FALSE);
-		
-		$this->layout->view('index/index', $data);	 
-		
-	}
-    
-    
     
     function tab_header($current = 'settings'){
  

@@ -3,8 +3,8 @@
 		<tr>
 			<th>Name</th>
 			<th>Description</th>
-			<th>Date</th>
-			<th>Files</th>
+			<th width="150">Date</th>
+			<th width="75">Files</th>
 			<th></th>
 		</tr>
 	</thead>

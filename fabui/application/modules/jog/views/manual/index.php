@@ -26,13 +26,13 @@
 		        		<?php foreach($gcodes as $code): ?>
 		        			<tr class="code" data-attr="<?php echo $code['type'].$code['code']; ?>" >
 		        				<td width="150px;"><strong><?php echo $code['label']; ?></strong></td>
-		        				<td><?php echo $code['description']; ?></td>
+		        				<td><p class="description"><?php echo $code['description']; ?></p></td>
 		        			</tr>
 		        		<?php endforeach; ?>
 		        		<?php foreach($mcodes as $code): ?>
 		        			<tr class="code" data-attr="<?php echo $code['type'].$code['code']; ?>" >
 		        				<td width="150px;"><strong><?php echo $code['label']; ?></strong></td>
-		        				<td><?php echo $code['description']; ?></td>
+		        				<td><p class="description"><?php echo $code['description']; ?></p></td>
 		        			</tr>
 		        		<?php endforeach; ?>
 		        	</tbody>
@@ -65,15 +65,19 @@
 			
 			function hide_divs(search) {
 				
+				
 			    $(".code").hide(); 
 
 			    $(".code").each(function(index, value) {
 			    	
-			    	if(typeof $(this).attr('data-attr') !== typeof undefined && $(this).attr('data-attr') !== false){			    		
-			    		if($(this).attr('data-attr').indexOf(search) > -1 ){
+			    	if(typeof $(this).attr('data-attr') !== typeof undefined && $(this).attr('data-attr') !== false){
+			    					    		
+			    		if(($(this).attr('data-attr').indexOf(search) > -1) || ($(this).find('.description').html().toUpperCase().indexOf(search) > -1)){
 			    			$(this).show();
 			    		}
 			    	}
+			    	
+			    	
 				    
 				});
 		}

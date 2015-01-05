@@ -213,13 +213,18 @@ var safety_interval;
 var tasks_interval;
 var emergency = false;
 var idleTime  = 0;
-var idleInterval
+var idleInterval;
+var do_system_call = true;
 
 /** CHECK PRINTE SAFETY */
 function safety(){
+	
+	if(!do_system_call){
+		return false;
+	}
    
-   var timestamp = new Date().getTime();
-   if(emergency == false){
+   	var timestamp = new Date().getTime();
+  	if(emergency == false){
        $.get( "/temp/fab_ui_safety.json?time=" + jQuery.now() , function( data ) {
            
              if(parseInt(data.state.emergency) == 1 ) {
@@ -347,6 +352,13 @@ function update_notifications(){
 
 
 function refresh_notifications(){
+	
+	
+	if(!do_system_call){
+		return false;
+	}
+	
+	
     $( ".notification" ).each( function( index, element ){
         var obj = $(this);
         if(obj.hasClass('active')){
@@ -361,6 +373,10 @@ function refresh_notifications(){
 
 /** CHECK TASKS, MENU  */
 function check_notifications(){
+	
+	if(!do_system_call){
+		return false;
+	}
 	
 	if(idleTime < max_idle_time || max_idle_time == 0){
 	    var timestamp = new Date().getTime();
@@ -393,17 +409,20 @@ function check_notifications(){
 
 $(function() {
 	
-			
-  // Handler for .ready() called.
-  idleInterval = setInterval(timerIncrement, 1000);
-  safety_interval= setInterval(safety, 3000); /* START TIMER... */
-  check_notifications();
-  notifications_interval = setInterval(check_notifications, 10000);
-  $("#refresh-notifications").on('click', refresh_notifications);
-  check_for_updates();
-  
-  
-  check_for_wizard_setup();
+	
+	if(fabui){
+					
+	  	// Handler for .ready() called.
+	  	idleInterval = setInterval(timerIncrement, 1000);
+	  	safety_interval= setInterval(safety, 3000); /* START TIMER... */
+	  	check_notifications();
+	  	notifications_interval = setInterval(check_notifications, 10000);
+	  	$("#refresh-notifications").on('click', refresh_notifications);
+	  	check_for_updates();
+	  
+	  
+	  	check_for_wizard_setup();
+  }
   
 
   
@@ -474,6 +493,10 @@ function shutdown(){
 
 /** SHUTDOWN */
 function check_for_updates(){
+	
+	if(!do_system_call){
+		return false;
+	}
 	
 	$.ajax({
 			type: "POST",
@@ -598,6 +621,9 @@ $("#send-bug").on('click', function(){
 
 function check_for_wizard_setup(){
 	
+	if(!do_system_call){
+		return false;
+	}
 	
 	setTimeout(function(){
 		if(setup_wizard){
@@ -606,12 +632,8 @@ function check_for_wizard_setup(){
 				title : "Wizard Setup",
 				content : "It seems that you still did not complete the first recommended setup:<ul><li>Manual Bed Calibration</li><li>Probe Lenght Calibration</li><li>Engage Feeder</li></ul><br>Without a proper calibration you will not be able to use the FABtotum correctly<br>Do you want to do it now?<br><br><p class='text-align-right'><a href='/fabui/maintenance/first-setup' class='btn btn-primary btn-sm'>Yes</a> <a href='javascript:void(0);' class='btn btn-danger btn-sm'>No</a> <a href='javascript:dont_ask_wizard();' class='btn btn-warning btn-sm'>Don't ask me anymore</a> </p>",
 				color : "#296191",
-				//timeout: 8000,
-				//color : "#C79121",
 				icon : "fa fa-warning swing animated"
 			});
-
-				
 		}
 	}, 1000);
 }
@@ -636,11 +658,14 @@ function dont_ask_wizard(){
 /** GET TRACE */
 function getTrace(url, type, contenitor){
 	
+	
+	
 	$.ajax({
 			type: type,
 			url: url,
 	}).done(function(data, statusText, xhr) {
 		
+
 		if(xhr.status == 200){
 			contenitor.html(data);
 			$('#console').scrollTop(1E10);
