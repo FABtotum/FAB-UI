@@ -81,6 +81,7 @@ PROFILE
 RECOVERY
 - [devs] added macro simulator to simulate actions from the macro python script
 - added "eth config" to manually change the dhcp server address in lan mode.
+
 ==================================================================
 
 FABUI 0.64 (23/10/2014)
