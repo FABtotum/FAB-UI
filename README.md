@@ -2,7 +2,12 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
-FABUI 0.7 (4/12/2014)
+FABUI 0.75 (05/01/2015)
+
+GENERAL
+
+==================================================================
+FABUI 0.7 (04/12/2014)
 
 SCAN
 - Fixed end scan procedure
@@ -30,7 +35,7 @@ GENERAL
 - Minor bugfixes
 
 
-================================================== ================
+==================================================================
 FABUI 0.655 (14/11/2014)
 
 - Fixed some missing plugins dependencies
