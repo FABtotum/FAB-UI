@@ -5,6 +5,18 @@ the FABtotum User Interface Repo
 FABUI 0.75 (05/01/2015)
 
 GENERAL
+- Added module SUPPORT
+- Improved recovery section for a better user experience
+
+OBJECTMANAGER
+- Fixed characters encoding on show list
+
+MAINTENANCE
+- Self Test: improved script on heating test 
+
+SETTINGS
+- General : fixed issue on safety front door lock option (need firmware version 1.0.006)
+- Network : fixed some bugs on WI-FI connection. Now is possible to connect the FABtotum to an open wifi connection or to a WEP wifi connection 
 
 ==================================================================
 FABUI 0.7 (04/12/2014)
