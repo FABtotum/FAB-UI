@@ -1,49 +1,42 @@
 <?php
-include_once("header.php");
-
-function get_string_between($string, $start, $end){
-    $string = " ".$string;
-    $ini = strpos($string,$start);
-    if ($ini == 0) return "";
-    $ini += strlen($start);
-    $len = strpos($string,$end,$ini) - $ini;
-    return substr($string,$ini,$len);
-}
-
-//I'm connected to...(parse ifconfig)
-	$nets=shell_exec("sudo ifconfig");
-	$nets=explode("\n\n",$nets);
-	
-	//DEBUG print_r($nets);
-	
-	foreach($nets as $id => $interface){
-	   $interface=explode(" ",$interface,2);
-	   $int[$interface[0]]=get_string_between($interface[1], "inet addr:", " ");
-	   
-	    
-	}
-
-	echo '<div align=center> <img src=fablogo.jpg></div>';
-	//echo '<div align=center>  <b> currently connected to: </b>';
-		$icons=array("eth0" => "icon_ethernet.gif" , "wlan0" => "icon_wlan.png");
-		$names=array("eth0" => "LAN" , "wlan0" => "Wireless");
-		
-		/*
-		foreach($int as $id => $addr){
-			if(($id!="lo") &&($id!="")){
-				if($addr==""){
-					$addr="Disconnected";
-				}
-				if($addr==$_SERVER['SERVER_ADDR']){
-				//display on wich connection the UI is connected to.
-				$names[$id]="<font color=green>".$names[$id]."</font>";
-				}
-			echo " <img src=".$icons[$id]." width=15px height=15px> ". $names[$id] .": ". $addr." ";
-			}
-		}*/
-    echo '</div><br>';
-	echo '<div align=center> <a href=http://'.$_SERVER['SERVER_ADDR'].'/fabui/><button>[fabui]</button></a> <a href=jog.php><button>[JOG]</button></a> <a href=setup.php><button>[Wlan CONFIG]</button></a> <a href=eth.php><button>[ETH CONFIG]</button></a> <a href=info.php?mode=net><button>[Network]</button></a> <a href=reboot.php><button>[REBOOT]</button></a> <a href=flash.php><button>[FLASH FW]</button></a> <a href=flash_remote.php><button>[FLASH FW REMOTE]</button></a> <a href=/phpmyadmin><button>[Database]</button></a> <a href=macrosim.php><button>[Macro sim]</button></a> <a href=/recovery/install><button>[Re-Install]</button></a><a href=/recovery/phpinfo.php><button>[PHPINFO]</button></a><a href=/recovery/shutdown.php><button>[SHUTDOWN]</button></a></div>';
-
-include_once("footer.php");
+include 'header.php';
 ?>
-
+<style>
+	a{
+		margin-top:10px !important;
+	}
+</style>
+</head>
+	<body>
+		<header id="header">
+			<div id="logo-group">
+				<span id="logo"><img src="/assets/img/logo-0.png"></span>
+			</div>
+		</header>
+		<div id="main" role="main">
+			<div id="ribbon">
+				<ol class="breadcrumb">
+					<li>Recovery</li>
+				</ol>
+			</div>
+			<div id="content">
+				<div class="row">
+					<div class="col-sm-12 text-center">
+						<a href="/fabui/"                 class="btn btn-primary">FABui</a>
+						<a href="/recovery/jog.php"       class="btn btn-primary">Jog</a>
+						<a href="/recovery/wlan.php"      class="btn btn-primary">Network</a>
+						<a href="/recovery/info.php"      class="btn btn-primary">Info</a>
+						<a href="/recovery/log.php"       class="btn btn-primary">Log</a>
+						<a href="/recovery/flash.php"     class="btn btn-primary">Flash Firmware</a>
+						<a href="/phpmyadmin"             class="btn btn-primary">Database</a>
+						<a href="/recovery/macrosim.php"  class="btn btn-primary">Macro Simulator</a>
+						<a href="/recovery/install"       class="btn btn-primary">Re-Install</a>
+						<a href="/recovery/shutdown.php"  class="btn btn-warning ">Shutdown</a>
+						<a href="/recovery/reboot.php"    class="btn btn-warning ">Reboot</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php include 'footer.php'; ?>
+	</body>
+</html>

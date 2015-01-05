@@ -1,56 +1,96 @@
 <?php
-include_once("header.php");
-//error_reporting(E_ALL);
-//ini_set('display_errors', '1');
 
-echo "<b>MACRO SIMULATOR</b>";
-if($_POST['macro']!=""){
-	$macro=$_POST['macro'];
-	}
 
-$macrofile="/var/www/fabui/python/gmacro.py";
+$macrofile = "/var/www/fabui/python/gmacro.py";
 $data = file_get_contents($macrofile);
 
-$data=explode('preset=="',$data);
+$data = explode('preset=="', $data);
 
-echo '<form method="post" action="macrosim.php"><select name="macro">';
-	
-			for ($i = 1; $i <= count($data); $i++) {
-				$macroname=explode('":',$data[$i]);
-				if ($macro==$macroname[0]){
-						$selected="selected";
-					}else{
-						$selected="";
-				}
-			
-				echo '<option value="'.$macroname[0].' '.$selected.'">'.$macroname[0].'</option>';
-			}
+$options = array();
 
-echo '</select><INPUT TYPE="submit" name="submit" /></form>';
+for ($i = 1; $i <= count($data); $i++) {
+	$macroname = explode('":', $data[$i]);
+	if($macroname[0]!='') array_push($options, $macroname[0]);
+}
 
-if ($macro!=""){
-	echo "selected : " . $macro;
+if(isset($_GET['macro']) && $_GET['macro']!='' && in_array($_GET['macro'], $options)){
 	
-	$cmd = "sudo python /var/www/fabui/python/gmacro.py ".$macro." /var/www/temp/simtrace.trace /var/www/temp/simresult.log";
 	
-	$descriptorspec = array(
-	   0 => array("pipe", "r"),   // stdin is a pipe that the child will read from
-	   1 => array("pipe", "w"),   // stdout is a pipe that the child will write to
-	   2 => array("pipe", "w")    // stderr is a pipe that the child will write to
-	);
+	$macro = $_GET['macro'];
 	
-	flush();
+	$time = time();
 	
-	$process = proc_open($cmd, $descriptorspec, $pipes, realpath('./'), array());
-	echo "<pre>";
-		if (is_resource($process)) {
-			while ($s = fgets($pipes[1])) {
-				print $s;
-				flush();
-			}
-		}
-		echo "</pre>";
-	}
+	$command = "sudo python /var/www/fabui/python/gmacro.py ".$macro." /var/www/temp/".$macro.$time.".trace /var/www/temp/".$macro.$time.".log";
+	shell_exec($command);
 	
+	$trace = file_get_contents("/var/www/temp/".$macro.$time.".trace");
+	
+	shell_exec('sudo rm -rf '.'/var/www/temp/'.$macro.$time.'.trace');
+	shell_exec('sudo rm -rf '.'/var/www/temp/'.$macro.$time.'.log');  
+	
+	
+	
+}
+
+include 'header.php';
 ?>
+	</head>
+	<body>
+		<header id="header">
+			<div id="logo-group">
+				<span id="logo"><img src="/assets/img/logo-0.png"></span>
+			</div>
+		</header>
+		<div id="main" role="main">
+			<div id="ribbon">
+				<ol class="breadcrumb">
+					<li><a href="/recovery/index.php">Recovery</a></li>
+					<li>Macro Simulator</li>
+				</ol>
+			</div>
+			<div id="content">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="well">
+							<div class="form-inline margin-bottom-10">
+								<fieldset>
+									<div class="form-group">
+										<select class="form-control macro">
+											<?php foreach($options as $key => $value): ?>
+												<option <?php echo $value == $macro ? 'selected' : ''; ?> value="<?php echo $value ?>"><?php echo $value; ?></option>
+											<?php endforeach; ?>
+										</select>
+									</div>
+								</fieldset>
+							</div>
+							
+							<?php if(isset($trace) && $trace != ''): ?>
+								<h6><?php echo $macro; ?></h6>
+								<pre><?php echo $trace; ?></pre>
+							<?php endif; ?>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
+		include 'footer.php';
+ 		?>
+ 		
+ 		<script type="text/javascript">
+ 			
+ 			$(function() {
+ 				
+ 				$('.macro').on('change', function(){
+ 					
+ 					document.location.href = 'macrosim.php?macro=' + $(this).val();
+ 				});
+ 				
+ 			});
+ 			
+ 		</script>
+ 		
+	</body>
+</html>
 

@@ -1,77 +1,180 @@
 <?php
 
-include_once("header.php");
-//error_reporting(E_ALL);
-//ini_set('display_errors', '1');
-include "php_serial.class.php";
+$feed = 1000;
+$raspi_still = false;
 
-//print_r($_POST);
-$value=$_POST['c'];
-$feed=intval($_POST[feed]);
-if($feed==""){
-//$feed=1000;
-} 
-
-if($_POST['s']==1){
-echo '<img src="http://my.fabtotum.com/embed.php">';
-
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	
+	
+	include "php_serial.class.php";
+	
+	
+	$value = isset($_POST['c']) && $_POST['c'] != '' ? $_POST['c'] : '';
+	$feed  = isset($_POST['feed']) && $_POST['feed'] != '' ? $_POST['feed'] : $feed;
+	
+	
+	if($value != ''){
+		
+		if($value == 'mdi'){ 
+			$value = isset($_POST['mdi-code']) && $_POST['mdi-code'] != '' ? strtoupper($_POST['mdi-code']) : '';
+		}
+		
+		
+		if(strpos($value, 'G0') !== false){
+			$value .= ' F'.$feed;
+		}
+		
+		
+		$serial = new phpSerial;
+		$serial->deviceSet("/dev/ttyAMA0");
+		$serial->confBaudRate(115200);
+		$serial->confParity("none");
+		$serial->confCharacterLength(8);
+		$serial->confStopBits(1);
+		$serial->deviceOpen();
+		$serial->sendMessage($value."\r\n");
+		$reply = $serial->readPort();
+		$serial->deviceClose();
+	}
+	
+	
+	if(isset($_POST['s']) && $_POST['s'] == 1){
+		$raspi_still = true;
+		
+		
+		exec('sudo raspistill -hf -w 512 -h 320 -o /var/www/temp/picture.jpg -t 0');
+		$filename = "/var/www/temp/picture.jpg";
+		$handle = fopen($filename, "rb");
+		$contents = fread($handle, filesize($filename));
+		fclose($handle);
+		
+	}
+	
 }
 
-
-if($value!=""){
-
-//$value.=" F$feed";
-//$value=str_replace("_","\r\n",$value);
-
-$serial = new phpSerial;
-$serial->deviceSet("/dev/ttyAMA0");
-$serial->confBaudRate(115200);
-$serial->confParity("none");
-$serial->confCharacterLength(8);
-$serial->confStopBits(1);
-$serial->deviceOpen();
-$serial->sendMessage($value."\r\n");
-$reply=$serial->readPort();
-$serial->deviceClose();
-} 
- 
-
-echo "<div><b>SERIAL STARTED</b> || <a href=/jog.php>[RELOAD]</a><br><br>";
-
-
-echo "<form method='POST' action='jog.php'>
-
-
-SETUP    : <button name='s' type='submit' value='1'>STILL</button> <button name='c' type='submit' value='G92 X0 Y0 Z0'>ZERO ALL</button> <button name='c' type='submit' value='G0 X0 Y0 Z0'>GO TO ZERO</button><br><br>
-FEEDRATE : <input name='feed' type='text' size='25' value='".$feed."'><br>
-
-MOTORS   : <button name='c' type='submit' value='M17'>ON</button> <button name='c' type='submit' value='M18'>OFF</button><br>
-COORD    : <button name='c' type='submit' value='G91'>RELATIVE</button> <button name='c' type='submit' value='G90'>ABSOLUTE</button><br>
-JOG      : <br><br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button name='c' type='submit' value='G0 Y+10'>^</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button name='c' type='submit' value='G0 Z+10'>Z+</button><br>
-<button name='c' type='submit' value='G0 X-10'>&lt;</button> <button name='c' type='submit' value='G0 X+10'>&gt;</button><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button name='c' type='submit' value='G0 Y-10'>v</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button name='c' type='submit' value='G0 Z-10'>Z-</button><br>
-<br><br>
-
-<button name='c' type='submit' value='G0 E-45'>&lt A </button> <button name='c' type='submit' value='G0 E+45'>A &gt</button><br>
-
-
-</form>";
-
-echo "<form method='POST' action='jog.php'>
-MDI : <input name='c' type='text' size='25' value='".$value."'><button type='submit'>EXEC</button><br>
-</form>";
-
-echo "MONITOR<br>";
-echo "SENT     - ($value)<br>";
-echo "REPLIED  - ($reply)<br>";
-
-
-echo'DEBUG LED : <a href=?c=a>[ON]</a> || <a href=?c=b>[OFF]</a><br>';
-echo'MOTORS    : <a href=?c=M17>[ON]</a> || <a href=?c=M18>[OFF]</a><br>';
-
-
-
-include_once("footer.php");
-
+include 'header.php';
 ?>
+	<style>
+		.uppercase {
+			text-transform: uppercase;
+		}
+	</style>
+</head>
+<body>
+	<header id="header">
+		<div id="logo-group">
+			<span id="logo"><img src="/assets/img/logo-0.png"></span>
+		</div>
+	</header>
+	<div id="main" role="main">
+		<div id="ribbon">
+			<ol class="breadcrumb">
+				<li>
+					<a href="/recovery/index.php">Recovery</a>
+				</li>
+				<li>
+					Jog
+				</li>
+			</ol>
+		</div>
+		<div id="content">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="well">
+						<form method="POST">
+							<fieldset>
+								<div class="form-group">
+									<label>Setup:</label>&nbsp;
+									<button type="submit" class="btn btn-primary" name="s" value="1">Still</button>
+									<button type="submit" class="btn btn-primary" name="c" value="G92 X0 Y0 Z0">Zero All</button>
+									<button type="submit" class="btn btn-primary" name="c" value="G0 X0 Y0 Z0">Go To Zero</button>
+									<button type="submit" class="btn btn-primary" name="c" value="M105">Temperature</button>
+								</div>
+							</fieldset>
+							<fieldset>
+								<div class="form-group">
+									<label>Feedrate:</label>&nbsp;
+									<input name="feed" class="form-control" placeholder="<?php echo $feed; ?>" type="number" value="<?php echo $feed; ?>">
+								</div>
+							</fieldset>
+							<fieldset>
+								<div class="form-group">
+									<label>Motors:</label>&nbsp;
+									<button type="submit"  class="btn btn-primary" name="c" value="M17">On</button>
+									<button type="submit"  class="btn btn-primary" name="c" value="M18">Off</button>
+								</div>
+							</fieldset>
+							<fieldset>
+								<div class="form-group">
+									<label>Coordinate:</label>&nbsp;
+									<button type="submit" class="btn btn-primary" name="c" value="G91">Relative</button>
+									<button type="submit" class="btn btn-primary" name="c" value="G90">Absolute</button>
+								</div>
+							</fieldset>
+							<fieldset>
+								<div class="form-group">
+									<label>Jog</label>
+									<table>
+										<tr>
+											<td></td>
+											<td><button type="submit" class="btn btn-primary" name="c" value="G0 Y+10"><i class="fa fa-arrow-up"></i></button></td>
+											<td width="25">&nbsp;</td>
+											<td width="25">&nbsp;</td>
+											<td><button type="submit" class="btn btn-primary" name="c" value="G0 Z-10">Z+</button></td>
+										</tr>
+										<tr>
+											<td><button type="submit" class="btn btn-primary" name="c" value="G0 X-10"><i class="fa fa-arrow-left"></i></button></td>
+											<td></td>
+											<td><button type="submit" class="btn btn-primary" name="c" value="G0 X+10"><i class="fa fa-arrow-right"></i></button></td>
+											<td width="25">&nbsp;</td>
+											<td width="25">&nbsp;</td>
+											<td>&nbsp;</td>
+										</tr>
+										<tr>
+											<td></td>
+											<td><button type="submit" class="btn btn-primary" name="c" value="G0 Y-10"><i class="fa fa-arrow-down"></i></button></td>
+											<td width="25">&nbsp;</td>
+											<td width="25">&nbsp;</td>
+											<td><button type="submit" class="btn btn-primary" name="c" value="G0 Z+10">Z-</button></td>
+										</tr>
+									</table>
+								</div>
+								<div class="form-group">
+									<button type="submit" class="btn btn-primary" name="c" value="G0 E-45"><i class="fa fa-arrow-left"></i> A</button>
+									<button type="submit" class="btn btn-primary" name="c" value="G0 E+45"><i class="fa fa-arrow-right"></i> A</button>
+								</div>
+							</fieldset>
+							<fieldset>
+								<div class="form-group">
+									<label>Mdi</label>
+									<textarea name="mdi-code" class="form-control uppercase"><?php echo $value; ?></textarea>
+									<button type="submit" class="btn btn-primary margin-top-10" name="c" value="mdi">Exec</button>
+								</div>
+							</fieldset>
+						</form>
+						<hr>
+						Console:
+						<pre><?php echo $value.': '.$reply; ?></pre>
+					</div>
+				</div>
+			</div>
+			<?php if($raspi_still) :?>
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="well">
+						<img src="/temp/picture.jpg">
+					</div>
+				</div>
+			</div>
+			<?php endif; ?>
+		</div>
+	</div>
+	<?php
+	include 'footer.php';
+	?>
+
+	<script type="text/javascript"></script>
+
+</body>
+</html>
+

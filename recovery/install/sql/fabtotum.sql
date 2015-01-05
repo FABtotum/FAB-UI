@@ -65,8 +65,8 @@ INSERT INTO `sys_configuration` (`id`, `key`, `value`) VALUES
 (17, 'lights', 'off'),
 (18, 'language', 'english'),
 (19, 'languages', '{"english":{"code":"us","description":"English","name":"english"},"italian":{"code":"it","description":"Italiano","name":"italian"},"german":{"code":"de","description":"Deutsch","name":"german"}}'),
-(20, 'fw_version', ''),
-(21, 'fabui_version', '0.7'),
+(20, 'fw_version', '1.0.006'),
+(21, 'fabui_version', '0.75'),
 (22, 'wifi', '{"ssid":"","password":"","ip":""}');
 
 -- --------------------------------------------------------
@@ -514,7 +514,7 @@ INSERT INTO `sys_codes` (`id`, `type`, `code`, `label`, `description`) VALUES
 (150, 'M', 789, 'M789', 'read Head capability: purpose (single purpose, multipurpose)'),
 (151, 'M', 790, 'M790', 'read Head capability: wattage (0-200W)'),
 (152, 'M', 791, 'M791', 'read Head capability: axis (number of axis)'),
-(153, 'M', 792, 'M792', 'read Head capability: servo (number of axis)');
+(153, 'M', 792, 'M792', 'read Head capability: servo (number of axis)'),
 (154, 'M', 732, 'M732 S<FLAG>', 'Code for enable/disable the operations kill on door opening permanently (M732 S0->disable(unsafe),M732 S1->enable(safe)');
 
 
@@ -530,7 +530,7 @@ INSERT INTO `sys_obj_files` (`id`, `id_obj`, `id_file`) VALUES (2, 1, 2);
 
 
 INSERT INTO `sys_files` (`id`, `file_name`, `file_type`, `file_path`, `full_path`, `raw_name`, `orig_name`, `client_name`, `file_ext`, `file_size`, `print_type`, `is_image`, `image_width`, `image_height`, `image_type`, `image_size_str`, `insert_date`, `update_date`, `note`, `attributes`) VALUES
-(1, 'Marvin_KeyChain_FABtotum.gcode', 'text/plain', '/var/www/upload/gcode/', '/var/www/upload/gcode/Marvin_KeyChain_FABtotum.gcode', 'Marvin Key Chain FABtotum', 'Marvin_KeyChain_FABtotum.gcode', 'Marvin_KeyChain_FABtotum.gcode', '.gcode', 2176020, 'additive', 0, 0, 0, 0, '', now(), now(), 'Marvin sample', '{"dimensions": {"x" : "40.2099990845", "y": "34.2200012207", "z": "25.3999996185"}, "number_of_layers" : 254, "filament": "1346.76025391", "estimated_time":"0:27:38" }');
+(1, 'Marvin_KeyChain_FABtotum.gcode', 'text/plain', '/var/www/upload/gcode/', '/var/www/upload/gcode/Marvin_KeyChain_FABtotum.gcode', 'Marvin Key Chain FABtotum', 'Marvin_KeyChain_FABtotum.gcode', 'Marvin_KeyChain_FABtotum.gcode', '.gcode', 2176020, 'additive', 0, 0, 0, 0, '', now(), now(), 'Marvin sample', '{"dimensions": {"x" : "34.9160003662", "y": "28.9209976196", "z": "25.3999996185"}, "number_of_layers" : 254, "filament": "1026.98718262", "estimated_time":"0:43:38" }');
 
 INSERT INTO `sys_files` (`id`, `file_name`, `file_type`, `file_path`, `full_path`, `raw_name`, `orig_name`, `client_name`, `file_ext`, `file_size`, `print_type`, `is_image`, `image_width`, `image_height`, `image_type`, `image_size_str`, `insert_date`, `update_date`, `note`, `attributes`) VALUES
 (2, 'bracelet.gcode', 'text/plain', '/var/www/upload/gcode/', '/var/www/upload/gcode/bracelet.gcode', 'Bracelet', 'bracelet.gcode', 'bracelet.gcode', '.gcode', 1467880, 'additive', 0, 0, 0, 0, '', now(), now(), 'Bracelet sample', '{"dimensions":{"x":"101.062004089","y":"101.062004089","z":"9.80000019073"},"number_of_layers":98,"filament":"3229.01245117","estimated_time":"1:11:07"}');
