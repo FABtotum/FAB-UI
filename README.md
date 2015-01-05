@@ -81,7 +81,7 @@ PROFILE
 RECOVERY
 -[devs] added macro simulator to simulate actions from the macro python script
 -added "eth config" to manually change the dhcp server address in lan mode.
-================================================== ================
+==================================================================
 
 FABUI 0.64 (23/10/2014)
 
@@ -99,14 +99,14 @@ GENERAL
 - Implemented emergency error codes description
 - Fixed emergency dialog
 
-================================================== ================
+==================================================================
 
 FABUI 0.635 (20/10/2014)
 
 JOG
 - Fixed an annoying bug that it was setting relative mode on movements 
 
-================================================== ================
+==================================================================
 
 FABUI 0.63 (17/10/2014)
 
@@ -129,7 +129,7 @@ OTHER
 - Renamed "Marlin Firmware" to "FABlin Firmware"
 - Improved "Engage Feeder" instructions
 
-================================================== ================
+==================================================================
 
 FABUI 0.62 (09/10/2014)
 
@@ -156,4 +156,4 @@ OTHER
 - added "Request a feature" button
 - added "Report a bug" button
 
-================================================== ================
+==================================================================
