@@ -2,7 +2,24 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
-FABUI 0.7 (4/12/2014)
+FABUI 0.75 (05/01/2015)
+
+GENERAL
+- Added module SUPPORT
+- Improved recovery section for a better user experience
+
+OBJECTMANAGER
+- Fixed characters encoding on show list
+
+MAINTENANCE
+- Self Test: improved script on heating test 
+
+SETTINGS
+- General : fixed issue on safety front door lock option (need firmware version 1.0.006)
+- Network : fixed some bugs on WI-FI connection. Now is possible to connect the FABtotum to an open wifi connection or to a WEP wifi connection 
+
+==================================================================
+FABUI 0.7 (04/12/2014)
 
 SCAN
 - Fixed end scan procedure
@@ -30,7 +47,7 @@ GENERAL
 - Minor bugfixes
 
 
-================================================== ================
+==================================================================
 FABUI 0.655 (14/11/2014)
 
 - Fixed some missing plugins dependencies
@@ -62,9 +79,10 @@ PROFILE
 - added new layouts: Fixed header - fixed navigation - fixed ribbon - fixed footer
 
 RECOVERY
--[devs] added macro simulator to simulate actions from the macro python script
--added "eth config" to manually change the dhcp server address in lan mode.
-================================================== ================
+- [devs] added macro simulator to simulate actions from the macro python script
+- added "eth config" to manually change the dhcp server address in lan mode.
+
+==================================================================
 
 FABUI 0.64 (23/10/2014)
 
@@ -82,14 +100,14 @@ GENERAL
 - Implemented emergency error codes description
 - Fixed emergency dialog
 
-================================================== ================
+==================================================================
 
 FABUI 0.635 (20/10/2014)
 
 JOG
 - Fixed an annoying bug that it was setting relative mode on movements 
 
-================================================== ================
+==================================================================
 
 FABUI 0.63 (17/10/2014)
 
@@ -112,7 +130,7 @@ OTHER
 - Renamed "Marlin Firmware" to "FABlin Firmware"
 - Improved "Engage Feeder" instructions
 
-================================================== ================
+==================================================================
 
 FABUI 0.62 (09/10/2014)
 
@@ -139,4 +157,4 @@ OTHER
 - added "Request a feature" button
 - added "Report a bug" button
 
-================================================== ================
+==================================================================
