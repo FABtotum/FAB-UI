@@ -2,6 +2,37 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.8 (26/01/2015)
+
+SCAN
+- Fixed reconstruction order and size
+- Increased postprocessing speed by changing the laser detection method<
+- Dynamic Brightness Treshold introduced
+- Minor works toward introduction of perspective correction and camera undistort algorithm
+
+CREATE
+- Improved user experience
+- Fixed ojects list on second page
+
+JOG
+- Improved user experience
+
+OBJECTMANAGER
+- Added 2 new presets config for the slicing "PLA Generic" and "ABS Generic - Small pieces"
+- Added manual helper for the slicing parameters
+
+MAINTENANCE
+- Performed Load and Unload spool functions
+
+SETTINGS
+- General: Added selection switch, Left or Right, for homing (need firmware 1.0.007)
+
+GENERAL
+- Minor bugfixes
+- Fixed bug on "Recovery Password" procedure
+
+==================================================================
+
 FABUI 0.75 (05/01/2015)
 
 GENERAL
