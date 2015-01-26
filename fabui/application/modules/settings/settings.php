@@ -32,6 +32,7 @@ class Settings extends Module {
         
         $data['_standby_color'] = $_units['color'];
 		$data['_safety_door']     = isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
+		$data['_switch']          = isset($_units['switch']) ? $_units['switch']: '0';
         
         /** LOAD TAB HEADER */
         $_tab_header = $this->tab_header();
@@ -152,6 +153,7 @@ class Settings extends Module {
     	
 		
 		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/masked-input/jquery.maskedinput.min.js', 'comment' => ''));
         
         /** LOAD HELPERS */
         $this->load->helper("os_helper");

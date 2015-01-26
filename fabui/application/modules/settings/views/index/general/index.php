@@ -33,6 +33,30 @@
 						</div>
 					</fieldset>
 					
+					
+					<fieldset>
+						<legend>Homing preferences</legend>
+						
+						<div class="form-group">
+							<label class="col-md-1 control-label">Switch</label>
+							<div class="col-md-11">
+								<div class="radio">
+									<label>
+										<input type="radio" class="radiobox style-0" name="switch" value="0" <?php echo $_switch == '0' ? 'checked="checked"' : '' ?>>
+										<span>Left</span>
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" class="radiobox style-0" name="switch" value="1" <?php echo $_switch == '1' ? 'checked="checked"' : '' ?>>
+										<span>Right</span>
+									</label>
+								</div>
+							</div>
+						</div>
+						
+					</fieldset>
+					
 					<fieldset>
 						<legend>
 							Lighting

@@ -92,7 +92,7 @@
 </div>
 <?php  endif; ?>
 <!-- ONLY FOR GCODE FILE -->
-<?php if(strtolower($file->file_ext) == '.gc' || strtolower($file->file_ext) == '.gcode'  || strtolower($file->file_ext) == '.nc'): ?>
+<?php if(strtolower($file->file_ext) == '.gc' || strtolower($file->file_ext) == '.gcode'  ): ?>
 	
 	<div class="row">
 		<div class="col-sm-6 text-center">

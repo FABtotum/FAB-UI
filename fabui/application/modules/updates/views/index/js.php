@@ -43,8 +43,6 @@
                 
                 var button = $(this);
                 
-                
-                
 				$.SmartMessageBox({
 					title : "Updates Center",
 					content : "Do you want to download and install the new update?",
@@ -144,7 +142,8 @@
                 
                	$.ajax({
 					  url: json_uri,
-					  dataType: 'json'
+					  dataType: 'json', 
+					  cache: false
 				}).done(function( response ) {
 				    
                     finished   = parseInt(response.completed) == 0 ? false : true;

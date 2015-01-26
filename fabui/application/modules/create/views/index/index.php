@@ -11,12 +11,6 @@
 			</span>
 		</h1>
 	</div>
-	<div class="col-sx-1 col-sm-1 col-md-1 col-lg-1">
-		<h1 class="pull-right">
-			<i id="status-icon" class="fa  fa-cog fa-spin txt-color-green hide">
-			</i>
-		</h1>
-	</div>
 </div>
 <div class="row">
 	<div class="col-sm-12">

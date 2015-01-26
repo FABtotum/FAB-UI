@@ -97,22 +97,22 @@ if preset=="check_pre_print":
 	
 #pre_SCAN CHECK (SAFETY)
 elif preset=="check_pre_scan":
-	trace("Preparing the FABtotum to scan",log_trace)
-	if(safety_door == 1):
-		macro("M741","TRIGGERED",2,"Front panel door control",0.1)
-	#macro("M744","open",1,"Building plane control",0.1)
-	macro("M744","TRIGGERED",1,"Spool panel control",1, warning=True)
-	macro("G90","ok",2,"Setting absolute positioning mode",1)
-	macro("G27","ok",100,"zeroing Z axis",1)
-	macro("G28 X0 Y0","ok",15,"Zeroing Z axis",1)
-	#disable feeder
-	macro("G91","ok",2,"Setting Relative position",1,verbose=False)
-	macro("G0 Z-"+str(feeder_disengage_offset)+" F400","ok",2,"Engaging 4th Axis motion",1)
-	macro("G90","ok",2,"Setting Absolute position",1,verbose=False)
-	macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0,verbose=False)
-	#move to collimation
-	macro("G0 Z140 F1000","ok",5,"Moving to pre-scan position",3)
-	macro("M18","ok",1,"Motor Off",1) #should be moved to firmware
+    trace("Preparing the FABtotum to scan",log_trace)
+    if(safety_door == 1):
+        macro("M741","TRIGGERED",2,"Front panel door control",0.1)
+    #macro("M744","open",1,"Building plane control",0.1)
+    macro("M744","TRIGGERED",1,"Spool panel control",1, warning=True)
+    macro("G90","ok",2,"Setting absolute positioning mode",1)
+    macro("G27","ok",100,"zeroing Z axis",1)
+    macro("G28 X0 Y0","ok",15,"Zeroing Z axis",1)
+    #disable feeder
+    macro("G91","ok",2,"Setting Relative position",1,verbose=False)
+    macro("G0 Z-"+str(feeder_disengage_offset)+" F400","ok",2,"Engaging 4th Axis motion",1)
+    macro("G90","ok",2,"Setting Absolute position",1,verbose=False)
+    macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0,verbose=False)
+    #move to collimation
+    macro("G0 Z135 F1000","ok",5,"Moving to pre-scan position",3)
+    macro("M18","ok",1,"Motor Off",1) #should be moved to firmware
 		
 #engage feeder (require manual intervention)
 elif preset=="engage_feeder":
@@ -209,19 +209,19 @@ elif preset=="auto_bed_leveling":
 	
 #r_scan rotative scan preset
 elif preset=="r_scan":
-	trace("Initializing Rotative Laser scanner",log_trace)
-	trace("checking panel door status and bed inserted",log_trace)
-	if(safety_door == 1):
-		macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
-	macro("M744","open",1,"Building plane (must be removed)",0.1)
-	macro("M744","TRIGGERED",1,"Spool panel closed",0.1, warning=True)
-	macro("M701 S0","ok",2,"turning off lights",0.1,verbose=False)
-	macro("M702 S0","ok",2,"turning off lights",0.1,verbose=False)
-	macro("M703 S0","ok",2,"turning off lights",0.1,verbose=False)
-	macro("G90","ok",2,"setting abs position",1,verbose=False)
-	macro("G0 X96 Y190 Z140 E0 F10000","ok",90,"Moving to collimation position",1)
-	macro("M302 S0","ok",2,"Enabling cold extrusion",0,verbose=False)
-	#macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0)
+    trace("Initializing Rotative Laser scanner",log_trace)
+    trace("checking panel door status and bed inserted",log_trace)
+    if(safety_door == 1):
+        macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
+    macro("M744","open",1,"Building plane (must be removed)",0.1)
+    macro("M744","TRIGGERED",1,"Spool panel closed",0.1, warning=True)
+    macro("M701 S0","ok",2,"turning off lights",0.1,verbose=False)
+    macro("M702 S0","ok",2,"turning off lights",0.1,verbose=False)
+    macro("M703 S0","ok",2,"turning off lights",0.1,verbose=False)
+    macro("G90","ok",2,"setting abs position",1,verbose=False)
+    macro("G0 X96 Y175 Z135 E0 F10000","ok",90,"Moving to collimation position",1)
+    macro("M302 S0","ok",2,"Enabling cold extrusion",0,verbose=False)
+    #macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0)
 	
 #s_scan preset
 elif preset=="s_scan":
@@ -269,43 +269,44 @@ elif preset=="home_all":
 	trace("Now homing all axes",log_trace)
 	macro("G90","ok",2,"set abs position",0,verbose=False)
 	macro("G28","ok",100,"homing all axes",1,verbose=False)
-	
-#unload spool
+
+#unload spool	
 elif preset=="unload_spool":
-	trace("Unloading Spool : Procedure Started.",log_trace)
-	macro("G90","ok",10,"set abs position",0,verbose=False)
-	macro("G27","ok",100,"zeroing Z axis",1,verbose=False)
-	macro("G0 X120 Y120 Z150 F1000","ok",10,"Moving to safe zone",0.1,verbose=False) #right top corner Z=240mm
-	macro("M83","ok",5,"setting relative estrusion",0.1,verbose=False)
-	macro("G92 E0","ok",5,"set extruder to zero",0.1,verbose=False)
-	macro("M92 E"+str(units['e']),"ok",30,"setting extruder mode",0.1,verbose=False)
-	#heating nozzle
-	macro("M109 S220","ok",15,"Heating Nozzle... Get ready to pull the filament gently...",10)
-	macro("M300","ok",1,"Start Pulling!",3)
-	macro("G0 E-200 F200","ok",10,"Leaving the heating chamber (slow!)",60)
-	macro("G0 E-700 F550","ok",10,"Expelling filament",60)
-	macro("M82","ok",2,"Restoring absolute estrusion mode",0,verbose=False)
-	macro("M104 S0","ok",1,"Disabling Extruder",1)
+    trace("Unloading Spool : Procedure Started.",log_trace)
+    macro("G90","ok",10,"set abs position",0,verbose=False)
+    macro("G27","ok",100,"zeroing Z axis",1,verbose=False)
+    macro("G0 X120 Y120 Z150 F1000","ok",10,"Moving to safe zone",0.1,verbose=False) #right top corner Z=150mm
+    macro("M83","ok",5,"setting relative estrusion",0.1,verbose=False)
+    macro("G92 E0","ok",5,"set extruder to zero",0.1,verbose=False)
+    macro("M92 E"+str(units['e']),"ok",30,"setting extruder mode",0.1,verbose=False)
+    #heating nozzle
+    macro("M109 S220","ok",150,"Heating Nozzle... Get ready to pull the filament gently...",1)
+    macro("M300","ok",2,"Start Pulling!",3)
+    macro("G0 E-50 F350","ok",10,"Leaving the heating chamber (slow!)",1)
+    macro("G0 E-800 F550","ok",10,"Expelling filament",1)
+    macro("M82","ok",2,"Restoring absolute estrusion mode",0,verbose=False)
+    macro("M104 S0","ok",1,"Disabling Extruder",1)
+    trace("Done!",log_trace)
 	
 #load spool from reel
 elif preset=="load_spool":
-	trace("Loading Spool : Procedure Started.",log_trace)
-	macro("G90","ok",2,"set abs position",0)
-	macro("G27","ok",100,"zeroing Z axis",1)
-	macro("G0 X120 Y120 Z150 F1000","ok",10,"Moving to Safe Zone",0.1)
-	macro("M302 S0","ok",5,"Enabling Cold extrusion",0.1,verbose=False)
-	macro("M83","ok",5,"setting relative estrusion mode",0.1,verbose=False)
-	macro("G92 E0","ok",5,"setting extruder position to 0",0.1,verbose=False)
-	macro("M92 E"+str(units['e']),"ok",5,"Setting extruder mode",0.1,verbose=False)
-	macro("M104 S190","ok",5,"Heating Nozzle. Get ready to push...",5) #heating and waiting.
-	macro("M300","ok",5,"Start pushing!",3)
-	macro("G0 E110 F500","ok",1,"Loading filament (slow)",15)
-	macro("G0 E660 F700","ok",1,"Loading filament (fast)",20)
-	macro("M109 S220","ok",100,"waiting to get to temperature...",1) #heating and waiting.
-	macro("G0 E100 F200","ok",1,"Entering heating chamber (slow)",5)
-	macro("M82","ok",1,"setting back absolute estrusion",0,verbose=False)
-	macro("M104 S0","ok",1,"Disabling Extruder",0.1)
-	macro("M302 S160","ok",1,"Disabling Cold Extrusion Prevention",0.1,verbose=False)
+    trace("Loading Spool : Procedure Started.",log_trace)
+    macro("G90","ok",2,"set abs position",0)
+    macro("G27","ok",100,"zeroing Z axis",1)
+    macro("G0 X120 Y120 Z150 F1000","ok",10,"Moving to Safe Zone",0.1)
+    macro("M302 S0","ok",5,"Enabling Cold extrusion",0.1,verbose=False)
+    macro("M83","ok",5,"setting relative estrusion mode",0.1,verbose=False)
+    macro("G92 E0","ok",5,"setting extruder position to 0",0.1,verbose=False)
+    macro("M92 E"+str(units['e']),"ok",5,"Setting extruder mode",0.1,verbose=False)
+    macro("M104 S190","ok",5,"Heating Nozzle. Get ready to push...",5) #heating and waiting.
+    macro("M300","ok",5,"Start pushing!",3)
+    macro("G0 E110 F500","ok",1,"Loading filament (slow)",15)
+    macro("G0 E660 F700","ok",1,"Loading filament (fast)",20)
+    macro("M109 S220","ok",100,"waiting to get to temperature...",1) #heating and waiting.
+    macro("G0 E100 F200","ok",1,"Entering heating chamber (slow)",5)
+    macro("M82","ok",1,"setting back absolute estrusion",0,verbose=False)
+    macro("M104 S0","ok",1,"Disabling Extruder",0.1)
+    macro("M302 S160","ok",1,"Disabling Cold Extrusion Prevention",0.1,verbose=False)
 	
 #jog setup procedure
 elif preset=="jog_setup":

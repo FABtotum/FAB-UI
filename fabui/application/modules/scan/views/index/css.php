@@ -106,4 +106,21 @@
 }
 
 
+.fab-slider {
+	background-color: #57889c!important;
+}
+
+.noUi-handle{
+    background: #858585 !important;
+    height: 30px ;
+    width: 16px;
+    border: 1px solid #fff;
+    cursor: default;  
+    box-shadow: none !important;
+}
+
+#probe-quality .noUi-handle{
+	top: -5px !important;
+}
+
 </style>

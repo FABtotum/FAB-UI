@@ -38,7 +38,7 @@
                             <select id="output_type" class="form-control">
                                 <option value=".gcode">gcode</option>
                                 <option value=".gc">gc</option>
-                                <option value=".nc">nc</option>
+                                <!--<option value=".nc">nc</option>-->
                             </select>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                             
                                 <?php foreach($_presets as $_set): ?>
                                 
-                                    <option value="<?php echo $_set['file'] ?>"><?php echo $_set['name'] ?> - <?php echo $_set['description'] ?></option>
+                                    <option value="<?php echo $_set['file'] ?>"><?php echo $_set['description'] ?></option>
                                 
                                 <?php endforeach; ?>
                                 
@@ -63,11 +63,12 @@
                     	<div class="col-md-1"></div>
                     	<div class="col-md-11">
                     		<div class="row margin-bottom-10">
-                    			<div class="col-md-12">
+                    			<div class="col-md-12 buttons">
                     				<a rel="tooltip" title="Delete config" class="btn btn-default btn-xs pull-right txt-color-red " href="javascript:void(0);" id="delete-slicer-config-button"><i class="fa fa-trash "></i></a>
                     				<a data-toggle="modal" data-backdrop="static" data-target=".add-config-modal"  rel="tooltip" title="Add config" class="btn btn-default btn-xs pull-right txt-color-green " href="#"><i class="fa fa-plus"></i></a>
                     				<a rel="tooltip" title="Download config" class="btn btn-default btn-xs pull-right" id="download-slicer-config-button" href="javascript:void(0);"><i class="fa fa-download"></i></a>
                     				<a rel="tooltip" title="Save config" class="btn btn-default btn-xs pull-right txt-color-blue" href="javascript:void(0);" id="save-config"><i class="fa fa-save"></i></a>
+                    				<a rel="tooltip" title="Help" class="btn btn-default btn-xs pull-right txt-color-blue" data-toggle="modal" href="<?php echo site_url("objectmanager/slicer_manual") ?>" data-target="#manula-modal"><i class="fa fa-question"></i></a>
                     			</div>
                     		</div>
                     		<div class="row">
@@ -217,3 +218,9 @@
 	<input type="hidden" name="dsc" id="dsc" value="">
 	<input type="hidden" name="nsc" id="nsc" value="">
 </form>
+
+<div class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true" id="manula-modal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content"></div>
+	</div>
+</div>

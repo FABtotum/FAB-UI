@@ -13,6 +13,7 @@ $_output_type = $_POST['output_type'];
 $_object      = $_POST['object'];
 $_id_file     = $_POST['id_file'];
 
+$_output = str_replace(' ', '_', $_output);
 
 switch($_type){
     

@@ -1,13 +1,10 @@
 import numpy as np
 import cv2,cv
-#import pprint
 import sys, getopt,os
 from subprocess import call
 import datetime,time
 from os import path, access, R_OK
 import math
-
-#verbose off: print "initialization done"
 
 #defaults:
 scan_dir='/var/www/camera/scan_temp/'  	#default dir
@@ -27,7 +24,7 @@ percent=0								#progress
 debug=0									#debug disabled by default
 name="scan_track"						#default scan task name
 logfile=name +"log.json"				#default log name
-cs=0										#initialize counter
+cs=0									#initialize counter
 dx=dz=x=y=z=0							#initialize offsets and positions
 reconstruct_mode="r"					#default reconstruction mode is rotative,not sweep.
 z_offset=0								#default z-offset unless specified
@@ -46,8 +43,7 @@ def printlog(percent,num):
 	return
 	
 def rotate_y_axis(point,angle):
-	#Rotation matrix definition---------------------------
-	
+	#Rotation matrix definition	
 	rotation_matrix_y = np.zeros(shape=(4,4))
 	rotation_matrix_y[0,0]=rotation_matrix_y[2,2]=np.cos(angle*math.pi/180)
 	rotation_matrix_y[1,1]=1
@@ -55,8 +51,7 @@ def rotate_y_axis(point,angle):
 	rotation_matrix_y[0,2]=np.sin(angle*math.pi/180)
 	rotation_matrix_y[2,0]=-np.sin(angle*math.pi/180)
 
-	#End rotation matrix definition------------------------
-
+	#rotate the data set
 	return np.dot(point,rotation_matrix_y)
 
 def convert_cloud(points):
@@ -131,12 +126,13 @@ for opt, arg in opts:
 		debug = 1
  
 #IMAGE PROCESSING SETTINGS
-mmpph=6.0							#mm per pixel y di
-mmppl=6.111							#apparent mmpp lenght 
-tresh=40								#noise treshold for difference operation (usually 10-35 works) lowest than tesh gets deleted.	
-subrange=30								#analysis subrange.lower values are faster but less reliable, usually 10-30 is fine
+mmpph=6.0							#mm per pixel height
+mmppl=6.111							#mm per pixel lenght 
 
-#Params for exectuing HSV thresholding
+tresh=40							#noise treshold for difference operation (usually 10-45 works) lowest than tresh gets deleted.	
+subrange=30							#analysis subrange.lower values are faster but less reliable, usually 10-15 is fine with 200/255 PWM laser
+
+#Params for HSV thresholding
 hue_min=228
 hue_max=255
 
@@ -149,29 +145,29 @@ val_max=100
 channels = {'hue': None,'saturation': None,'value': None,'laser': None,}
 
 #RASPICAM GEOMETRIC CONFIG
-beta_angle=24 #angolo raspi-horizon 
+beta_angle=24  #angle raspicam-horizon 
 laser_angle=35 #laser-camera angle :  
-fan_angle=53 # Fan angle 
+fan_angle=53   #fan angle 
 half_aperture=np.tan((fan_angle/2)*(math.pi/180))
 
-print "half aperture" + str(half_aperture)
+if debug:
+	print "half aperture" + str(half_aperture)
 
 #do not change
-#positions=range(img_height)				#height of the images for column analysis
+#positions=range(img_height)					#height of the images for column analysis
 domain=np.arange(subrange*2, dtype=np.uint8)	#subdomain for analysis is initialized as blank uint8 array
-cloud_data=""							#inzitialize empty ascii data
-points = np.zeros(4) 					#define temporary point vector
+cloud_data=""									#inzitialize empty ascii data
+points = np.zeros(4, dtype=np.float) 			#define temporary points vector
 
-#hole image setup
+#hole & texture image setup
 hole_image=np.zeros((img_height,slices+1,3), np.uint8)  #create new empty numpy for colored map
 texture_image=np.zeros((img_height,slices+1,1), np.uint8)  #create new empty numpy for greyscale
 
-#write the hole image
-#cv2.imwrite(scan_dir + 'holes.png',hole_image)
-#write the texture image
-#cv2.imwrite(scan_dir + 'texture.png',texture_image)
+if debug:
+	print "Initialization done"
 
-while (cs <= slices) :
+	
+while (cs < slices) :
 		filename=scan_dir +str(cs) + '.png'
 		filename_l=scan_dir +str(cs) + '_l.png'
 
@@ -179,7 +175,6 @@ while (cs <= slices) :
 		img_l=None
 		img=None
 	
-		#Not Needed anymore.
 		while img is None:
 			# Load the image
 			img = cv2.imread(filename)
@@ -198,49 +193,59 @@ while (cs <= slices) :
 			
 		
 		if debug:
-			print "File: " + filename + ":"
+			print "File       : " + filename + ":"
 			#print "F_OK" + str(os.access(filename, os.F_OK))
 			#print "R_OK" + str(os.access(filename, os.R_OK))
 			#print "W_OK" + str(os.access(filename, os.W_OK))
 			#print " "
-			print "Laser File: " + filename_l + ":"
+			print "Laser File : " + filename_l + ":"
 			#print "F_OK" + str(os.access(filename_l, os.F_OK))
 			#print "R_OK" + str(os.access(filename_l, os.R_OK))
 			#print "W_OK" + str(os.access(filename_l, os.W_OK))
 
 		#COMPUTE DIFFERENCE Between laser and no laser images
-		or_difference = cv2.absdiff(img_l, img)
-
-		#remove differences that are smaller that treshold and are just sensor noise.
+		or_difference = cv2.absdiff(img_l, img)			
+	
+		if cs==0:
+			#first time only (calculate dynamic threshold)
+			tresh_difference = cv2.cvtColor(or_difference, cv.CV_BGR2GRAY)
+			maxval=tresh_difference.max()
+			#print maxval
+			tresh= int(maxval*0.6)		 #use 60% of max value as a treshold
+			if debug:
+				print "Dynamic Treshold :" , tresh			
+			
+		
+		#remove differences that are smaller that [tresh] (threshold) and are just sensor noise.
 		ret,difference = cv2.threshold(or_difference,tresh,255,cv2.THRESH_TOZERO)
 				
 		#Create enhanced view of the Laser line
-		hsv_img = cv2.cvtColor(difference, cv.CV_BGR2HSV)
-
+		#hsv_img = cv2.cvtColor(difference, cv.CV_BGR2HSV)
+		difference = cv2.cvtColor(difference, cv.CV_BGR2GRAY)
+		
 		# split into color channels
-		h, s, v = cv2.split(hsv_img)
+		##h, s, v = cv2.split(hsv_img)
 
-		channels['hue'] = h
-		channels['saturation'] = s
-		channels['value'] = v
-
+		##channels['hue'] = h
+		##channels['saturation'] = s
+		##channels['value'] = v
+		
 		# Threshold the HSV img
-		#threshold_image("hue") #not needed right now
-		threshold_image("saturation")
-		threshold_image("value")
+		##threshold_image("hue") #not needed right now
+		##threshold_image("saturation")
+		##threshold_image("value")
 
 		#Getting the laser line
-		channels['laser'] = cv2.bitwise_and(channels['saturation'],channels['value'])
+		##channels['laser'] = cv2.bitwise_and(channels['saturation'],channels['value'])
 
 		#increasing precision by merging the Laser with Saturation (gives thinner line and bigger smooth subdomain)
-		difference = cv2.bitwise_and(channels['laser'],s)
+		#difference = cv2.bitwise_and(channels['laser'],s)
 
 		#max values for each column
 		ind=difference.argmax(axis=0)
-
-		#if debug:
-			#create image of pixels for debug purposes
-			#cv_laserline=np.zeros((img_width,img_height,3),np.uint8)  #create new empty (black) image
+			
+		#declare empty position array for post process.
+		line_pos=np.zeros(img_height,dtype=np.int)
 		
 		for col,value in enumerate(ind):
 			if(value>0): #if column has a point to process. otherwise skip to next
@@ -256,111 +261,149 @@ while (cs <= slices) :
 				else:
 					y2=value+subrange
 					
-				#print "from " + str(y1) + "to " + str(y2)	
 				luminance_col=difference[y1:y2,col:col+1]
 				luminance_col=np.swapaxes(luminance_col,1,0)
 				
 				if(domain.shape==luminance_col[0].shape):
-				
-					#average(a, axis=None, weights=None, returned=False):
-					w_position=np.average(domain,0,luminance_col[0])    #weighted position  
-					w_position=value+(w_position-subrange)				#correction of the position
-					#print value , "-", w_position
+					#Use np.average: average(a, axis=None, weights=None, returned=False):
+					w_position=np.average(domain,0,luminance_col[0])    #find index in the search domain with weighted position
+					w_position=value+(w_position-subrange)				#correction of the original position
+					#if debug and cs==slices-1:
+						#print col , "-", w_position
 				else:
 					fail+=1
-					if debug:
-						print "Exiting subdomain in col :" + str(col) +" of slice " + str(cs) + " value:" + str(value)
-						print "Domain:" + str(domain.shape) +" , Luminance col:" +str(luminance_col[0].shape)
-						print "domain resized"
+					#if debug:
+					#	print "Exiting subdomain in col :" + str(col) +" of slice " + str(cs) + " value:" + str(value)
+					#	print "Domain:" + str(domain.shape) +" , Luminance col:" +str(luminance_col[0].shape)
+					#	print "Domain resized."
 					w_position=value		#keep the max luminance found since the subdomain has violated the image borders
-				
-				#todo: noise filter
-				
-				#------------------RECONSTRUCTION----------------------------
-				#-------Calculate XYZ coordinates for cloud points-----------						
-				#-------for reference: wiki.fabtotum.cc
-				
-				if reconstruct_mode=="r":
-					#ROTATIVE laser_scan reconstruction
-					a_deg=cs*((float(end)-float(start))/float(slices))*math.pi/180			#degrees for each shot in radiants
-					app_distance=float(abs((img_height/2)-w_position)/float(mmppl))						#apparent distance in pixels *mm per pixels
-					ro=float(app_distance*(2*np.tan(laser_angle*math.pi/180)))
-					x=(ro*(np.cos(-a_deg)))               									#switching to cartesian
-					y=(ro*(np.sin(-a_deg)))						
-					z=float(col/mmpph)
-
-				#-----------------------------------
-				if reconstruct_mode=="s":
-					#SWEEPING laser scan reconstruction
-					#area params:
-					#			start  : x0 (mm, x position)
-					#			end	   : x1 (mm, x position)
-					#			slices : linear slices
-
-					x=float((((end-start)/slices*cs)+int(start)))									#distance from the camera
-					y=float(((230-z_offset)-((float(img_height)/float(2))-col)/float(mmpph)))		   			#Y columns
-					#z=float(((img_width/2)-w_position)/(img_width/2))*np.tan(30*math.pi/180)*x		#
-					z=x*(np.tan((beta_angle*math.pi/180)-np.arctan(((img_width/2-w_position)/(img_width/2))*half_aperture)))
-
-				#data collected, now add to cloud
-				new_point = [x,y,z,1]
-				points = np.vstack([points, new_point])
-				#print "added point: " , new_point
-
-				#cloud_data+=str(x)+ "," + str(y) + "," + str(z) + "\n"		
-				
+					
+				#add the position in the empty array
+				line_pos[col] = w_position
+					
 				if debug:
-					print str(x)+ "," + str(y) + "," + str(z) + "\n"
+					#print str(x)+ "," + str(y) + "," + str(z) + "\n"
 					or_difference[w_position,col,1]=255  #set green pixel in CV debug image  (BGR)
-					
-				#create texture image			
-				#this is WIP.
-					
+					or_difference[y1,col,0]=255  #set blue pixel in CV debug image  (BGR)
+					or_difference[y2,col,0]=255  #set blue pixel in CV debug image  (BGR)
+				
 			#holes map
 			if value==0:	
-				#there is a hole! possible shadow.
-				#print "there is a hole in slice" , cs , "col :", col
-				
+				#the holemap maps where there is data.
 				hole_image[col,cs,2]=255 #place a red pixel (BGR)
-				#hole_image.itemset((col,cs,2),255) #place a red pixel 
-		print "failed subdomains :" + str(fail)
+		
+		#END COL CYCLE: IMAGE ANALYZED.
+		
+		if debug:
+			print "failed subdomains :" + str(fail)
 		fail=0
 		
-		#END COL CYCLE	
-		percent=(float(cs)/slices)*100
+		# post process pixel postions with local STD (to uniform line)
+		# all positions are in array line_pos
+		# line pos = array [0,0,0,530,532,534,0,0,0,0...0]
+		
+		# Measure STD once.
+		#if cs==0:
+		#	global_std = np.std(line_pos)
+		#	if debug:
+		#		print "Global STD calculated as ", global_std
+		
+		# Local  STD	
+		
+		'''for col,value in enumerate(line_pos):
+			if value==0:
+				continue #skip if empty
+			
+			subset_range=3
+			subset_start=col 				#analyze only ahead. 
+			subset_end=col+subset_range
+			
+			if subset_start<0:
+				subset_start=0
+			if subset_end>len(line_pos):
+				subset_end=len(line_pos)
+			
+			#extract STD from smaller subset
+			local_line_pos=line_pos[subset_start:subset_end]
+			local_std = np.std(local_line_pos)
+			local_mean = np.mean(local_line_pos)
+			
+			#corrects pixel position with STD
+			if abs(local_mean-value)<local_std:
+				#sample is within STD, set it to mean.
+				line_pos[col]=local_mean
 				
-		#update task log
+			else:
+				#move the position closer to local_mean by local_std
+				pass
+		'''
+		
+		# Convert to XYZ points
+		tri_side=float(2*np.tan(laser_angle*math.pi/180))
+		for col,value in enumerate(line_pos):
+			if value==0:
+				continue
+				
+			#------------------RECONSTRUCTION----------------------------
+			#-------Calculate XYZ coordinates for cloud points-----------						
+			#-------for reference: wiki.fabtotum.cc
+			
+			if reconstruct_mode=="r":
+				#ROTATIVE laser_scan reconstruction
+				a_deg=float((cs*(end-start)/slices)*math.pi/180)				#degrees for each shot in radiants
+				app_distance=float(abs((img_width/2)-line_pos[col])/mmppl)		#apparent distance in pixels *mm per pixels
+				ro=float(app_distance*tri_side)
+				x=float(ro*(np.cos(a_deg)))               						#switching to cartesian
+				y=float(ro*(np.sin(a_deg)))						
+				z=col/float(mmpph)
+				
+				if col==100:
+					print "a deg", a_deg , " app_dist:", app_distance , " ro :", ro 
+
+			#-----------------------------------
+			if reconstruct_mode=="s":
+				#SWEEPING laser scan reconstruction
+				#area params:
+				#			start  : x0 (mm, x position)
+				#			end	   : x1 (mm, x position)
+				#			slices : linear slices
+
+				x=((end-start)/slices*cs)+int(start)															#distance from the camera
+				y=float((230-z_offset)-((float(img_height)/float(2))-col)/float(mmpph))		   					#Y columns
+				#z=float(((img_width/2)-w_positionline_pos[col])/(img_width/2))*np.tan(30*math.pi/180)*x		#
+				z=x*(np.tan((beta_angle*math.pi/180)-np.arctan(((img_width/2-line_pos[col])/(img_width/2))*half_aperture)))
+
+			#data collected, now add to cloud
+			new_point = [x,y,z,1]
+			points = np.vstack([points, new_point])
+		
+		
+		#finished this slice, update task log
+		percent=(float(cs)/slices)*100				
 		printlog(percent,cs) 
 		
 		if debug:
 			if reconstruct_mode=="r":
-				print str(cs) + " :" + filename_l + " - Segree: " + str(a_deg*180/3.14) + " - "+str(percent) + "%"
+				print str(cs) + " :" + filename_l + " - Degrees : " + str(a_deg*180/3.14) + " - "+str(percent) + "%"
 			if reconstruct_mode=="s":
-				print str(cs) + " :" + filename_l + " - Sweep: " + str(cs) + "/"+ str(slices) + " - " +str(percent) + "%"
-			
-		if debug:
-			#computer vision png preview is written.
-			#cv2.imwrite(scan_dir + str(cs) +'_clear.png',difference)
-			#vision = cv2.addWeighted(difference,0.7,cv_laserline,0.3,0)		
+				print str(cs) + " :" + filename_l + " - Sweep no.  " + str(cs) + "/"+ str(slices) + " - " +str(percent) + "%"
+			#computer vision png preview is written.	
 			cv2.imwrite(scan_dir + str(cs) +'_vision.png',or_difference)
 			
-		#print "slice ", cs, " start:",start," end:", end," - Delta x: " ,dx," - Delta z: ",dz , "wpos: ", w_position , " app dist= ",app_distance , " ro=", ro
-				
 		#next slice
 		cs+=1
+		#END SLICES CYCLE (end of this slice scan)
 		
-		#END SLICES CYCLE
-
-		
-#point postprocessing
+#Overall point cloud transformations, if needed
 if not a_offset==0:
 	if debug:
 		print "rotating points"
 		#trace("Now rotating the points by "+str(a_offset)+ " degrees")
 	points=rotate_y_axis(points,a_offset)  #this may take a while. note: +=CCW
 
-#compile cloud data
-print "---------------------------------------------"
+#Write cloud data to ASC file
+if debug: 
+	print "---------------------------------------------"
 if points.shape != "4,":
 	convert_cloud(points[1:]) #save the ascii cloud data ignoring the first point
 
@@ -381,9 +424,8 @@ printlog(percent,cs)
 
 if debug:
 	print "done, Elapsed time: " + str(delta_t) 
-	print "done!"
-
+	
 #finalize database-side operations
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" scan_"+reconstruct_mode], shell=True)
 
-sys.exit()  
+sys.exit()

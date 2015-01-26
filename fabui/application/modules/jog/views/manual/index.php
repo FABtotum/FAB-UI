@@ -46,11 +46,8 @@
 		Close
 	</button>
 <script type="text/javascript">
-	
-	
-	$(function() { 
-		
 
+	$(function() { 
 			$("#fa-icon-search").keyup(function() {
 				var search = $.trim(this.value);
 				
@@ -58,7 +55,7 @@
 					show_all();
 				}
 				else {
-					hide_divs(search.toUpperCase());
+					hide_divs(search.toLowerCase());
 				}
 			});
 			
@@ -71,14 +68,15 @@
 			    $(".code").each(function(index, value) {
 			    	
 			    	if(typeof $(this).attr('data-attr') !== typeof undefined && $(this).attr('data-attr') !== false){
-			    					    		
-			    		if(($(this).attr('data-attr').indexOf(search) > -1) || ($(this).find('.description').html().toUpperCase().indexOf(search) > -1)){
+			    		
+			    		var desc = $(this).find('.description').html().toLowerCase();
+			    		var attr = $(this).attr('data-attr');
+			    							    		
+			    		if((attr.indexOf(search) > -1) || (desc.indexOf(search) > -1)){
 			    			$(this).show();
 			    		}
 			    	}
-			    	
-			    	
-				    
+
 				});
 		}
 		

@@ -13,12 +13,15 @@
 		<!-- CSS FILES -->
 		<?php echo $_css_files ?>
 		<!-- END CSS FILES -->
-		<!-- CSS IN PAGE -->
-		<?php echo $_css_in_page; ?>
-		<!-- END CSS IN PAGE -->
+		
 		<!-- JS HEADER -->
 		<?php echo $_header_js_files; ?>
 		<!-- END JS HEADER -->
+		
+		<!-- CSS IN PAGE -->
+		<?php echo $_css_in_page; ?>
+		<!-- END CSS IN PAGE -->
+		
 	</head>
 	<body class="<?php echo $_skin; ?> <?php echo isset($_SESSION['user']['layout']) ? $_SESSION['user']['layout'] : '' ?>">
 		<!-- HEADER -->

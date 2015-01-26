@@ -68,6 +68,14 @@
 	
 	var process_type;
 	
+	var oTable;
+	
+	
+	var blockSliderExt = false;
+	var blockSliderBed = false;
+	
+	
+		
 	$(document).ready(function() {
 		
 		
@@ -76,8 +84,8 @@
 		});
 
 		
- 	  $('#objects_table').dataTable({
-			"aaSorting": []
+ 	  	oTable = $('#objects_table').dataTable({
+			
 		});
         
         
@@ -164,7 +172,7 @@
 			if($(this).is(':checked')){
 				do_trace = true;
 				interval_trace   = setInterval(_trace, 1000);
-				$( '.trace' ).show( "fast" );
+				$( '.trace' ).show( "fast");
 			}else{
 				do_trace = false;
 				$('.trace').hide("fast");
@@ -182,7 +190,8 @@
 				/*$( '.details-container' ).show( "fast" );*/
                 
                 $( ".details-container" ).slideDown( "slow", function() {
-                       
+						
+					$('#details').find('i').removeClass('fa-angle-double-down').addClass('fa-angle-double-up');                       
                 });
                 
                 
@@ -191,7 +200,7 @@
                 do_trace = false;
 				/*$('.details-container').hide("fast");*/
                 $( ".details-container" ).slideUp( "slow", function() {
-                       
+                      $('#details').find('i').removeClass('fa-angle-double-up').addClass('fa-angle-double-down'); 
                 });
 				_stop_trace();
             }   
@@ -212,18 +221,44 @@
         $("#temp1").noUiSlider({
 		        range: {'min': 0, 'max' : 230},
                 /*range: [0, 250],*/
-		        start: <?php echo $ext_temp; ?>,
+		        start: <?php echo $ext_target; ?>,
 		        handles: 1,
                 connect: 'lower'
         });
         
+        
+        $("#act-ext-temp").noUiSlider({
+	 	 	
+	        range: {'min': 0, 'max' : 230},
+	        start: <?php echo intval($ext_temp) ?>,
+	        handles: 0,
+            connect: 'lower',
+            behaviour: "none"
+		});
+		
+		
+		$("#act-ext-temp .noUi-handle").remove();
+        
+        
+        
         $("#temp2").noUiSlider({
 		        range: {'min': 0, 'max' : 100 },
                 /*range: [0, 100],*/
-                start: <?php echo $bed_temp; ?>,
+                start: <?php echo $bed_target; ?>,
 		        handles: 1,
                 connect: 'lower'
         });
+        
+        
+        $("#act-bed-temp").noUiSlider({
+	 	 	
+	        range: {'min': 0, 'max' : 100},
+	        start: <?php echo intval($bed_temp) ?>,
+	        handles: 0,
+            connect: 'lower',
+            behaviour: "none"
+		});
+      	$("#act-bed-temp .noUi-handle").remove();
         
      	$("#rpm").noUiSlider({
 		        range: {'min': 6000, 'max' : 14000 },
@@ -238,6 +273,34 @@
 		      slide: manage_slide,
               change: manage_change
 	   });
+	   
+	   
+	   $(".extruder-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,25, 50, 75, 100],
+			density: 10,
+			format: wNumb({
+				prefix: '&deg;'
+			})
+		});
+		
+		
+		$(".bed-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,25,50,75,100],
+			density: 10,
+			format: wNumb({
+				prefix: '&deg;'
+			})
+		});
+		
+		$(".speed-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,20,40,60,80,100],
+			density: 10,
+			format: wNumb({
+			})
+		});
         
 
 		/**
@@ -263,7 +326,10 @@
         <?php if($_request_file != FALSE && $_request_obj != FALSE && $_running == FALSE): ?>
                   
              /** IF I COME FROM OBJECT MANAGER */
-            $( "#objects_table > tbody > tr" ).each(function() {
+            
+            var rows = oTable.fnGetNodes( );
+            
+            $(rows).each(function() {
                
                 if($(this).attr('data-id') == <?php echo $_request_obj?>){
                     $(this).trigger('click');
@@ -274,15 +340,16 @@
             $("#btn-next").trigger('click');          
         <?php endif; ?>
         
-        /*
-        editor = ace.edit("ace-editor");
-        editor.getSession().setMode("ace/mode/text");
-        editor.setReadOnly(true);
-        */
-        
+     
         /** TICKER */
-		
         interval_ticker   = setInterval(ticker, 2500);
+        
+        
+        
+        
+        
+        
+        
 		
         
 	});
@@ -292,8 +359,6 @@
 function ticker(){
     
     if(ticker_url != ''){
-    	
-    	
     	
     	$.ajax({
 			type: 'GET',
@@ -316,11 +381,8 @@ function ticker(){
     
 function manage_slide(e){
     
-    var id = $(this).attr('id');
-    
-    
-    
-    
+   var id = $(this).attr('id');    
+   
    switch(id){
    	
    	case 'velocity':
@@ -328,36 +390,19 @@ function manage_slide(e){
    		 break;
    	case 'temp1':
    		extruder_target = parseInt($(this).val());
-   		$("#label-"+ id + '-target' ).html('' + parseInt($(this).val()) + '');
+   		$("#label-"+ id + '-target' ).html('' + parseInt($(this).val()) + '&deg;C');
+   		blockSliderExt = true;
    		break;
    	case 'temp2':
    		bed_target = parseInt($(this).val());
-   		$("#label-"+ id + '-target' ).html('' + parseInt($(this).val()) + '');
+   		$("#label-"+ id + '-target' ).html('' + parseInt($(this).val()) + '&deg;C');
+   		blockSliderBed = true;
    		break;
    	case 'rpm':
    		$("#label-"+ id ).html('' + parseInt($(this).val()) + '');
    		break;
    }
     
-    
-    /*
-    if(id == "velocity"){
-    	
-        $("#label-"+ id ).html('' + parseInt($(this).val()) + '%');
-        
-    }else{
-    	
-    	if(id == 'temp1'){
-    		extruder_target = parseInt($(this).val());
-    	}
-    	
-    	if(id == 'temp2'){
-    		bed_target = parseInt($(this).val());
-    	}
-    	
-        $("#label-"+ id + '-target' ).html('' + parseInt($(this).val()) + '');
-    }
-    */
     
 }
 

@@ -422,6 +422,11 @@ $(function() {
 	  
 	  
 	  	check_for_wizard_setup();
+	  	
+	 
+	  	
+	  	
+	  	
   }
   
 
@@ -658,8 +663,7 @@ function dont_ask_wizard(){
 /** GET TRACE */
 function getTrace(url, type, contenitor){
 	
-	
-	
+
 	$.ajax({
 			type: type,
 			url: url,

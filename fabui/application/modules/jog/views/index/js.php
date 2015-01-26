@@ -109,32 +109,76 @@
 	 	$('#exece-mdi').on( "click", mdi );
 	 	 
 	 	/** EXTRUDER TEMPERATURE */
-	 	$("#ext-temp").noUiSlider({
+	 	$("#ext-target-temp").noUiSlider({
 	 	 	
 	        range: {'min': 0, 'max' : 230},
 	        start: <?php echo $_ext_temp ?>,
 	        handles: 1,
             connect: 'lower'
 		});
+		
+		$("#act-ext-temp").noUiSlider({
+	 	 	
+	        range: {'min': 0, 'max' : 230},
+	        start: <?php echo $_ext_temp ?>,
+	        handles: 0,
+            connect: 'lower',
+            behaviour: "none"
+		});
+		
+		
+		$("#act-ext-temp .noUi-handle").remove();
 		 
-		$("#ext-temp").on({
+		$("#ext-target-temp").on({
 			slide: extTempSlide,
         	change: extTempChange
 	 	});
 	 	
 	 	
+	 	$(".extruder-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,25, 50, 75, 100],
+			density: 5,
+			format: wNumb({
+				prefix: '&deg;'
+			})
+		});
+	 	
+		
+	 	
 	 	/** BED TEMPERATURE */
-	 	$("#bed-temp").noUiSlider({
+	 	$("#bed-target-temp").noUiSlider({
 	        range: {'min': 0, 'max' : 100},
 	        start: <?php echo $_bed_temp ?>,
 	        handles: 1,
 	        connect: 'lower'
       	});
       	
-      	$("#bed-temp").on({
+      	$("#act-bed-temp").noUiSlider({
+	 	 	
+	        range: {'min': 0, 'max' : 100},
+	        start: <?php echo $_bed_temp ?>,
+	        handles: 0,
+            connect: 'lower',
+            behaviour: "none"
+		});
+      	$("#act-bed-temp .noUi-handle").remove();
+      	
+      	
+      	$("#bed-target-temp").on({
 			slide: bedTempSlide,
         	change: bedTempChange
 	 	});
+	 	
+	 	$(".bed-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,25,50,75,100],
+			density: 5,
+			format: wNumb({
+				prefix: '&deg;'
+			})
+		});
+	 	
 	 	 
 	 	
 	 	
@@ -195,6 +239,11 @@
 		});
 		
 		
+		$('.progress-bar').progressbar({
+			display_text : 'fill'
+		});
+		
+		
 		
 			
 		
@@ -237,7 +286,7 @@
 	
 	function extTempSlide(e){
     	var slide_val = parseInt($(this).val());
-    	$("#ext-degrees").html(slide_val);
+    	$("#ext-degrees").html(slide_val + '&deg;C');
     
 	}
 	
@@ -247,7 +296,7 @@
 	
 	function bedTempSlide(e){
     	var slide_val = parseInt($(this).val());
-    	$("#bed-degrees").html(slide_val);
+    	$("#bed-degrees").html(slide_val + '&deg;C');
 	}
 	
 	function bedTempChange(e){
@@ -314,27 +363,47 @@
 			  
 	            if(response.ext != "" && response.ext != null){
 	                
-	                $("#ext-actual-degrees").html(response.ext);
-	                $("#ext-degrees").html(response.ext_target);
+	                $("#ext-actual-degrees").html(parseInt(response.ext) + '&deg;C');
+	                $("#ext-degrees").html(parseInt(response.ext_target) + '&deg;C');
 	                
-	                $("#ext-temp").val( parseInt(response.ext), {
+	                
+	                
+	                $("#ext-target-temp").val( parseInt(response.ext_target), {
 	                	set: true,
 	                	animate: true
 	                });
+	                
+	                
+	                 $("#act-ext-temp").val( parseInt(response.ext), {
+	                	set: true,
+	                	animate: true
+	                });
+	                
+	                
+	                
 	                
 	            }
 	            
 	            if(response.bed != "" && response.bed != null){
-	                $("#bed-actual-degrees").html(response.bed);
-	                $("#bed-degrees").html(response.bed_target);
+	                $("#bed-actual-degrees").html(parseInt(response.bed) + '&deg;C');
+	                $("#bed-degrees").html(parseInt(response.bed_target) + '&deg;C');
 	                
-	                $("#bed-temp").val( parseInt(response.bed), {
+	                
+	                $("#bed-target-temp").val( parseInt(response.bed_target), {
 	                	set: true,
 	                	animate: true
 	                });
+	                
+	                $("#act-bed-temp").val( parseInt(response.bed), {
+	                	set: true,
+	                	animate: true
+	                });
+	                
+	                
+	                
 	            }
 	            
-	            write_to_console('Temperatures (M105) [Ext: ' + response.ext + ' / ' + response.ext_target   + ' ---  Bed: ' + parseInt(response.bed) + ' / ' + response.bed_target +  ']\n');
+	            write_to_console('Temperatures (M105) [Ext: ' + parseInt(response.ext) + ' / ' + parseInt(response.ext_target)   + ' ---  Bed: ' + parseInt(response.bed) + ' / ' + parseInt(response.bed_target) +  ']\n');
 	          
 	        });
 	}

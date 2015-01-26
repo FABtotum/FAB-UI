@@ -10,7 +10,7 @@ def err_msg(code):
 	if code == 0:
 		msg="All Nominal"
 	elif code == 100:
-		msg= "Safety Lock engaged!"
+		msg= "General Safety Lockdown"
 	elif code == 101:
 		msg= "Printer stopped due to errors"
 	elif code == 102:
@@ -21,8 +21,16 @@ def err_msg(code):
 		msg= "Extruder Temperature critical, shutting down"
 	elif code == 105:
 		msg= "Bed Temperature critical, shutting down"
+	elif code == 106:
+		msg= "X max Endstop hit"
+	elif code == 107:
+		msg= "X min Endstop hit"
+	elif code == 108:
+		msg= "Y max Endstop hit"
+	elif code == 109:
+		msg= "Y min Endstop hit"
 	else:
-		msg="dunno!"
+		msg="Unknown error Error code: ", code
 	return msg
 		
 		
@@ -37,9 +45,11 @@ safety_log_path="/var/www/temp/fab_ui_safety.json" #/var/www/temp
 
 
 def switch_safety(emergency,status):
-	status_string='{"state":{"emergency":"'+ str(emergency)+'","status":"'+ str(status)+'"}}'
-	safety= open(safety_log_path, 'w+')  
-	print>>safety, status_string
+	
+	status_string='{"state":{"emergency":"'+ str(emergency) + '","status":"' + str(status)  + '"}}'
+	safety = open(safety_log_path, 'w+')  
+	
+	print >> safety, status_string
 	print "written" + str(emergency)
 	return
 switch_safety(0,"Ok")  #safety log = safe!
@@ -65,7 +75,7 @@ while True:
 				code=100
 				
 			status=err_msg(code)
-			#print "[!] ("+str(code)+") "+str(status)
+			#print "[!] (",code,") "+str(status)
 			
 			#Write UI-Level emergency status JSON
 			switch_safety(1,status)
@@ -79,7 +89,6 @@ while True:
 			switch_safety(0,"ok")
 			emergency=False
 			#send M999 TO RESET!
-			
 			#DEBUG
 			#print("Safe")
 	

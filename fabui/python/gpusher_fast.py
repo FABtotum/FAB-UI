@@ -59,6 +59,13 @@ paused=False
 shutdown=False #default shutdown printer on complete = no
 killed=False  
 
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 	
 def printlog(percent,sent):
 	global bed_temp_target	
@@ -292,13 +299,19 @@ def listener():
 			#ok T:219.7 /220.0 B:26.3 /0.0 T0:219.7 /220.0 @:35 B@:0
 			#trace(serial_in);
 			temps=serial_in.split(" ")
-			ext_temp=float(temps[1].split(":")[1])
-			ext_temp_target=float(temps[2].split("/")[1])
-			print ext_temp_target
 			
+			if is_number(temps[1].split(":")[1]):
+				ext_temp=float(temps[1].split(":")[1])
+			if is_number(temps[2].split("/")[1]):
+				ext_temp_target=float(temps[2].split("/")[1])
+			#print ext_temp_target
 			
-			bed_temp=float(temps[3].split(":")[1])
-			bed_temp_target=float(temps[4].split("/")[1])
+			if is_number(temps[3].split(":")[1]):
+				bed_temp=float(temps[3].split(":")[1])
+			
+			if is_number(temps[4].split("/")[1]):
+				bed_temp_target=float(temps[4].split("/")[1])
+			
 			received+=1
 			
 		## temp report (wait)	
@@ -307,8 +320,11 @@ def listener():
 			#T:187.1 E:0 B:59
 			#print serial_in
 			temps=serial_in.split(" ")
-			ext_temp=temps[0].split(":")[1]
-			bed_temp=temps[2].split(":")[1]
+			
+			if is_number(temps[0].split(":")[1]):
+				ext_temp=float(temps[0].split(":")[1])
+			if is_number(temps[2].split(":")[1]):
+				bed_temp=float(temps[2].split(":")[1])
 			
 			#print "BED: "+str(bed_temp) + " EXT: "+ str(ext_temp)
 			#ok is sent separately.

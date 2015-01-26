@@ -50,6 +50,17 @@ ser.write("M732 S"+str(safety_door)+"\r\n")
 
 print "Safety door setted"
 
+
+
+try:
+    switch = config['switch']
+except KeyError:
+    switch = 0
+
+ser.write("M714 S"+str(switch)+"\r\n")
+
+print "Homing direction setted"
+
 #ENABLE SAFETY 
 print "Safety script"
 call (["sudo python /var/www/recovery/python/safety.py > /var/log/safety.log"], shell=True) #the script will run forever.

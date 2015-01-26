@@ -211,6 +211,9 @@ for (p,point) in enumerate(probed_points):
 			pass
 			
 		#print serial_reply
+		if probes==0:
+			trace("Not enough contacts. Check bed height.")
+			sys.exit();
 		#get the z position
 		if serial_reply!="":
 			z=float(serial_reply.split("Z:")[1].strip())
@@ -230,8 +233,8 @@ for (p,point) in enumerate(probed_points):
 	
 	#trace("Mean ="+ str(probed_points[p,2]))
 	
-	msg="Point " +str(p+1)+ "/"+ str(len(probed_points)) + " , Z= " +str(probed_points[p,2])
-	trace(msg)
+	#msg="Point " +str(p+1)+ "/"+ str(len(probed_points)) + " , Z= " +str(probed_points[p,2])
+	#trace(msg)
 	
 	macro("M402","ok",2,"Raising Probe",1, warning=True, verbose=False)	
 	

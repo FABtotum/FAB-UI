@@ -44,6 +44,14 @@ except KeyError:
 
 serial.write("M732 S"+str(safety_door)+"\r\n")
 
+try:
+    switch = config['switch']
+except KeyError:
+    switch = 0
+
+serial.write("M714 S"+str(switch)+"\r\n")
+
+
 serial.flush()
 serial.close()
 print "done"

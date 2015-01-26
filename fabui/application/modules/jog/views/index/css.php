@@ -64,5 +64,26 @@ box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
 }
 
 
+#ext-target-temp, #bed-target-temp{
+	background-color: #57889c!important;
+	margin-top: 3px;
+}
+
+
+
+.label-danger{
+	background-color: #a65858!important;
+	font-size:100% !important;
+	
+}
+
+
+.label-info{
+	font-size:100% !important;
+}
+
+.margin-right-5{
+	margin-right: 5px !important;
+}
 
 </style>

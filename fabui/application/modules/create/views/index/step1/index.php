@@ -1,7 +1,8 @@
 <div class="step-pane <?php echo $_running ? " " : "active " ?>" id="step1">
 	<div class="row">
 		<div class="col-sm-6">
-			<h2 class="text-primary">Select an object to create</h2>
+			<h6 class="text-primary">Select an object to create</h6>
+			
 		</div>
 	</div>
 	<div class="row">

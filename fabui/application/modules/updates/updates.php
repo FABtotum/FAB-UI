@@ -1,21 +1,28 @@
 <?php 
 
 class Updates extends Module {
+	
+	
+	private $_fabui_local;
+	private $_marlin_local;
 
 	public function __construct()
 	{
 		parent::__construct();
-        
-		
-		
 		
         $this->load->helper('print_helper');
         /** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
         if(is_printer_busy()){
             redirect('dashboard');
         }
-        
+		
         $this->lang->load($_SESSION['language']['name'], $_SESSION['language']['name']);
+		
+		/** LOAD HELPER */
+        $this->load->helper('update_helper');
+		
+		$this->_fabui_local = myfab_get_local_version();
+		$this->_marlin_local = marlin_get_local_version();
 
 	}
     
@@ -27,17 +34,19 @@ class Updates extends Module {
 		$this->load->database();
 		$this->load->model('tasks');
 		
-		/** LOAD HELPER */
-        $this->load->helper('update_helper');
 		
+		/*
 		$_fabui_local   =  myfab_get_local_version();
 		$_marlin_local  =  marlin_get_local_version();
 		
 		$data['fabui_local']   = $_fabui_local;
 		$data['marlin_local']  = $_marlin_local;
+		*/
 		
+		$data['fabui_local']   = $this->_fabui_local;
+		$data['marlin_local']  = $this->_marlin_local;
 		
-		$_SESSION['fabui_version'] = $_fabui_local;
+		$_SESSION['fabui_version'] = $this->_fabui_local;
 		
 		
 		$_updates =  array();
@@ -74,7 +83,7 @@ class Updates extends Module {
         if($_is_internet_ok){    
            
             $_fabui_remote = myfab_get_remote_version();
-            $_fabui        = $_fabui_remote > $_fabui_local;
+            $_fabui        = $_fabui_remote > $this->_fabui_local;
             
             $data['fabui']        = $_fabui;
             $data['fabui_remote'] = $_fabui_remote;
@@ -85,7 +94,7 @@ class Updates extends Module {
 			
            
             $_marlin_remote =  marlin_get_remote_version();
-            $_marlin        =  $_marlin_remote > $_marlin_local;
+            $_marlin        =  $_marlin_remote > $this->_marlin_local;
             
             $data['marlin']        = $_marlin;
             $data['marlin_remote'] = $_marlin_remote;
@@ -95,7 +104,7 @@ class Updates extends Module {
 			}
 			
 			
-			$data['no_update'] = ($_fabui_local == $_fabui_remote ) && ($_marlin_local == $_marlin_remote);
+			$data['no_update'] = ($this->_fabui_local == $_fabui_remote ) && ($this->_marlin_local == $_marlin_remote);
 			
 			
 			$_updates['number'] += $_fabui ? 1 : 0;
@@ -125,7 +134,6 @@ class Updates extends Module {
 		
 		$this->config->load('myfab', TRUE);
 		
-		
 		$_remote_url = $this->config->item($type.'_remote_download_url', 'myfab');
 		
 		$_changelog = $this->config->item($type.'_changelog', 'myfab');
@@ -142,8 +150,70 @@ class Updates extends Module {
 		
 		echo $response;
 		 
-		 
+	}
+	
+	
+	public function upload(){
+			
 		
+		if($this->input->post()){
+			
+			
+			if(isset($_FILES['install-file'])){
+				
+				$install_type = $this->input->post('type');
+				
+				//print_r($_POST);
+				//print_r($_FILES['install-file']);
+				
+				
+				$config['upload_path']   = '../temp/';
+				$config['allowed_types'] = 'zip';
+				
+				$this -> load -> library('upload', $config);
+				
+				if (!$this -> upload -> do_upload('install-file')) {
+					$this -> upload -> display_errors();
+					
+				}else{
+					$file_data = array('upload_data' => $this -> upload -> data());
+					
+					$zip = new ZipArchive;
+
+					$file = $file_data['upload_data']['full_path'];
+					
+					chmod($file, 0777);
+					
+					print_r($file_data);
+					
+					if ($zip -> open($file) === TRUE) {
+						
+						$zip -> extractTo(TEMPPATH . $file_data['upload_data']['raw_name']);
+						$zip -> close();
+						
+						echo "unzipped";
+						
+					}else{
+						echo "error";
+					}
+					
+				}
+				
+				
+				exit();
+				
+			}
+			
+		}
+		
+		$data['fabui_local']   = $this->_fabui_local;
+		$data['marlin_local']  = $this->_marlin_local;
+		
+		
+		$js_in_page  = $this->load->view('upload/js', $data, TRUE);
+		$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'upload js'));
+		
+		$this->layout->view('upload/index', $data); 
 	}
     
     

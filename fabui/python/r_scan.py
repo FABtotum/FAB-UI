@@ -3,7 +3,6 @@ import serial
 import time
 from subprocess import call
 
-
 #PARAMS
 
 #get process pid so the GUI can kill it if needed
@@ -20,7 +19,7 @@ width=1920   #default W
 height=1080  #default H
 post=1      # DISABLED  mode 1=default:laser switch 2=greyscale only 3:laser only.
 
-usage= 'r_scan.py -s<slices> -i<ISO> -d<destination> -l<json log> -b<start angle> -e<end angle> -z<z_offset> -w<width> -h<height>\n'
+usage= 'r_scan.py -s<slices> -i<ISO> -d<destination> -l<json log> -b<start angle> -e<end angle> -z<z_offset> -w<width> -h<height>\n\npython r_scan.py -s30 -i200 -d/var/www/fabui/python/scans -llog.json -b0 -e360 -w1920 -h1080'
 
 #default scan range params, do not change.
 begin=0
@@ -33,9 +32,9 @@ i = 0
 
 try:
     opts, args = getopt.getopt(sys.argv[1:],"n:s:i:d:l:w:h:pb:e:z",["slices=","ISO=","dest=","log=","width=","height=","post=","begin=","end="])
-except getopt.GetoptError:
+except getopt.GetoptError as e:
     #Error handling for unknown or incorrect number of options
-    print "\n\nERROR!\n Correct usage:\n\n",usage
+    print "\n\nERROR!\n Correct usage:\n\n",usage , e
     sys.exit(2)
 for opt, arg in opts:
    if opt =='--help':
@@ -68,7 +67,6 @@ started=float(time.time())
 
 #compose destination
 scan_dir=destination+"images/"	
-	
 	
 def printlog(percent,num):		
 	str_log='{"scan":{"name": "'+name+'","pid": "'+str(myPID)+'","started": "'+str(started)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","stats":{"percent":"'+str(percent)+'","img_number":'+str(i)+',"tot_images":'+str(slices)+'}}}'
@@ -122,9 +120,9 @@ def raspistill(laser_string):
 #shell call raspistill
 	scanfile=scan_dir + str(i) + laser_string + ".png"
 	#NEW raspistill -o test4.png -rot 90 -hf -vf -w 1944 -h 2592
-	#-cfx 128:128
-	
-	call (["raspistill -hf -vf -rot 90 --exposure off -awb sun -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 0"], shell=True)
+	#--exposure off
+	print "saving to ",scanfile
+	call (["raspistill -hf -vf --exposure off -rot 90 -awb sun -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 0"], shell=True)
 
 	#OLD call (["raspistill -vf -hf --exposure off -awb sun -ISO " + str(iso) + " -w "+ str(width) +" -h "+ str(height) +" -o " + scanfile + " -t 0"], shell=True)
 
@@ -133,14 +131,16 @@ def raspistill(laser_string):
 		time.sleep(0.1)
 		pass
 	return
+	
+serial.write('M700 S0\r\n')# Turn laser off (you never know!)
 
-while (i <= slices) :
+while (i < slices) :
 	#Turn the plate
 	print str(i) + "/" + str(slices) +" (" + str(deg*i) + "/360)"
 	serial.write('G0 E' + str(pos) + 'F2500\r\n')
 	time.sleep(deg*0.1)  #take its time to rotate
 	
-	serial.write('M700 S180\r\n') #turn laser ON
+	serial.write('M700 S210\r\n') #turn laser ON
 	raspistill("_l") 	  #snap a pic
 	
 	serial.write('M700 S0\r\n')# Turn laser off

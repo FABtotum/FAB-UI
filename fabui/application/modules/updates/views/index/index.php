@@ -21,11 +21,10 @@
 <div class="alert alert-warning fade in">
 	<button class="close" data-dismiss="alert"></button>
 	<i class="fa-fw fa fa-warning"></i>
-	<strong>Warning </strong> No internet connectivity detected. Please <a href="<?php echo site_url("settings/network") ?>">reconnect</a> and try again
+	<strong>Warning </strong> No internet connectivity detected. Please <a href="<?php echo site_url("settings/network") ?>"><u>reconnect</u></a> and try again or <a href="<?php echo site_url("updates/upload") ?>"><u>upload</u></a> if you have an install file in .zip format
 </div>
 
 <?php endif; ?>
-
 <div class="row">
 	<div class="col-sm-12">
 		<div class="well">
@@ -109,19 +108,19 @@
 
 <?php if($internet): ?>
 
-    <div class="row progress-container" style="display: none;">
-            <div class="col-sm-12">
-                <div class="well">
-                    <p>
-						<span id="status"></span> <span id="velocita"></span> <span id="percentuale" class="pull-right"></span>
-					</p>
-                    <div class="progress">
-						<div id="progress-download" class="progress-bar bg-color-blue"
-							role="progressbar" style="width: 0%"></div>
-					</div>
-                </div>
-            </div>
-        </div>
+<div class="row progress-container" style="display: none;">
+	<div class="col-sm-12">
+	    <div class="well">
+	        <p>
+				<span id="status"></span> <span id="velocita"></span> <span id="percentuale" class="pull-right"></span>
+			</p>
+	        <div class="progress">
+				<div id="progress-download" class="progress-bar bg-color-blue"
+					role="progressbar" style="width: 0%"></div>
+			</div>
+	    </div>
+	</div>
+</div>
 
 
 <?php endif; ?>
