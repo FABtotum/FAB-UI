@@ -5,9 +5,9 @@
 <!--
 <script type="text/javascript">
 	setTimeout(function(){
-		
+
 		document.getElementById('final-message').innerHTML = 'Now you can switch off the power';
-		
+
 	}, 15000);
 </script>
 
@@ -18,13 +18,13 @@
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['shutdown'])) {
-	
-	
+
+
 	shell_exec('sudo python /var/www/fabui/python/gmacro.py shutdown');
-	
-	shell_exec('sudo shutdown now');
+
+	shell_exec('sudo poweroff');
 	$shutdown = true;
-	
+
 }
 
 include 'header.php';
@@ -62,7 +62,7 @@ include 'header.php';
 					<div class="well">
 						<form method="POST">
 							<p>
-								Do you want to shutdown now? 
+								Do you want to shutdown now?
 								<button type="submit" class="btn btn-primary <?php echo $shutdown ? 'disabled' : ''; ?>" name="shutdown">Yes</button>
 								<a href="/recovery/index.php" class="btn btn-primary <?php echo $shutdown ? 'disabled' : ''; ?>">No</a>
 							</p>
