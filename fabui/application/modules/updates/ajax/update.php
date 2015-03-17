@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '/var/www/fabui/ajax/config.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
-require_once '/var/www/fabui/ajax/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 
 /** GET POST DATA */
@@ -24,14 +24,18 @@ $_task_data['user']       = $_SESSION['user']['id'];
 /** ADD TASK RECORD TO DB */ 
 $id_task = $db->insert('sys_tasks', $_task_data);
 
+//call socket
+shell_exec('sudo php '.SCRIPT_PATH.'/notifications.php &');
+
 
 /** CREATING TASK FILES */
 $_time               = time();
 $_destination_folder = TASKS_PATH.'update_'.$_type.'_'.$id_task.'_'.$_time.'/';
-$_monitor_file       = $_destination_folder.'update_'.$_type.'_'.$id_task.'_'.$_time.'.monitor';
+//$_monitor_file       = $_destination_folder.'update_'.$_type.'_'.$id_task.'_'.$_time.'.monitor';
+$_monitor_file       = TEMP_PATH.'task_monitor.json';
 $_debug_file         = $_destination_folder.'update_'.$_type.'_'.$id_task.'_'.$_time.'.debug';
-$_uri_monitor        = '/tasks/update_'.$_type.'_'.$id_task.'_'.$_time.'/'.'update_'.$_type.'_'.$id_task.'_'.$_time.'.monitor';
-
+//$_uri_monitor        = '/tasks/update_'.$_type.'_'.$id_task.'_'.$_time.'/'.'update_'.$_type.'_'.$id_task.'_'.$_time.'.monitor';
+$_uri_monitor        = '/temp/task_monitor.json';
 
 mkdir($_destination_folder, 0777);            
 /** create print monitor file */

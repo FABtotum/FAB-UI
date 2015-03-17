@@ -13,9 +13,7 @@
 
 		});
 	
-	<? endif; ?>
+	<?php endif; ?>
 	
 	});	
-
-
 </script>

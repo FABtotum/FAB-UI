@@ -7,6 +7,11 @@ import numpy as np
 from subprocess import call
 import math
 
+import ConfigParser
+
+config = ConfigParser.ConfigParser()
+config.read('/var/www/fabui/python/config.ini')
+
 #PARAMS
 
 #get process pid so the GUI can kill it if needed
@@ -80,7 +85,7 @@ for opt, arg in opts:
 	elif opt in ("-i", "--i"):
 		x1 = float(arg)
 	elif opt in ("-j", "--j"):
-		       y1 = float(arg)
+		y1 = float(arg)
 	elif opt in ("-n", "--n"):
 		probe_density = float(arg) #number of probes each unit: can be a float
  	elif opt in ("-a", "--a"):
@@ -203,11 +208,14 @@ def probe(x,y):
 printlog(0,0) #create log vuoto
 
 trace("\n ---------- Initializing ---------- \n")
-port = '/dev/ttyAMA0'
-baud = 115200
+
+'''#### SERIAL PORT COMMUNICATION ####'''
+serial_port = config.get('serial', 'port')
+serial_baud = config.get('serial', 'baud')
+serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 #initialize serial
-serial = serial.Serial(port, baud, timeout=0.6)
+#serial = serial.Serial(port, baud, timeout=0.6)
 time.sleep(0.5) 						#sleep a while
 serial.flushInput()						#clean buffer
 	

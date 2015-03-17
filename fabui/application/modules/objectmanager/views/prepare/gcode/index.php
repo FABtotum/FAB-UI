@@ -14,6 +14,15 @@
 <div class="row setting" style="<?php echo $_task ? 'display:none;' : ''; ?>">
     <div class="col-sm-12">
         <div class="well">
+        	
+        	
+        	<?php if($alert_size): ?>
+        	<div class="alert alert-warning fade in">
+        		<i class="fa-fw fa fa-warning"></i><strong>Warning</strong> The selected model seems to be rather complex. Slicing it directly on the FABtotum may take a very long time.
+        		Consider to use a dedicated slicing software on your computer.
+        	</div>
+        	<?php endif; ?>
+        	
             
             <h5>This experimental feature takes the selected <strong>STL</strong> file and turns it into a printable model (additive manufacturing only).</h5>
             
@@ -21,7 +30,7 @@
                 
                 <fieldset>
                     
-                    <legend><?php echo $_file->file_name; ?></legend>
+                    <legend><i class="fa fa-file-o"></i> <?php echo $_file->file_name; ?></legend>
                     
                     
                     <div class="form-group">
@@ -157,7 +166,7 @@
 <div class="row monitor" style="<?php echo $_task ? '' : 'display:none;'; ?>">
     <div class="col-sm-12">
     	<div class="well">
-        	<pre id="editor" style="height: 200px; "></pre>
+        	<pre class="console" style="height: 200px; "></pre>
         </div>
     </div>
 </div>

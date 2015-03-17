@@ -1,14 +1,14 @@
 <?php
-
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 /** CREATE LOG FILES */
 $_time                 = $_POST['time'];
-$_destination_trace    = TEMP_PATH.'pre_jog_'.$_time.'.trace';
-$_destination_response = TEMP_PATH.'pre_jog_'.$_time.'.log';
+//$_destination_trace    = TEMP_PATH.'pre_jog_'.$_time.'.trace';
+//$_destination_response = TEMP_PATH.'pre_jog_'.$_time.'.log';
 
-
+$_destination_trace    = TEMP_PATH.'macro_trace';
+$_destination_response = TEMP_PATH.'macro_response';
 
 write_file($_destination_trace, '', 'w');
 chmod($_destination_trace, 0777);

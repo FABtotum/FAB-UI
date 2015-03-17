@@ -33,6 +33,7 @@ class Settings extends Module {
         $data['_standby_color'] = $_units['color'];
 		$data['_safety_door']     = isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
 		$data['_switch']          = isset($_units['switch']) ? $_units['switch']: '0';
+		$data['_feeder_disengage'] = isset($_units['feeder']['disengage-offset']) ? $_units['feeder']['disengage-offset']: 2;
         
         /** LOAD TAB HEADER */
         $_tab_header = $this->tab_header();

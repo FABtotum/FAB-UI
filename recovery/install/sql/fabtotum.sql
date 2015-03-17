@@ -237,8 +237,8 @@ INSERT INTO `sys_configuration` (`id`, `key`, `value`) VALUES
 (18, 'language', 'english'),
 (19, 'languages', '{"english":{"code":"us","description":"English","name":"english"},"italian":{"code":"it","description":"Italiano","name":"italian"},"german":{"code":"de","description":"Deutsch","name":"german"}}'),
 (20, 'fw_version', '1.0.007'),
-(21, 'fabui_version', '0.8'),
-(22, 'wifi', '{"ssid":"lan-eth0","password":"","ip":"192.168.0.110"}');
+(21, 'fabui_version', '0.875'),
+(22, 'wifi', '{"ssid":"lan-eth0","password":"","ip":""}');
 
 -- --------------------------------------------------------
 
@@ -276,7 +276,7 @@ CREATE TABLE IF NOT EXISTS `sys_files` (
 --
 
 INSERT INTO `sys_files` (`id`, `file_name`, `file_type`, `file_path`, `full_path`, `raw_name`, `orig_name`, `client_name`, `file_ext`, `file_size`, `print_type`, `is_image`, `image_width`, `image_height`, `image_type`, `image_size_str`, `insert_date`, `update_date`, `note`, `attributes`) VALUES
-(1, 'Marvin_KeyChain_FABtotum.gcode', 'text/plain', '/var/www/upload/gcode/', '/var/www/upload/gcode/Marvin_KeyChain_FABtotum.gcode', 'Marvin Key Chain FABtotum', 'Marvin_KeyChain_FABtotum.gcode', 'Marvin_KeyChain_FABtotum.gcode', '.gcode', 2176020, 'additive', 0, 0, 0, 0, '', '2015-01-26 13:05:26', '2015-01-26 13:05:26', 'Marvin sample', '{"dimensions": {"x" : "34.9160003662", "y": "28.9209976196", "z": "25.3999996185"}, "number_of_layers" : 254, "filament": "1026.98718262", "estimated_time":"0:43:38" }'),
+(1, 'Marvin_KeyChain_FABtotum.gcode', 'text/plain', '/var/www/upload/gcode/', '/var/www/upload/gcode/Marvin_KeyChain_FABtotum.gcode', 'Marvin Key Chain FABtotum', 'Marvin_KeyChain_FABtotum.gcode', 'Marvin_KeyChain_FABtotum.gcode', '.gcode', 2176020, 'additive', 0, 0, 0, 0, '', '2015-01-26 13:05:26', '2015-01-26 13:05:26', 'Marvin sample', '{"dimensions": {"x" : "109.444000244", "y": "116.483001709", "z": "50.0"}, "number_of_layers" : 203, "filament": "1276.94702148", "estimated_time":"0:25:07" }'),
 (2, 'bracelet.gcode', 'text/plain', '/var/www/upload/gcode/', '/var/www/upload/gcode/bracelet.gcode', 'Bracelet', 'bracelet.gcode', 'bracelet.gcode', '.gcode', 1467880, 'additive', 0, 0, 0, 0, '', '2015-01-26 13:05:26', '2015-01-26 13:05:26', 'Bracelet sample', '{"dimensions":{"x":"101.062004089","y":"101.062004089","z":"9.80000019073"},"number_of_layers":98,"filament":"3229.01245117","estimated_time":"1:11:07"}');
 
 -- --------------------------------------------------------

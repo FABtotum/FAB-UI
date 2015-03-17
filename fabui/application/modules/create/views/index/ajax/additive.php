@@ -155,9 +155,10 @@
     	
     	<div class="col-sm-12">
     		
-    		<div class="row">
+    		<div class="row margin-bottom-10">
     			<div class="col-sm-12 text-center"> 
     				<h2>Calibration</h2>
+    				<small>Print will start automatically in <span class="start-countdown">10</span> seconds</small>
     			</div>
     		</div>
     		
@@ -284,6 +285,10 @@
 	$("#rpm-slider-container").hide();
 	$("#skip_engage").on('click', skip_engage);
 	
+	var countdown_ticker; 
+	var COUNTDOWN_START = 20
+	var seconds_to_start = COUNTDOWN_START;
+	
 	function skip_engage(){
 		
 		$("#row_0").slideUp('slow', function(){
@@ -291,7 +296,6 @@
 			
 			$("#row_1").slideDown('slow', function(){
 				$("#skip_engage").hide();
-				
 				$("#modal_link").html('Continue');
                 $("#modal_link").attr('data-action', '');
 				
@@ -311,6 +315,7 @@
             var action = $(this).attr('data-action');
             
             if(action == "exec"){
+            	clearInterval(countdown_ticker);
                 print_object();
                 return false; 
             }
@@ -363,7 +368,6 @@
                     switch(next_row){
                     	
                     	case 1:
-                    		
                     		 $("#modal_link").html('Continue');
                     		break;
                         
@@ -375,6 +379,8 @@
                             $("#modal_link").html('Start');
                             $("#modal_link").attr('data-action', 'exec');
                             $("#skip").show();
+                            $(".start-countdown").html(COUNTDOWN_START);
+                            countdown_ticker = setInterval(countdown, 1000);
                             break;
                         
                     }
@@ -387,6 +393,26 @@
         });
         
         
+        
+        function countdown(){
+        	
+        	
+        	seconds_to_start = parseInt($(".start-countdown").html()) - 1;
+        	
+        	$(".start-countdown").html(seconds_to_start);
+        	
+        	if(seconds_to_start == 0){
+        		
+        		$("#modal_link").trigger("click");
+        		clearInterval(countdown_ticker);
+        		
+        	}
+        	
+        	
+        	
+        }
+        
+        
         function pre_print(){
             
             openWait('Checking printer');
@@ -396,7 +422,8 @@
             
             var timestamp = new Date().getTime();
             
-            ticker_url = '/temp/check_' + timestamp + '.trace';
+            //ticker_url = '/temp/check_' + timestamp + '.trace';
+            ticker_url = '/temp/macro_trace';
                        
             $.ajax({
         		  url: ajax_endpoint + 'ajax/pre_print.php',
@@ -452,6 +479,7 @@
             var timestamp = new Date().getTime();
             
             ticker_url = '/temp/engage_feeder_' + timestamp + '.trace';
+            ticker_url = '/temp/macro_trace';
                        
             $.ajax({
         		  url: ajax_endpoint + 'ajax/engage_feeder.php',

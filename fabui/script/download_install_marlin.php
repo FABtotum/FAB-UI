@@ -1,8 +1,8 @@
 <?php
 /** FIRST DOWNLOAD FILE */
-require_once '/var/www/fabui/ajax/config.php';
-require_once '/var/www/fabui/ajax/lib/database.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
+require_once '/var/www/lib/config.php';
+require_once '/var/www/lib/database.php';
+require_once '/var/www/lib/utilities.php';
 
 /** GET ARGS FROM COMMAND LINE */
 $_task_id = $argv[1];
@@ -78,8 +78,8 @@ if($do_update){
 	
 	/** LOG FLASH  */
 	$log = TEMP_PATH.'flash_'.time().'.log';
-	write_file($_data_file, '', 'w');
-	chmod($_data_file, 0777);
+	write_file($log, '', 'w');
+	chmod($log, 0777);
 	
    	$_command = 'sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:'.$_file_name.':i > '.$log;
     shell_exec($_command);

@@ -1,8 +1,8 @@
 <?php
 @session_start();
-require_once '/var/www/fabui/ajax/config.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
-require_once '/var/www/fabui/ajax/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 
 /** GET POST DATA */
@@ -25,14 +25,21 @@ $_task_data['start_date'] = 'now()';
 /** ADD TASK RECORD TO DB */ 
 $id_task = $db->insert('sys_tasks', $_task_data);
 
+//call socket
+shell_exec('sudo php '.SCRIPT_PATH.'/notifications.php &');
+
 
 /** CREATING TASK FILES */
 $_time               = time();
 $_destination_folder = TASKS_PATH.'settings_'.$_type.'_'.$id_task.'_'.$_time.'/';
-$_monitor_file       = $_destination_folder.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.json';
-$_trace_file         = $_destination_folder.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.trace';
-$_uri_monitor        = '/tasks/settings_'.$_type.'_'.$id_task.'_'.$_time.'/'.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.json';
-$_uri_trace          = '/tasks/settings_'.$_type.'_'.$id_task.'_'.$_time.'/'.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.trace';
+//$_monitor_file       = $_destination_folder.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.json';
+//$_trace_file         = $_destination_folder.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.trace';
+$_monitor_file       = TEMP_PATH.'task_monitor.json';
+$_trace_file         = TEMP_PATH.'task_trace';
+$_uri_monitor        = '/temp/task_monitor.json';
+$_uri_trace          = '/temp/task_trace';
+//$_uri_monitor        = '/tasks/settings_'.$_type.'_'.$id_task.'_'.$_time.'/'.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.json';
+//$_uri_trace          = '/tasks/settings_'.$_type.'_'.$id_task.'_'.$_time.'/'.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.trace';
 $_debug_file         = $_destination_folder.'settings_'.$_type.'_'.$id_task.'_'.$_time.'.debug';
 
 mkdir($_destination_folder, 0777);            
@@ -50,7 +57,8 @@ $fabui_version = $db->query('select sys_configuration.value from sys_configurati
 //$fabui_version = $fabui_version[0];
 $fabui_version = $fabui_version['value'];
 
-$_command          = 'sudo python '.RECOVERY_PATH.'python/self_test.py '.$_trace_file.' '.$_monitor_file.' '.$_remote.' 0 '.$id_task.' '.$fabui_version.' 2>'.$_debug_file.' > /dev/null & echo $!';
+//$_command          = 'sudo python '.RECOVERY_PATH.'python/self_test.py '.$_trace_file.' '.$_monitor_file.' '.$_remote.' 0 '.$id_task.' '.$fabui_version.' 2>'.$_debug_file.' > /dev/null & echo $!';
+$_command          = 'sudo python '.RECOVERY_PATH.'python/self_test.py '.$_remote.' 0 '.$id_task.' '.$fabui_version.' 2>'.$_debug_file.' > /dev/null & echo $!';
 $_response_command = shell_exec ($_command);
 $_pid              = trim(str_replace('\n', '', $_response_command));
 

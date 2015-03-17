@@ -2,7 +2,10 @@ import os, sys, getopt
 import serial
 import time
 from subprocess import call
+import ConfigParser
 
+config = ConfigParser.ConfigParser()
+config.read('/var/www/fabui/python/config.ini')
 #PARAMS
 
 #get process pid so the GUI can kill it if needed
@@ -97,7 +100,11 @@ print 'Estimated Scan time =', str(estimated) + " " + str(unit) + "  [Pessimisti
 #Please note: laser PWM is controlled by M700 SXXX
 
 print "\n ---------- Initializing ---------- \n"
-serial = serial.Serial('/dev/ttyAMA0', 115200)
+
+'''#### SERIAL PORT COMMUNICATION ####'''
+serial_port = config.get('serial', 'port')
+serial_baud = config.get('serial', 'baud')
+serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 if(begin!=0):
 	#if an offset is set, rotates to the specified A angle.
@@ -122,7 +129,7 @@ def raspistill(laser_string):
 	#NEW raspistill -o test4.png -rot 90 -hf -vf -w 1944 -h 2592
 	#--exposure off
 	print "saving to ",scanfile
-	call (["raspistill -hf -vf --exposure off -rot 90 -awb sun -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 0"], shell=True)
+	call (["raspistill -hf -vf --exposure off -rot 90 -awb sun -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 1"], shell=True)
 
 	#OLD call (["raspistill -vf -hf --exposure off -awb sun -ISO " + str(iso) + " -w "+ str(width) +" -h "+ str(height) +" -o " + scanfile + " -t 0"], shell=True)
 

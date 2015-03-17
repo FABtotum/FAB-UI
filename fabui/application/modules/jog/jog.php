@@ -48,12 +48,7 @@ class Jog extends Module {
 
 		$this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => 'JOG CSS'));
 		$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'JOG JS'));
-        
-		/*
-        $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.min.js', 'comment' => 'javascript for the noUISlider'));
-        $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.css', 'comment' => 'javascript for the noUISlider'));
-        */
-        
+
         $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.all.min.js', 'comment' => 'javascript for the noUISlider'));
         $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.min.css', 'comment' => 'javascript for the noUISlider'));
 		$this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.pips.min.css', 'comment' => 'javascript for the noUISlider'));
@@ -63,14 +58,8 @@ class Jog extends Module {
         
         $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/knob/jquery.knob.min.js', 'comment'=>'KNOB'));
 		
-		//$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/fuelux/spinbox/spinbox.js', 'comment'=>'SPINBOX'));
-		//$this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/fuelux/spinbox/spinbox.css', 'comment'=>'SPINBOX'));
-        //$this->layout->set_compress(false);
-		
-		
-		/** AVOID TO SEND ALWAYS G91 FOR EVERY MOVEMENT */
-		$_SESSION['relative'] = false;
-		
+		$this->layout->set_compress(false);
+	
 		$this->layout->view('index/index', $data); 
 	}
     

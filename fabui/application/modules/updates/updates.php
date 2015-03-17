@@ -120,7 +120,7 @@ class Updates extends Module {
         $js_in_page  = $this->load->view('index/js', $data, TRUE);
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'updates js'));
             
-        //$this->layout->set_compress(true);
+        $this->layout->set_compress(false);
         
         $data['internet']= $_is_internet_ok; 
 		

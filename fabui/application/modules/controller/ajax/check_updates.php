@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '/var/www/fabui/script/config.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 
 //$time_to_check = 60;
@@ -10,20 +10,27 @@ $now           = time();
 $check         = false;
 
 
+
+$updates = isset($_SESSION["updates"]) ? $_SESSION["updates"] : array();
+
+
+
 //IF IS PASSED MORE THAN TIME TO CHECK SO CHECK AGAIN IF THERE ARE UPDATES AVAIABLES
 if(($now-$_SESSION['updates']['time']) > $time_to_check){
+	
 	
 	
 	if(is_internet_avaiable()){
 		
 		
+		
 		$updates = array();
 	
 		$updates['number'] = 0;
-		$updates['time'] = time();	
+		$updates['time']   = time();	
 		
 		$fabui_update  = myfab_get_local_version() < myfab_get_remote_version();    	
-		$fw_update = marlin_get_local_version() < marlin_get_remote_version();
+		$fw_update     = marlin_get_local_version() < marlin_get_remote_version();
 		
 		$updates['number'] += $fabui_update ? 1 : 0;
 		$updates['number'] += $fw_update ? 1 : 0;
@@ -36,8 +43,12 @@ if(($now-$_SESSION['updates']['time']) > $time_to_check){
 	}
 	
 }else{
+	
+	
+	
 	$updates = $_SESSION['updates'];
 }
+
 
 
 $_response_items = array();

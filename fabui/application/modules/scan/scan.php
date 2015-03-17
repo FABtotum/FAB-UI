@@ -92,12 +92,29 @@ class Scan extends Module {
                     $_pprocess_monitor = json_decode(file_get_contents($_task_attributes['folder'].$_task_attributes['pprocess_monitor']), true); 
                     
                 }
-            }	
+            }
+			
+			
+			
+			
 			
 
 			/** if process not exist, unset the task */
-            
-    			if(!exist_process(json_decode($_task['attributes'])->scan_pid) || !isset(json_decode($_task['attributes'])->scan_pid)){
+			
+			//pprocess_pid
+			if(isset(json_decode($_task['attributes'])->pprocess_pid)){
+				
+				if(!exist_process(json_decode($_task['attributes'])->scan_pid) && !exist_process(json_decode($_task['attributes'])->pprocess_pid)){
+					
+					$this->tasks->delete($_task['id']);
+					$_task = FALSE;
+					
+					
+				}
+				
+				
+			}else{
+    		if(!exist_process(json_decode($_task['attributes'])->scan_pid) || !isset(json_decode($_task['attributes'])->scan_pid)){
     				
                     /** IF PROCESS DOESNT EXIST DELETE TASK RECORD FROM DB */
                    
@@ -106,6 +123,8 @@ class Scan extends Module {
                     $_task = FALSE;
                     
     			}
+			
+			}
             
            
 				
@@ -220,6 +239,8 @@ class Scan extends Module {
                     $this->scan_probe($data);
                     break;
             }
+			
+			shell_exec('sudo python '.PYTHONPATH.'websocket_tasks.py');
         
         }
 
@@ -481,7 +502,7 @@ class Scan extends Module {
         /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME */
         while(file_get_contents($task_files['destination_folder'].$task_files['scan_monitor_file']) == ''){   
             //aspetto
-            sleep(0.5);
+            sleep(0.1);
         }
         
         
@@ -495,7 +516,7 @@ class Scan extends Module {
         /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME */
         while(file_get_contents($task_files['destination_folder'].$task_files['pprocess_monitor_file']) == ''){   
             //aspetto
-            sleep(0.5);
+            sleep(0.1);
         }
         
          
@@ -774,7 +795,6 @@ class Scan extends Module {
         $status = json_encode($_json_status);
         
         while($_json_status == ''){
-            
             $_json_status = file_get_contents($task_files['destination_folder'].$task_files['scan_monitor_file'], FILE_USE_INCLUDE_PATH);
             $status = json_encode($_json_status);   
         }

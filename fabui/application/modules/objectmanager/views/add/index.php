@@ -68,7 +68,7 @@
 							
                             <ul id="myTab1" class="nav nav-tabs bordered">
                                 <li class="active"><a href="#remote" data-toggle="tab">  Local Disk</a></li>
-                                <li><a href="#usb" data-toggle="tab"> Usb Disk</a></li>
+                                <li><a href="#usb" class="check-usb" data-toggle="tab"> Usb Disk</a></li>
                             </ul>
                             <div id="myTabContent1" class="tab-content padding-10">
                                 <!-- dropzone -->
@@ -83,27 +83,7 @@
                                 <!-- usb disk -->
                                 <div class="tab-pane fade in" id="usb">
                                 
-                                    <?php if (sizeof($folder_tree) > 0 ): ?>
-                                    <div class="tree smart-form">
-                                        <ul>
-                                            <?php foreach($folder_tree as $folder): ?>
-                                            
-                                                <li><span data-loaded="false" data-folder="<?php echo $folder; ?>"><i class="fa fa-lg fa-folder-open"></i> <?php echo rtrim(str_replace("/media/", '', $folder), '/'); ?></span>
-                                                    <ul></ul>
-                                                </li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    </div>
-                                    <?php else: ?>
-                                    
-                                    <div class="text-center">
-                                                <h1><span style="font-size: 50px;" class="icon-fab-usb"></span></h1>
-                                                <h1>Please insert USB disk</h1>
-                                                <a id="check-usb" class="btn btn-default" href="javascript:void(0);">Reload</a>
-                                    </div>
-                                    
-                                    <?php endif; ?>
-
+                                   
                                 </div>
                             
                             </div>

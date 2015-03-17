@@ -1,8 +1,7 @@
 <?php
-
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 
 
@@ -12,8 +11,8 @@ $_action = $_POST['action'];
 /** CREATE LOG E MONITOR FILES */
 
 $_time                 = time();
-$_destination_trace    = TEMP_PATH.'spool_'.$_action.'_'.$_time.'.trace';
-$_destination_response = TEMP_PATH.'spool_'.$_action.'_'.$_time.'.response';
+$_destination_trace    = TEMP_PATH.'macro_trace';
+$_destination_response = TEMP_PATH.'macro_response';
 
 
 write_file($_destination_trace, '', 'w');
@@ -28,18 +27,12 @@ $_command        = 'sudo python /var/www/fabui/python/gmacro.py '.$_action.'_spo
 $_output_command = shell_exec ( $_command );
 $_pid            = trim(str_replace('\n', '', $_output_command));
 
-
-
-
-
-
 $_response_items = array();
-
 
 $_response_items['command']      = $_command;
 $_response_items['pid']          = $_pid;
-$_response_items['uri_trace']    = '/temp/spool_'.$_action.'_'.$_time.'.trace';
-$_response_items['uri_response'] = '/temp/spool_'.$_action.'_'.$_time.'.response';
+$_response_items['uri_trace']    = '/temp/macro_trace';
+$_response_items['uri_response'] = '/temp/macro_response';
 
 /** WAIT JUST 1 SECOND */
 sleep(1);

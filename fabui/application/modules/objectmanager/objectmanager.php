@@ -90,7 +90,10 @@ class Objectmanager extends Module {
 
 			foreach ($usb_files as $file) {
 				if ($file != '') {
-					array_push($usb_files_id, $this -> copy_from_usb($file));
+					
+					$tmp = str_replace(" ", "_", $file);
+					
+					array_push($usb_files_id, $this -> copy_from_usb('/media/'.$file));
 				}
 
 			}
@@ -107,12 +110,21 @@ class Objectmanager extends Module {
 		$this -> config -> load('upload');
 
 		/** LOAD FROM USB DISK FIRST TREE */
-		$_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
-		$_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
-		shell_exec($_command);
-		//sleep ( 1);
-
-		$data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
+		
+		$data['folder_tree'] = array();
+		
+		/** CHECK IF USB IS INSERTED 
+		if(file_exists('/dev/sda1')){
+			
+			$_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
+			$_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
+			shell_exec($_command);
+			//sleep ( 1);
+			$data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
+			
+		}*/
+		
+		
 
 		$js_data['accepted_files'] = $this -> config -> item('upload_accepted_files');
 		$j_data['_upload_max_filesize'] = ini_get("upload_max_filesize");
@@ -402,7 +414,8 @@ class Objectmanager extends Module {
 
 				foreach ($usb_files as $file) {
 					if ($file != '') {
-						array_push($usb_files_id, $this -> copy_from_usb($file));
+						$tmp = str_replace(" ", "_", $file);
+						array_push($usb_files_id, $this -> copy_from_usb('/media/'.$file));
 					}
 
 				}
@@ -429,12 +442,20 @@ class Objectmanager extends Module {
 			$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => 'INIT DROPZONE'));
 
 			/** LOAD FROM USB DISK FIRST TREE */
-			$_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
-			$_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
-			shell_exec($_command);
-			//sleep ( 1);
-
-			$data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
+			$data['folder_tree'] = array();
+			
+			/*
+			if(file_exists('/dev/sda1')){
+				
+				$_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
+				$_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
+				shell_exec($_command);
+				//sleep ( 1);
+	
+				$data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
+				
+			}
+			*/
 
 			$data['_action'] = $action;
 
@@ -721,17 +742,33 @@ class Objectmanager extends Module {
 		$this -> load -> model('files');
 		$this -> load -> model('configuration');
 		$this -> load -> model('tasks');
+		
+		//load helpers
+		$this->load->helper("ft_file_helper");
 
 		/** CHEK IF THERE IS AN OPEN TASK */
 		$_task = $this -> tasks -> get_running('objectmanager', 'slice');
 
 		$_file = $this -> files -> get_file_by_id($file);
+		
+		$file_size = filesize($_file->full_path);
+		
 		$_presets = json_decode($this -> configuration -> get_config_value('slicer_presets'), true);
-
+		
+		
+		
 		$data['_task'] = $_task;
 		$data['_object'] = $object;
 		$data['_file'] = $_file;
 		$data['_presets'] = $_presets;
+		$data['file_size'] = $file_size;
+		$data['alert_size'] = $file_size >= 10485760 ? true : false;
+		
+		//if file size bigger than 10MB
+		//if($file_size >= 10485760){
+		//	
+		//	$data['alert_size'] = true;
+		//}
 
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
@@ -743,6 +780,8 @@ class Objectmanager extends Module {
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
 		$this -> layout -> add_css_in_page(array('data' => $ccs_in_page, 'comment' => ''));
 		$this -> layout -> view('prepare/gcode/index', $data);
+		
+		
 
 	}
 
@@ -770,6 +809,10 @@ class Objectmanager extends Module {
 		$js_in_page = $this -> load -> view('prepare/stl/js', $data, TRUE);
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
 		$this -> layout -> view('prepare/stl/index', $data);
+		
+		
+		
+		
 
 	}
 
@@ -825,11 +868,18 @@ class Objectmanager extends Module {
 		$this -> load -> helper('file');
 		$this -> load -> helper('ft_file_helper');
 
+		
+			
+	
 		$file_name = explode("/", $file);
 		$file_name = end($file_name);
 
+
+
 		/** MOVE TO TEMP FOLDER */
-		$_command = 'sudo cp ' . $file . ' /var/www/temp/' . $file_name;
+		$_command = 'sudo cp "' . $file . '"  "/var/www/temp/' . $file_name.'" ';
+		
+		
 		shell_exec($_command);
 
 		$file = '/var/www/temp/' . $file_name;
@@ -843,10 +893,10 @@ class Objectmanager extends Module {
 		$file_name = set_filename($folder_destination, $file_name);
 
 		/** MOVE TO FINALLY FOLDER */
-		$_command = 'sudo cp ' . $file . ' ' . $folder_destination . $file_name;
+		$_command = 'sudo cp "' . $file . '" "' . $folder_destination . $file_name.'" ';
 		shell_exec($_command);
 		/** ADD PERMISSIONS */
-		$_command = 'sudo chmod 746 ' . $folder_destination . $file_name;
+		$_command = 'sudo chmod 746 "' . $folder_destination . $file_name.'" ';
 		shell_exec($_command);
 
 		/** INSERT RECORD TO DB */
@@ -926,14 +976,23 @@ class Objectmanager extends Module {
 	}
 
 	public function slicer_manual() {
+		
+		$this->load->helper('file');
 
-		$shell = shell_exec('sudo /var/www/fabui/slic3r/slic3r --help');
-
-		$help = strstr($shell, '--help');
+		$manual_file = "./slic3r/manual.txt";
+		
+		
+		if(file_exists($manual_file)){
+			$manual = read_file($manual_file);	
+		}else{
+			$manual = shell_exec('sudo /var/www/fabui/slic3r/slic3r --help');
+			write_file($manual_file, $manual);
+		}
+		
+		
+		$help = strstr($manual, '--help');
 
 		$contents = explode('--', $help);
-
-		//print_r($contents);
 
 		$parameters = array();
 
@@ -944,13 +1003,11 @@ class Objectmanager extends Module {
 		$no_show[] = 'repair';
 		$no_show[] = 'cut';
 		$no_show[] = 'info';
-		
 		$no_show[] = 'threads';
 		$no_show[] = 'no_plater';
 		$no_show[] = 'gui_mode';
 		$no_show[] = 'autosave';
 		$no_show[] = 'output_filename_format';
-		
 		$no_show[] = 'post_process';
 		$no_show[] = 'export_svg';
 		$no_show[] = 'merge';

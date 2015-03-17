@@ -1,6 +1,6 @@
 <?php
 @session_start();
-require_once '/var/www/fabui/ajax/config.php';
+require_once '/var/www/lib/config.php';
 
 
 

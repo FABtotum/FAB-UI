@@ -5,7 +5,7 @@ var object;
 var file_selected;
 var stop_monitor = false;
 var interval_monitors;
-var monitor_count = 0;
+
 //counter for count how many times monitor we'll be called
 var print_finished = false;
 /**/
@@ -286,18 +286,23 @@ function _timer() {
  */
 function _trace() {
 
-	if (!print_finished) {
-
-		$.ajax({
-			url : uri_trace,
-			async : true,
-		}).done(function(response) {
-
-			$("#ace-editor").html(response);
-			$('#ace-editor').scrollTop(1E10);
-		});
-
+	if (!SOCKET_CONNECTED) {
+		if (!print_finished) {
+			_trace_call();
+		}
 	}
+}
+
+function _trace_call() {
+
+	$.ajax({
+		url : uri_trace,
+		async : true,
+	}).done(function(response) {
+		$(".console").html(response);
+		$('.console').scrollTop(1E10);
+	});
+
 }
 
 /**
@@ -306,30 +311,53 @@ function _trace() {
  * @param value
  */
 function _do_action(action, value) {
-	$.ajax({
-		url : ajax_endpoint + 'ajax/action.php',
-		data : {
-			id_task : id_task,
-			pid : pid,
-			data_file : data_file,
-			action : action,
-			value : value,
-			progress : progress
-		},
-		type : 'post',
-		dataType : 'json',
-		async : true
-	}).done(function(response) {
 
-		$.smallBox({
-			title : "Success",
-			content : "<i class='fa fa-check'></i> " + response.message,
-			color : "#659265",
-			iconSmall : "fa fa-thumbs-up bounce animated",
-			timeout : 8000
+	if (SOCKET_CONNECTED) {
+
+		var jsonData = {};
+
+		jsonData['function'] = 'operation';
+		jsonData['id_task'] = id_task;
+		jsonData['data_file'] = data_file;
+		jsonData['action'] = action;
+		jsonData['value'] = value;
+		jsonData['progress'] = progress;
+
+		var message = {};
+
+		message['name'] = "create";
+		message['data'] = jsonData;
+
+		SOCKET.send('message', JSON.stringify(message));
+
+	} else {
+
+		$.ajax({
+			url : ajax_endpoint + 'ajax/action.php',
+			data : {
+				id_task : id_task,
+				pid : pid,
+				data_file : data_file,
+				action : action,
+				value : value,
+				progress : progress
+			},
+			type : 'post',
+			dataType : 'json',
+			async : true
+		}).done(function(response) {
+
+			$.smallBox({
+				title : "Success",
+				content : "<i class='fa fa-check'></i> " + response.message,
+				color : "#659265",
+				iconSmall : "fa fa-thumbs-up bounce animated",
+				timeout : 8000
+			});
+
 		});
 
-	});
+	}
 
 }
 
@@ -343,15 +371,9 @@ function ask_stop() {
 	}, function(ButtonPressed) {
 
 		if (ButtonPressed === "Yes") {
-
 			stop_print();
-
 		}
-
 	});
-
-	;
-
 }
 
 function stop_print() {
@@ -365,35 +387,51 @@ function stop_print() {
 
 }
 
-function _stopper() {
-	waitContent('Refreshing page');
-	document.location.href = document.location.href;
-}
+
 
 /**
  *
  */
 function _update_task() {
 
-	var _async = true;
+	if (SOCKET_CONNECTED) {
 
-	$.ajax({
-		url : ajax_endpoint + 'ajax/update.php',
-		data : {
-			//folder       : folder,
-			monitor_file : monitor_file,
-			id_task : id_task,
-			//stopped : stopped,
-			estimated_time : array_estimated_time,
-			progress_steps : array_progress_steps,
-			stats_file : stats_file
-		},
-		type : 'post',
-		dataType : 'json',
-		async : _async
-	}).done(function(response) {
+		var jsonData = {};
+		jsonData['function'] = 'update';
+		jsonData['estimated_time'] = array_estimated_time;
+		jsonData['progress_steps'] = array_progress_steps;
+		jsonData['stats_file']     = stats_file;
 
-	});
+		var message = {};
+
+		message['name'] = "create";
+		message['data'] = jsonData;
+
+		SOCKET.send('message', JSON.stringify(message));
+
+	} else {
+
+		var _async = true;
+
+		$.ajax({
+			url : ajax_endpoint + 'ajax/update.php',
+			data : {
+				//folder       : folder,
+				//monitor_file : monitor_file,
+				//id_task : id_task,
+				//stopped : stopped,
+				estimated_time : array_estimated_time,
+				progress_steps : array_progress_steps,
+				stats_file : stats_file
+			},
+			type : 'post',
+			dataType : 'json',
+			async : _async
+		}).done(function(response) {
+
+		});
+
+	}
 
 }
 
@@ -405,92 +443,12 @@ function _monitor_call() {
 	if (!print_finished) {
 
 		$.ajax({
-			//url : ajax_endpoint + '/monitor',
 			url : uri_monitor,
 			dataType : 'json',
-			//type: 'post',
 			async : true,
 			cache : false,
-			//data : {id_task: id_task, file_monitor: monitor_file}
 		}).done(function(response) {
-
-			monitor_count++;
-
-			monitor_response = response;
-
-			pid = response.print.pid;
-
-			if (parseFloat(response.print.stats.percent) > 0) {
-
-				$(".create-monitor").slideDown("slow", function() {
-				});
-				$('#stop-button').removeClass('disabled');
-				$('.controls').removeClass('disabled');
-
-				if (print_type == 'additive') {
-					$("#velocity-slider-container .well").height($("#ext-slider-container .well").height());
-				} else {
-					$("#velocity-slider-container .well").height($("#rpm-slider-container .well").height());
-				}
-
-			}
-
-			if (!blockSliderExt) {
-				$("#temp1").val(parseInt(monitor_response.print.stats.extruder_target), {
-					animate : true
-				});
-				$("#label-temp1-target").html(parseInt(monitor_response.print.stats.extruder_target) + '&deg;C');
-			}
-
-			if (!blockSliderBed) {
-				$("#temp2").val(parseInt(monitor_response.print.stats.bed_target), {
-					animate : true
-				});
-				$("#label-temp2-target").html(parseInt(monitor_response.print.stats.bed_target) + '&deg;C');
-			}
-
-			progress = response.print.stats.percent;
-
-			$('.total-lines').html(response.print.lines);
-			$('.current-line').html(response.print.stats.line_number);
-			$('.pid').html(response.print.pid);
-			$('.temperature').html(response.print.stats.extruder);
-			$('.position').html(response.print.stats.position);
-
-			$("#act-ext-temp").val(parseInt(monitor_response.print.stats.extruder), {
-				animate : true
-			});
-			$("#act-bed-temp").val(parseInt(monitor_response.print.stats.bed), {
-				animate : true
-			});
-
-			$('#lines-progress').attr('style', 'width:' + parseFloat(response.print.stats.percent) + '%');
-			$('#lines-progress').attr('aria-valuetransitiongoal', parseFloat(response.print.stats.percent));
-			$('#lines-progress').attr('aria-valuenow', parseFloat(response.print.stats.percent));
-			$('#lines-progress').html(number_format(parseFloat(response.print.stats.percent), 2, ',', '.') + ' %');
-
-			$('.progress-status').html(number_format(parseFloat(response.print.stats.percent), 2, ',', '.') + ' %');
-
-			$('#label-progress').html('(' + number_format(parseFloat(response.print.stats.percent), 2, ',', '.') + ' % )');
-
-			$("#label-temp1").html(parseInt(monitor_response.print.stats.extruder) + '&deg;C');
-			$("#label-temp2").html(parseInt(monitor_response.print.stats.bed) + '&deg;C');
-
-			extruder_target = parseInt(monitor_response.print.stats.extruder_target);
-
-			bed_target = parseInt(monitor_response.print.stats.bed_target);
-
-			if (response.print.completed == 1) {
-				print_finished = true;
-
-			}
-
-			_update_task();
-
-			estimated_time_left = ((elapsed_time / response.print.stats.percent) * 100) - elapsed_time;
-
-			tip(monitor_response.print.tip.show, monitor_response.print.tip.message);
-
+			monitor(response);
 		});
 
 	}
@@ -514,27 +472,11 @@ function tip(show, message) {
  *
  */
 var print_monitor = function() {
-
-	//controllo finch� la stampa non � finita
-	if (!print_finished) {
-		_monitor_call();
-		//_trace();
-	} else {
-		_stop_monitor();
-		_stop_timer();
-		_stop_trace();
-		//_update_task();
-		$('.controls').addClass('disabled');
-		$('.progress').removeClass('active');
-		$('.estimated-time').html('-');
-		$('.estimated-time-left').html('-');
-		/** GO TO NEXT STEP */
-		$("#btn-next").trigger('click');
-		unfreeze_menu();
-		$("#wizard-buttons").hide();
-
+	if (!SOCKET_CONNECTED) {
+		if (!print_finished) {
+			_monitor_call();
+		}
 	}
-
 }
 /**
  *
@@ -545,12 +487,11 @@ function print_object() {
 	openWait('Starting');
 
 	var timestamp = new Date().getTime();
-	ticker_url = '/temp/print_check_' + timestamp + '.trace';
+	//ticker_url = '/temp/print_check_' + timestamp + '.trace';
+	ticker_url = '/temp/macro_trace';
 
 	$.ajax({
-		//url: ajax_endpoint + '/do_print/' + object.object.id + '/' + file_selected.id,
 		url : ajax_endpoint + 'ajax/create.php',
-		// url: '/fabui/create/start',
 		type : 'POST',
 		dataType : 'json',
 		async : true,
@@ -562,12 +503,14 @@ function print_object() {
 			time : timestamp
 		}
 	}).done(function(response) {
-		//respons
+		
+		console.log(response);
+
 		if (response.response == true) {
 
-			/** CHECK BACKGROUND TASKS FOR NOTIFICATIONS */
-			check_notifications()
-			/*freeze_menu('create');*/
+			if (!SOCKET_CONNECTED) {
+				check_notifications();
+			}
 
 			id_task = response.id_task;
 			monitor_file = response.monitor_file;
@@ -581,28 +524,17 @@ function print_object() {
 			var status = JSON.parse(response.status);
 			status = jQuery.parseJSON(status);
 
-			//print_monitor();
-			$('#lines-progress').attr('style', 'width:' + parseFloat(status.print.stats.percent) + '%');
-			$('#lines-progress').attr('aria-valuetransitiongoal', parseFloat(status.print.stats.percent));
-			$('#lines-progress').attr('aria-valuenow', parseFloat(status.print.stats.percent));
-			$('#lines-progress').html(number_format(parseFloat(status.print.stats.percent), 2, ',', '.') + ' %');
-			$('.progress-status').html(number_format(parseFloat(status.print.stats.percent), 2, ',', '.') + ' %');
-			$('#label-progress').html('(' + number_format(parseFloat(status.print.stats.percent), 2, ',', '.') + ' % )');
-
-			//azzero contatore monitor
-			monitor_count = 0;
-
+			monitor(status);
 			//faccio partire il monitor 1000 = 1 secondo
 			print_monitor();
+
 			interval_monitor = setInterval(print_monitor, monitor_timeout);
 			interval_timer = setInterval(_timer, 1000);
 
-			if (do_trace == true) {
-				interval_trace = setInterval(_trace, 1000);
-			}
-
-			//printo a video il commando utitlizzato per lanciare il gpusher (debug)
-			$('.command').html(response.command);
+			interval_trace = setInterval(_trace, 1000);
+			
+			
+			
 
 			//vado avanti negli step
 			$('#btn-next').trigger('click');
@@ -610,13 +542,21 @@ function print_object() {
 			$("#wizard-buttons").hide();
 			closeWait();
 			ticker_url = '';
-
 			$("#details").trigger('click');
 			$(".stop").removeClass('disabled');
-
-			//console.log(print_type);
-			//console.log($("#ext-slider-container .well").height());
-			//console.log($("#rpm-slider-container .well").height());
+			
+			if(print_type == 'additive'){
+				$(".subtractive-print").hide();
+				initGraphs();
+			}else{
+				$(".additive-print").hide();
+				$(".speed-well").removeClass("col-sm-4").addClass("col-sm-6");
+				$(".stats-well").removeClass("col-sm-4").addClass("col-sm-12");
+			}
+			
+			
+			//setTimeout(initGraphs, 2000);
+			
 
 		} else {
 
@@ -632,35 +572,7 @@ function print_object() {
 
 }
 
-/*
- * OBJECT
- */
-$('.obj').click(function() {
 
-	$(this).find(':first-child').find('input').prop("checked", true);
-	$("#objects_table tbody tr").removeClass('success');
-	$(this).addClass('success');
-	var id = $(this).attr("data-id");
-
-	$.ajax({
-		url : ajax_object_endopoint + 'ajax/object.php',
-		dataType : 'json',
-		type : "POST",
-		async : true,
-		data : {
-			printable : true,
-			id_object : id
-		},
-		beforeSend : function(xhr) {
-		}
-	}).done(function(response) {
-
-		object = response;
-		detail_object(object);
-		detail_files(object);
-	});
-
-});
 
 function check_wizard() {
 
@@ -681,8 +593,12 @@ function check_wizard() {
 	}
 
 	if (item.step == 3) {
-
 		$('#btn-next').hide();
+		
+		if(typeof countdown_ticker == 'function') { 
+			clearInterval(countdown_ticker); 
+		}
+		
 	}
 
 	if (item.step >= 4) {
@@ -758,17 +674,5 @@ function _stop_timer() {
 
 function _stop_trace() {
 	clearInterval(interval_trace);
-}
-
-function _resume() {
-
-	$("#details").trigger('click');
-	$(".create-monitor").slideDown("slow", function() {
-	});
-	monitor_count = 0;
-	//faccio partire il monitor 1000 = 1 secondo
-	interval_monitor = setInterval(print_monitor, monitor_timeout);
-	interval_timer = setInterval(_timer, 1000);
-	//interval_trace   = setInterval(_trace, 1000);
 }
 

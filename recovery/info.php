@@ -52,6 +52,12 @@ switch($mode){
 		$content .= shell_exec('sudo lsusb');   
 		$content .= '</pre>'; 
 		
+		$content .= '<h6>Raspi Cam</h6>';
+		$content .= '<pre>';
+		$content .= shell_exec('sudo raspistill -v');   
+		$content .= '</pre>'; 
+		
+		
 		break;
 }
 

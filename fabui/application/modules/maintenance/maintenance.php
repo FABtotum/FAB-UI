@@ -82,7 +82,9 @@ class Maintenance extends Module {
 				
 				
 				$data['monitor_file'] = $_attributes['uri_monitor'];
-				$data['trace_file'] = $_attributes['uri_trace'];
+				$data['trace_file']   = $_attributes['uri_trace'];
+				$data['trace_content'] = file_get_contents($_attributes['trace']);
+				$this->layout->set_compress(false);
 			
 			}else{
 				
@@ -102,7 +104,7 @@ class Maintenance extends Module {
         $this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT')); 
 		
 		
-		$this->layout->view('selftest/index', '');
+		$this->layout->view('selftest/index', $data);
 	}
 	
 	

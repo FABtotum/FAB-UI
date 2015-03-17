@@ -10,7 +10,7 @@
 				
 			</li>
 			<li class="sparks-info">
-				<h5> FABlin FW<span class="txt-color-purple"><i class="fa fa-shield"></i>&nbsp;v&nbsp;<?php echo $marlin_local ?></span></h5>
+				<h5> FABlin FW <span class="txt-color-purple"><i class="fa fa-shield"></i>&nbsp;v&nbsp;<?php echo $marlin_local ?></span></h5>
 			</li>
 		</ul>
 	</div>
@@ -21,7 +21,7 @@
 <div class="alert alert-warning fade in">
 	<button class="close" data-dismiss="alert"></button>
 	<i class="fa-fw fa fa-warning"></i>
-	<strong>Warning </strong> No internet connectivity detected. Please <a href="<?php echo site_url("settings/network") ?>"><u>reconnect</u></a> and try again or <a href="<?php echo site_url("updates/upload") ?>"><u>upload</u></a> if you have an install file in .zip format
+	<strong>Warning </strong> No internet connectivity detected. Please <a href="<?php echo site_url("settings/network") ?>"><u>reconnect</u></a> and try again <!--or <a href="<?php echo site_url("updates/upload") ?>"><u>upload</u></a> if you have an install file in .zip format-->
 </div>
 
 <?php endif; ?>

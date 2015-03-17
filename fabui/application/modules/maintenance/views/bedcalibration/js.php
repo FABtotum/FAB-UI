@@ -15,18 +15,20 @@
 	
 	function ticker(){
 		
-	    if(ticker_url != ''){
-	        
-	         $.get( ticker_url , function( data ) {
-	           
-	            if(data != ''){
-	            	
-	            	waitContent(data);
-	              
-	            }
-	       }).fail(function(){ 
-	           
-	        });
+		if(!SOCKET_CONNECTED){
+		    if(ticker_url != ''){
+		        
+		         $.get( ticker_url , function( data ) {
+		           
+		            if(data != ''){
+		            	
+		            	waitContent(data);
+		              
+		            }
+		       }).fail(function(){ 
+		           
+		        });
+		    }
 	    }
 	}
 	
@@ -38,7 +40,7 @@
 		openWait('Calibration in process');
 		
 		var now = jQuery.now();
-		ticker_url = '/temp/bed_calibration_' + now + '.trace'; 
+		ticker_url = '/temp/macro_trace';
 		
 		
 		

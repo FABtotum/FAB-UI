@@ -1,5 +1,7 @@
 <?php
 
+include '/var/www/lib/config.php';
+
 $feed = 1000;
 $raspi_still = false;
 
@@ -26,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		
 		
 		$serial = new phpSerial;
-		$serial->deviceSet("/dev/ttyAMA0");
-		$serial->confBaudRate(115200);
+		$serial->deviceSet(PORT_NAME);
+		$serial->confBaudRate(BOUD_RATE);
 		$serial->confParity("none");
 		$serial->confCharacterLength(8);
 		$serial->confStopBits(1);
@@ -42,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$raspi_still = true;
 		
 		
-		exec('sudo raspistill -hf -w 512 -h 320 -o /var/www/temp/picture.jpg -t 0');
+		exec('sudo raspistill -hf -w 512 -h 320 -o /var/www/temp/picture.jpg -t 1');
 		$filename = "/var/www/temp/picture.jpg";
 		$handle = fopen($filename, "rb");
 		$contents = fread($handle, filesize($filename));

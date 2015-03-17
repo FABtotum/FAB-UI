@@ -75,9 +75,7 @@
 	background-color: #000000;
 }
 
-#velocity {
-	background-color: #c79121 !important;
-}
+
 
 .rotondo {
 	border-radius: 50% !important;
@@ -107,11 +105,11 @@
 	background: #6c6c6c !important;
 }
 
-#ace-editor pre {
+.console pre {
 	line-height: 20px;
 }
 
-#ace-editor strong {
+.console strong {
 	font-size: 16px;
 	color: #346597;
 }
@@ -157,6 +155,7 @@
 
 .label-warning {
 	font-size: 100% !important;
+	background-color: #568a89!important;
 }
 
 .show-stat-microcharts > div {
@@ -165,4 +164,29 @@
 
 .model-info{
 	background-color: #f7f7f9 !important;
+}
+
+.time {
+	
+}
+
+.noUi-horizontal {
+	height: 15px !important;
+}
+
+.margin-top-40 {
+	margin-top: 40px !important;
+}
+
+.margin-top-30 {
+	margin-top: 30px !important;
+}
+
+#fan, #velocity, #flow-rate, #rpm{
+	
+	background-color: #568a89!important;
+}
+
+.progress-status{
+	
 }

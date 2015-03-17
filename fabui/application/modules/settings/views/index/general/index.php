@@ -11,10 +11,10 @@
 						</legend>
 						
 						<div class="form-group"> 
-							<label class="col-md-1 control-label">
+							<label class="col-md-2 control-label">
 								Door
 							</label>
-							<div class="col-md-11">
+							<div class="col-md-10">
 								<div class="radio">
 									<label>
 										<input type="radio" class="radiobox style-0" name="safety-door" value="1" <?php echo $_safety_door == '1' ? 'checked="checked"' : '' ?>>
@@ -36,10 +36,9 @@
 					
 					<fieldset>
 						<legend>Homing preferences</legend>
-						
 						<div class="form-group">
-							<label class="col-md-1 control-label">Switch</label>
-							<div class="col-md-11">
+							<label class="col-md-2 control-label">Switch</label>
+							<div class="col-md-10">
 								<div class="radio">
 									<label>
 										<input type="radio" class="radiobox style-0" name="switch" value="0" <?php echo $_switch == '0' ? 'checked="checked"' : '' ?>>
@@ -58,11 +57,21 @@
 					</fieldset>
 					
 					<fieldset>
+						<legend>Feeder</legend>
+						<div class="form-group">
+							<label class="col-md-2 control-label">Disengage Offset (mm)</label>
+							<div class="col-md-10">
+								<input class="form-control"  type="text" id="feeder-disengage-offset" value="<?php echo $_feeder_disengage; ?>">
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset>
 						<legend>
 							Lighting
 						</legend>
 						<div class="form-group">
-							<label class="col-md-1 control-label">
+							<label class="col-md-2 control-label">
 								Standby
 							</label>
 							<div class="col-md-4">
