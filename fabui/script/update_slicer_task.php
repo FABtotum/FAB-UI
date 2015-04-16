@@ -1,7 +1,7 @@
 <?php
-require_once '/var/www/fabui/script/config.php';
-require_once '/var/www/fabui/ajax/lib/database.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
+require_once '/var/www/lib/config.php';
+require_once '/var/www/lib/database.php';
+require_once '/var/www/lib/utilities.php';
 
 /** GET ARGS FROM COMMAND LINE */
 $task_id    = $argv[1];

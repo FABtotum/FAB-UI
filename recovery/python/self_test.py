@@ -6,34 +6,50 @@ import time, datetime
 import serial
 import json
 from subprocess import call
-import requests  #run   sudo pip install requests if needed 
+import requests  #run   sudo pip install requests if needed
+import ConfigParser
+
+import logging
+
+
+config = ConfigParser.ConfigParser()
+config.read('/var/www/fabui/python/config.ini') 
 
 #read config units from config
-json_f = open("/var/www/fabui/config/config.json")
+json_f = open(config.get('printer', 'settings_file'))
 units = json.load(json_f)
 
 try:
     safety_door = units['safety']['door']
 except KeyError:
     safety_door = 0
+    
+    
+print units
 
 
 #process params
-log_trace=str(sys.argv[1]) #param for the log file
-status_json=str(sys.argv[2])
-online=int(sys.argv[3]) #for online log
+#log_trace=str(sys.argv[1]) #param for the log file
+#status_json=str(sys.argv[2])
+
+log_trace=config.get('task', 'trace_file')
+status_json=config.get('task', 'monitor_file')
+
+logging.basicConfig(filename=log_trace,level=logging.INFO,format='<span class="hidden-xs">[%(asctime)s] -</span> %(message)s',datefmt='%d/%m/%Y %H:%M:%S')
+
+online=int(sys.argv[1]) #for online log
 try:
-    calibration=int(sys.argv[4]) # manual calibration
+    calibration=int(sys.argv[2]) # manual calibration
 except:
     calibration=0
 try:
-    task_id=int(sys.argv[5])    
+    task_id=int(sys.argv[3])    
 except:
     task_id=0
 try:
-    fabui_version=str(sys.argv[6])
+    fabui_version=str(sys.argv[4])
 except:
-    fabui_version='not avaiable'
+    fabui_version='Not Available'
     
     
     
@@ -43,20 +59,23 @@ s_error=0
 ckey=""
 
 
-def write_json(value, json):
-    str_log='{"finish": ' + value +'}'
-    handle=open(json,'w+')
-    print>>handle, str_log
+def write_json(value, file):
+    
+    info = {'type': 'self_test',  'finish':  value}
+    #str_log='{"finish": ' + value +'}'
+    handle=open(file,'w+')
+    print>>handle, json.dumps(info)
     return
 
 write_json('0', status_json)
 
 #track trace
 def trace(string,destination_file):
-    print string
-    out_file = open(destination_file,"a+")
-    out_file.write(str(string) + "\n")
-    out_file.close()
+    #print string
+    #out_file = open(destination_file,"a+")
+    #out_file.write(str(string) + "\n")
+    #out_file.close()
+    logging.info(string)
     return
 
 def read_serial(gcode):
@@ -159,9 +178,12 @@ def summary():
         sys.exit()
 
  
-port = '/dev/ttyAMA0'
-baud = 115200
-serial = serial.Serial(port, baud, timeout=0.6)
+
+'''#### SERIAL PORT COMMUNICATION ####'''
+serial_port = config.get('serial', 'port')
+serial_baud = config.get('serial', 'baud')
+
+serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 serial.flushInput()
 
 # 1 - Extruder turn on, reach temp, turns off
@@ -231,10 +253,10 @@ trace("-------------------------------------------------------\n",log_trace)
 
 
 #pre test-2: check safety measures
-if(safety_door == 1):
+if(int(safety_door) == 1):
     macro("M741","TRIGGERED",1,"Front door switch",0.5)
 else:
-    trace("Fron door control skipped beacuse is disabled", log_trace)
+    trace("Front door control skipped because it is disabled", log_trace)
     
 macro("M744","TRIGGERED",1,"Building plane recognition",0.5)
 

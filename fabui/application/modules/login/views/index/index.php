@@ -568,27 +568,27 @@ url: "<?php echo site_url('login/reset_mail') ?>
 	$("#send-mail").html('Send Mail');
 
 	if(response.user == 0){
-	$("#error-message").show();
-	return false;
+		$("#error-message").show();
+		return false;
 	}
 
 	if(response.user == 1){
 
-	$("#error-message").hide();
-
-	if(response.sent == 1){
-
-	$('#password-modal').modal('hide')
-
-	$.smallBox({
-	title : "Success",
-	content : "<i class='fa fa-check'></i>A message was be sent to that address containing a link to reset your password ",
-	color : "#659265",
-	iconSmall : "fa fa-thumbs-up bounce animated",
-	timeout : 4000
-	});
-
-	}
+		$("#error-message").hide();
+	
+		if(response.sent == 1){
+	
+			$('#password-modal').modal('hide')
+		
+			$.smallBox({
+			title : "Success",
+			content : "<i class='fa fa-check'></i>A message was be sent to that address containing a link to reset your password ",
+			color : "#659265",
+			iconSmall : "fa fa-thumbs-up bounce animated",
+			timeout : 4000
+			});
+	
+		}
 
 	}
 

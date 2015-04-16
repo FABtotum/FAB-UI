@@ -1,8 +1,8 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 /** SAVE POST PARAMETERS */
 $_folder    = str_replace("//", "/", (str_replace('/media', '', $_POST["folder"])));
@@ -10,7 +10,7 @@ $_folder    = str_replace("//", "/", (str_replace('/media', '', $_POST["folder"]
 
 /** LOAD FROM USB DISK */
 $_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
-$_command     = 'sudo python /var/www/fabui/python/usb_browser.py --path='.$_folder.'  --dest='.$_destination .' -f';
+$_command     = 'sudo python /var/www/fabui/python/usb_browser.py --path='.$_folder.'  --dest='.$_destination .' ';
 shell_exec($_command);
 
 

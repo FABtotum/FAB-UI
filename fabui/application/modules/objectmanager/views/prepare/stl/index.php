@@ -95,7 +95,7 @@
 </div>
 <div class="row monitor" style="<?php echo $_task ? '' : 'display:none;'; ?>">
     <div class="col-sm-12">
-        <div class="well" id="editor" style="height: 200px; ">
+        <pre class="well console" style="height: 200px; ">
         </div>
     </div>
 </div>

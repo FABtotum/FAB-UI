@@ -2,30 +2,12 @@ import RPi.GPIO as GPIO
 import time  
 import sys,os
 import serial
+from ws4py.client.threadedclient import WebSocketClient
+import ConfigParser
+import json
 
 #realtime emergency management.
 #if GPIO Pin 5 is set to low , emergency mode will be triggered.
-
-def err_msg(code):
-	if code == 0:
-		msg="All Nominal"
-	elif code == 100:
-		msg= "Safety Lock engaged!"
-	elif code == 101:
-		msg= "Printer stopped due to errors"
-	elif code == 102:
-		msg= "Front panel is open, cannot continue"
-	elif code == 103:
-		msg= "Head not properly locked in place"
-	elif code == 104:
-		msg= "Extruder Temperature critical, shutting down"
-	elif code == 105:
-		msg= "Bed Temperature critical, shutting down"
-	else:
-		msg="dunno!"
-	return msg
-		
-		
 GPIO.cleanup()
 
 GPIO.setmode(GPIO.BCM)
@@ -33,57 +15,74 @@ GPIO.setup(2, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
 emergency=False #default emergency flag
 
+config = ConfigParser.ConfigParser()
+config.read('/var/www/fabui/python/config.ini')
+
 safety_log_path="/var/www/temp/fab_ui_safety.json" #/var/www/temp
 
+def write_emergency(code):    
+    if(code != ''):
+        status_string='{"type": "emergency", "code": '+ code +'}'
+    else:
+        status_string='{"type": ""}'
+    
+    safety = open(safety_log_path, 'w+')
+    print >> safety, status_string
+    return
 
-def switch_safety(emergency,status):
-	status_string='{"state":{"emergency":"'+ str(emergency)+'","status":"'+ str(status)+'"}}'
-	safety= open(safety_log_path, 'w+')  
-	print>>safety, status_string
-	print "written" + str(emergency)
-	return
-switch_safety(0,"Ok")  #safety log = safe!
+code=''
+write_emergency(code)  #safety log = safe!
+
+#wait 5 seconds
 
 port = '/dev/ttyAMA0'
 baud = 115200
 serial = serial.Serial(port, baud, timeout=0.6)
 
-while True:
-	if(GPIO.input(2) == 0):
-		#Pin is set as low, switch to emergency mode!
-		if not emergency:					
-			#read status
-			
-			serial.flushInput()
-			serial.write("M730\r\n")
-			time.sleep(0.5)
-			reply=serial.readline()
+host=config.get('socket', 'host')
+port=config.get('socket', 'port')
 
-			try:
-				code=float(reply.split("ERROR : ")[1].rstrip())
-			except:
-				code=100
-				
-			status=err_msg(code)
-			#print "[!] ("+str(code)+") "+str(status)
-			
-			#Write UI-Level emergency status JSON
-			switch_safety(1,status)
-			emergency=True
-			
-			
-	if(GPIO.input(2) == 1):
-		#normal ops
-		if emergency:
-			#disable emergency mode
-			switch_safety(0,"ok")
-			emergency=False
-			#send M999 TO RESET!
-			
-			#DEBUG
-			#print("Safe")
-	
-	#print str(i)+ " Emergency :"+ str(emergency)
-	#i+=1
-	time.sleep(1)
+ws = WebSocketClient('ws://'+host +':'+port+'/', protocols=['http-only', 'chat'])
+ws.connect();
+
+print "Connected to socket"
+
+while True:
+    
+    if(GPIO.input(2) == GPIO.LOW):
+        #Pin is set as low, switch to emergency mode!
+        if not emergency:                    
+            #read status
+            
+            serial.flushInput()
+            serial.write("M730\r\n")
+            #time.sleep(0.5)
+            reply=serial.readline()
+
+            try:
+                code=float(reply.split("ERROR : ")[1].rstrip())
+            except:
+                code=100
+            
+            #print '{"type": "emergency", "code": '+ str(code) +'}'
+            #ws.send('{"type": "emergency", "code": '+ str(code) +'}')
+            
+            message = {'type': 'emergency', 'code': str(code)}
+            ws.send(json.dumps(message))
+            emergency=True
+            
+            
+    if(GPIO.input(2) == GPIO.HIGH):
+        #normal ops
+        if emergency:
+            #disable emergency mode
+            code=''
+            emergency=False
+            #send M999 TO RESET!
+            #DEBUG
+           
+                
+    write_emergency(str(code))
+    
+    time.sleep(0.5)
 GPIO.cleanup()

@@ -124,7 +124,11 @@
 
     		var started = <?php echo str_replace('', '', $_json_monitor['slicing']['started']) ?>;
     		elapsed_time = (now - started);
-
+    		
+    		
+    		monitor_get();
+    		get_trace();
+			
     		interval_monitor   = setInterval(monitor, 1000);
             interval_trace     = setInterval(trace, 3000);
             interval_timer     = setInterval(timer, 1000);
@@ -208,22 +212,27 @@
     
     function monitor(){
         
-        if(slice_finished == false){
-            monitor_get();
-        }else{
-            
-            clearInterval(interval_monitor);
-            clearInterval(interval_trace);
-            clearInterval(interval_timer);
-
-            setTimeout(function (){
-            	
-            	$( ".monitor" ).slideUp( "slow", function() {
-		                 $( ".complete" ).slideDown( "slow", function() {});
-		            });   
-		        }
-            	
-            , 5000);
+        if(!SOCKET_CONNECTED){
+        
+	        if(slice_finished == false){
+	            monitor_get();
+	        }else{
+	            
+	            clearInterval(interval_monitor);
+	            clearInterval(interval_trace);
+	            clearInterval(interval_timer);
+	
+	            setTimeout(function (){
+	            	
+	            	$( ".monitor" ).slideUp( "slow", function() {
+			                 $( ".complete" ).slideDown( "slow", function() {});
+			            });   
+			        }
+	            	
+	            , 5000);
+	    	}
+    	
+    	
     	}
     
     }
@@ -231,32 +240,12 @@
     
     function monitor_get(){
         
-        
+
         $.get( monitor_uri , function( data ) {
         
             if(data != ''){
-                
-                monitor = jQuery.parseJSON(data);
-            
-            
-                $('#lines-progress').attr('style', 'width:' + parseInt(monitor.slicing.stats.percent) + '%');
-                $('#lines-progress').attr('aria-valuetransitiongoal',  parseInt(monitor.slicing.stats.percent));
-                $('#lines-progress').attr('aria-valuenow', parseInt(monitor.slicing.stats.percent));
-                
-                $('#lines-progress').html(number_format(parseInt(monitor.slicing.stats.percent), 1, ',', '.') + ' %');
-    			$('.progress-status').html(	number_format(parseInt(monitor.slicing.stats.percent),1, ',', '.') + ' %');
-                $('#label-progress').html('(' +	number_format(parseInt(monitor.slicing.stats.percent), 1, ',', '.') + ' % )');
-                
-                if(time_left_saved != parseInt(monitor.slicing.stats.time_left)){
-                    time_left       = parseInt(monitor.slicing.stats.time_left);
-                    time_left_saved = time_left;
-                }
-                
-                
-                $('.estimated-time').html(_time_to_string(parseInt(monitor.slicing.stats.time_total)));
-                
-                slice_finished = parseInt(monitor.slicing.completed) == 1 ? true : false;
-    
+
+               manage_monitor(data);
             }
             
         }).fail(function(){ 
@@ -266,22 +255,25 @@
     }
     
     
+    
     function trace(){
+    	
+        if(!SOCKET_CONNECTED){
+	        get_trace();
+        }
         
-        $.get( trace_uri , function( data ) {
-            
-            if(data != ''){
-
-               $("#editor").html(data);
-               var $t = $('#editor');
-               $t.animate({"scrollTop": $('#editor')[0].scrollHeight}, "slow");
-                
-            }
-        }).fail(function(){ 
-                
-        });
-        
-        
+    }
+    
+    function get_trace(){
+    	$.get( trace_uri , function( data ) {    
+	            if(data != ''){
+	               $(".console").html(data);
+	               var $t = $(".console");
+	               $t.animate({"scrollTop": $(".console")[0].scrollHeight}, "slow");
+	            }}
+	      ).fail(function(){ 
+	                
+	    });
     }
     
     
@@ -490,5 +482,49 @@
     	});
     	
     }
+    
+    function manage_task_monitor(obj){
+    	
+    	if(obj.content != ""){
+			var monitor = jQuery.parseJSON(obj.content);
+			manage_monitor(monitor);
+		}
+	}
+	
+	
+	function manage_monitor(data){
+		
+		$('#lines-progress').attr('style', 'width:' + parseInt(data.slicing.stats.percent) + '%');
+        $('#lines-progress').attr('aria-valuetransitiongoal',  parseInt(data.slicing.stats.percent));
+        $('#lines-progress').attr('aria-valuenow', parseInt(data.slicing.stats.percent));
+        
+        $('#lines-progress').html(number_format(parseInt(data.slicing.stats.percent), 1, ',', '.') + ' %');
+		$('.progress-status').html(	number_format(parseInt(data.slicing.stats.percent),1, ',', '.') + ' %');
+        $('#label-progress').html('(' +	number_format(parseInt(data.slicing.stats.percent), 1, ',', '.') + ' % )');
+        
+        if(time_left_saved != parseInt(data.slicing.stats.time_left)){
+            time_left       = parseInt(data.slicing.stats.time_left);
+            time_left_saved = time_left;
+        }
+        
+        
+        $('.estimated-time').html(_time_to_string(parseInt(data.slicing.stats.time_total)));
+        
+        slice_finished = parseInt(data.slicing.completed) == 1 ? true : false;
+        
+        if(slice_finished){
+        	setTimeout(function (){
+            	
+            	$( ".monitor" ).slideUp( "slow", function() {
+		                 $( ".complete" ).slideDown( "slow", function() {});
+		            });   
+		        }
+            	
+            , 5000);
+        }
+		
+	}
+
+
     
 </script>

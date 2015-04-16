@@ -46,7 +46,7 @@
                 </div>
                 <div class="col-sm-6">
                     <h1 class="text-primary">Download</h1>
-                    <h2>Save the cloud data on your computer. You can use it in the third party software.</h2>
+                    <h2>Save data on your computer. You can use it in the third party software.</h2>
                 </div>
             
             </div>
@@ -92,7 +92,7 @@
 </div>
 <?php  endif; ?>
 <!-- ONLY FOR GCODE FILE -->
-<?php if(strtolower($file->file_ext) == '.gc' || strtolower($file->file_ext) == '.gcode'  || strtolower($file->file_ext) == '.nc'): ?>
+<?php if(strtolower($file->file_ext) == '.gc' || strtolower($file->file_ext) == '.gcode'  ): ?>
 	
 	<div class="row">
 		<div class="col-sm-6 text-center">
@@ -124,7 +124,7 @@
 			<div class="well">
 				<div class="row">
 					<div class="col-sm-6">
-						<a href="<?php  echo site_url('objectmanager/file/preview/'.$obj_id.'/'.$file->id)?>"><i class="fa fa-cubes fa-4x" style="font-size: 189px;"></i></a>
+						<a href="<?php  echo site_url('objectmanager/file/preview/'.$obj_id.'/'.$file->id)?>"><i class="fa  fa-connectdevelop fa-4x" style="font-size: 189px;"></i></a>
 					</div>
 					<div class="col-sm-6">
 						<h1 class="text-primary"><a href="<?php  echo site_url('objectmanager/file/preview/'.$obj_id.'/'.$file->id)?>">STL Viewer</a></h1>

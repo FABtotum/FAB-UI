@@ -58,14 +58,14 @@
     </div>
     
     
-    
+    <!--
     <div class="row">
 		<div class="col-sm-6">
 			<h2 class="text-primary">Select scan mode</h2>
 		</div>
 
 	</div>
-
+	-->
 
 	<div class="row">
 	
@@ -78,7 +78,7 @@
 		
 			<div class="scan-mode  well well-sm text-center " data-id="<?php echo $mode->id; ?>" data-type="<?php echo $mode->name ?>" data-title="<?php echo $configuration->info->name ?>">
 			
-				<h4 class="page-title txt-color-blueDark"><?php echo $configuration->info->name ?></h4>
+				<h6><?php echo $configuration->info->name ?></h6>
 				<div class="row">
 					<div class="text-align-center mode-image">
 						<img class="img-responsive" style="display: inline; max-width: 50%;" src="<?php echo base_url() .'/application/modules/scan/assets/img/'.strtolower($configuration->info->name).'.png' ?>">

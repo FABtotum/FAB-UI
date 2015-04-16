@@ -5,6 +5,8 @@ import serial
 from subprocess import call
 import numpy as np
 import json
+import ConfigParser
+import logging
 
 #Args
 try:
@@ -16,6 +18,18 @@ except:
 	print "Missing Log reference"
 	
 #vars
+config = ConfigParser.ConfigParser()
+config.read('/var/www/fabui/python/config.ini')
+macro_status=config.get('macro', 'status_file')
+
+log_trace=config.get('macro', 'trace_file')
+logfile=config.get('macro', 'response_file')
+
+open(log_trace, 'w').close() #reset trace file
+open(logfile, 'w').close() #reset trace file
+
+
+logging.basicConfig(filename=log_trace,level=logging.INFO,format='<span class="hidden-xs">[%(asctime)s] -</span> %(message)s',datefmt='%d/%m/%Y %H:%M:%S')
 
 #print "json: "+logfile
 #print "trace: "+log_trace
@@ -37,13 +51,23 @@ serial_reply=""
 #num of probes each point
 num_probes=4
 
+def write_status(status):
+    global macro_status
+    json='{"status": ' + str(status).lower() +'}'
+    handle=open(macro_status,'w+')
+    print>>handle, json
+    return
+
 def trace(string):
+	'''
 	global log_trace
 	out_file = open(log_trace,"a+")
 	out_file.write(str(string) + "\n")
 	out_file.close()
 	#headless
 	print string
+	'''
+	logging.info(string)
 	return
 	
 def printlog():
@@ -153,19 +177,23 @@ def macro(code,expected_reply,timeout,error_msg,delay_after,warning=False,verbos
 		return False
 	return serial_reply
 
+write_status(True)
 trace("Manual Bed Calibration Wizard Initiated")
-port = '/dev/ttyAMA0'
-baud = 115200
+
+'''#### SERIAL PORT COMMUNICATION ####'''
+serial_port = config.get('serial', 'port')
+serial_baud = config.get('serial', 'baud')
+serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 #initialize serial
-serial = serial.Serial(port, baud, timeout=0.6)
+#serial = serial.Serial(port, baud, timeout=0.6)
 serial.flushInput()
 
 json_f = open("/var/www/fabui/config/config.json")
-config = json.load(json_f)
+settings = json.load(json_f)
 
 try:
-    safety_door = config['safety']['door']
+    safety_door = settings['safety']['door']
 except KeyError:
     safety_door = 0
 
@@ -211,6 +239,9 @@ for (p,point) in enumerate(probed_points):
 			pass
 			
 		#print serial_reply
+		if probes==0:
+			trace("Not enough contacts. Check bed height.")
+			sys.exit();
 		#get the z position
 		if serial_reply!="":
 			z=float(serial_reply.split("Z:")[1].strip())
@@ -230,8 +261,8 @@ for (p,point) in enumerate(probed_points):
 	
 	#trace("Mean ="+ str(probed_points[p,2]))
 	
-	msg="Point " +str(p+1)+ "/"+ str(len(probed_points)) + " , Z= " +str(probed_points[p,2])
-	trace(msg)
+	#msg="Point " +str(p+1)+ "/"+ str(len(probed_points)) + " , Z= " +str(probed_points[p,2])
+	#trace(msg)
 	
 	macro("M402","ok",2,"Raising Probe",1, warning=True, verbose=False)	
 	
@@ -317,4 +348,6 @@ printlog()
 
 #end
 trace("Done!")
+write_status(False)
+#open(log_trace, 'w').close() #reset trace file
 sys.exit()

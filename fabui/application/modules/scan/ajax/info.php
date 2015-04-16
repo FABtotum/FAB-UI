@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
 
 $_task_id = $_POST['task_id'];
 

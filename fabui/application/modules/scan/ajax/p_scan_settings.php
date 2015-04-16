@@ -2,9 +2,7 @@
 	<div class="col-sm-8">
 		<div class="row">
 			<div class="col-sm-12">
-				<h2 class="text-primary">
-					Select scan area
-				</h2>
+				<h6 class="text-primary">Select scan area</h6>
 			</div>
 		</div>
 		<div class="row">
@@ -72,9 +70,7 @@
 	<div class="col-sm-4">
 		<div class="row">
 			<div class="col-sm-12">
-				<h2 class="text-primary">
-					Title
-				</h2>
+				<h6 class="text-primary">Settings</h6>
 			</div>
 		</div>
 		<div class="row">
@@ -83,7 +79,8 @@
 					<div class="smart-form">
 						<fieldset style="background: none !important;">
 							<section>
-                                <div id="probe-quality" class="noUiSlider"></div>
+                                <div id="probe-quality" class="noUiSlider fab-slider"></div>
+                                
 								<label class="label margin-top-10 probe-quality-label"> </label>
                                 <!--
 								<label class="input">
@@ -128,8 +125,8 @@
 
 
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/lib/database.php';
 /** LOAD DB */
 $db = new Database();
 /** GET PROBE QUALITY FROM DB */

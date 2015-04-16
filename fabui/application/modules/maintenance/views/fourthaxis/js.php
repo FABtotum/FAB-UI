@@ -17,19 +17,21 @@
 	
 	function ticker(){
 		
-	    if(ticker_url != ''){
-	        
-	         $.get( ticker_url , function( data ) {
-	           
-	            if(data != ''){
-	            	
-	            	waitContent(data);
-	              
-	            }
-	       }).fail(function(){ 
-	           
-	        });
-	    }
+		if(!SOCKET_CONNECTED){
+		    if(ticker_url != ''){
+		        
+		         $.get( ticker_url , function( data ) {
+		           
+		            if(data != ''){
+		            	
+		            	waitContent(data);
+		              
+		            }
+		       }).fail(function(){ 
+		           
+		        });
+		    }
+	   }
 	}
 	
 	
@@ -39,12 +41,12 @@
 		openWait('Engaging in process');
 		
 		var now = jQuery.now();
-		ticker_url = '/temp/4axis_engage_' + now + '.trace'; 
+		ticker_url = '/temp/macro_trace'; 
 		
 		
 		$.ajax({
 			type: "POST",
-			url : "<?php echo module_url('settings').'ajax/4axis_engage.php' ?>",
+			url : "<?php echo module_url('maintenance').'ajax/4axis_engage.php' ?>",
 			data : {time: now},
 			dataType: "json"
 		}).done(function( data ) {

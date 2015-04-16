@@ -1,8 +1,7 @@
 <?php
-
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/application/libraries/Serial.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/serial.php';
 
 
 /** LOAD SERIAL CLASS */

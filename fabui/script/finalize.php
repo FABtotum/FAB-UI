@@ -1,17 +1,17 @@
 <?php
-require_once '/var/www/fabui/script/config.php';
-require_once '/var/www/fabui/ajax/lib/database.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
-require_once dirname(__FILE__).'/../../lib/log4php/Logger.php';
+require_once '/var/www/lib/config.php';
+require_once '/var/www/lib/database.php';
+require_once '/var/www/lib/utilities.php';
+//require_once '/var/www/lib/log4php/Logger.php';
 
 // INCLUDE MAIL CLASS (CI)
-require_once FABUI_PATH.'system/libraries/Email.php';
+require_once FABUI_PATH.'system/libraries/Email.php'; 
 
 
 /* INIT LOG **/
-Logger::configure(FABUI_PATH.'config/log_fabui_config.xml');
-$log = Logger::getLogger('finalize');
-$log->info('=====================================================');
+//Logger::configure(FABUI_PATH.'config/log_fabui_config.xml');
+//$log = Logger::getLogger('finalize');
+//$log->info('=====================================================');
 
 /** GET ARGS FROM COMMAND LINE */
 $_task_id       = $argv[1];
@@ -51,7 +51,7 @@ switch($_type){
 }
 
 
-$log->info('=====================================================');
+//$log->info('=====================================================');
 
 /** UPDATE TASK ON DB 
  * 
@@ -60,7 +60,7 @@ $log->info('=====================================================');
  * 
  ***/
 function update_task($tid, $status){
-	global $log;
+	//global $log;
 	
 	//LOAD DB
 	$db = new Database();
@@ -72,7 +72,8 @@ function update_task($tid, $status){
 	$db->update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
 	$db->close();
 	
-	$log->info('Task #'.$tid.' updated. New status: '.$status);
+	shell_exec('sudo php '.SCRIPT_PATH.'/notifications.php &');
+	//$log->info('Task #'.$tid.' updated. New status: '.$status);
 	
 }
 
@@ -86,10 +87,10 @@ function update_task($tid, $status){
  * 
  **/
 function finalize_print($tid, $status){
-	global $log;
+	//global $log;
 	
-	$log->info('Task #'.$tid.' print '.$status);
-	$log->info('Task #'.$tid.' start finalizing');
+	//$log->info('Task #'.$tid.' print '.$status);
+	//$log->info('Task #'.$tid.' start finalizing');
 	
 	//LOAD DB
 	$db = new Database();
@@ -97,9 +98,11 @@ function finalize_print($tid, $status){
 	$task = $db->query('select * from sys_tasks where id='.$tid);
 	
 	
+	$reset = false;
+	
 	//CHECK IF TASK WAS ALREARDY FINALIZED
 	if($task['status'] == 'stopped' || $task['status'] == 'performed'){
-		$log->info('Task #'.$tid.' already finalized. Exit');
+		//$log->info('Task #'.$tid.' already finalized. Exit');
 		return;
 	}
 	
@@ -109,18 +112,18 @@ function finalize_print($tid, $status){
 	
 	if($status == 'stopped'){
 		
-		//sleep(2); //IF STATUS IS STOPPED I HAVE TO KILL PRINT PROCESS
-		//shell_exec('sudo kill '.$attributes['pid']);
-		
 		//IF % PROGRESS IS < 0.5 FOR SECURITY REASON I RESET THE BOARD CONTROLLER
 		$monitor = json_decode(file_get_contents($attributes['monitor']), TRUE);
 		$percent = $monitor['print']['stats']['percent'];
 		
-		if($percent < 0.5){
+		
+		if($percent < 0.2){
+			
 			/** FORCE RESET CONTROLLER */
 			$_command = 'sudo python '.PYTHON_PATH.'force_reset.py';
 			shell_exec($_command);
-			$log->info('Task #'.$tid.' reset controller');
+			$reset = true;
+			//$log->info('Task #'.$tid.' reset controller');
 		}
 		
 	}
@@ -129,42 +132,37 @@ function finalize_print($tid, $status){
 	$file = $db->query('select * from sys_files where id='.$attributes['id_file']);
 	
 	
+	//UPDATE TASK
+	update_task($tid, $status);
+	
+	$_macro_end_print_response = TEMP_PATH.'macro_response';
+	$_macro_end_print_trace    = TEMP_PATH.'macro_trace';
+	
+	/*
+	if(($file['print_type'] == 'additive') && !$reset){
+		echo 'sudo python '.PYTHON_PATH.'gmacro.py end_print_additive_safe_zone '.$_macro_end_print_trace.' '.$_macro_end_print_response.' > /dev/null &';
+		shell_exec('sudo python '.PYTHON_PATH.'gmacro.py end_print_additive_safe_zone '.$_macro_end_print_trace.' '.$_macro_end_print_response.' > /dev/null &');
+	}
+	*/
+	
 	$end_macro =  $file['print_type'] == 'subtractive' ? 'end_print_subtractive' : 'end_print_additive';
-	
-	
-	//CREATE MACRO LOG FILES
-	$_macro_end_print_trace    = $attributes['folder'].'end_print.trace';
-	$_macro_end_print_response = $attributes['folder'].'end_print.response';
-	
+		
 	write_file($_macro_end_print_trace, '', 'w');
 	chmod($_macro_end_print_trace, 0777);
 	
 	write_file($_macro_end_print_response, '', 'w');
 	chmod($_macro_end_print_response, 0777);
 	
-	
-	//UPDATE TASK
-	update_task($tid, $status);
-	
-	
 	//EXEC END MACRO
 	shell_exec('sudo python '.PYTHON_PATH.'gmacro.py '.$end_macro.' '.$_macro_end_print_trace.' '.$_macro_end_print_response.' > /dev/null &');
 	
-	
-	if($percent < 0.5 && $status=='stopped'){
-			/** FORCE RESET CONTROLLER */
-			$_command = 'sudo python '.PYTHON_PATH.'force_reset.py';
-			shell_exec($_command);
-			//$log->info('Task #'.$tid.' reset controller');
-		}
-	
-	$log->info('Task #'.$tid.' end macro: '.$end_macro);
+
+	//$log->info('Task #'.$tid.' end macro: '.$end_macro);
 	
 	sleep(2);
 	
-	
-	
-	
+	shell_exec('sudo kill '.$attributes['pid']);
+
 	// SEND MAIL
 	if(isset($attributes['mail']) && $attributes['mail'] == 1 && $status == 'peformed'){
 		
@@ -197,22 +195,21 @@ function finalize_print($tid, $status){
 		$email->message($message);
 		
 		if ( ! $email->send()){
-			$log->error('Task #'.$tid.' mail sent to '.$user['email']); 
+			//$log->error('Task #'.$tid.' mail sent to '.$user['email']); 
 		}else{
-			$log->info('Task #'.$tid.' mail sent to '.$user['email']);
+			//$log->info('Task #'.$tid.' mail sent to '.$user['email']);
 		}
-				
-			
+						
 	}
 	
 	$db->close();
 	
-	
 	//WAIT FOR THE UI TO FINALIZE THE PROCESS
-	sleep(7);
+	//sleep(7);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']); 
-	$log->info('Task #'.$tid.' end finalizing');
+	
+	//$log->info('Task #'.$tid.' end finalizing');
 	
 	
 	
@@ -229,10 +226,10 @@ function finalize_print($tid, $status){
  * 
  **/
 function finalize_slice($tid, $status){
-	global $log;
+	//global $log;
 	
-	$log->info('Task #'.$tid.' slice '.$status);
-	$log->info('Task #'.$tid.' start finalizing');
+	//$log->info('Task #'.$tid.' slice '.$status);
+	//$log->info('Task #'.$tid.' start finalizing');
 	
 	//LOAD DB
 	$db = new Database();
@@ -242,7 +239,7 @@ function finalize_slice($tid, $status){
 	
 	//CHECK IF TASK WAS ALREARDY FINALIZED
 	if($task['status'] == 'stopped' || $task['status'] == 'performed'){
-		$log->info('Task #'.$tid.' already finalized. Exit');
+		//$log->info('Task #'.$tid.' already finalized. Exit');
 		exit;
 	}
 	
@@ -254,7 +251,7 @@ function finalize_slice($tid, $status){
 		//KILL ALL PROCESSESS
 		shell_exec('sudo kill '.$attributes['slicer_pid']);
 		shell_exec('sudo kill '.$attributes['perl_pid']);
-		$log->info('Task #'.$tid.' kill process #'.$attributes['slicer_pid'].' #'.$attributes['perl_pid']);
+		//$log->info('Task #'.$tid.' kill process #'.$attributes['slicer_pid'].' #'.$attributes['perl_pid']);
 		
 	}else{
 		
@@ -272,7 +269,7 @@ function finalize_slice($tid, $status){
 		
 		//MOVE TO FINALLY FOLDER
 	    shell_exec('sudo cp '.$_output.' '.$_output_folder_destination.$_output_file_name);
-		$log->info('Task #'.$tid.' file moved in:'.$_output_folder_destination.$_output_file_name);
+		//$log->info('Task #'.$tid.' file moved in:'.$_output_folder_destination.$_output_file_name);
 		
 		//ADD PERMISSIONS
 	    shell_exec('sudo chmod 746 '.$_output_folder_destination.$_output_file_name);
@@ -310,7 +307,7 @@ function finalize_slice($tid, $status){
 	
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']); 
-	$log->info('Task #'.$tid.' end finalizing');
+	//$log->info('Task #'.$tid.' end finalizing');
 	
 }
 
@@ -325,10 +322,10 @@ function finalize_slice($tid, $status){
  **/
 function finalize_self_test($tid, $status){
 	
-	global $log;
+	//global $log;
 	
-	$log->info('Task #'.$tid.' self test '.$status);
-	$log->info('Task #'.$tid.' start finalizing');
+	//$log->info('Task #'.$tid.' self test '.$status);
+	//$log->info('Task #'.$tid.' start finalizing');
 	
 	//LOAD DB
 	$db = new Database();
@@ -344,11 +341,11 @@ function finalize_self_test($tid, $status){
 	update_task($tid, $status);
 	
 	//SLEEP MORE TO LET THE UI REFRESH	
-	sleep(5);
+	//sleep(5);
 	
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']); 
-	$log->info('Task #'.$tid.' end finalizing');
+	//$log->info('Task #'.$tid.' end finalizing');
 	
 }
 
@@ -363,10 +360,10 @@ function finalize_self_test($tid, $status){
  **/
 function finalize_update_fw($tid, $status){
 	
-	global $log;
+	//global $log;
 	
-	$log->info('Task #'.$tid.' update FW '.$status);
-	$log->info('Task #'.$tid.' start finalizing');
+	//$log->info('Task #'.$tid.' update FW '.$status);
+	//$log->info('Task #'.$tid.' start finalizing');
 	
 	//LOAD DB
 	$db = new Database();
@@ -384,7 +381,7 @@ function finalize_update_fw($tid, $status){
     sleep(10);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']); 
-	$log->info('Task #'.$tid.' end finalizing');
+	//$log->info('Task #'.$tid.' end finalizing');
 	
 }
 
@@ -401,10 +398,10 @@ function finalize_update_fw($tid, $status){
 
 function finalize_mesh($tid, $status){
 	
-	global $log;
+	//global $log;
 	
-	$log->info('Task #'.$tid.' mesh '.$status);
-	$log->info('Task #'.$tid.' start finalizing');
+	//$log->info('Task #'.$tid.' mesh '.$status);
+	//$log->info('Task #'.$tid.' start finalizing');
 	//LOAD DB
 	$db = new Database();
 	//GET TASK
@@ -461,7 +458,7 @@ function finalize_mesh($tid, $status){
 	sleep(10);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']);
-	$log->info('Task #'.$tid.' end finalizing');
+	//$log->info('Task #'.$tid.' end finalizing');
 	
 }
 
@@ -477,10 +474,10 @@ function finalize_mesh($tid, $status){
 
 function finalize_general($tid,$type,$status){
 	
-	global $log;
+	//global $log;
 	
-	$log->info('Task #'.$tid.' '.$type.' '.$status);
-	$log->info('Task #'.$tid.' start finalizing');
+	//$log->info('Task #'.$tid.' '.$type.' '.$status);
+	//$log->info('Task #'.$tid.' start finalizing');
 	
 	
 	//LOAD DB
@@ -497,7 +494,7 @@ function finalize_general($tid,$type,$status){
 	sleep(10);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']);
-	$log->info('Task #'.$tid.' end finalizing');
+	//$log->info('Task #'.$tid.' end finalizing');
 	
 }
 
@@ -514,10 +511,10 @@ function finalize_general($tid,$type,$status){
  **/
 
  function finalize_scan($tid, $type, $status){
- 	global $log;
+ 	//global $log;
 	
-	$log->info('Task #'.$tid.' '.$type.' '.$status);
-	$log->info('Task #'.$tid.' start finalizing');
+	//$log->info('Task #'.$tid.' '.$type.' '.$status);
+	//$log->info('Task #'.$tid.' start finalizing');
 	
 	
 	
@@ -618,7 +615,7 @@ function finalize_general($tid,$type,$status){
 	sleep(5);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf '.$attributes['folder']);
-	$log->info('Task #'.$tid.' end finalizing');
+	//$log->info('Task #'.$tid.' end finalizing');
 	
 	
  }

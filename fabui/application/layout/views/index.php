@@ -13,12 +13,12 @@
 		<!-- CSS FILES -->
 		<?php echo $_css_files ?>
 		<!-- END CSS FILES -->
-		<!-- CSS IN PAGE -->
-		<?php echo $_css_in_page; ?>
-		<!-- END CSS IN PAGE -->
 		<!-- JS HEADER -->
 		<?php echo $_header_js_files; ?>
 		<!-- END JS HEADER -->
+		<!-- CSS IN PAGE -->
+		<?php echo $_css_in_page; ?>
+		<!-- END CSS IN PAGE -->
 	</head>
 	<body class="<?php echo $_skin; ?> <?php echo isset($_SESSION['user']['layout']) ? $_SESSION['user']['layout'] : '' ?>">
 		<!-- HEADER -->
@@ -67,7 +67,7 @@
 				<!-- SUPPORT BUTTON -->
 				<div class="btn-header transparent pull-right">
 					<span>
-						<?php echo anchor( 'support', '<i class="fa fa-life-ring"></i>', 'title="Support" style="cursor: pointer !important"'); ?>
+						<?php echo anchor( 'support', '<i class="fa fa-life-ring"></i>', 'title="Support" style="cursor: pointer !important" class="hidden-xs"'); ?>
 					</span>
 				</div>
 				<!-- END SUPPORT BUTTON -->
@@ -119,17 +119,30 @@
 		<div id="main" role="main">
 			<!-- RIBBON -->
 			<div id="ribbon">
+				<!-- USB -->
+				<span class="ribbon-button-alignment usb-ribbon" style="display:none">
+					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="USB disk inserted" data-html="true"><i class="icon-fab-usb "></i></span>
+				</span>
+				<!-- END USB -->
+				
 				<!-- INTERNET -->
 				<span class="ribbon-button-alignment internet" style="display:none">
-					<span class="btn btn-ribbon "  rel="tooltip" data-placement="bottom" data-original-title="Connected to internet" data-html="true"><i class="fa fa-globe "></i></span>
+					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="Connected to internet" data-html="true"><i class="fa fa-globe "></i></span>
 				</span>
 				<!-- END INTERNET -->
+				
+				<!-- LOCK -->
+				<span class="ribbon-button-alignment lock-ribbon">
+					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="Lock Screen" data-html="true"><i class="fa fa-lock"></i></span>
+				</span>
+				
 				<span class="ribbon-button-alignment">
-					<span id="refresh" data-action="resetWidgets" class="btn btn-ribbon" data-title="refresh" rel="tooltip" data-placement="bottom" data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
+					<span id="refresh" data-action="resetWidgets" class="btn btn-ribbon" data-title="refresh" rel="tooltip" data-placement="right" data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
 					data-html="true">
 						<i class="fa fa-refresh"></i>
 					</span>
 				</span>
+				
 				<!-- BREADCRUMBS -->
 				<?php echo $_breadcrumbs ?>
 				<!-- END BREADCRUMBS -->

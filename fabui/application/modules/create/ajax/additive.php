@@ -326,10 +326,8 @@
             
             
             if(action == "feeder"){
-            	
             	engage_feeder();
             	return false;
-            	
             }
             
             
@@ -396,7 +394,7 @@
             
             var timestamp = new Date().getTime();
             
-            ticker_url = '/temp/check_' + timestamp + '.trace';
+            ticker_url = '/temp/macro_trace';
                        
             $.ajax({
         		  url: ajax_endpoint + 'ajax/pre_print.php',
@@ -451,7 +449,7 @@
             
             var timestamp = new Date().getTime();
             
-            ticker_url = '/temp/engage_feeder_' + timestamp + '.trace';
+            ticker_url = '/temp/macro_trace';
                        
             $.ajax({
         		  url: ajax_endpoint + 'ajax/engage_feeder.php',

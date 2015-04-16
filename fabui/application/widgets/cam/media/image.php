@@ -17,8 +17,8 @@ switch( $file_extension ) {
 }
 
 
-header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
-header('Expires: ' . gmdate('D, d M Y H:i:s', $last_modified + $seconds_to_cache) . ' GMT');
+//header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
+//header('Expires: ' . gmdate('D, d M Y H:i:s', $last_modified + $seconds_to_cache) . ' GMT');
 header('Content-type: ' . $ctype);
 echo readfile('/var/www/temp/picture.jpg');
 

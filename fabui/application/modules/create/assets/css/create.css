@@ -1,13 +1,13 @@
-.obj{
-    cursor:pointer;
+.obj {
+	cursor: pointer;
 }
 
-.file-row{
-    cursor:pointer;
+.file-row {
+	cursor: pointer;
 }
 
 .my-selected {
-	
+
 }
 
 .my-selected:before {
@@ -50,7 +50,6 @@
 	content: " °C"
 }
 
-
 .trace {
 	display: block;
 	padding: 8.5px;
@@ -66,89 +65,128 @@
 	border: 1px solid #ccc;
 	border-radius: 2px;
 	max-height: 150px;
-}  
+}
 
 #renderArea {
-    
-    	margin-top: 20px;
-    	height: 300px;
-    	width: 100%;
 
-        background-color: #000000;
-}
-      
-      
-#temp1 {
-    
-    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-    font-weight: 700;
-    text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-    background-image: url(/fabui/application/layout/assets/img/pattern/overlay-pattern.png);
-    background-color: #a65858!important;
+	margin-top: 20px;
+	height: 300px;
+	width: 100%;
+	background-color: #000000;
 }
 
 
 
-#temp2 {
-    
-   box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-    font-weight: 700;
-    text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-    background-image: url(/fabui/application/layout/assets/img/pattern/overlay-pattern.png);
-    background-color: #a65858!important;
+.rotondo {
+	border-radius: 50% !important;
+	-moz-border-radius: 50% !important;
+	-webkit-border-radius: 50% !important;
 }
-
-
-#velocity{
-    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-    font-weight: 700;
-    text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-    background-image: url(/fabui/application/layout/assets/img/pattern/overlay-pattern.png);
-    background-color: #57889c!important;
-}
-
-  .rotondo {
-    border-radius: 50% !important;
--moz-border-radius: 50% !important;
--webkit-border-radius: 50% !important;
-  }
-
 
 .fa-rotate-45 {
-	filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=1 );
-	-webkit-transform:rotate(45deg);
-	-moz-transform:rotate(45deg);
-	-ms-transform:rotate(45deg);
-	-o-transform:rotate(45deg);
-	transform:rotate(45deg);
-	}
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1 );
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
 
-
-.noUi-handle{
-    background: #858585 !important;
-    height: 30px ;
-    width: 16px;
-    border: 1px solid #fff;
-    cursor: default;  
-    box-shadow: none !important;
+.noUi-handle {
+	background: #858585 !important;
+	height: 30px;
+	width: 16px;
+	border: 1px solid #fff;
+	cursor: default;
+	box-shadow: none !important;
 }
 
 .noUi-handle:hover {
-    background: #6c6c6c !important;
+	background: #6c6c6c !important;
 }
 
-
-#ace-editor pre {
+.console pre {
 	line-height: 20px;
 }
 
-#ace-editor strong {
+.console strong {
 	font-size: 16px;
 	color: #346597;
+}
+
+.pagination-sm {
+	width: 200px !important;
+}
+
+.noUi-connect {
+	
+	background-color: #a65858 !important;
+}
+
+#temp1, #temp2 {
+	background-color: #57889c !important;
+	margin-top: 3px;
+}
+
+.margin-right-5 {
+	margin-right: 5px !important;
+}
+
+.label-danger {
+	background-color: #a65858 !important;
+	font-size: 100% !important;
+}
+
+.label-info {
+	font-size: 100% !important;
+}
+
+.label-success {
+	font-size: 100% !important;
+}
+
+.bg-green {
+	background-color: #739e73 !important;
+}
+
+.txt-color-yellow {
+	color: #c79121 !important;
+}
+
+.label-warning {
+	font-size: 100% !important;
+	background-color: #568a89!important;
+}
+
+.show-stat-microcharts > div {
+	height: 200px !important;
+}
+
+.model-info{
+	background-color: #f7f7f9 !important;
+}
+
+.time {
 	
 }
 
+.noUi-horizontal {
+	height: 15px !important;
+}
 
-.pagination-sm{
-		width:200px !important;
-}	
+.margin-top-40 {
+	margin-top: 40px !important;
+}
+
+.margin-top-30 {
+	margin-top: 30px !important;
+}
+
+#fan, #velocity, #flow-rate, #rpm{
+	
+	background-color: #568a89!important;
+}
+
+.progress-status{
+	
+}

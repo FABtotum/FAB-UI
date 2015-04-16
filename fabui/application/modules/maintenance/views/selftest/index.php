@@ -31,7 +31,7 @@
 			<div class="row margin-top-10">
 
 				<div class="col-md-12">
-					<pre id="editor" style="height: 400px; display:none; overflow: auto;"></pre>
+					<pre class="console"  style="height: 400px; display:none; overflow: auto;"><?php echo $running ? $trace_content : '' ?></pre>
 				</div>
 
 			</div>

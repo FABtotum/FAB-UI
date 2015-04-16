@@ -148,7 +148,7 @@
 			<div class="row margin-top-10 trace">
 
 				<div class="col-md-12">
-					<pre id="console" style="height:300px;display:none;overflow:auto"></pre>
+					<pre class="console" style="height:300px;display:none;overflow:auto"></pre>
 				</div>
 
 			</div>

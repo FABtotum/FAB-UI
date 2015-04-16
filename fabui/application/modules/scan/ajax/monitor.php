@@ -1,9 +1,4 @@
 <?php
-//require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-//require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
-//require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
-
-
 /** GET DATA FROM POST */
 $task_id = $_POST['task_id'];
 $scan_file_monitor    = $_POST['scan_monitor_file'];

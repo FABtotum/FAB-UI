@@ -1,6 +1,6 @@
 <?php
-require_once '/var/www/fabui/ajax/config.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
+require_once '/var/www/lib/config.php';
+require_once '/var/www/lib/utilities.php';
 
 if (is_internet_avaiable()) {
 

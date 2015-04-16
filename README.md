@@ -2,6 +2,90 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.875 (17/03/2015)
+
+CREATE
+- Fixed bug which prevented the printing to start if was chosen auto bed leveling procedure for the calibration
+
+MAINTENANCE
+- Fixed blocked button on "Probe Calibration"
+
+UPDATE
+- Fixed bug that did not properly update the progress bar during the updating task
+
+==================================================================
+
+FABUI 0.85 (13/03/2015)
+
+GENERAL
+The primary focus has been improving the user experience by increasing the responsiveness of the application to user inputs as well as internal logging.
+Web Sockets have been added for leaner communication with the device, where supported by the browser.
+If the browser doesn't support Web Sockets, the old Ajax Json interaction mode has been provided for backward compatibility on older browsers.
+You can get a web socket compatibility list here: http://en.wikipedia.org/wiki/WebSocket#Browser_support.
+The Boot process, initially based on a cron event and a arbitrary timeout of 60 seconds, is now controlled by a init script that check whenever all the required services for the FAB UI are started or not.
+The unit ambient light will turn to it's default color only when the FAB UI is really accessible. 
+This has also slightly reduced boot times and will avoid any instance when a service (e.g. Mysql) is not yet available.
+Improved in general user experience using the potential of the web socket 
+
+YOU HAVE TO RESTART THE FABTOTUM FOR APPLY THE NEW FEATURES
+In order to improve the machine performances some parameters will be updated
+
+SCAN
+- Minor bugfixes
+
+CREATE
+- Improved user experience that now take advantage of the changes outlined in the [General] Section. Overrides will respond faster and the lag between the input and the actual execution on the Totumduino controller is reduced as a result
+- Minor bugfixes
+
+JOG
+- Added realtime temperature feedback (available only if supported by the browser)
+- Controls, console, functions and temperature will now response faster.
+- Improved user experience
+- Minor bugfixes
+
+OBJECTMANAGER
+- Optimized slicing presets
+- Fixed bug on uploading files from local or USB disk
+- Minor bugfixes
+
+
+SETTINGS
+- General: Added feeder disengage offset editable parameter
+- Minor bugfixes
+
+==================================================================
+
+FABUI 0.8 (26/01/2015)
+
+SCAN
+- Fixed reconstruction order and size
+- Increased postprocessing speed by changing the laser detection method<
+- Dynamic Brightness Treshold introduced
+- Minor works toward introduction of perspective correction and camera undistort algorithm
+
+CREATE
+- Improved user experience
+- Fixed ojects list on second page
+
+JOG
+- Improved user experience
+
+OBJECTMANAGER
+- Added 2 new presets config for the slicing "PLA Generic" and "ABS Generic - Small pieces"
+- Added manual helper for the slicing parameters
+
+MAINTENANCE
+- Performed Load and Unload spool functions
+
+SETTINGS
+- General: Added selection switch, Left or Right, for homing (need firmware 1.0.007)
+
+GENERAL
+- Minor bugfixes
+- Fixed bug on "Recovery Password" procedure
+
+==================================================================
+
 FABUI 0.75 (05/01/2015)
 
 GENERAL

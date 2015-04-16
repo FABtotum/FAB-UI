@@ -1,8 +1,8 @@
 <?php
 @session_start();
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 /** SAVE POST PARAMETERS */
 $_type        = $_POST['type'];
@@ -13,6 +13,7 @@ $_output_type = $_POST['output_type'];
 $_object      = $_POST['object'];
 $_id_file     = $_POST['id_file'];
 
+$_output = str_replace(' ', '_', $_output);
 
 switch($_type){
     
@@ -44,6 +45,10 @@ function create_gcode($_object, $_id_file,  $file, $configuration, $_output){
     
     /** ADD TASK RECORD TO DB */ 
     $id_task = $db->insert('sys_tasks', $_task_data);
+	
+	//call socket
+	shell_exec('sudo php '.SCRIPT_PATH.'/notifications.php &');
+	
     
     
     
@@ -54,8 +59,13 @@ function create_gcode($_object, $_id_file,  $file, $configuration, $_output){
     /** CREATING TASK FILES */
     $_time               = time();
     $_destination_folder = TASKS_PATH.'slice_'.$id_task.'_'.$_time.'/';
-    $_monitor_file       = $_destination_folder.'slice_'.$id_task.'_'.$_time.'.monitor';
-    $_trace_file         = $_destination_folder.'slice_'.$id_task.'_'.$_time.'.trace';
+    
+    //$_monitor_file       = $_destination_folder.'slice_'.$id_task.'_'.$_time.'.monitor';
+    //$_trace_file         = $_destination_folder.'slice_'.$id_task.'_'.$_time.'.trace';
+    
+    $_monitor_file       = TEMP_PATH.'task_monitor.json';
+	$_trace_file         = TEMP_PATH.'task_trace';
+    
     $_debug_file         = $_destination_folder.'log.debug';
 	$_slicer_config      = $_destination_folder.'slice_config_'.$id_task.'_'.$_time.'.ini';
     
@@ -160,6 +170,9 @@ function create_stl($_object, $_id_file,  $file, $_output){
     
     /** ADD TASK RECORD TO DB */ 
     $id_task = $db->insert('sys_tasks', $_task_data);
+	
+	//call socket
+	shell_exec('sudo php '.SCRIPT_PATH.'/notifications.php &');
     
     /** ADD RECORD FOR THE OUTPUT FILE */
     $_id_new_file = $db->insert('sys_files', array());
@@ -171,8 +184,12 @@ function create_stl($_object, $_id_file,  $file, $_output){
      /** CREATING TASK FILES */
     $_time               = time();
     $_destination_folder = TASKS_PATH.'mesh_'.$id_task.'_'.$_time.'/';
-    $_monitor_file       = $_destination_folder.'mesh_'.$id_task.'_'.$_time.'.json';
-    $_trace_file         = $_destination_folder.'mesh_'.$id_task.'_'.$_time.'.trace';
+    //$_monitor_file       = $_destination_folder.'mesh_'.$id_task.'_'.$_time.'.json';
+    //$_trace_file         = $_destination_folder.'mesh_'.$id_task.'_'.$_time.'.trace';
+    
+    $_monitor_file       = TEMP_PATH.'task_monitor.json';
+	$_trace_file         = TEMP_PATH.'task_trace';
+    
     $_debug_file         = $_destination_folder.'log.debug';
    
    

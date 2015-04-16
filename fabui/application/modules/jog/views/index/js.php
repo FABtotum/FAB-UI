@@ -3,11 +3,13 @@
 	var positions = new Array();
 	var ticker_url = '';
 	var interval_ticker;
-	
+	var interval_temperature;
+	var isMacro=false;
+	var firstEntry=true;
+	var showTemperatureConsole = false;
+
 	
 	$(function() { 
-		
-		
 		
 		/** MOTORS */
 		$("#motors").on('change', function(){
@@ -56,7 +58,10 @@
 	    
 	    $("#position").on("click", position);
 	    
-	    $("#get-temp-ext").on("click", refresh_temperature);
+	    $(".refresh-temperature").on("click", function() {
+	    	showTemperatureConsole=true;
+	    	refresh_temperature();
+	    });
 	    
 	    $("#bed-align").on("click", bed_align);
 	    
@@ -71,7 +76,7 @@
 	    
 	    
 	    $("#clear-console").on('click', function(){
-	    	$("#console").html('');
+	    	$(".console").html('');
 	    });
 	    
 	    
@@ -109,32 +114,76 @@
 	 	$('#exece-mdi').on( "click", mdi );
 	 	 
 	 	/** EXTRUDER TEMPERATURE */
-	 	$("#ext-temp").noUiSlider({
+	 	$("#ext-target-temp").noUiSlider({
 	 	 	
 	        range: {'min': 0, 'max' : 230},
 	        start: <?php echo $_ext_temp ?>,
 	        handles: 1,
             connect: 'lower'
 		});
+		
+		$("#act-ext-temp").noUiSlider({
+	 	 	
+	        range: {'min': 0, 'max' : 230},
+	        start: <?php echo $_ext_temp ?>,
+	        handles: 0,
+            connect: 'lower',
+            behaviour: "none"
+		});
+		
+		
+		$("#act-ext-temp .noUi-handle").remove();
 		 
-		$("#ext-temp").on({
+		$("#ext-target-temp").on({
 			slide: extTempSlide,
         	change: extTempChange
 	 	});
 	 	
 	 	
+	 	$(".extruder-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,25, 50, 75, 100],
+			density: 5,
+			format: wNumb({
+				prefix: '&deg;'
+			})
+		});
+	 	
+		
+	 	
 	 	/** BED TEMPERATURE */
-	 	$("#bed-temp").noUiSlider({
+	 	$("#bed-target-temp").noUiSlider({
 	        range: {'min': 0, 'max' : 100},
 	        start: <?php echo $_bed_temp ?>,
 	        handles: 1,
 	        connect: 'lower'
       	});
       	
-      	$("#bed-temp").on({
+      	$("#act-bed-temp").noUiSlider({
+	 	 	
+	        range: {'min': 0, 'max' : 100},
+	        start: <?php echo $_bed_temp ?>,
+	        handles: 0,
+            connect: 'lower',
+            behaviour: "none"
+		});
+      	$("#act-bed-temp .noUi-handle").remove();
+      	
+      	
+      	$("#bed-target-temp").on({
 			slide: bedTempSlide,
         	change: bedTempChange
 	 	});
+	 	
+	 	$(".bed-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,25,50,75,100],
+			density: 5,
+			format: wNumb({
+				prefix: '&deg;'
+			})
+		});
+	 	
 	 	 
 	 	
 	 	
@@ -145,7 +194,12 @@
 	    	$(this).addClass('active');
 	    	var mode = $(this).attr("data-mode");
 	    	$("#mode-" + mode ).show();
-	    	extruder_mode(mode);   
+	    	extruder_mode(mode); 
+	    	
+	    	var mode_label = mode == "a" ? '4th axis' : 'Extruder';
+	    	
+	    	$(".mode").html(mode_label);
+	    	  
 	        
 	   	});
 	   	
@@ -167,6 +221,14 @@
 		pre_jog();
 		/** TICKER */
     	interval_ticker   = setInterval(ticker, 500);
+    	
+    	
+    	interval_temperature = setInterval(function(){
+    			if(SOCKET_CONNECTED && ticker_url == '') {
+    				showTemperatureConsole=false;
+    				make_call_ws("get_temperature", "");
+    			}
+    	}, 5000);
     	
     	
     	  	
@@ -195,11 +257,21 @@
 		});
 		
 		
+		$("#extruder-e-value").spinner({
+			step:1,
+			numberFormat : "n",
+			min: 0
+		});
 		
-			
 		
+		$('.progress-bar').progressbar({
+			display_text : 'fill'
+		});
+		
+
 	});
 	
+
 	
 	/** FUNCTIONS  */
 	
@@ -207,21 +279,39 @@
     
 	    var func = $(this).attr("data-attribute-function");
 	    var step = $(this).attr("data-attribute-step");
-	    make_call(func, step);
+	    
+	    if(SOCKET_CONNECTED){
+	    	make_call_ws(func, step);
+	    }else{
+	    	make_call(func, step);
+	    }
+	    
+	    
 	    
 	}
 	
 	function directions(){
 		var value = $(this).attr("data-attribue-direction");
-		make_call("directions", value);	
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("directions", value);
+		}else{
+			make_call("directions", value);
+		}
 	}
 	
 	function zero_all(){
-		make_call("zero_all", true);
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("zero_all", true);
+		}else{
+			make_call("zero_all", true);
+		}
+		
 	}
 	
 	function bed_align(e){
-	    make_call("bed-align", true);
+	    make_call("bed-align", true, true);
 	}
 	
 	function saved_position(){
@@ -232,26 +322,41 @@
 	}
 	
 	function home_all_axis(){
-	    make_call("home_all_axis", true);
+	    make_call("home_all_axis", true, true);
 	}
 	
 	function extTempSlide(e){
     	var slide_val = parseInt($(this).val());
-    	$("#ext-degrees").html(slide_val);
+    	$("#ext-degrees").html(slide_val + '&deg;C');
     
 	}
 	
 	function extTempChange(e){
-   		make_call("ext-temp", parseInt($(this).val()));
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("ext_temp", parseInt($(this).val()));
+		}else{
+			make_call("ext_temp", parseInt($(this).val()));
+		}
+		
+   		
 	}
 	
 	function bedTempSlide(e){
     	var slide_val = parseInt($(this).val());
-    	$("#bed-degrees").html(slide_val);
+    	$("#bed-degrees").html(slide_val + '&deg;C');
 	}
 	
 	function bedTempChange(e){
-    	make_call("bed-temp", parseInt($(this).val()));
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("bed_temp", parseInt($(this).val()));
+		}else{
+			make_call("bed_temp", parseInt($(this).val()));
+		}
+		
+		
+    	
 	}
 	
 	function mdi(){
@@ -259,84 +364,146 @@
 		var gcode = jQuery.trim($("#mdi").val());
 		jQuery("#mdi").val(gcode.replace('<br>', ''));
 	    if(gcode != ''){
-	        make_call('mdi', gcode);
+	    	
+	    	if(SOCKET_CONNECTED){
+				 make_call_ws('mdi', gcode);
+			}else{
+				 make_call('mdi', gcode);
+			}
 	    }	
 	}
 	
 	function extruder_mode(mode){
-	    make_call("extruder_mode", mode);
+	    
+	    if(SOCKET_CONNECTED){
+			 make_call_ws("extruder_mode", mode);
+		}else{
+			 make_call("extruder_mode", mode);
+		}
+	    
 	}
 	
 	function motors(value){
+		
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("motors", value);
+		}else{
+			make_call("motors", value);
+		}
 	
-		make_call("motors", value);
-		save_value("motors", value);	
 	}
 	
 	
 	function coordinates(value){
 		
 		make_call("coordinates", value);
-		save_value("coordinates", value);
 	    enable_save_position();
 	}
 	
 	
 	function lights(value){
 
-		make_call("lights", value);
-		save_value("lights", value);
+		if(SOCKET_CONNECTED){
+			make_call_ws("lights", value);
+		}else{
+			make_call("lights", value);
+		}
+
 	}
 	
 	function position(){
-    	make_call("position", true);
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("position", true);
+		}else{
+			make_call("position", true);
+		}
+		
+    	
 	}
 	
 	function rotation(value){
 
-		make_call("rotation", value);	
+		
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("rotation", value);
+		}else{
+			make_call("rotation", value);
+		}
+			
 	}
 	
 	function extruder_e_action(action){
-    	make_call("extruder-e", action + $("#extruder-e-value").val());
+		
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("extruder_e", action + $("#extruder-e-value").val());
+		}else{
+			make_call("extruder_e", action + $("#extruder-e-value").val());
+		}
+		
+    	
 	}
 	
 	
 	
 	function refresh_temperature(){
+		
+		
+		if(SOCKET_CONNECTED){
+			
+			make_call_ws("get_temperature", "");
+			
+		}else{
     
-	    $.ajax({
-	              url : '<?php echo module_url('jog').'ajax/temperature.php' ?>',
-				  dataType : 'json',
-				  type: 'post',
-				  async : true,
+		    $.ajax({ 
+		    	url : '<?php echo module_url('jog').'ajax/temperature.php' ?>',
+				dataType : 'json',
+				type: 'post',
+					  async : true,
 			}).done(function(response) {
-			  
-	            if(response.ext != "" && response.ext != null){
-	                
-	                $("#ext-actual-degrees").html(response.ext);
-	                $("#ext-degrees").html(response.ext_target);
-	                
-	                $("#ext-temp").val( parseInt(response.ext), {
-	                	set: true,
-	                	animate: true
-	                });
-	                
-	            }
-	            
-	            if(response.bed != "" && response.bed != null){
-	                $("#bed-actual-degrees").html(response.bed);
-	                $("#bed-degrees").html(response.bed_target);
-	                
-	                $("#bed-temp").val( parseInt(response.bed), {
-	                	set: true,
-	                	animate: true
-	                });
-	            }
-	            
-	            write_to_console('Temperatures (M105) [Ext: ' + response.ext + ' / ' + response.ext_target   + ' ---  Bed: ' + parseInt(response.bed) + ' / ' + response.bed_target +  ']\n');
-	          
-	        });
+				  
+		            if(response.ext != "" && response.ext != null){
+		                
+		                $("#ext-actual-degrees").html(parseInt(response.ext) + '&deg;C');
+		                $("#ext-degrees").html(parseInt(response.ext_target) + '&deg;C');
+		                
+		                $("#ext-target-temp").val( parseInt(response.ext_target), {
+		                	set: true,
+		                	animate: true
+		                });
+		                	                
+		                $("#act-ext-temp").val( parseInt(response.ext), {
+		                	set: true,
+		                	animate: true
+		                });
+	
+		            }
+		            
+		            if(response.bed != "" && response.bed != null){
+		                $("#bed-actual-degrees").html(parseInt(response.bed) + '&deg;C');
+		                $("#bed-degrees").html(parseInt(response.bed_target) + '&deg;C');
+	
+		                $("#bed-target-temp").val( parseInt(response.bed_target), {
+		                	set: true,
+		                	animate: true
+		                });
+		                
+		                $("#act-bed-temp").val( parseInt(response.bed), {
+		                	set: true,
+		                	animate: true
+		                });
+	
+		            }
+		            
+		            
+		            write_to_console('Temperatures (M105) [Ext: ' + parseInt(response.ext) + ' / ' + parseInt(response.ext_target)   + ' ---  Bed: ' + parseInt(response.bed) + ' / ' + parseInt(response.bed_target) +  ']\n');
+		          
+		        });
+	        
+	    }
 	}
 	
 	
@@ -367,23 +534,49 @@
 	
 	function ticker(){
 		
-	    if(ticker_url != ''){
-			getTrace(ticker_url, 'GET', $("#console"));
-	    }
+		if(!SOCKET_CONNECTED){
+		    if(ticker_url != ''){
+				getTrace(ticker_url, 'GET', $(".console"));
+		    }
+	   }
 	}
 	
 	
-	function make_call(func, value){
+	
+	
+	function make_call_ws(func, value){
+		
+		var jsonData = {};
+		
+		jsonData['func']     = func;
+		jsonData['value']    = value;
+		jsonData['step']     = $("#step").val();
+		jsonData['z_step']   = $("#z-step").val();
+		jsonData['feedrate'] = $("#feedrate").val();
+		
+		var message = {};
+		
+		message['name'] = "serial";
+		message['data'] = jsonData;
+		
+		if(func != 'get_temperature') $(".btn").addClass('disabled');
+		SOCKET.send('message', JSON.stringify(message));
+		
+	}
+	
+	
+	function make_call(func, value, macro){
     
+    
+    	macro = macro || false;
 	    var timestamp = new Date().getTime();
 	    
 	    
-	    if(func == 'home_all_axis' || func == 'bed-align'){
-	    	$("#console").html('');
-	         ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/jog_' + timestamp + '.trace'; 
+	    if(macro){
+	    	ticker_url = '/temp/macro_trace';
+	    	isMacro=true;
 	    }
 	            
-	  
 	    $(".btn").addClass('disabled');
 	    $("#reset-controller").removeClass('disabled');
 	    
@@ -392,11 +585,16 @@
 		$.ajax({
 			type: "POST",
 			url : "<?php echo module_url('jog').'ajax/exec.php' ?>",
-			data : {function: func, value: value, time: timestamp, step:$("#step").val(), z_step:$("#z-step").val(), feedrate: $("#feedrate").val()},
+			data : {function: func, value: value, time: timestamp, step:$("#step").val(), z_step:$("#z-step").val(), feedrate: $("#feedrate").val(), macro:macro},
 			dataType: "json"
 		}).done(function( data ) {
 			
-	        write_to_console(data.response);
+			if(!macro){
+				var separator = '-----------\n';
+	        	write_to_console(separator + data.data.command + ': ' + data.data.response);
+	       	}
+	        
+	        isMacro=false;
 	        $(".btn").removeClass('disabled');
 	        enable_save_position();
 	        ticker_url = '';
@@ -405,26 +603,6 @@
 		
 	}
 	
-	
-	function write_to_console(text){
-	
-	
-		/*
-	   	var text = '';
-	   	
-	   	if(command != ''){
-	   		text += command + ' : ';
-	   	}
-	   	
-	   	if(response != ''){
-	   		text += response;
-	   	}*/
-	   
-	   	$("#console").append(text);
-	   	$('#console').scrollTop(1E10);
-	   	
-	   	
-	}
 	
 	function enable_save_position(){
     
@@ -446,7 +624,8 @@
 	    $(".status").html(' <i class="fa fa-spin fa-spinner fa-2x"></i>');
 	    $(".btn").addClass('disabled');
 	    var timestamp = new Date().getTime();        
-	    ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/pre_jog_' + timestamp + '.trace';
+	    /*ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/pre_jog_' + timestamp + '.trace';*/
+	    ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/macro_trace';
 	   
 	    
 	    $.ajax({
@@ -463,12 +642,7 @@
 	        });
 	    
 	}
-	
-	
-	function save_value(key, value){
 		
-	}
-	
 	
 	function ask_reset(){
 		
@@ -513,8 +687,81 @@
 		
 	}
 	
-		
 	
+	function update_temperature_info(data){
+		
+		if(data.response.indexOf('ok T:') > -1){
+			
+			var str_temp = data.response.replace('ok ', '');
+			
+			var temperature = str_temp.split(' ');
+
+			var ext_temp = temperature[0].split(':')[1];
+			var ext_target = temperature[1].split('/')[1];		
+			
+			var bed_temp = temperature[2].split(':')[1];
+			var bed_target = temperature[3].split('/')[1];
+			
+			
+			$("#ext-actual-degrees").html(parseInt(ext_temp) + '&deg;C');
+		                	                
+            $("#act-ext-temp").val( parseInt(ext_temp), {
+            	set: true,
+            	animate: true
+            });
+            
+            
+            $("#bed-actual-degrees").html(parseInt(bed_temp) + '&deg;C');
+			 $("#act-bed-temp").val( parseInt(bed_temp), {
+            	set: true,
+            	animate: true
+            });
+			
+			
+			if(firstEntry){
+				
+				$("#ext-degrees").html(parseInt(ext_target) + '&deg;C');
+				$("#bed-degrees").html(parseInt(bed_target) + '&deg;C');
+				
+				
+				$("#ext-target-temp").val( parseInt(ext_target), {
+		    		set: true,
+		    		animate: true
+		    	});
+
+            	$("#bed-target-temp").val( parseInt(bed_target), {
+            		set: true,
+            		animate: true
+            	});
+            	firstEntry = false;
+           	}
+			
+			if(showTemperatureConsole){
+				write_to_console('Temperatures (M105) [Ext: ' + parseInt(ext_temp) + ' / ' + parseInt(ext_target)   + ' ---  Bed: ' + parseInt(bed_temp) + ' / ' + parseInt(bed_target) +  ']\n');	
+			}
+			
+			
+				
+		}
+		
+	}
+	
+	
+	function write_to_console(text, type) {
+
+		type = type || '';
+	
+		if (type == 'macro' || type == "task") {
+			$('.console').html(text);
+		} else {
+			$('.console').append(text);
+		}
+	
+		$('.console').scrollTop(1E10);
+		waitContent(text);
+		
+		$(".btn").removeClass('disabled');
+	}
 	
 	
 	

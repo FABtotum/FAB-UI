@@ -17,6 +17,8 @@ $(document).ready(function() {
 		dictResponseError: 'Error uploading file!',
 		acceptedFiles : '<?php echo $accepted_files ?>',
 		autoProcessQueue: false,
+		dictDefaultMessage: '<span class="text-center"><span class="font-lg visible-xs-block visible-sm-block visible-lg-block"><span class="font-lg"><i class="fa fa-caret-right text-danger"></i> Drop files <span class="font-xs">to upload</span></span><span>&nbsp&nbsp<h4 class="display-inline"> (Or Click)</h4></span>',
+
 		parallelUploads: 1,
 
 		init: function (){
@@ -64,7 +66,7 @@ $(document).ready(function() {
 	};
     
     
-    $("#check-usb").on('click', function() {
+    $(".check-usb").on('click', function() {
         check_usb();
     });
 
@@ -169,7 +171,7 @@ function file_item(item, parent){
     html += '<li style="list-item;"><span>';
     html += '<label class="checkbox inline-block usb-file">';
     
-    html += '<input type="checkbox" name="checkbox-inline" value="'+ item +'" />';
+    html += '<input type="checkbox" name="checkbox-inline" value="'+ parent + item +'" />';
     html += '<i></i> '+ item_label;
     
     html += '</label>';
@@ -186,7 +188,7 @@ function folder_item(item, parent){
     
     html += '<li class="parent_li" role="treeitem">';
     
-    html += '<span class="subfolder" data-loaded="false" data-folder="' + item +'">';
+    html += '<span class="subfolder" data-loaded="false" data-folder="' + parent + item +'">';
     
     item = item.replace(parent, '');
     item = item.slice(0,-1);
@@ -232,16 +234,19 @@ function check_usb(){
     
     $.ajax({
     	   type: "POST",
-    	   url: "<?php echo module_url('objectmanager/ajax/check_usb.php') ?>/",
-    	   dataType: 'html'
+    	   url: "<?php echo module_url('objectmanager/ajax/check_usb.php') ?>",
+    	   dataType: 'json'
    	}).done(function(response) {
         
-        if(response != ""){
-            $("#usb").html(response);
-            init_tree();
+        $("#usb").html(response.content);
+   	    
+   	    if(response.inserted == true){
+        	init_tree();
         }else{
-            $("#check-usb").html("Reload");
-        }    
+        	$(".check-usb").on('click', function() {
+           		check_usb();
+        	});
+        }  
    	    
     });
 }

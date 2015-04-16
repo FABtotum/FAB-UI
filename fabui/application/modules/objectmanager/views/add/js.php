@@ -2,7 +2,7 @@
 
     $(function() {
         
-        init_tree();
+        /*init_tree();*/
         var files = new Array();
         
         Dropzone.options.mydropzone = {
@@ -11,6 +11,7 @@
             dictResponseError: 'Error uploading file!',
             acceptedFiles : '<?php echo $accepted_files ?>',
             autoProcessQueue: false,
+            dictDefaultMessage: '<span class="text-center"><span class="font-lg visible-xs-block visible-sm-block visible-lg-block"><span class="font-lg"><i class="fa fa-caret-right text-danger"></i> Drop files <span class="font-xs">to upload</span></span><span>&nbsp&nbsp<h4 class="display-inline"> (Or Click)</h4></span>',
 	        parallelUploads: 1,
             
             /** INIT FUNCTION */
@@ -34,6 +35,9 @@
                         }else{
                         	
                         	add_usb_files();
+                        	
+                        	
+                        	
                         	$("#object-form").submit();
                         	return false;
                         	
@@ -98,7 +102,7 @@
         });
         
         
-        $("#check-usb").on('click', function() {
+        $(".check-usb").on('click', function() {
             check_usb();
         });
         
@@ -129,8 +133,6 @@ function init_tree(){
 
 
 function init_sub_tree(){
-    
-    console.log("init sub tree");
     
     $(".subfolder").on('click', function (e) {
                     
@@ -170,16 +172,20 @@ function load_tree(obj){
         obj.next('ul').html('');
     	$.ajax({
     	   type: "POST",
-    	   url: "<?php echo module_url('objectmanager/ajax/tree.php') ?>/",
+    	   url: "<?php echo module_url('objectmanager/ajax/tree.php') ?>",
            data: {folder: folder},
     	   dataType: 'json'
     	}).done(function(response) {
             var tree = response.tree;
             if(tree.length > 0){
                 
+               
+                
                 $.each(tree, function(i, item) {
                 
                     var element = '';
+                    
+                   
                     
                     if(item.charAt((item.length - 1)) == '/'){
                         element = folder_item(item, folder);
@@ -218,7 +224,7 @@ function file_item(item, parent){
     html += '<li style="list-item;"><span>';
     html += '<label class="checkbox inline-block usb-file">';
     
-    html += '<input type="checkbox" name="checkbox-inline" value="'+ item +'" />';
+    html += '<input type="checkbox" name="checkbox-inline" value="'+ parent + item +'" />';
     html += '<i></i> '+ item_label;
     
     html += '</label>';
@@ -235,7 +241,7 @@ function folder_item(item, parent){
     
     html += '<li class="parent_li" role="treeitem">';
     
-    html += '<span class="subfolder" data-loaded="false" data-folder="' + item +'">';
+    html += '<span class="subfolder" data-loaded="false" data-folder="' + parent + item +'">';
     
     item = item.replace(parent, '');
     item = item.slice(0,-1);
@@ -254,19 +260,18 @@ function folder_item(item, parent){
 
 function add_usb_files(){
 	
-	
-	
-    
      if($('.tree').length > 0){
                             
         var usb_files = new Array();                        
+        
         $( ".tree" ).find("input").each(function( index ) {
             
             
             var input = $(this);
             
             if(input.is(':checked')){
-            
+            	
+            		
                 usb_files.push(input.val());
                 
             }
@@ -281,20 +286,25 @@ function add_usb_files(){
 
 function check_usb(){
     
-    $("#check-usb").html("Checking...");
+   
     
     $.ajax({
     	   type: "POST",
-    	   url: "<?php echo module_url('objectmanager/ajax/check_usb.php') ?>/",
-    	   dataType: 'html'
+    	   url: "<?php echo module_url('objectmanager/ajax/check_usb.php') ?>",
+    	   dataType: 'json'
    	}).done(function(response) {
         
-        if(response != ""){
-            $("#usb").html(response);
-            init_tree();
+   	    
+   	    $("#usb").html(response.content);
+   	    
+   	    if(response.inserted == true){
+        	init_tree();
         }else{
-            $("#check-usb").html("Reload");
-        }    
+        	$(".check-usb").on('click', function() {
+           		check_usb();
+        	});
+        }
+   	    
    	    
     });
 }

@@ -142,17 +142,21 @@
     
     function monitor(){
         
-        if(mesh_finished == false){
-            monitor_get();
-        }else{
-            
-            clearInterval(interval_monitor);
-            clearInterval(interval_trace);
-            clearInterval(interval_timer);
-               
-            $( ".monitor" ).slideUp( "slow", function() {
-                 $( ".complete" ).slideDown( "slow", function() {});
-            });   
+        
+        if(!SOCKET_CONNECTED){
+        
+	        if(mesh_finished == false){
+	            monitor_get();
+	        }else{
+	            
+	            clearInterval(interval_monitor);
+	            clearInterval(interval_trace);
+	            clearInterval(interval_timer);
+	               
+	            $( ".monitor" ).slideUp( "slow", function() {
+	                 $( ".complete" ).slideDown( "slow", function() {});
+	            });   
+	        }
         }
         
     }
@@ -165,30 +169,10 @@
         
         $.get( monitor_uri , function( data ) {
         
-            if(data != ''){
-                
-                
+            if(data != ''){               
                 monitor = data;
-            
-            
-                $('#lines-progress').attr('style', 'width:' + parseInt(monitor.Meshing.stats.percent) + '%');
-                $('#lines-progress').attr('aria-valuetransitiongoal',  parseInt(monitor.Meshing.stats.percent));
-                $('#lines-progress').attr('aria-valuenow', parseInt(monitor.Meshing.stats.percent));
-                
-                $('#lines-progress').html(number_format(parseInt(monitor.Meshing.stats.percent), 1, ',', '.') + ' %');
-    			$('.progress-status').html(	number_format(parseInt(monitor.Meshing.stats.percent),1, ',', '.') + ' %');
-                $('#label-progress').html('(' +	number_format(parseInt(monitor.Meshing.stats.percent), 1, ',', '.') + ' % )');
-                
-                if(time_left_saved != parseInt(monitor.Meshing.stats.time_left)){
-                    time_left       = parseInt(monitor.Meshing.stats.time_left);
-                    time_left_saved = time_left;
-                }
-                
-                
-                $('.estimated-time').html(_time_to_string(parseInt(monitor.Meshing.stats.time_total)));
-                
-                mesh_finished = parseInt(monitor.Meshing.completed) == 1 ? true : false;
-    
+            	manage_update(monitor);
+ 
             }
             
         }).fail(function(){ 
@@ -200,22 +184,21 @@
     
     
     function trace(){
-        
-        $.get( trace_uri , function( data ) {
-            
-            if(data != ''){
-                
-                var trace = data;
-                
-                trace = trace.replace('\n', '<br>');
-                trace = trace.replace('<?php echo PHP_EOL; ?>', '<br>');   
-                $("#editor").html('<p>' + trace + '</p>');
-            }
-        }).fail(function(){ 
-                
-        });
-        
-        
+        if(!SOCKET_CONNECTED){
+	        $.get( trace_uri , function( data ) {
+	            
+	            if(data != ''){
+	                
+	                var trace = data;
+	                
+	                trace = trace.replace('\n', '<br>');
+	                trace = trace.replace('<?php echo PHP_EOL; ?>', '<br>');   
+	                $(".console").html(trace);
+	            }
+	        }).fail(function(){ 
+	                
+	        });
+        }
     }
     
     
@@ -275,6 +258,42 @@
     		});
     	
     }
+    
+    function manage_task_monitor(obj){
+    			
+		if(obj.content != ""){
+			var monitor = jQuery.parseJSON(obj.content);
+			manage_update(monitor);
+				
+		}
+	}
+	
+	function manage_update(obj){
+		
+		$('#lines-progress').attr('style', 'width:' + parseInt(obj.Meshing.stats.percent) + '%');
+        $('#lines-progress').attr('aria-valuetransitiongoal',  parseInt(obj.Meshing.stats.percent));
+        $('#lines-progress').attr('aria-valuenow', parseInt(obj.Meshing.stats.percent));
+                
+        $('#lines-progress').html(number_format(parseInt(obj.Meshing.stats.percent), 1, ',', '.') + ' %');
+		$('.progress-status').html(	number_format(parseInt(obj.Meshing.stats.percent),1, ',', '.') + ' %');
+        $('#label-progress').html('(' +	number_format(parseInt(obj.Meshing.stats.percent), 1, ',', '.') + ' % )');
+        
+        if(time_left_saved != parseInt(obj.Meshing.stats.time_left)){
+            time_left       = parseInt(obj.Meshing.stats.time_left);
+            time_left_saved = time_left;
+        }
+        
+        
+        $('.estimated-time').html(_time_to_string(parseInt(obj.Meshing.stats.time_total)));
+        
+        mesh_finished = parseInt(obj.Meshing.completed) == 1 ? true : false;
+        
+        if(mesh_finished){
+        	$( ".monitor" ).slideUp( "slow", function() {
+	        	$( ".complete" ).slideDown( "slow", function() {});
+	        }); 
+        }
+}
     
     
     

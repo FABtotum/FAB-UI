@@ -46,7 +46,7 @@
         							<label class="font-md" style="margin-top:13px;">169.254.1.</label>  
         						</div>
         						<div class="form-group">
-									<input min="2" max="255" type="number" class="form-control font-md" id="eth-endnumber" placeholder="" value="<?php echo $ethEndIp ?>">
+									<input min="2" max="255"  type="text" class="form-control font-md" id="eth-endnumber" placeholder="" value="<?php echo $ethEndIp ?>">
 								</div>
         					</fieldset>
         					<div class="form-actions">

@@ -1,13 +1,8 @@
 <div class="row margin-bottom-10">
-    
     <div class="col-sm-12">
-        
-            <!-- <img id="raspi_picture" class="img-responsive rotate-180" src="<?php echo  'http://'.$_SERVER['HTTP_HOST'] ?>/temp/picture.jpg" /> -->
             <img id="raspi_picture" class="img-responsive rotate-180" src="<?php echo widget_url('cam').'media/image.php?time='.time() ?>" />
-        
     </div>
 </div>
-
 <div class="row margin-bottom-10">
     <div class="col-sm-8 margin-bottom-10">
         <div class="btn-group btn-group-justified">

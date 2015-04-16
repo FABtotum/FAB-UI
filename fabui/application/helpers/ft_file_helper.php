@@ -20,7 +20,7 @@ if ( ! function_exists('roundsize'))
 if ( ! function_exists('print_type'))
 {
 	function print_type($file_path){       
-        return strtolower(trim(shell_exec("sudo python /var/www/fabui/python/check_manufacturing.py ".$file_path)));
+        return strtolower(trim(shell_exec('sudo python '.PYTHONPATH.'check_manufacturing.py "'.$file_path.'"')));
 	}
 	 
 }
@@ -81,7 +81,8 @@ function clean_temp($mode = 'day', $max = 1){
     $CI->load->helper('file');
     
     
-    $directory = '/var/www/temp/';
+    //$directory = '/var/www/temp/';
+    $directory = TEMPPATH;
     
     $files = directory_map($directory);
     
@@ -89,11 +90,14 @@ function clean_temp($mode = 'day', $max = 1){
     
     
     $files_to_take[] = 'picture.jpg';
-    $files_to_take[] = 'fab_ui_safety.json';
-    $files_to_take[] = 'faq.json';
+	$files_to_take[] = 'fab_ui_safety.json';
 	$files_to_take[] = 'instagram_feed.json';
 	$files_to_take[] = 'instagram_hash.json';
 	$files_to_take[] = 'twitter.json';
+	$files_to_take[] = 'faq.json';
+	$files_to_take[] = 'macro_response';
+	$files_to_take[] = 'macro_trace'; 
+	$files_to_take[] = 'macro_status.json';
     
     foreach($files as $file){
         
@@ -131,7 +135,7 @@ function clean_temp($mode = 'day', $max = 1){
 function gcode_analyzer($file_id){
 	
 	
-	$command = 'sudo php /var/www/fabui/script/gcode_analyzer.php '.$file_id.' > /dev/null & echo $!';
+	$command = 'sudo php '.SCRIPTPATH.'gcode_analyzer.php '.$file_id.' > /dev/null & echo $!';
 	shell_exec($command);
 	
 }

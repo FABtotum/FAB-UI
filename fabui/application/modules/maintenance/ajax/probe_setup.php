@@ -1,8 +1,8 @@
 <?php
 @session_start();
-require_once '/var/www/fabui/ajax/config.php';
-require_once '/var/www/fabui/ajax/lib/utilities.php';
-require_once '/var/www/fabui/ajax/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 
 /** GET POST DATA */
@@ -10,8 +10,8 @@ $_mode = $_POST['mode'];
 
 
 $_time = time();
-$_destination_trace    = TEMP_PATH.'probe_'.$_mode.'_'.$_time.'.trace';
-$_destination_response = TEMP_PATH.'probe_'.$_mode.'_'.$_time.'.response';
+$_destination_trace    = TEMP_PATH.'macro_trace';
+$_destination_response = TEMP_PATH.'macro_response';
 
 
 write_file($_destination_trace, '', 'w');
@@ -40,8 +40,8 @@ $_response_items['command'] = $_command;
 $_response_items['trace']  = file_get_contents($_destination_trace);
 $_response_items['response'] = file_get_contents($_destination_response);
 
-unlink($_destination_trace);
-unlink($_destination_response);
+//unlink($_destination_trace);
+//unlink($_destination_response);
 
 header('Content-Type: application/json');
 echo json_encode($_response_items); 

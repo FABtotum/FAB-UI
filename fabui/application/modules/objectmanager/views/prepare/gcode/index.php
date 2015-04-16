@@ -14,6 +14,15 @@
 <div class="row setting" style="<?php echo $_task ? 'display:none;' : ''; ?>">
     <div class="col-sm-12">
         <div class="well">
+        	
+        	
+        	<?php if($alert_size): ?>
+        	<div class="alert alert-warning fade in">
+        		<i class="fa-fw fa fa-warning"></i><strong>Warning</strong> The selected model seems to be rather complex. Slicing it directly on the FABtotum may take a very long time.
+        		Consider to use a dedicated slicing software on your computer.
+        	</div>
+        	<?php endif; ?>
+        	
             
             <h5>This experimental feature takes the selected <strong>STL</strong> file and turns it into a printable model (additive manufacturing only).</h5>
             
@@ -21,7 +30,7 @@
                 
                 <fieldset>
                     
-                    <legend><?php echo $_file->file_name; ?></legend>
+                    <legend><i class="fa fa-file-o"></i> <?php echo $_file->file_name; ?></legend>
                     
                     
                     <div class="form-group">
@@ -38,7 +47,7 @@
                             <select id="output_type" class="form-control">
                                 <option value=".gcode">gcode</option>
                                 <option value=".gc">gc</option>
-                                <option value=".nc">nc</option>
+                                <!--<option value=".nc">nc</option>-->
                             </select>
                         </div>
                     </div>
@@ -51,7 +60,7 @@
                             
                                 <?php foreach($_presets as $_set): ?>
                                 
-                                    <option value="<?php echo $_set['file'] ?>"><?php echo $_set['name'] ?> - <?php echo $_set['description'] ?></option>
+                                    <option value="<?php echo $_set['file'] ?>"><?php echo $_set['description'] ?></option>
                                 
                                 <?php endforeach; ?>
                                 
@@ -63,11 +72,12 @@
                     	<div class="col-md-1"></div>
                     	<div class="col-md-11">
                     		<div class="row margin-bottom-10">
-                    			<div class="col-md-12">
+                    			<div class="col-md-12 buttons">
                     				<a rel="tooltip" title="Delete config" class="btn btn-default btn-xs pull-right txt-color-red " href="javascript:void(0);" id="delete-slicer-config-button"><i class="fa fa-trash "></i></a>
                     				<a data-toggle="modal" data-backdrop="static" data-target=".add-config-modal"  rel="tooltip" title="Add config" class="btn btn-default btn-xs pull-right txt-color-green " href="#"><i class="fa fa-plus"></i></a>
                     				<a rel="tooltip" title="Download config" class="btn btn-default btn-xs pull-right" id="download-slicer-config-button" href="javascript:void(0);"><i class="fa fa-download"></i></a>
                     				<a rel="tooltip" title="Save config" class="btn btn-default btn-xs pull-right txt-color-blue" href="javascript:void(0);" id="save-config"><i class="fa fa-save"></i></a>
+                    				<a rel="tooltip" title="Help" class="btn btn-default btn-xs pull-right txt-color-blue" data-toggle="modal" href="<?php echo site_url("objectmanager/slicer_manual") ?>" data-target="#manula-modal"><i class="fa fa-question"></i></a>
                     			</div>
                     		</div>
                     		<div class="row">
@@ -156,7 +166,7 @@
 <div class="row monitor" style="<?php echo $_task ? '' : 'display:none;'; ?>">
     <div class="col-sm-12">
     	<div class="well">
-        	<pre id="editor" style="height: 200px; "></pre>
+        	<pre class="console" style="height: 200px; "></pre>
         </div>
     </div>
 </div>
@@ -217,3 +227,9 @@
 	<input type="hidden" name="dsc" id="dsc" value="">
 	<input type="hidden" name="nsc" id="nsc" value="">
 </form>
+
+<div class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true" id="manula-modal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content"></div>
+	</div>
+</div>

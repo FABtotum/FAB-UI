@@ -59,7 +59,7 @@
 									<fieldset style="background: none;">
 										<div class="row">
 											<section class="col col-4">
-												<label class="label text-center">Step (mm)</label>
+												<label class="label text-center">XY Step (mm)</label>
 												<label class="input-sx">
 													<input class="text-center" type="text" id="step" value="10">
 												</label>
@@ -85,7 +85,7 @@
 						</div>
 			            
 			            <div class="row">
-							<div class="col-sm-12">
+							<div class="col-sm-8">
 						
 								<div class="btn-group-vertical">
 									<a href="javascript:void(0)" data-attribue-direction="up-left" data-attribute-keyboard="103" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
@@ -106,7 +106,7 @@
 										<i class="fa fa-arrow-up fa-1x">
 										</i>
 									</a>
-									<a href="javascript:void(0)" id="zero-all"  class="btn btn-default btn-lg btn-circle btn-xl rotondo">
+									<a href="javascript:void(0)" id="zero-all" rel="tooltip" title="Zero"  class="btn btn-default btn-lg btn-circle btn-xl rotondo">
 										<i class="fa fa-bullseye">
 										</i>
 									</a>
@@ -131,7 +131,7 @@
 								</div>
 			                    
 			                    
-			                    <div class="btn-group-vertical" style="margin-left: 10px;">
+			                    <div class="btn-group-vertical margin-top-10" style="margin-left: 10px;">
 									<a href="javascript:void(0)" class="btn btn-default axisz" data-attribute-step="1" data-attribute-function="zdown">
 										<i class="fa fa-angle-double-up">
 										</i>&nbsp;Z
@@ -144,6 +144,16 @@
 									
 								</div>
 							</div>
+							
+							
+							<div class="col-sm-4">
+								<span>Mode:</span><span class="mode"> 4th Axis</span>
+								<div class="knobs-demo  text-center margin-top-10" id="mode-a">
+									<input class="knob" data-width="150" data-cursor="true" data-step="0.5" data-min="1" data-max="360" data-thickness=".3" data-fgColor="#A0CFEC" data-displayInput="true">
+								</div>
+							</div>
+							
+							
 						</div>
 			        </div>
         		</div>
@@ -163,7 +173,9 @@
 
 <script type="text/javascript">
 
-
+	
+	
+	var setZero = false;
 
 	$("#velocity-slider-container").removeClass('col-md-4 col-lg-4').addClass('col-md-6 col-lg-6');
 	$("#ext-slider-container").hide();
@@ -194,7 +206,41 @@
 				step :50,
 				numberFormat : "n",
 				min: 0
-		});	
+		});
+		
+		
+	/** KNOB */
+		$('.knob').knob({
+	        change: function (value) {
+	        },
+	        release: function (value) {
+				rotation(value);
+	        },
+	        cancel: function () {
+	            console.log("cancel : ", this);
+	        }
+		 });
+		 
+		 
+		$('.knob').keypress(function(e) {
+	        if(e.which == 13) {
+	        	rotation($(this).val());
+	        }
+	 	 });
+	 	 
+	 	 
+	 	 
+	 function rotation(value){
+
+		console.log(value);
+		
+		if(SOCKET_CONNECTED){
+			make_call_ws("rotation", value);
+		}else{
+			make_call("rotation", value);
+		}
+			
+	}		
 
     $('#exec_button').on('click', function(){
         
@@ -243,8 +289,10 @@
                         break;
                     
                     case 3:
+                    /*
                         $("#exec_button").html('Print');
                         $('#exec_button').removeClass('disabled');
+                    */
                         break;
                     
                 }
@@ -267,8 +315,8 @@
         
         var timestamp = new Date().getTime();
             
-        ticker_url = '/temp/check_' + timestamp + '.trace';
-        
+        //ticker_url = '/temp/check_' + timestamp + '.trace';
+        ticker_ulr = '/temp/macro_trace';
         
                         
         $.ajax({
@@ -289,13 +337,13 @@
                     	$("#row_3").slideDown('slow');
                     });
                 	
-                    
                     $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-check').addClass('txt-color-green');
                     $("#exec_button").html('Start');
+                    
                     $('.check_result').html('');           
                     $("#exec_button").attr('data-action', '');
                     
-                    
+                    $("#exec_button").addClass("disabled");
                     
                     
                 }else{
@@ -308,7 +356,7 @@
                 
                 ticker_url = '';
                 closeWait();
-                $('#exec_button').removeClass('disabled');
+                //$('#exec_button').removeClass('disabled');
                 
                 
                 
@@ -321,6 +369,8 @@
         var func = $(this).attr("data-attribute-function");
         var step = $(this).attr("data-attribute-step");
         make_call(func, step);
+        
+     	   
     
     }
     
@@ -331,13 +381,25 @@
     }
     
     function zero_all(){
+    	
+    	setZero = true;
     	make_call("zero_all_pre_mill", true);
+    	
+    	$("#exec_button").removeClass('disabled');
+    	
+    	
+    	//krios
     }
     
     
-    function make_call(func, value){
+    function make_call(func, value){   	
     	
-    	$(".btn").addClass('disabled');
+    	if(SOCKET_CONNECTED){	
+    		make_call_ws(func, value);
+    		return false;
+    	}
+    	
+    	
 
     	$.ajax({
     		type: "POST",
@@ -345,10 +407,29 @@
     		data : {function: func, value: value, step:$("#step").val(), z_step:$("#z-step").val(), feedrate: $("#feedrate").val()},
     		dataType: "json"
     	}).done(function( data ) {
-            $(".btn").removeClass('disabled');
+            //$(".btn").removeClass('disabled');
             
     	});
 	
+    }
+    
+    function make_call_ws(func, value){
+    	
+    	var jsonData = {};
+		
+		jsonData['func']     = func;
+		jsonData['value']    = value;
+		jsonData['step']     = $("#step").val();
+		jsonData['z_step']   = $("#z-step").val();
+		jsonData['feedrate'] = $("#feedrate").val();
+		
+		var message = {};
+		
+		message['name'] = "serial";
+		message['data'] = jsonData;
+		
+		SOCKET.send('message', JSON.stringify(message));
+		
     }
 
 </script>

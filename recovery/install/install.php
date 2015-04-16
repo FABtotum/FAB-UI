@@ -4,10 +4,10 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 
 
     //=========== CONFIG FILES
-    include_once ('/var/www/fabui/ajax/config.php');
-    include_once ('/var/www/fabui/ajax/lib/database.php');
-	include_once ('/var/www/fabui/ajax/lib/serial.php');
-    include_once ('/var/www/fabui/ajax/lib/utilities.php');
+    include_once ('/var/www/lib/config.php');
+    include_once ('/var/www/lib/database.php');
+	include_once ('/var/www/lib/serial.php');
+    include_once ('/var/www/lib/utilities.php');
 	
 	
 	
@@ -74,7 +74,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 	
 	
 	//=========== SERIAL CLASS - GET FW VERSION
-	$serial = new phpSerial;
+	$serial = new Serial;
 	$serial->deviceSet(PORT_NAME);
 	$serial->confBaudRate(BOUD_RATE);
 	$serial->confParity("none");
@@ -127,6 +127,8 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 	shell_exec('sudo cp /var/www/recovery/install/file/Marvin_KeyChain_FABtotum.gcode '.UPLOAD_PATH.'gcode/Marvin_KeyChain_FABtotum.gcode');
 	shell_exec('sudo cp /var/www/recovery/install/file/bracelet.gcode '.UPLOAD_PATH.'gcode/bracelet.gcode');
 	
+	shell_exec('sudo chmod 777 '.UPLOAD_PATH.'gcode/Marvin_KeyChain_FABtotum.gcode');
+	shell_exec('sudo chmod 777 '.UPLOAD_PATH.'gcode/bracelet.gcode');
 	
 	
 	/** CLEAN SESSION */

@@ -92,12 +92,29 @@ class Scan extends Module {
                     $_pprocess_monitor = json_decode(file_get_contents($_task_attributes['folder'].$_task_attributes['pprocess_monitor']), true); 
                     
                 }
-            }	
+            }
+			
+			
+			
+			
 			
 
 			/** if process not exist, unset the task */
-            
-    			if(!exist_process(json_decode($_task['attributes'])->scan_pid) || !isset(json_decode($_task['attributes'])->scan_pid)){
+			
+			//pprocess_pid
+			if(isset(json_decode($_task['attributes'])->pprocess_pid)){
+				
+				if(!exist_process(json_decode($_task['attributes'])->scan_pid) && !exist_process(json_decode($_task['attributes'])->pprocess_pid)){
+					
+					$this->tasks->delete($_task['id']);
+					$_task = FALSE;
+					
+					
+				}
+				
+				
+			}else{
+    		if(!exist_process(json_decode($_task['attributes'])->scan_pid) || !isset(json_decode($_task['attributes'])->scan_pid)){
     				
                     /** IF PROCESS DOESNT EXIST DELETE TASK RECORD FROM DB */
                    
@@ -106,6 +123,8 @@ class Scan extends Module {
                     $_task = FALSE;
                     
     			}
+			
+			}
             
            
 				
@@ -220,6 +239,8 @@ class Scan extends Module {
                     $this->scan_probe($data);
                     break;
             }
+			
+			shell_exec('sudo python '.PYTHONPATH.'websocket_tasks.py');
         
         }
 
@@ -227,164 +248,6 @@ class Scan extends Module {
 
 
 
-/*
-	function monitor(){
-		
-		//se � una chiamata AJAX allora...
-		if ($this->input->is_ajax_request()) {
-				
-			$id_task              = $this->input->post('task_id');
-			$scan_file_monitor    = $this->input->post('scan_monitor_file');
-			$process_file_monitor = $this->input->post('pprocess_monitor_file');
-            $isprobing            = $this->input->post('isprobing');
-            $isprobing            = $isprobing == 'true' ? true : false;
-			
-			/** load scan monitor file 
-			$_status_scan     = json_decode(file_get_contents($scan_file_monitor), TRUE);
-		
-			$_response_items['scan']     = $_status_scan;
-            
-            if(!$isprobing){
-                
-               	/** load pprocess monitor file
-                $_status_pprocess = json_decode(file_get_contents($process_file_monitor), TRUE);
-                $_response_items['pprocess'] = $_status_pprocess;
-                
-            }
-			
-
-			/** monitor response 
-			header('Content-Type: application/json');
-			echo json_encode($_response_items); 
-		}
-	}
-
-*/
-
-/*
-	function updatetask(){
-
-		if ($this->input->is_ajax_request()) {
-				
-			
-			/** GET DATA FROM POST 
-			$id_task            	   = $this->input->post('task_id');
-			$scan_completed            = $this->input->post('scan_completed');
-			$pprocess_completed        = $this->input->post('pprocess_completed');
-//			$_scan_estimated_time      = $this->input->post('scan_estimated_time');
-//			$_scan_progress_steps      = $this->input->post('scan_progress_steps');
-			$_step                     = $this->input->post('step');
-//			$_pprocess_estimated_times = $this->input->post('pprocess_estimated_time');
-//			$_pprocess_progess_steps   = $this->input->post('pprocess_progress_steps');
-//			$_scan_image               = $this->input->post('scan_image');
-			$mesh_completed            = $this->input->post('mesh_completed');
-			$mesh_completed            = $mesh_completed == true ? 1 : 0;
-
-
-
-			//carico X class database
-			$this->load->database();
-			$this->load->model('tasks');
-
-			$task = $this->tasks->get_by_id($id_task);
-
-			$attributes = json_decode($task->attributes, TRUE);
-
-			$attributes['scan_completed']          = $scan_completed;
-			$attributes['pprocess_completed']      = $pprocess_completed;
-			$attributes['scan_estimated_time']     = $_scan_estimated_time;
-			$attributes['scan_progress_steps']     = $_scan_progress_steps;
-			$attributes['pprocess_estimated_time'] = $_pprocess_estimated_times;
-			$attributes['pprocess_progress_steps'] = $_pprocess_progess_steps;
-			$attributes['step']                    = $_step;
-//			$attributes['scan_image']              = $_scan_image;
-			$attributes['mesh_completed']          = $mesh_completed;
-
-			$_data_update['attributes']            = json_encode($attributes);
-
-			if($scan_completed == 1 && $pprocess_completed == 1 && $mesh_completed == 1){
-					
-				$_data_update['status'] = 'performed';
-			}
-
-			//if the printing proccess is stopped by the user
-
-			/*
-			if($_stopped == 1){
-
-				$_data_update['status'] = 'stopped';
-				$_data_update['finish_date'] = 'now()';
-			}
-			
-
-
-
-			$this->tasks->update($id_task, $_data_update);
-				
-			//echo $this->db->last_query();
-		}
-
-	}
-
-	*/
-	/*
-	function mesh(){
-		
-		
-		$task_id = $this->input->post("task_id");
-		
-		//carico X class database
-		$this->load->database();
-		$this->load->model('tasks');
-		
-		$task = $this->tasks->get_by_id($task_id);
-		
-		$_attributes = json_decode($task->attributes, TRUE);
-		
-		
-		$_time          = $_attributes['time'];
-		$_folder        = $_attributes['folder'];
-		$_input_file    = $_folder.$_attributes['pprocess_file'];
-		$_output_file   = 'mesh_'.$task_id.$_time.'.stl';
-		$_filter_script = '/root/meshlab_script.mlx';
-		$_mesh_monitor  = 'mesh_'.$task_id.$_time.'.monitor';
-		$_mesh_debug    = 'mesh_'.$task_id.$_time.'.debug';
-		
-		$_xvfb_log_file = $_folder.'xvfb_'.$task_id.$_time.'.log';
-		
-		
-		$_command_mesh = 'sudo xvfb-run -a -e '.$_xvfb_log_file.' meshlabserver -i '.$_input_file.' -s '.$_filter_script.' -o '.$_folder.$_output_file.' 1>'.$_folder.$_mesh_monitor. ' 2>'.$_folder.$_mesh_debug.' &  echo $!' ;
-		
-		$_output_command = shell_exec ( $_command_mesh );
-		
-		$_mesh_pid = trim(str_replace('\n', '', $_output_command));
-		
-		
-		
-		/** UPDATE TASK ATTRIBUTES 
-		$_attributes['mesh_pid']     = $_mesh_pid;
-		$_attributes['mesh_monitor'] = $_mesh_monitor;
-		$_attributes['mesh_debug']   = $_mesh_debug;
-		$_attributes['mesh_file']    = $_output_file;
-		$_attributes['step']         = 5;
-		
-		$this->tasks->update($task_id, array('attributes' => json_encode($_attributes)));
-		
-		/** OUTPUT MESH INFO 
-		$_response_items['mesh_pid']          = $_mesh_pid;
-		$_response_items['command']           = $_command_mesh;
-		$_response_items['mesh_monitor_file'] = $_mesh_monitor;
-		
-		/** mesh response 
-		header('Content-Type: application/json');
-		echo json_encode($_response_items);
-		 
-		
-		
-	}
-	
-	*/
-    
     
 	/**
 	 * 
@@ -639,7 +502,7 @@ class Scan extends Module {
         /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME */
         while(file_get_contents($task_files['destination_folder'].$task_files['scan_monitor_file']) == ''){   
             //aspetto
-            sleep(0.5);
+            sleep(0.1);
         }
         
         
@@ -653,7 +516,7 @@ class Scan extends Module {
         /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME */
         while(file_get_contents($task_files['destination_folder'].$task_files['pprocess_monitor_file']) == ''){   
             //aspetto
-            sleep(0.5);
+            sleep(0.1);
         }
         
          
@@ -932,7 +795,6 @@ class Scan extends Module {
         $status = json_encode($_json_status);
         
         while($_json_status == ''){
-            
             $_json_status = file_get_contents($task_files['destination_folder'].$task_files['scan_monitor_file'], FILE_USE_INCLUDE_PATH);
             $status = json_encode($_json_status);   
         }

@@ -1,5 +1,6 @@
 <script type="text/javascript">
             
+            
             var interval_monitor;
             var interval_refresh;
             var json_uri = '<?php echo $running == true ? $json_uri : "" ?>';
@@ -42,8 +43,6 @@
 				version = $(this).attr('download-version');
                 
                 var button = $(this);
-                
-                
                 
 				$.SmartMessageBox({
 					title : "Updates Center",
@@ -128,15 +127,13 @@
             
             
             function monitor(){
-                
-                
-                if(finished == false){
-                    json_call();
-                }else{
-                    console.log("finished");
-                    finalize_download();
+            	if(!SOCKET_CONNECTED){	
+	                if(finished == false){
+	                    json_call();
+	                }else{
+	                    finalize_download();
+	                }
                 }
-                
             }
             
             
@@ -144,43 +141,10 @@
                 
                	$.ajax({
 					  url: json_uri,
-					  dataType: 'json'
+					  dataType: 'json', 
+					  cache: false
 				}).done(function( response ) {
-				    
-                    finished   = parseInt(response.completed) == 0 ? false : true;
-                    var status = response.status;
-                    
-                    /** IF FABUI MODE */
-                    if(type == 'fabui'){
-                        
-                        switch(status){
-                            case 'downloading':
-                                _downloading(response.download);
-                                break;
-                            case 'extracting':
-                                _extracting(response.extract);
-                                break;
-                            case 'installing':
-                                _installing(response.install);
-                                break;
-                        }
-                        
-                    }
-                    
-                    
-                    if(type == 'marlin'){
-                        
-                        switch(status){
-                            case 'downloading':
-                                _downloading(response.download);
-                                break;
-                            case 'installing':
-                                _installing(response.install);
-                                break;
-                        }
-                    }
-                    
-                    	  
+					manage_update(response);
 				});
                 
             }
@@ -188,41 +152,32 @@
             
             
             function _downloading(data){
-                
-                $("#status").html("<i class='fa fa-download'></i> Downloading...");
-                $('.progress-container').slideDown('slow', function() {});   
-                var percent = data.percent;
-				
-				percent = number_format(precise_round(percent, 2), 2, ',', '.');					  
-
-				$("#progress-download").attr('style', 'width:' + precise_round(data.percent, 2)+'%');
-				$("#percentuale").html(percent + "%");
-				$("#size").html(bytesToSize(data.downloaded) + " of " + bytesToSize(data.download_size));
-				$("#velocita").html('(' + bytesToSize(data.velocita) + '/s)');  
-                
+            	if(typeof(data) != "undefined"){
+            		$("#status").html("<i class='fa fa-download'></i> Downloading...");
+                	$('.progress-container').slideDown('slow', function() {});   
+                	var percent = data.percent;
+					percent = number_format(precise_round(percent, 2), 2, ',', '.');					  
+					$("#progress-download").attr('style', 'width:' + precise_round(data.percent, 2)+'%');
+					$("#percentuale").html(percent + "%");
+                	$("#size").html(bytesToSize(data.downloaded) + " of " + bytesToSize(data.download_size));
+					$("#velocita").html('(' + bytesToSize(data.velocita) + '/s)');
+            	}
             }
             
             
             function _extracting(data){
                 
                 if(first_extracting){
-                    
                     $("#status").html("Download complete");
                     $("#progress-download").attr('style', 'width:100%');
     				$("#percentuale").html("<i class='fa fa-check'></i>");
     				$("#size").html("");
     				$("#velocita").html('');
                     first_extracting = false;
-                    
                 }else{
-                	
-                	
-                	
-                	
                     $("#status").html("Extracting files..");
                     $("#progress-download").attr('style', 'width:' + precise_round(data.percent, 2)+'%');
-                    $("#percentuale").html(data.percent + "%");
-                    
+                    $("#percentuale").html(data.percent + "%"); 
                 }
 
             }
@@ -249,9 +204,8 @@
             
             
             function finalize_download(){
-                
+            	    
                 clearInterval(interval_monitor);
-                
                 $("#status").html("Installation complete");
                 $("#progress-download").attr('style', 'width:100%');
                 $("#percentuale").html("<i class='fa fa-check'></i>");
@@ -275,13 +229,63 @@
                 
             }
             
-            
             function resume_myfab(){
                 $('.download').addClass('disabled');
                 json_call();
                 $('.progress-container').slideDown('slow', function() {}); 
                 interval_monitor  = setInterval(monitor, 1000);
             }
+
+
+			function manage_task_monitor(obj){
+				
+				if(obj.content != ""){
+					var monitor = jQuery.parseJSON(obj.content);
+					manage_update(monitor);
+				
+				}
+			}
+			
+			function manage_update(obj){
+				
+				
+                finished   = parseInt(obj.completed) == 0 ? false : true;
+                var status = obj.status;
+                
+                if(finished){
+                	finalize_download();
+                }
+                
+                /** IF FABUI MODE */
+                if(type == 'fabui'){
+                    
+                    switch(status){
+                        case 'downloading':
+                            _downloading(obj.download);
+                            break;
+                        case 'extracting':
+                            _extracting(obj.extract);
+                            break;
+                        case 'installing':
+                            _installing(obj.install);
+                            break;
+                    }
+                    
+                }
+                
+                if(type == 'marlin'){
+                    
+                    switch(status){
+                        case 'downloading':
+                            _downloading(obj.download);
+                            break;
+                        case 'installing':
+                            _installing(obj.install);
+                            break;
+                    }
+                }
+				
+			}
 
 
 			

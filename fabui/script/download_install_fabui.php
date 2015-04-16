@@ -1,8 +1,8 @@
 <?php
 /** FIRST DOWNLOAD FILE */
-require_once '/var/www/fabui/ajax/config.php';
-require_once FABUI_PATH.'ajax/lib/database.php';
-require_once FABUI_PATH.'ajax/lib/utilities.php';
+require_once '/var/www/lib/config.php';
+require_once '/var/www/lib/database.php';
+require_once '/var/www/lib/utilities.php';
 
 /** GET ARGS FROM COMMAND LINE */
 $_task_id = $argv[1];
@@ -205,10 +205,12 @@ function progress($download_size, $downloaded, $upload_size, $uploaded)
     global $_monitor_items;  
 	
 	
+	$now = time();
+	
 	$percent      = (($downloaded/$download_size)*100);
-	$elapsed_time = time() - $start;
+	$elapsed_time = $now - $start;
     
-    $elapsed_time = $elapsed_time%86400;
+    //$elapsed_time = $elapsed_time%86400;
     $velocita     = $downloaded/$elapsed_time;
 	
 	$_items_response['download_size'] = $download_size;
@@ -216,13 +218,18 @@ function progress($download_size, $downloaded, $upload_size, $uploaded)
 	$_items_response['percent']       = $percent;
 	$_items_response['pid']           = getmypid();
 	$_items_response['start']         = $start;
-	$_items_response['elapsed']       = $elapsed_time%60;
+	$_items_response['elapsed']       = $elapsed_time;
 	$_items_response['velocita']      = $velocita;
 	$_items_response['file']          = $_file_name;
     $_items_response['completed']     = 0;
     
+    
     $_monitor_items['download']       = $_items_response;
-	write_monitor();
+	
+	if($elapsed_time%3 == 0){
+		write_monitor();
+	}
+	
 }
 
  

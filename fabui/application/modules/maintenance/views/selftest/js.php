@@ -27,7 +27,7 @@
         
         
         var remote = $('#send-report').is(':checked') ? 1 : 0 ;
-        $("#editor").html(''); 
+        $(".console").html(''); 
         
         trace_file = '';
         monitor_file = '';
@@ -48,7 +48,7 @@
             trace_file       = response.trace_uri;
             interval_monitor = setInterval(do_monitor, 250);
             interval_trace   = setInterval(do_trace, 250);
-            $("#editor").slideDown('slow', function () {});
+            $(".console").slideDown('slow', function () {});
                
         });
         
@@ -59,17 +59,17 @@
     
     function do_monitor(){
         
-        
-        if(finished == false){
-            monitor();
-        }else{
-            clearInterval(interval_monitor);
-            clearInterval(interval_trace);
-            
-            
-            $("#start").removeClass("disabled");
-            $("#send-report").removeAttr("disabled");
-            
+        if(!SOCKET_CONNECTED){
+	        if(finished == false){
+	            monitor();
+	        }else{
+	            clearInterval(interval_monitor);
+	            clearInterval(interval_trace);
+	            
+	            $("#start").removeClass("disabled");
+	            $("#send-report").removeAttr("disabled");
+	            
+	        }
         }
         
     }
@@ -77,14 +77,16 @@
     
     function do_trace(){
         
-        if(finished == false){
-            trace();
-        }else{
-            clearInterval(interval_monitor);
-            clearInterval(interval_trace);
-            
-            $("#start").removeClass("disabled");
-            $("#send-report").removeAttr("disabled");
+        if(!SOCKET_CONNECTED){
+	        if(finished == false){
+	            trace();
+	        }else{
+	            clearInterval(interval_monitor);
+	            clearInterval(interval_trace);
+	            
+	            $("#start").removeClass("disabled");
+	            $("#send-report").removeAttr("disabled");
+	        }
         }
     }
     
@@ -114,22 +116,47 @@
 			  cache: false
         }).done(function( response ) {
             
-          
-            
-            $("#editor").html(response);
-            $('#editor').scrollTop(1E10);
+            $(".console").html(response);
+            $('.console').scrollTop(1E10);
             
         });
         
     }
     
+    
+    function manage_task_monitor(obj){
+		
+		if(obj.content != ""){
+			
+			var content = jQuery.parseJSON(obj.content);	
+			if(parseInt(content.finish) == 1){
+				$("#start").removeClass("disabled");
+	    		$("#send-report").removeAttr("disabled");
+	    		SOCKET.send('message', '{"name": "getTasks"}');
+	    	}
+		}
+		
+		
+		
+	}
+    
+    
     <?php if($running): ?>
 	    function resume(){
-	        monitor_file     = "<?php echo $monitor_file; ?>";
+	    	
+	    	monitor_file     = "<?php echo $monitor_file; ?>";
 	        trace_file       = "<?php echo $trace_file; ?>";
-	        interval_monitor = setInterval(do_monitor, 250);
-	        interval_trace   = setInterval(do_trace, 250);
-	        $("#editor").slideDown('slow', function () {});
+	    	
+	    	if(!SOCKET_CONNECTED){
+	        	interval_monitor = setInterval(do_monitor, 250);
+	        	interval_trace   = setInterval(do_trace, 250);
+	        	
+	       }else{
+	       		
+	       }
+	       $(".console").slideDown('slow', function () {});
+	       $("#start").addClass("disabled");
+           $("#send-report").attr("disabled", 'disabled');
 	    } 
 	<?php endif; ?>
 </script>

@@ -3,6 +3,7 @@ from subprocess import call,Popen, PIPE, STDOUT
 import time
 import fcntl
 import os, sys, getopt
+import logging
 
 
 myPID=os.getpid()	
@@ -56,11 +57,16 @@ for opt, arg in opts:
 		print usage
 		sys.exit(2)
 
+
+logging.basicConfig(filename=trace_file, level=logging.INFO,format='<span class="hidden-xs">[%(asctime)s] -</span> %(message)s',datefmt='%d/%m/%Y %H:%M:%S')
+
 def trace(string):
-	out_file = open(trace_file,"a+")
-	out_file.write(str(string) + "\n")
-	print string
-	out_file.close()
+	
+	#out_file = open(trace_file,"a+")
+	#out_file.write(str(string) + "\n")
+	logging.info(string)
+	#print string
+	#out_file.close()
 	return
 
 def printlog(percent,status):		
