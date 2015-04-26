@@ -34,6 +34,7 @@ class Settings extends Module {
 		$data['_safety_door']     = isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
 		$data['_switch']          = isset($_units['switch']) ? $_units['switch']: '0';
 		$data['_feeder_disengage'] = isset($_units['feeder']['disengage-offset']) ? $_units['feeder']['disengage-offset']: 2;
+		$data['_feeder_extruder_steps_per_unit'] = isset($_units['e']) ? $_units['e']: 3048.1593;
         
         /** LOAD TAB HEADER */
         $_tab_header = $this->tab_header();

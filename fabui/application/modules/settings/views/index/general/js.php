@@ -127,7 +127,7 @@ function save(){
 		  dataType : 'json',
 		  type: 'post',
           data: {red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val(), 
-          		safety_door: $('[name="safety-door"]:checked').val(), switch:$('[name="switch"]:checked').val(), feeder_disengage_feeder: $("#feeder-disengage-offset").val()},
+          		safety_door: $('[name="safety-door"]:checked').val(), switch:$('[name="switch"]:checked').val(), feeder_disengage_feeder: $("#feeder-disengage-offset").val(), feeder_extruder_steps_per_unit: $("#feeder-extruder-steps-per-unit").val()},
           dataType: 'json'
 		}).done(function(response) {
 			
@@ -151,6 +151,13 @@ function save(){
 
 $("#feeder-disengage-offset").spinner({
 				step :0.5,
+				numberFormat : "n",
+				min: 0
+		});
+
+$("#feeder-steps-per-unit").spinner({
+				step :0.5,
+				display : none,
 				numberFormat : "n",
 				min: 0
 		});
