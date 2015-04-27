@@ -64,6 +64,12 @@
 								<input class="form-control"  type="text" id="feeder-disengage-offset" value="<?php echo $_feeder_disengage; ?>">
 							</div>
 						</div>
+						<div class="form-group">
+							<label class="col-md-2 control-label">Extruder steps per unit</label>
+							<div class="col-md-10">
+								<input class="form-control"  type="text" id="feeder-extruder-steps-per-unit" value="<?php echo $_feeder_extruder_steps_per_unit; ?>">
+							</div>
+						</div>
 					</fieldset>
 					
 					<fieldset>
