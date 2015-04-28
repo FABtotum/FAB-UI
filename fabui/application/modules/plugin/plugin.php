@@ -91,6 +91,17 @@ class Plugin extends Module {
 		$this -> plugins -> active($plugin);
 
 		$_SESSION['plugins'] = $this -> plugins -> get_activeted_plugins();
+		
+		include PLUGINSPATH . $plugin . '/' . $plugin . '.php';
+		
+		$pluginClassName = ucfirst($plugin);
+		
+		$reflection = new ReflectionClass($pluginClassName);
+		
+		// check if activate method exists for plugin class
+		if ($reflection -> getMethod('activate') -> class == $pluginClassName) {
+			redirect('plugin/' . $plugin . '/activate');
+		}
 
 		redirect('plugin');
 
@@ -104,6 +115,17 @@ class Plugin extends Module {
 		$this -> plugins -> deactive($plugin);
 
 		$_SESSION['plugins'] = $this -> plugins -> get_activeted_plugins();
+		
+		include PLUGINSPATH . $plugin . '/' . $plugin . '.php';
+		
+		$pluginClassName = ucfirst($plugin);
+		
+		$reflection = new ReflectionClass($pluginClassName);
+		
+		// check if deactivate method exists for plugin class
+		if ($reflection -> getMethod('deactivate') -> class == $pluginClassName) {
+			redirect('plugin/' . $plugin . '/deactivate');
+		}
 
 		redirect('plugin');
 
