@@ -10,6 +10,8 @@ import RPi.GPIO as GPIO
 import logging
 import os, sys
 
+from subprocess import call
+
 
 monitorPID = os.getpid()
 
@@ -55,6 +57,10 @@ GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(2, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
+'''### READ PRINTER SETTINGS ###'''
+json_f = open(config.get('printer', 'settings_file'))
+units = json.load(json_f)
+
 
 def write_emergency(str):        
     safety = open(safety_file, 'w+')
@@ -85,10 +91,24 @@ def safety_callback(channel):
             #to do
             type=""
             code=""
-                
-        message = {'type': str(type), 'code': str(code)}
-        ws.send(json.dumps(message))
-        write_emergency(json.dumps(message))
+
+	print units['bothy']
+	print type
+	print code
+
+	if (units['bothy']=="Shutdown" and type=="emergency" and int(code)==120):
+		call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
+		return
+
+	if (units['bothz']=="Shutdown" and type=="emergency" and int(code)==121):
+		call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
+		return
+
+       	message = {'type': str(type), 'code': str(code)}		
+
+       	ws.send(json.dumps(message))
+       	write_emergency(json.dumps(message))
+
         
     except Exception, e:
         logging.info(str(e))

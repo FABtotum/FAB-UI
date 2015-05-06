@@ -3,14 +3,12 @@
 		<div class="col-md-12">
 			<div class="well no-border">
 				<form class="form-horizontal" action="<?php echo site_url('settings') ?>" method="post">
-					
 					<fieldset>
-						
 						<legend>
 							Safety - enable/disable warnings
 						</legend>
-						
-						<div class="form-group"> 
+
+						<div class="form-group">
 							<label class="col-md-2 control-label">
 								Door
 							</label>
@@ -27,13 +25,12 @@
 										<span>Disable</span>
 									</label>
 								</div>
-								
-								
+
+
 							</div>
 						</div>
 					</fieldset>
-					
-					
+
 					<fieldset>
 						<legend>Homing preferences</legend>
 						<div class="form-group">
@@ -53,9 +50,33 @@
 								</div>
 							</div>
 						</div>
-						
 					</fieldset>
-					
+
+					<fieldset>
+						<legend>Customized input actions</legend>
+						<div class="form-group">
+							<label class="col-md-2 control-label">Both Y Endstops pressed</label>
+							<div class="col-md-10">
+								 <select id="both-y-endstops">
+									  <option value="None" <?php echo $_both_y_endstops == 'None' ? 'selected="selected"' : '' ?> >None</option>
+									  <option value="Shutdown" <?php echo $_both_y_endstops == 'Shutdown' ? 'selected="selected"' : '' ?> >Shutdown</option>
+								</select> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 control-label">Both Z Endstops pressed</label>
+							<div class="col-md-10">
+								 <select id="both-z-endstops">
+									  <option value="None" <?php echo $_both_z_endstops == 'None' ? 'selected="selected"' : '' ?> >None</option>
+									  <option value="Shutdown" <?php echo $_both_z_endstops == 'Shutdown' ? 'selected="selected"' : '' ?> >Shutdown</option>
+								</select> 
+							</div>
+						</div>
+						<div><b>Warning: You have to restart the FABtotum so that some customized input actions take effect</b>
+						</div>
+					</fieldset>
+
+
 					<fieldset>
 						<legend>Feeder</legend>
 						<div class="form-group">
@@ -71,7 +92,7 @@
 							</div>
 						</div>
 					</fieldset>
-					
+
 					<fieldset>
 						<legend>
 							Lighting
@@ -96,7 +117,7 @@
 							<input name="standby-color-green" id="standby-color-green" type="hidden" value="<?php echo $_standby_color['g'] != '' ? $_standby_color['g'] : 0 ?>"/>
 							<input name="standby-color-blue"  id="standby-color-blue"  type="hidden" value="<?php echo $_standby_color['b'] != '' ? $_standby_color['b'] : 0 ?>"/>
 						</div>
-                        
+
 					</fieldset>
 					<div class="form-actions">
 						<button id="save-button" class="btn btn-primary" type="button">

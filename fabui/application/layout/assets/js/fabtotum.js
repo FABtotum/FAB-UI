@@ -240,8 +240,8 @@ function safety() {
 	var timestamp = new Date().getTime();
 	if (EMERGENCY == false) {
 		$.get("/temp/fab_ui_safety.json?time=" + jQuery.now(), function(data) {
-			if (data.type == 'emergency') {
-				show_emergency(data.code);
+			if (data.type == 'emergency') {	
+                        	show_emergency(data.code);
 			}
 		});
 	}
@@ -414,7 +414,7 @@ $(function() {
 				switch(obj.type) {
 					
 				case 'emergency':
-					show_emergency(obj.code);
+                                       	show_emergency(obj.code);
 					break;
 				case 'security':
 					EMERGENCY = false;
@@ -796,6 +796,15 @@ function decode_emergency_code(code) {
 	case 109:
 		return 'Y min Endstop hit';
 		break;
+
+	case 120:
+		return 'Both Y Endstops hit at the same time';
+		break;
+
+	case 121:
+		return 'Both Z Endstops hit at the same time';
+		break;
+
 	default:
 		return 'Unknown error Error code: ' + code;
 		break;

@@ -126,8 +126,15 @@ function save(){
         url : '<?php echo module_url('settings').'ajax/general.php' ?>',
 		  dataType : 'json',
 		  type: 'post',
-          data: {red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val(), 
-          		safety_door: $('[name="safety-door"]:checked').val(), switch:$('[name="switch"]:checked').val(), feeder_disengage_feeder: $("#feeder-disengage-offset").val(), feeder_extruder_steps_per_unit: $("#feeder-extruder-steps-per-unit").val()},
+          data: {
+			red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val(), 
+          		safety_door: $('[name="safety-door"]:checked').val(), 
+			switch:$('[name="switch"]:checked').val(), 
+			feeder_disengage_feeder: $("#feeder-disengage-offset").val(), 
+			feeder_extruder_steps_per_unit: $("#feeder-extruder-steps-per-unit").val(),
+			both_y_endstops: $("#both-y-endstops").val(),
+			both_z_endstops: $("#both-z-endstops").val()
+		},
           dataType: 'json'
 		}).done(function(response) {
 			
