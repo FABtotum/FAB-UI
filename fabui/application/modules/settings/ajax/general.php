@@ -11,6 +11,9 @@ $_switch      = $_POST['switch'];
 $_feeder_disengage = $_POST['feeder_disengage_feeder'];
 $_feeder_extruder_steps_per_unit = $_POST['feeder_extruder_steps_per_unit'];
 
+$_both_y_endstops = $_POST['both_y_endstops'];
+$_both_z_endstops = $_POST['both_z_endstops'];
+
 $_colors['r'] = $_red;
 $_colors['g'] = $_green;
 $_colors['b'] = $_blue;
@@ -26,6 +29,8 @@ $_units['safety']['door'] = $_safety_door;
 $_units['switch']         = $_switch;
 $_units['feeder']         = $_feeder;
 $_units['e'] 		  = $_feeder_extruder_steps_per_unit;
+$_units['bothy']	  = $_both_y_endstops;
+$_units['bothz']	  = $_both_z_endstops;
 
 file_put_contents(FABUI_PATH.'config/config.json', json_encode($_units));
 
