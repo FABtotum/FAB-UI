@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/serial.php';
+session_start();
 
 /** GET DATA FROM POST */
 $_red         = $_POST['red'];
@@ -27,7 +28,7 @@ $_units['safety']['door'] = $_safety_door;
 $_units['switch']         = $_switch;
 $_units['feeder']         = $_feeder;
 $_units['e'] 		  = $_feeder_extruder_steps_per_unit;
-$_units['api']['key'] = $_upload_api_key;
+$_units['api']['keys'][$_SESSION['user']['id']] = $_upload_api_key;
 
 file_put_contents(FABUI_PATH.'config/config.json', json_encode($_units));
 

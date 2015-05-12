@@ -3,20 +3,43 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/ajax/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/ajax/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/ajax/lib/utilities.php';
 
-$config = '/var/www/fabui/config/config.json';
 
-$key = $_SERVER['HTTP_X_API_KEY'];
+
+$post_key = $_SERVER['HTTP_X_API_KEY'];
 $location = trim($_REQUEST['location']);
+$key_match = FALSE;
+$api_user = 0;
 
-$_units = json_decode(file_get_contents($config), TRUE);
-$_upload_api_key = isset($_units['api']['key']) ? $_units['api']['key']: '';
+$_units = json_decode(file_get_contents(CONFIG_UNITS), TRUE);
+$_upload_api_keys = isset($_units['api']['keys']) ? $_units['api']['keys']: '';
+
+foreach ($_upload_api_keys as $user => $key){
+	if ($key == $post_key){
+		$key_match = TRUE;
+		$api_user = $user;
+	}
+}
 
 
-if($key == $_upload_api_key){
+if($key_match){
 	
-	$_file_path = UPLOAD_PATH;
-	$_file_name = basename($_FILES['file']['name']);
+
+	$ext = end(explode('.', $_FILES['file']['name']));
+	$_extension = strtolower($ext);
+	
+
+	
+	$_file_path = UPLOAD_PATH . $_extension;
+	$_origin_name = basename($_FILES['file']['name']);
+	
+	$_file_name = set_filename($_file_path, $_origin_name);
+	$_raw_name = str_replace('.'.$ext, '', $_file_name);
 	$uploadfile = $_file_path . $_file_name;
+	
+	if (!file_exists($_file_path))
+	{
+		mkdir($_file_path, 0777);
+	}
 	
 	
 	if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
@@ -26,15 +49,15 @@ if($key == $_upload_api_key){
 		$db = new Database();
 		
 		/** CHECK FOR OBJ OR CREATE IT */
-		$_user = 0;
-		$cmd  = "SELECT id FROM sys_objects WHERE obj_name='Slic3r Upload' AND user=$_user";
+		
+		$cmd  = "SELECT id FROM sys_objects WHERE obj_name='Slic3r Upload' AND user=$api_user";
 		$obj_id  = $db->query($cmd)['id'];
 		if (!$obj_id){
 			$_obj_insert['obj_name'] = "Slic3r Upload";
 			$_obj_insert['obj_description'] = "Objects uploaded from Slic3r";
 			$_obj_insert['private'] = "false";
 			$_obj_insert['date_insert'] = 'now()';
-			$_obj_insert['user'] = 0;
+			$_obj_insert['user'] = $api_user;
 			$obj_id = $db->insert('sys_objects', $_obj_insert);
 		}
 		
@@ -50,12 +73,12 @@ if($key == $_upload_api_key){
 		/** UPDATE FILE INFO */
 		$_file_update['file_name'] = $_file_name;
 		$_file_update['file_type'] = 'text/plain';
-		$_file_update['file_path'] = UPLOAD_PATH;
+		$_file_update['file_path'] = $_file_path;
 		$_file_update['full_path'] = $uploadfile;
-		$_file_update['raw_name'] = $_file_name;
-		$_file_update['orig_name'] = $_file_name;
-		$_file_update['client_name'] = $_file_name;
-		$_file_update['file_ext'] = '.gcode';
+		$_file_update['raw_name'] = $_raw_name;
+		$_file_update['orig_name'] = $_origin_name;
+		$_file_update['client_name'] = $_origin_name;
+		$_file_update['file_ext'] = '.'.$_extension;
 		$_file_update['file_size'] = $_file_size;
 		$_file_update['print_type'] = $_print_type;
 		$_file_update['insert_date'] = 'now()';
@@ -86,26 +109,6 @@ if($key == $_upload_api_key){
 	return http_response_code(401);
 
 }
-
-// echo $location;
-
-// $myfile = fopen("/home/tom/test/testfile.txt", "w");
-
-// fwrite($myfile, 'key:' . $_SERVER['HTTP_X_API_KEY'].PHP_EOL);
-
-// fwrite($myfile, 'POST:' . var_export($_POST, TRUE) . PHP_EOL. "****************".PHP_EOL);
-
-// fwrite($myfile, 'REQUEST:' . var_export($_REQUEST, TRUE) . "****************".PHP_EOL);
-
-// fwrite($myfile, 'FILES:' . var_export($_FILES, TRUE) . "****************".PHP_EOL);
-
-// fwrite($myfile, 'SERVER:' . var_export($_SERVER, TRUE) . "****************".PHP_EOL);
-
-
-
-// fclose($myfile);
-
-
 
 
 
