@@ -1,0 +1,10 @@
+RewriteEngine on
+RewriteBase /api/
+#RewriteCond $1 !^(index\.php|assets|application|down|robots|upload|ajax|temp|slic3r|\.txt\.json)
+#RewriteRule ^(.*)$ /fabui/index.php/$1 [L]
+RewriteRule ^files/([A-Za-z0-9-]+)/?$ file_upload.php?location=$1 [NC]
+RewriteRule ^version/?$ connection_test.php [NC]
+
+
+
+
