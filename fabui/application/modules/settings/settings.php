@@ -35,7 +35,9 @@ class Settings extends Module {
 		$data['_switch']          = isset($_units['switch']) ? $_units['switch']: '0';
 		$data['_feeder_disengage'] = isset($_units['feeder']['disengage-offset']) ? $_units['feeder']['disengage-offset']: 2;
 		$data['_feeder_extruder_steps_per_unit'] = isset($_units['e']) ? $_units['e']: 3048.1593;
-        
+		$data['_upload_api_key'] = isset($_units['api']['key'][$_SESSION['user']['id']]) ? $_units['api']['keys'][$_SESSION['user']['id']]: '';
+		
+       
         /** LOAD TAB HEADER */
         $_tab_header = $this->tab_header();
         

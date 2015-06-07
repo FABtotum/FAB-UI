@@ -98,6 +98,21 @@
 						</div>
                         
 					</fieldset>
+					
+					<fieldset>
+						<legend>Api</legend>
+						<div class="form-group">
+							<label class="col-md-2 control-label">File Upload API key</label>
+							<div class="col-md-9">
+								<input class="form-control"  type="text" id="upload-api-key" value="<?php echo $_upload_api_key; ?>">
+							</div>
+							<button id="gen-key-button" class="btn btn-primary col-md-1" type="button">
+							New key
+							</button>
+							
+						</div>
+				
+					</fieldset>
 					<div class="form-actions">
 						<button id="save-button" class="btn btn-primary" type="button">
 							<i class="fa fa-save"></i>&nbsp;Save
