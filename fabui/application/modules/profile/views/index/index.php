@@ -169,20 +169,24 @@
 										<label class="col-md-1 control-label">Layout</label>
 										<div class="col-md-11">
 											<label class="checkbox-inline">
-												  <input type="checkbox" id="smart-fixed-header" class="checkbox style-0"  <?php echo strpos($_SESSION['user']['layout'], 'fixed-header') !== false ? 'checked="checked"' : ''; ?> >
+												  <input type="checkbox" id="smart-fixed-header" class="checkbox "  <?php echo strpos($_SESSION['user']['layout'], 'fixed-header') !== false ? 'checked="checked"' : ''; ?> >
 												  <span>Fixed Header</span>
 											</label>
 											<label class="checkbox-inline">
-												  <input type="checkbox" id="smart-fixed-navigation" class="checkbox style-0" <?php echo strpos($_SESSION['user']['layout'], 'fixed-navigation') !== false ? 'checked="checked"' : ''; ?>>
+												  <input type="checkbox" id="smart-fixed-navigation" class="checkbox" <?php echo strpos($_SESSION['user']['layout'], 'fixed-navigation') !== false ? 'checked="checked"' : ''; ?>>
 												  <span>Fixed Navigation</span>
 											</label>
 											<label class="checkbox-inline">
-												  <input type="checkbox" id="smart-fixed-ribbon" class="checkbox style-0" <?php echo strpos($_SESSION['user']['layout'], 'fixed-ribbon') !== false ? 'checked="checked"' : ''; ?>>
+												  <input type="checkbox" id="smart-fixed-ribbon" class="checkbox" <?php echo strpos($_SESSION['user']['layout'], 'fixed-ribbon') !== false ? 'checked="checked"' : ''; ?>>
 												  <span>Fixed Ribbon</span>
 											</label>
 											<label class="checkbox-inline">
-												  <input type="checkbox" id="smart-fixed-footer" class="checkbox style-0" <?php echo strpos($_SESSION['user']['layout'], 'fixed-page-footer') !== false ? 'checked="checked"' : ''; ?>>
+												  <input type="checkbox" id="smart-fixed-footer" class="checkbox" <?php echo strpos($_SESSION['user']['layout'], 'fixed-page-footer') !== false ? 'checked="checked"' : ''; ?>>
 												  <span>Fixed Footer</span>
+											</label>
+											<label class="checkbox-inline">
+												  <input type="checkbox" id="smart-top-menu" class="checkbox" <?php echo strpos($_SESSION['user']['layout'], 'menu-on-top') !== false ? 'checked="checked"' : ''; ?> >
+												  <span>Menu on top</span>
 											</label>
 										</div>
 									</div>

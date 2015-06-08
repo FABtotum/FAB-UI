@@ -143,7 +143,7 @@ time.sleep(5)
 # STARTING PARAMS //DO NOT CHANGE
 
 
-dx = abs((end-begin)/slices)  #mm to move each slice
+dx = abs((float(end)-float(begin))/float(slices))  #mm to move each slice
 
 #-----
 

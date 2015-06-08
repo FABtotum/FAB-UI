@@ -71,7 +71,7 @@ class Dashboard extends Module {
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
 		
 		
-        //$this->layout->set_compress(false);
+        $this->layout->set_compress(false);
 		$this->layout->view('index/template/'.$_template, $data);
 		
 		

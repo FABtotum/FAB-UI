@@ -39,6 +39,7 @@ allow-hotplug wlan0
 #compile wifi
 handle= open('/etc/network/interfaces', 'w')  
 print>>handle, network_config
+handle.close()
 
 #print "Configuration has been updated"
 

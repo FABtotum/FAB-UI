@@ -29,7 +29,7 @@ open(log_trace, 'w').close() #reset trace file
 open(logfile, 'w').close() #reset trace file
 
 
-logging.basicConfig(filename=log_trace,level=logging.INFO,format='<span class="hidden-xs">[%(asctime)s] -</span> %(message)s',datefmt='%d/%m/%Y %H:%M:%S')
+logging.basicConfig(filename=log_trace,level=logging.INFO,format='%(message)s')
 
 #print "json: "+logfile
 #print "trace: "+log_trace
@@ -56,6 +56,7 @@ def write_status(status):
     json='{"status": ' + str(status).lower() +'}'
     handle=open(macro_status,'w+')
     print>>handle, json
+    handle.close()
     return
 
 def trace(string):

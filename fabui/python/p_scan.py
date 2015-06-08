@@ -6,6 +6,7 @@ import time
 import numpy as np
 from subprocess import call
 import math
+import json
 
 import ConfigParser
 
@@ -133,10 +134,16 @@ else:
 tot_probes=((abs(x1-x)*probe_density)*(abs(y1-y)*probe_density))*slices
 
 
-def printlog(percent,num):		
-	str_log='{"scan":{"name": "'+name+'","pid": "'+str(myPID)+'","started": "'+str(started)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","stats":{"percent":"'+str(percent)+'","probe":"'+str(probe_num)+'","tot_probes":"'+str(tot_probes)+'","slice_number":'+str(i)+',"tot_slices":'+str(slices)+'}}}'
-	handle=open(destination+logfile,'w')
-	print>>handle, str_log
+def printlog(percent,num):
+	
+	stats = {'percent': str(percent), 'probe': str(probe_num), 'tot_probes': str(tot_probes), 'slice_number': str(i), 'tot_slices': str(slices)}
+	scan  = {'name': name, 'pid': str(myPID), 'started': str(started), 'completed' : str(completed), 'completed_time' : str(completed_time), 'stats' : stats}
+	json_log = {'scan': scan}
+	#str_log='{"scan":{"name": "'+name+'","pid": "'+str(myPID)+'","started": "'+str(started)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","stats":{"percent":"'+str(percent)+'","probe":"'+str(probe_num)+'","tot_probes":"'+str(tot_probes)+'","slice_number":'+str(i)+',"tot_slices":'+str(slices)+'}}}'
+	handle=open(logfile,'w')
+	print>>handle, json.dumps(json_log)
+	handle.close()
+	#print>>handle, str_log
 	return
 #track trace
 

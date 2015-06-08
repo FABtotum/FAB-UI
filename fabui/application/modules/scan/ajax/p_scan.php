@@ -71,14 +71,17 @@
 
 <script type="text/javascript">
 
+
+	
+
+	
     $("#check-pre-scan").on('click', check_pre_scan);
     
     $("#check-p-scan").on('click', check_p_scan);
     
     $("#start-p-scan").on('click', start);
     
-    
-    
+
     function check_pre_scan(){
     
     
@@ -86,7 +89,8 @@
         $(".result-check-pre-scan").html('');
         openWait('Checking printer');
         var timestamp = new Date().getTime();
-        ticker_url    = '/temp/check_pre_scan_' + timestamp + '.trace';
+        /*ticker_url    = '/temp/check_pre_scan_' + timestamp + '.trace';*/
+        ticker_url    = '/temp/macro_trace';
         
         
         $.ajax({
@@ -99,8 +103,6 @@
     
             if(response.response == true){
               
-                
-                
                 setTimeout(function(){ $("#row_1").slideUp('slow', function(){
                       closeWait();
                      $("#row_2").slideDown('slow', function(){});
@@ -150,17 +152,31 @@
     	}).done(function( response ) {
     
             if(response.response == true){
+            	
+            	
+            	
+            	
+            	$("#row_2").slideUp('fast', function(){
+            		
+            		$("#row_3").slideDown('fast', function(){
+            			$("#start-p-scan").trigger('click');
+            		});
+            		
+            	});
                 
-               /** STEP SUCCESSIVO */
+               /** STEP SUCCESSIVO 
                 setTimeout(function(){ $("#row_2").slideUp('slow', function(){
                     closeWait();
                      $("#row_3").slideDown('slow', function(){
                      	
+                     	/*
                      	$("#start-p-scan").trigger('click');
+                     	
+                     	
                      	
                      });
                  });}, 3000);
-                 
+                 */
                           
             }else{
                 closeWait();

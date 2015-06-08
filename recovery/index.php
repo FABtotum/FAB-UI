@@ -30,6 +30,9 @@ include 'header.php';
 						<a href="/recovery/flash.php"     class="btn btn-primary">Flash Firmware</a>
 						<a href="/phpmyadmin"             class="btn btn-primary">Database</a>
 						<a href="/recovery/macrosim.php"  class="btn btn-primary">Macro Simulator</a>
+						
+						<a href="/recovery/test.php"              class="btn btn-primary"><i class="fa fa-fw fa-wrench"></i> Test</a>
+						
 						<a href="/recovery/install"       class="btn btn-primary">Re-Install</a>
 						<a href="/recovery/shutdown.php"  class="btn btn-warning ">Shutdown</a>
 						<a href="/recovery/reboot.php"    class="btn btn-warning ">Reboot</a>

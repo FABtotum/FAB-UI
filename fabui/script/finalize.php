@@ -42,6 +42,7 @@ switch($_type){
 	case 'scan_r':
 	case 'scan_p':
 	case 'scan_s':
+	case 'scan_pg':
 	case 'scan':
 		finalize_scan($_task_id, $_type, $_status);
 		break;		
@@ -110,7 +111,10 @@ function finalize_print($tid, $status){
 	//GET TASK ATTRIBUTES
 	$attributes = json_decode($task['attributes'], TRUE);
 	
-	if($status == 'stopped'){
+	$print_type = $attributes['print_type'];
+	
+	
+	if($status == 'stopped' && $print_type == 'additive'){
 		
 		//IF % PROGRESS IS < 0.5 FOR SECURITY REASON I RESET THE BOARD CONTROLLER
 		$monitor = json_decode(file_get_contents($attributes['monitor']), TRUE);
@@ -380,7 +384,7 @@ function finalize_update_fw($tid, $status){
     shell_exec('sudo python '.PYTHON_PATH.'gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log > /dev/null &');
     sleep(10);
 	//REMOVE ALL TEMPORARY FILES
-	shell_exec('sudo rm -rf '.$attributes['folder']); 
+	//shell_exec('sudo rm -rf '.$attributes['folder']); 
 	//$log->info('Task #'.$tid.' end finalizing');
 	
 }

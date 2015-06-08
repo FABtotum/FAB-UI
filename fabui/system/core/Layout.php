@@ -3,9 +3,7 @@ class FT_Layout {
 
 
 	protected $_meta_tag = array();
-	
 	protected $_css_file = array();
-	
 	protected $_header_js_file = array();
 	protected $_js_file  = array();
 

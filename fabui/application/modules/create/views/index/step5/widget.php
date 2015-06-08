@@ -28,11 +28,12 @@
 					
 				</div>
 				
-				<!-- LAYERS -->
+				<!-- LAYERS
 				<p class="additive-print">Layer <span class="pull-right"><span class="layer-actual font-md"><?php echo $layer_actual; ?></span> / <span class="layer-total"><?php echo $layer_total; ?></span> <span class="layer-percent"></span> </span></p>
 				<div class="progress progress-xs progress-striped active additive-print">
 					<div class="progress-bar  bg-color-blue progress-layer"></div>
 				</div>
+				 -->
 				
 				<p>Speed <span class="pull-right"><span class="label-velocity font-md"><?php echo $_velocity == '' ? 100 : $_velocity ?></span> / 500%</span> </p>
 				<div class="progress progress-xs">
@@ -99,12 +100,40 @@
 		<div class="row">	
 			<div class="col-sm-12">
 				<div class="well">
-					<div class="row">	
-						<div class="col-sm-2 additive-print">
-							<a href="javascript:void(0);" class="btn btn-default btn-block controls" data-action="zup" title="Change Z height: + 0.1mm" rel="tooltip"><i class="fa fa-angle-double-down"></i>&nbsp;Z</a>
-						</div>
-						<div class="col-sm-2 additive-print">
-							<a href="javascript:void(0);" class="btn btn-default btn-block controls" data-action="zdown" title="Change Z height: - 0.1mm" rel="tooltip"><i class="fa fa-angle-double-up"></i>&nbsp;Z</a>
+					<div class="row">
+						
+						
+						<div class="col-sm-4">
+							
+							
+							<div class="row">
+								<div class="col-sm-3"></div>
+								<div class="col-sm-6 text-center">
+									<label>Change Z Height</label>
+								</div>
+								<div class="col-sm-3"></div>
+							</div>
+							
+							<div class="row">
+							
+								<div class="col-sm-3 additive-print">
+									<!--<a href="javascript:void(0);" class="btn btn-default  controls" data-action="zup" title="Change Z height: + 0.1mm" rel="tooltip"><i class="fa fa-angle-double-down"></i>&nbsp;Z</a>-->
+									<button data-action="zup" type="button" class="form-control btn btn-default controls"><i class="fa fa-angle-double-down"></i>&nbsp;Z</button>
+								
+								</div>
+								
+								<div class="col-sm-6">
+									<select class="form-control text-center" id="z-height">
+										<option value="0.1">0.1</option>
+										<option value="0.01">0.01</option>
+									</select>
+								</div>
+								
+								<div class="col-sm-3 additive-print">
+									<!--<a href="javascript:void(0);" class="btn btn-default controls" data-action="zdown" title="Change Z height: - 0.1mm" rel="tooltip"><i class="fa fa-angle-double-up"></i>&nbsp;Z</a>-->
+									<button data-action="zdown" type="button" class="form-control btn btn-default controls"><i class="fa fa-angle-double-up"></i>&nbsp;Z</button>
+								</div>
+							</div>
 						</div>		
 					</div>
 				</div>

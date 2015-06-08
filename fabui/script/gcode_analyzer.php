@@ -16,7 +16,7 @@ if($file){
 	
 	$file_path = $file['full_path'];
 	/** COMMAND */
-	$command = 'sudo python '.PYTHON_PATH.'printrun/gcoder.py '.$file_path.' j';
+	$command = 'sudo nice -n 19 python '.PYTHON_PATH.'printrun/gcoder.py '.$file_path.' j';
 	$response = shell_exec($command);
 
 	

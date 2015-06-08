@@ -5,8 +5,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 /** CREATE LOG FILES */
 $_time                 = $_POST['time'];
-$_destination_trace    = TEMP_PATH.'check_r_scan_'.$_time.'.trace';
-$_destination_response = TEMP_PATH.'check_r_scan_'.$_time.'.log';
+//$_destination_trace    = TEMP_PATH.'check_r_scan_'.$_time.'.trace';
+//$_destination_response = TEMP_PATH.'check_r_scan_'.$_time.'.log';
+
+$_destination_response = TEMP_PATH.'macro_response';
+$_destination_trace    = TEMP_PATH.'macro_trace';
 
 
 write_file($_destination_trace, '', 'w');
@@ -35,7 +38,6 @@ unlink($_destination_trace);
 
 
 /** RESPONSE */
-
 
 $_response_items['check_trace']        = $_destination_trace;
 $_response_items['check_response']     = $_destination_response;

@@ -87,7 +87,8 @@
         $(".result-check-pre-scan").html('');
         openWait('Checking printer');
         var timestamp = new Date().getTime();
-        ticker_url    = '/temp/check_pre_scan_' + timestamp + '.trace';
+        /*ticker_url    = '/temp/check_pre_scan_' + timestamp + '.trace';*/
+        ticker_url    = '/temp/macro_trace';
         
         
         $.ajax({

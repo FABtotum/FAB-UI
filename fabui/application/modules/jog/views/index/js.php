@@ -5,8 +5,8 @@
 	var interval_ticker;
 	var interval_temperature;
 	var isMacro=false;
-	var firstEntry=true;
 	var showTemperatureConsole = false;
+	var maxIdleTime = 60;
 
 	
 	$(function() { 
@@ -224,11 +224,11 @@
     	
     	
     	interval_temperature = setInterval(function(){
-    			if(SOCKET_CONNECTED && ticker_url == '') {
+    			if(SOCKET_CONNECTED && ticker_url == '' && IDLETIME < maxIdleTime) {
     				showTemperatureConsole=false;
     				make_call_ws("get_temperature", "");
     			}
-    	}, 5000);
+    	}, 2000);
     	
     	
     	  	
@@ -648,7 +648,7 @@
 		
 		
 		$.SmartMessageBox({
-			title: "Reset controller",
+			title: "<i class='fa fa-warning'></i> <span class='txt-color-orangeDark'><strong>Reset Controller</strong></span> ",
 			content: "This operation will reset your control board, continue?",
 			buttons: '[No][Yes]'
 			}, function(ButtonPressed) {
@@ -667,25 +667,6 @@
 		
 	}
 	
-	function reset_controller(){
-		
-		
-		$(".btn").addClass('disabled');
-		$("#reset-controller").html('Resetting..');
-	    $.ajax({
-	              url : '<?php echo module_url('controller').'ajax/reset_controller.php' ?>',
-				  dataType : 'json',
-				  type: 'post'
-			}).done(function(response) {
-			 
-			 	 $(".btn").removeClass('disabled');
-			 	 $("#reset-controller").html('Reset controller');
-			 	  write_to_console('<strong>Reset controller</strong>', '<strong>done</strong>\n');
-			 	
-	        });
-		 
-		
-	}
 	
 	
 	function update_temperature_info(data){
@@ -718,7 +699,7 @@
             });
 			
 			
-			if(firstEntry){
+			if(jogFirstEntry){
 				
 				$("#ext-degrees").html(parseInt(ext_target) + '&deg;C');
 				$("#bed-degrees").html(parseInt(bed_target) + '&deg;C');
@@ -733,7 +714,7 @@
             		set: true,
             		animate: true
             	});
-            	firstEntry = false;
+            	jogFirstEntry = false;
            	}
 			
 			if(showTemperatureConsole){

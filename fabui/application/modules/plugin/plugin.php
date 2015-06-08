@@ -10,7 +10,6 @@ class Plugin extends Module {
 
 	public function index() {
 
-		//echo $this->session->flashdata('item');
 
 		$this -> load -> helper('ft_plugin_helper');
 

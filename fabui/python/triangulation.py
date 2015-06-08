@@ -5,6 +5,18 @@ from subprocess import call
 import datetime,time
 from os import path, access, R_OK
 import math
+from ws4py.client.threadedclient import WebSocketClient
+import ConfigParser
+import json
+
+config = ConfigParser.ConfigParser()
+config.read('/var/www/fabui/python/config.ini')
+
+'''#### WEB SOCKET CLIENT ####'''
+host=config.get('socket', 'host')
+port=config.get('socket', 'port')
+ws = WebSocketClient('ws://'+host +':'+port+'/')
+ws.connect();
 
 #defaults:
 scan_dir='/var/www/camera/scan_temp/'  	#default dir
@@ -37,9 +49,27 @@ fail=0
 usage="python triangulate.py -i[input_folder] -o[output_file] -s[slices] -b[start] -e[end] -w[width of image] -h[height of image] -z[z scan offset] -a[a scan offset] -m[mode r or s] -l[json tracking log file] -t[task ID] -d[debug]"
 
 def printlog(percent,num):		
-	str_log='{"post_processing":{"name": "'+name+'","pid": "'+str(myPID)+'","started": "'+str(t0)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","stats":{"percent":"'+str(percent)+'","img_number":'+str(cs)+',"tot_images":'+str(slices)+'}}}'
+	
+	global ws
+	global host
+	global port
+	
+	stats = {'percent': str(percent), 'img_number': str(cs), 'tot_images': str(slices)}
+	post_processing = {'name':  name, 'pid' : str(myPID), 'started': str(t0), 'completed': str(completed), 'completed_time': str(completed_time), 'stats': stats}
+	str_log = {'post_processing': post_processing}
+	#str_log='{"post_processing":{"name": "'+name+'","pid": "'+str(myPID)+'","started": "'+str(t0)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","stats":{"percent":"'+str(percent)+'","img_number":'+str(cs)+',"tot_images":'+str(slices)+'}}}'
+	message = {'type': 'post_processing', 'data': str_log}
+	
+	try:
+		ws.send(json.dumps(message))
+	except Exception, e:
+		print str(e)
+		ws = WebSocketClient('ws://'+host +':'+port+'/')
+		ws.connect();
+	
 	handle=open(logfile,'w')
-	print>>handle, str_log
+	print>>handle, json.dumps(str_log)
+	handle.close()
 	return
 	
 def rotate_y_axis(point,angle):
@@ -125,6 +155,8 @@ for opt, arg in opts:
 	elif opt in ("-d", "--d"):
 		debug = 1
  
+ 
+
 #IMAGE PROCESSING SETTINGS
 mmpph=6.0							#mm per pixel height
 mmppl=6.111							#mm per pixel lenght 
@@ -295,7 +327,7 @@ while (cs < slices) :
 		#END COL CYCLE: IMAGE ANALYZED.
 		
 		if debug:
-			print "failed subdomains :" + str(fail)
+			print "Failed subdomains :" + str(fail)
 		fail=0
 		
 		# post process pixel postions with local STD (to uniform line)
@@ -392,6 +424,8 @@ while (cs < slices) :
 			
 		#next slice
 		cs+=1
+		os.remove(filename)
+		os.remove(filename_l)
 		#END SLICES CYCLE (end of this slice scan)
 		
 #Overall point cloud transformations, if needed

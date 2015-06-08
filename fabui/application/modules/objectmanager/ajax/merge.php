@@ -18,17 +18,12 @@ $db = new Database();
 /** PREPARING JOIN COMMAND */
 $_string_files = '';
 
+
+
 foreach($_files_selected as $_file_id){
 
     $_file_temp = $db->query('select * from sys_files where id='.$_file_id);
-
-    if(isset($_file_temp[0])){
-        
-        $_file_temp = $_file_temp[0];
-        $_string_files .= $_file_temp['full_path'].' ';
-        
-    }
-    
+    $_string_files .= $_file_temp['full_path'].' ';
 }
 
 if($_output_name == ''){
@@ -101,6 +96,7 @@ $_response_items = array();
 $_response_items['file_id']  = $id_file;
 $_response_items['command']  = $_command_join;
 $_response_items['response'] = $_shell_response;
+$_response_items['string']   = $_string_files;
 
 sleep(5);
 /** RESPONSE */

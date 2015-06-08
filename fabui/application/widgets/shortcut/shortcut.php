@@ -19,6 +19,11 @@ class Shortcut_widget extends Widget {
         
         $CI =& get_instance();
      
+	 
+	 
+	 	$shortcut[] = array('controller'=>'');
+	 
+	 
         $_html   = $this->view('index', '', TRUE);
         $_widget = $this->get('shortcut', 'Shortcut', $_html, true, false);
         $_js     = $this->view('js', '', TRUE);

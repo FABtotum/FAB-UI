@@ -423,6 +423,9 @@
 		jsonData['z_step']   = $("#z-step").val();
 		jsonData['feedrate'] = $("#feedrate").val();
 		
+		
+		
+		
 		var message = {};
 		
 		message['name'] = "serial";

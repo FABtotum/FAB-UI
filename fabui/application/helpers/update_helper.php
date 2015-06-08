@@ -72,6 +72,8 @@ function marlin_get_local_version(){
 	$CI->load->database();
 	$CI->load->model('configuration');
 	
+	//$CI->load->library('serial');
+
 	return  $CI->configuration->get_config_value('fw_version');
 }
 

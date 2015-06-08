@@ -4,8 +4,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 /** CREATE LOG FILES */
 $_time                 = time();
-$_destination_trace    = TEMP_PATH.'scan_check_'.$_time.'.trace';
-$_destination_response = TEMP_PATH.'scan_response_'.$_time.'.log';
+//$_destination_trace    = TEMP_PATH.'scan_check_'.$_time.'.trace';
+//$_destination_response = TEMP_PATH.'scan_response_'.$_time.'.log';
+
+
+$_destination_response = TEMP_PATH.'macro_response';
+$_destination_trace    = TEMP_PATH.'macro_trace'; 
 
 write_file($_destination_trace, '', 'w');
 chmod($_destination_trace, 0777);

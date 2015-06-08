@@ -456,4 +456,180 @@ function clean_temp(){
 
 
 
+/**
+ * GET PIDs process by command
+ * @param $string
+ * @return array
+ */
+function get_pids($command){
+	
+	$pids = array();
+	
+	$exec_response = shell_exec('sudo ps ax | grep '.$command);
+	$temp = explode(PHP_EOL, $exec_response);
+	
+	foreach($temp as $line){
+		$t = explode(' ',trim($line));
+		
+		$pid = trim($t[0]);
+		
+		if($pid != ''){
+			array_push($pids, $t[0]);
+		}	
+	}
+	return $pids;
+}
+
+
+/**
+ *  KILL process by PID
+ * @param $int
+ * @return void
+ */
+function kill_process($pid){
+	
+	$command = 'sudo kill -9 ';
+	
+	if(is_array($pid)){
+		$command .= implode(" ", $pid);
+	}else{
+		$command .= $pid;
+	}
+	
+	shell_exec($command);
+}
+
+
+
+
+
+/**
+ * Return network configuration - ETHERNET AND WLAN
+ * 
+ */
+function networkConfiguration() {
+	
+	
+	
+	$interfaces = file_get_contents(NETWORK_INTERFACES);
+	
+	$wlan_section = strstr($interfaces, 'allow-hotplug wlan0');
+
+	$temp = explode(PHP_EOL, $wlan_section);
+
+	$wlan_ssid = '';
+	$wlan_password = '';
+	
+	$wifi_type = 'OPEN';
+
+	foreach ($temp as $line) {
+
+		if (strpos(ltrim($line), '-ssid') !== false) {
+			$wlan_ssid = trim(str_replace('"', '', str_replace('-ssid', '', strstr(ltrim($line), '-ssid'))));
+			$wifi_type = 'WPA2';
+		}
+
+		if (strpos(ltrim($line), '-psk') !== false) {
+			$wlan_password = trim(str_replace('"', '', str_replace('-psk', '', strstr(ltrim($line), '-psk'))));
+			$wifi_type = 'WPA2';
+		}
+		
+		//======================================================================================================
+		
+		if (strpos(ltrim($line), '-essid') !== false) {
+			$wlan_ssid = trim(str_replace('"', '', str_replace('-essid', '', strstr(ltrim($line), '-essid'))));
+		}
+		
+		if (strpos(ltrim($line), '-key') !== false) {
+			$wlan_password = trim(str_replace('"', '', str_replace('-key', '', strstr(ltrim($line), '-key'))));
+			$wifi_type = 'WEP';
+		}
+		
+
+	}
+
+	$interfaces = str_replace($wlan_section, '', $interfaces);
+
+	$eth_section = strstr($interfaces, 'allow-hotplug eth0');
+
+	$temp = explode(PHP_EOL, $eth_section);
+
+	$address = '';
+
+	foreach ($temp as $line) {
+
+		if (strpos(ltrim($line), 'address') !== false) {
+			$address = str_replace('"', '', str_replace('address', '', strstr(ltrim($line), 'address')));
+		}
+
+	}
+	
+	return array('eth' => trim($address), 'wifi'=>array('ssid'=>trim($wlan_ssid), 'password'=>trim($wlan_password), 'type' => $wifi_type));
+
+}
+
+
+/**
+ * Set Network Configuration
+ */
+function setNetworkConfiguration($eth, $wifi){
+	
+	$interfaces_file = NETWORK_INTERFACES;
+	
+	$new_configuration =  'auto lo'.PHP_EOL;
+	$new_configuration .= 'iface lo inet loopback'.PHP_EOL.PHP_EOL;
+	$new_configuration .= 'allow-hotplug eth0'.PHP_EOL;
+	$new_configuration .= '    auto eth0'.PHP_EOL;
+	$new_configuration .= '    iface eth0 inet static'.PHP_EOL;
+	$new_configuration .= '    address '.$eth.PHP_EOL;
+	$new_configuration .= '    netmask 255.255.0.0'.PHP_EOL.PHP_EOL;
+	$new_configuration .= 'allow-hotplug wlan0'.PHP_EOL;
+	$new_configuration .= '    auto wlan0'.PHP_EOL;
+	$new_configuration .= '    iface wlan0 inet dhcp'.PHP_EOL;
+	
+	switch($wifi['type']){
+		
+		case 'OPEN':
+			$new_configuration .= '    wireless-essid '.$wifi['ssid'].''.PHP_EOL;
+			$new_configuration .= '    wireless-mode managed'.PHP_EOL;
+			break;
+		case 'WEP':
+			$new_configuration .= '    wireless-essid '.$wifi['ssid'].''.PHP_EOL;
+			$new_configuration .= '    wireless-key '.$wifi['password'].''.PHP_EOL;
+			break;
+		case 'WPA':
+		case 'WPA2':
+			$new_configuration .= '    wpa-ssid "'.$wifi['ssid'].'"'.PHP_EOL;
+			$new_configuration .= '    wpa-psk "'.$wifi['password'].'"'.PHP_EOL;
+			break;
+	}
+	
+		
+	$backup_command = 'sudo cp /etc/network/interfaces '.$interfaces_file.'.sav';
+	shell_exec($backup_command);
+	
+	shell_exec('sudo chmod 666 '.$interfaces_file);
+	
+	file_put_contents($interfaces_file, $new_configuration);
+	
+	shell_exec('sudo chmod 644 '.$interfaces_file);
+}
+
+
+
+/**
+ * Set Ethernet static IP address
+ */
+function setEthIP($ip){
+	
+	$ip = '169.254.1.'.$ip;	 	
+	$networkConfiguration = networkConfiguration();
+	
+	setNetworkConfiguration($ip, $networkConfiguration['wifi']);
+	
+	$response = shell_exec("sudo service networking reload");
+}
+
+
+
 ?>

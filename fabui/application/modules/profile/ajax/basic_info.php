@@ -19,6 +19,7 @@ $_navigation_fixed = $_POST['navigation_fixed'] == 'true' ? true : false;
 $_header_fixed     = $_POST['header_fixed'] == 'true' ? true : false;
 $_ribbon_fixed     = $_POST['ribbon_fixed'] == 'true' ? true : false;
 $_footer_fixed     = $_POST['footer_fixed'] == 'true' ? true : false;
+$_menu_on_top      = $_POST['menu_on_top']  == 'true' ? true : false;
 
  
 $_avatar = $_SESSION['user']['avatar'];
@@ -88,6 +89,11 @@ if($_ribbon_fixed){
 
 if($_footer_fixed){
 	$_settings['layout'] .= ' fixed-page-footer ';
+}
+
+
+if($_menu_on_top){
+	$_settings['layout'] .= ' menu-on-top ';
 }
 
 

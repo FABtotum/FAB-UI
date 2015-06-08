@@ -132,6 +132,8 @@ $("#check-pre-scan").on('click', check_pre_scan);
 
 $("#check-r-scan").on('click', check_r_scan);
 
+
+
 $("#start-r-scan").on('click', start);
 
 function check_pre_scan(){
@@ -141,8 +143,8 @@ function check_pre_scan(){
     $(".result-check-pre-scan").html('');
     openWait('Checking printer');
     var timestamp = new Date().getTime();
-    ticker_url    = '/temp/check_pre_scan_' + timestamp + '.trace';
-    
+    /*ticker_url    = '/temp/check_pre_scan_' + timestamp + '.trace';*/
+    ticker_url    = '/temp/macro_trace';
     
     $.ajax({
 		  type: "POST",
@@ -153,19 +155,21 @@ function check_pre_scan(){
 	}).done(function( response ) {
 
         if(response.response == true){
-          
-            
-            
+                      
             setTimeout(function(){ $("#row_1").slideUp('slow', function(){
                   closeWait();
-                 $("#row_3").slideDown('slow', function(){});
+                 $("#row_3").slideDown('slow', function(){
+                 	
+                 	
+                 	
+                 	
+                 });
                  
              });}, 3000);
             
             
             /** STEP SUCCESSIVO */
-            
-                      
+                        
         }else{
             closeWait();
             $.smallBox({
@@ -190,8 +194,9 @@ function check_r_scan(){
     
     openWait('Checking printer');
     var timestamp = new Date().getTime();
-    ticker_url    = '/temp/check_r_scan_' + timestamp + '.trace';
+    /*ticker_url    = '/temp/check_r_scan_' + timestamp + '.trace';*/
     
+    ticket_url    = '/temp/macro_trace';
     
     $.ajax({
 		  type: "POST",
@@ -202,12 +207,32 @@ function check_r_scan(){
 	}).done(function( response ) {
 
         if(response.response == true){
+        		
+        	$("#row_3").slideUp('fast', function () {
+        		
+        		$("#row_4").slideDown('fast', function () {
+        			
+        			$("#start-r-scan").trigger("click");
+        			
+        		});
+        		
+        	});
+        	
             
-           /** STEP SUCCESSIVO */
+           /** STEP SUCCESSIVO 
             setTimeout(function(){ $("#row_3").slideUp('slow', function(){
                 closeWait();
-                 $("#row_4").slideDown('slow', function(){});
-             });}, 3000);
+                 $("#row_4").slideDown('slow', function(){
+
+                 	setTimeout(function(){
+                 		$("#start-r-scan").trigger("click");
+                 	}, 1500);
+                 	
+                 	
+                 });
+             });}, 1000);
+             
+             */
              
                       
         }else{

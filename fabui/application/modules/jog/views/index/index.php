@@ -46,7 +46,7 @@
 						<fieldset>
 							<div class="form-group">
 								<div class="col-md-5 control-label">
-									<strong>ZY Step (mm)</strong>
+									<strong>XY Step (mm)</strong>
 								</div>
 								<div class="col-md-7">
 									<input  type="text" id="step" value="10">

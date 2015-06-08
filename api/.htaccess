@@ -9,4 +9,3 @@ RewriteRule ^version/?$ connection_test.php [NC]
 php_value upload_max_filesize 512M
 php_value post_max_size 512M
 php_value memory_limit 512M
-

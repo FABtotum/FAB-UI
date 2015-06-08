@@ -15,19 +15,22 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<!-- Basic Styles -->
+		
+        
+        
+        <link rel="shortcut icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon">
+		<link rel="icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-production-plugins.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-production.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-skins.min.css">
-		
-		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/demo.min.css" />
-		<!-- page related CSS -->
-		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/lockscreen.min.css" />
-		<!-- FAVICONS -->
-		<link rel="shortcut icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon" />
-		<link rel="icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon" />
-		<!-- GOOGLE FONT -->
-        <link rel="stylesheet" href="/assets/css/fonts.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/demo.min.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/font-fabtotum.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="/assets/js/plugin/magnific-popup/magnific-popup.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/fonts.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/fabtotum_style.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="/assets/css/lockscreen.min.css" />
         
 		<style>
 			#header>:first-child,aside {

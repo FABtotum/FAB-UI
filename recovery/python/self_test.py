@@ -35,7 +35,7 @@ print units
 log_trace=config.get('task', 'trace_file')
 status_json=config.get('task', 'monitor_file')
 
-logging.basicConfig(filename=log_trace,level=logging.INFO,format='<span class="hidden-xs">[%(asctime)s] -</span> %(message)s',datefmt='%d/%m/%Y %H:%M:%S')
+logging.basicConfig(filename=log_trace,level=logging.INFO,format='%(message)s')
 
 online=int(sys.argv[1]) #for online log
 try:
@@ -52,7 +52,6 @@ except:
     fabui_version='Not Available'
     
     
-    
 trace_msg=""
 #generic errors
 s_error=0
@@ -65,6 +64,7 @@ def write_json(value, file):
     #str_log='{"finish": ' + value +'}'
     handle=open(file,'w+')
     print>>handle, json.dumps(info)
+    handle.close()
     return
 
 write_json('0', status_json)
@@ -506,7 +506,7 @@ else:
     summary()
     
 if float(bed_temp)>0: 
-    trace("OK : Bed sensor( "+ str(start_bed) +"&deg;C ) reponding correctly",log_trace)
+    trace("OK : Bed sensor ( "+ str(start_bed) +"&deg;C ) reponding correctly",log_trace)
 else:
     trace("FAILED : Bed not positioned or sensor not responding " + str(start_bed)+"&deg;C )",log_trace)
     s_error+=1
@@ -515,6 +515,10 @@ else:
 #end pre-test
 ext_temp=0
 bed_temp=0
+
+
+bed_temp_diff=10
+
 
 temperature_timeout=120
 trace("HEATING TEST (temperature in "+str(temperature_timeout)+" seconds): " ,log_trace)
@@ -548,8 +552,9 @@ else:
     summary()
     
 #================ CHECK BED TEMPERATURE
-while ((bed_temp <= 60) and (time_elapsed < temperature_timeout)):
-    
+
+while(((bed_temp - start_bed) < bed_temp_diff) and (time_elapsed < temperature_timeout)):
+#while ((bed_temp <= 60) and (time_elapsed < temperature_timeout)):   
     serial.flushInput()
     serial.write("M105\r\n")
     time.sleep(1)
@@ -563,13 +568,18 @@ while ((bed_temp <= 60) and (time_elapsed < temperature_timeout)):
     
     time_elapsed = time.time() - time_started
 
-if bed_temp>=60:
+if ((bed_temp - start_bed) > bed_temp_diff):
+#if bed_temp>=60:
     trace("OK : Bed heating ( started from " + str(int(start_bed)) + "&deg;C reached temperature " + str(int(bed_temp)) + "&deg;C in "+str(int(time_elapsed))+" seconds )",log_trace)
 else:
     trace("FAILED : Bed heating ( reached " + str(int(bed_temp)) + "&deg;C ) took more than "+str(temperature_timeout)+" seconds, please check bed connections", log_trace)
     s_error+=1
     summary()
 
+
+
+serial.write("M104 S0\r\n") #shutdown extruder (fast)
+serial.write("M140 S0\r\n") #shudown bed (fast)
 
 
 trace("HEATING SYSTEMS:                                DONE",log_trace)

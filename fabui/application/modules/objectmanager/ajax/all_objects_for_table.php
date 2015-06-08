@@ -80,7 +80,10 @@ foreach($_objects as $obj){
 	
 	
 	
-    $_rows[] = array($_link_edit, $obj['obj_description'], mysql_to_human($obj['date_insert']), $_files, $_action_buttons);          
+	$checkbox = '<label class="checkbox"><input type="checkbox" id="check_'.$obj['id'].'" name="checkbox-inline"><i></i> </label>';
+	
+	
+    $_rows[] = array($checkbox, $_link_edit, $obj['obj_description'], mysql_to_human($obj['date_insert']), $_files, $_action_buttons);          
 
 
 }

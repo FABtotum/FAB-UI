@@ -1,3 +1,35 @@
+var smartbgimage = "<h6 class='margin-top-10 semi-bold'>Background</h6><img src='img/pattern/graphy-xs.png' data-htmlbg-url='img/pattern/graphy.png' width='22' height='22' class='margin-right-5 bordered cursor-pointer'><img src='img/pattern/tileable_wood_texture-xs.png' width='22' height='22' data-htmlbg-url='img/pattern/tileable_wood_texture.png' class='margin-right-5 bordered cursor-pointer'><img src='img/pattern/sneaker_mesh_fabric-xs.png' width='22' height='22' data-htmlbg-url='img/pattern/sneaker_mesh_fabric.png' class='margin-right-5 bordered cursor-pointer'><img src='img/pattern/nistri-xs.png' data-htmlbg-url='img/pattern/nistri.png' width='22' height='22' class='margin-right-5 bordered cursor-pointer'><img src='img/pattern/paper-xs.png' data-htmlbg-url='img/pattern/paper.png' width='22' height='22' class='bordered cursor-pointer'>";
+$("#smart-bgimages").fadeOut(), $("#demo-setting").click(function() {
+    $(".demo").toggleClass("activate")
+}), $('input[type="checkbox"]#smart-fixed-header').click(function() {
+    $(this).is(":checked") ? $.root_.addClass("fixed-header") : ($('input[type="checkbox"]#smart-fixed-ribbon').prop("checked", !1), $('input[type="checkbox"]#smart-fixed-navigation').prop("checked", !1), $.root_.removeClass("fixed-header"), $.root_.removeClass("fixed-navigation"), $.root_.removeClass("fixed-ribbon"))
+}), $('input[type="checkbox"]#smart-fixed-navigation').click(function() {
+    $(this).is(":checked") ? ($('input[type="checkbox"]#smart-fixed-header').prop("checked", !0), $.root_.addClass("fixed-header"), $.root_.addClass("fixed-navigation"), $('input[type="checkbox"]#smart-fixed-container').prop("checked", !1), $.root_.removeClass("container")) : ($('input[type="checkbox"]#smart-fixed-ribbon').prop("checked", !1), $.root_.removeClass("fixed-navigation"), $.root_.removeClass("fixed-ribbon"))
+}), $('input[type="checkbox"]#smart-fixed-ribbon').click(function() {
+    $(this).is(":checked") ? ($('input[type="checkbox"]#smart-fixed-header').prop("checked", !0), $('input[type="checkbox"]#smart-fixed-navigation').prop("checked", !0), $('input[type="checkbox"]#smart-fixed-ribbon').prop("checked", !0), $.root_.addClass("fixed-header"), $.root_.addClass("fixed-navigation"), $.root_.addClass("fixed-ribbon"), $('input[type="checkbox"]#smart-fixed-container').prop("checked", !1), $.root_.removeClass("container")) : $.root_.removeClass("fixed-ribbon")
+}), $('input[type="checkbox"]#smart-fixed-footer').click(function() {
+    $(this).is(":checked") ? $.root_.addClass("fixed-page-footer") : $.root_.removeClass("fixed-page-footer")
+}), $('input[type="checkbox"]#smart-rtl').click(function() {
+    $(this).is(":checked") ? $.root_.addClass("smart-rtl") : $.root_.removeClass("smart-rtl")
+}), $('input[type="checkbox"]#smart-top-menu').click(function() {
+	$(this).is(":checked") ? $.root_.addClass("menu-on-top") : $.root_.removeClass("menu-on-top")
+}), "top" == localStorage.getItem("sm-setmenu") ? $("#smart-topmenu").prop("checked", !0) : $("#smart-topmenu").prop("checked", !1), $('input[type="checkbox"]#colorblind-friendly').click(function() {
+    $(this).is(":checked") ? $.root_.addClass("colorblind-friendly") : $.root_.removeClass("colorblind-friendly")
+}), $('input[type="checkbox"]#smart-fixed-container').click(function() {
+    $(this).is(":checked") ? ($.root_.addClass("container"), $('input[type="checkbox"]#smart-fixed-ribbon').prop("checked", !1), $.root_.removeClass("fixed-ribbon"), $('input[type="checkbox"]#smart-fixed-navigation').prop("checked", !1), $.root_.removeClass("fixed-navigation"), smartbgimage ? ($("#smart-bgimages").append(smartbgimage).fadeIn(1e3), $("#smart-bgimages img").bind("click", function() {
+        var e = $(this),
+            t = $("html");
+        bgurl = e.data("htmlbg-url"), t.css("background-image", "url(" + bgurl + ")")
+    }), smartbgimage = null) : $("#smart-bgimages").fadeIn(1e3)) : ($.root_.removeClass("container"), $("#smart-bgimages").fadeOut())
+}), $("#reset-smart-widget").bind("click", function() {
+    return $("#refresh").click(), !1
+}), $("#smart-styles > a").on("click", function() {
+    var e = $(this),
+        t = $("#logo img");
+    $.root_.removeClassPrefix("smart-style").addClass(e.attr("id")), t.attr("src", e.data("skinlogo")), $("#smart-styles > a #skin-checked").remove(), e.prepend("<i class='fa fa-check fa-fw' id='skin-checked'></i>")
+})
+
+
 function number_format(number, decimals, dec_point, thousands_sep) {
 
 	number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
@@ -136,8 +168,14 @@ function openWait(title, content, spinner) {
 		$(".wait-content").html('');
 		$(".wait-content").remove();
 	}
-
+	
 	var src_html = '<div class="white-popup animated bounceIn fast">';
+	
+	if(!pressedEmergencyButton){
+		src_html += '<a href="#" class="btn btn-default pull-right" title="Emergency Button" data-action="emergencyButton"><i class="glyphicon glyphicon-exclamation-sign txt-color-red"></i></a>';
+	}
+	
+	
 	src_html += '<h6 class="text-align-center wait-title">' + title + ' </h6>';
 
 	if (spinner == true) {
@@ -219,12 +257,13 @@ var notifications_interval;
 var safety_interval;
 var tasks_interval;
 var EMERGENCY = false;
-var idleTime = 0;
+var IDLETIME = 0;
 var idleInterval;
 var do_system_call = true;
 var SOCKET;
 var SOCKET_CONNECTED = false;
 var interval_internet;
+var jogFirstEntry = true;
 
 /** CHECK PRINTE SAFETY AJAX MODE*/
 function safety() {
@@ -361,7 +400,7 @@ function check_notifications() {
 		return false;
 	}
 
-	if (idleTime < max_idle_time || max_idle_time == 0) {
+	if (IDLETIME < max_idle_time || max_idle_time == 0) {
 		var timestamp = new Date().getTime();
 		$.ajax({
 			type : "POST",
@@ -401,7 +440,7 @@ $(function() {
 			var port = 9001;
 
 			SOCKET = new FabWebSocket(host, port);
-
+			
 			SOCKET.bind('message', function(payload) {
 
 				try {
@@ -459,6 +498,9 @@ $(function() {
 					
 				case 'system':
 					manage_system_monitor(obj.data);
+					break;
+				case 'post_processing':
+					manage_post_processing(obj.data);
 					break;
 				
 				}
@@ -530,12 +572,12 @@ $(".language").click(function() {
 
 /** MOUSE MOVE FOR LOCK SCREEN */
 $(document).mousemove(function(e) {
-	idleTime = 0;
+	IDLETIME = 0;
 });
 
 /** IDLE TIMER */
 function timerIncrement() {
-	idleTime++;
+	IDLETIME++;	
 }
 
 /** SHUTDOWN */
@@ -742,7 +784,10 @@ function getTrace(url, type, contenitor) {
 
 ////////////////////////
 function show_emergency(code) {
-
+	
+	
+	jogFirstEntry = true;
+	
 	if (EMERGENCY == true) {
 		return;
 	}
@@ -795,6 +840,15 @@ function decode_emergency_code(code) {
 		break;
 	case 109:
 		return 'Y min Endstop hit';
+		break;
+	case '110':
+		return 'The FABtotum has been idling for more than 8 minutes. Temperatures and Motors have been turned off.';
+		break;
+	case 120:
+		return 'Both Y Endstops hit at the same time';
+		break;
+	case 121:
+		return 'Both Z Endstops hit at the same time';
 		break;
 	default:
 		return 'Unknown error Error code: ' + code;
@@ -880,6 +934,10 @@ function manage_system_monitor(obj){
 }
 
 
+function manage_post_processing(obj){
+	
+}
+
 function mange_usb_monitor(status, alert){
 	
 	var message = '<p><strong>';
@@ -904,8 +962,38 @@ function mange_usb_monitor(status, alert){
 			icon : "icon-fab-usb"
 		});
 	}
+}
 
+
+function reset_controller(){
+		
+		
+		openWait("Reset Controller...");
+		
+	    $.ajax({
+	      	url : '/fabui/application/modules/controller/ajax/reset_controller.php',
+		  	dataType : 'json',
+		 	type: 'post'
+		}).done(function(response) {
+			closeWait(); 
+	    });
+}
+
+
+
+function stopAll(){
 	
+	openWait("Stopping all...");
+	
+	$.ajax({
+	      	url : '/fabui/application/modules/controller/ajax/stop_all.php',
+		  	dataType : 'json',
+		 	type: 'post'
+		}).done(function(response) {
+			waitContent("Refreshing page");
+			document.location.href = document.location.href; 
+	    });
 	
 	
 }
+

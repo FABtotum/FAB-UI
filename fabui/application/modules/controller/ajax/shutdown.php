@@ -1,10 +1,12 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once '/var/www/lib/config.php';
 
 /** FORCE RESET CONTROLLER */
 $_command = 'sudo python '.PYTHON_PATH.'gmacro.py shutdown '.TEMP_PATH.'macro_trace '.TEMP_PATH.'macro_response'; 
 shell_exec($_command);
 
+
+sleep(5);
 /** SHUTDOWN */
 $_command = 'sudo php '.SCRIPT_PATH.'shutdown.php';
 shell_exec($_command);

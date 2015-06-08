@@ -120,11 +120,11 @@ class CreateFactory {
 				$_message = 'No mail will be send at the end of the print';
 				break;
 			case 'zup' :
-				$_command = '!z_plus';
+				$_command = '!z_plus:'.$this -> _value;
 				$_message = 'Command for moving down the bed sent';
 				break;
 			case 'zdown' :
-				$_command = '!z_minus';
+				$_command = '!z_minus:'.$this -> _value;
 				$_message = 'Command for moving up the bed sent ';
 				break;
 			case 'fan':

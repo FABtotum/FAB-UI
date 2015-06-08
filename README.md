@@ -2,6 +2,41 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9 (08/06/2014)
+
+GENERAL
+- Improved Apache configuration to optimize server perfomance
+- Removed some unnecessary services that consume memory
+- Added "Emergency Button" on the top bar to stop immediately all the running operation on the FABtotum
+- Moved "Plugins" and "Support" button from the top bar to the sidebar navigation menu
+
+PROFILE
+- Added "Menu on Top" on layout settings
+
+DASHBOARD
+- Cam Widget: improved widget to get more control of the RaspiCam
+
+SCAN
+- Corrected scan descriptions
+- Modified "Rotating Scan" quality parameters
+- Improved user experience that now take advantage of responsiveness of web sockets technology (where supported by the browser)
+
+CREATE
+- Added parmetric Z Height controller
+- Removed the information of the current layer during printing, it will be added back in future updates
+
+OBJECTMANAGER
+- Added bulk selection for bulk actions on table views
+
+SETTINGS
+- Added support for direct upload from Slic3r (by Tohara)
+- Added new new Feature: custom functions on hitting both Y or Z endstops (need firmware version: 1.0.008) (by Imarin2)
+- Added support for custom activate and deactivate methods for plugins (by Tohara)
+- Added new feature: configurable extruder steps per unit (by Imarin2)
+
+
+==================================================================
+
 FABUI 0.875 (17/03/2015)
 
 CREATE
