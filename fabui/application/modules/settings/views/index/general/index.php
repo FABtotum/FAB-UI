@@ -57,7 +57,7 @@
 						<div class="form-group">
 							<label class="col-md-2 control-label">Both Y Endstops pressed</label>
 							<div class="col-md-10">
-								<select id="both-y-endstops">
+								<select class="form-control" id="both-y-endstops">
 									<option value="None" <?php echo $_both_y_endstops == 'None' ? 'selected="selected"' : '' ?> >None</option>
 									<option value="Shutdown" <?php echo $_both_y_endstops == 'Shutdown' ? 'selected="selected"' : '' ?> >Shutdown</option>
 								</select>
@@ -66,7 +66,7 @@
 						<div class="form-group">
 							<label class="col-md-2 control-label">Both Z Endstops pressed</label>
 							<div class="col-md-10">
-								<select id="both-z-endstops">
+								<select class="form-control" id="both-z-endstops">
 									<option value="None" <?php echo $_both_z_endstops == 'None' ? 'selected="selected"' : '' ?> >None</option>
 									<option value="Shutdown" <?php echo $_both_z_endstops == 'Shutdown' ? 'selected="selected"' : '' ?> >Shutdown</option>
 								</select>
