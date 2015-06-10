@@ -20,7 +20,7 @@
 		<?php echo $_css_in_page; ?>
 		<!-- END CSS IN PAGE -->
 	</head>
-	<body class="<?php echo $_skin; ?> <?php echo isset($_SESSION['user']['layout']) ? $_SESSION['user']['layout'] : '' ?>">
+	<body class="<?php echo $_skin; ?> <?php echo isset($_SESSION['user']['layout']) ? $_SESSION['user']['layout'] : '' ?> ">
 		<!-- HEADER -->
 		<header id="header">
 			<div id="logo-group">
@@ -64,31 +64,26 @@
 				<!-- end collapse menu button -->
 				
 				
-				<!-- SUPPORT BUTTON -->
-				<div class="btn-header transparent pull-right">
-					<span>
-						<?php echo anchor( 'support', '<i class="fa fa-life-ring"></i>', 'title="Support" style="cursor: pointer !important" class="hidden-xs"'); ?>
-					</span>
-				</div>
-				<!-- END SUPPORT BUTTON -->
-				
 				
 				<!-- PROFILE BUTTON -->
 				<div class="btn-header transparent pull-right">
 					<span>
-						<?php echo anchor( 'profile', '<i class="fa fa-user"></i>', 'title="Profile" style="cursor: pointer !important"'); ?>
+						<?php echo anchor( 'profile', ' <i class="fa fa-user"></i> ', 'title="Profile" style="cursor: pointer !important"'); ?>
 					</span>
 				</div>
 				<!-- END PROFILE BUTTON -->
-				<!-- PLUGIN BUTTON -->
+				
+				<!-- EMERGENCY BUTTON -->
 				<div class="btn-header transparent pull-right">
 					<span>
-						<?php echo anchor( 'plugin', '<i class="icon-fab-plugin"></i>', 'title="Plugins" style="cursor: pointer !important"'); ?>
+						<?php echo anchor( '#', '<i class="glyphicon glyphicon-exclamation-sign"></i>', 'title="Emercengy Button" style="cursor: pointer !important" data-action="emergencyButton" data-reset-msg="This operation will stop all the operations, continue?"'); ?>
 					</span>
 				</div>
-				<!-- END PLUGIN BUTTON -->
+				<!-- END EMERGENCY BUTTON-->
+				
+				
 				<!-- LOGOUT BUTTON -->
-				<div id="logout" class="btn-header transparent pull-right">
+				<div id="log-out" class="btn-header transparent pull-right">
 					<span>
 						<?php echo anchor( 'login/out', '<i class="fa fa-power-off"></i>', 'title="Power Off" data-user-name="'.$_SESSION['user']['first_name'].'" data-logout-msg="What do you want to do?" data-action="userLogout" style="cursor: pointer !important"'); ?>
 					</span>
@@ -164,7 +159,7 @@
 						<i class="fa fa-bug"></i>&nbsp;<span class="hidden-mobile">Report a bug</span>
 					</button>
 					<button data-toggle="modal" data-backdrop="static" data-target=".suggestion-modal" class="btn btn-xs bg-color-blue txt-color-white pull-right internet" style="display:none">
-						<i class="fa fa-stack-overflow"></i>&nbsp;<span class="hidden-mobile">Request for a feature</span>
+						<i class="fa fa-stack-overflow"></i>&nbsp;<span class="hidden-mobile">Request a feature</span>
 					</button>
 					<span class="txt-color-white ">FAB UI <em class="font-xs txt-color-orangeDark">beta</em> v.<?php echo $_SESSION['fabui_version'] ?></span>
 				</div>
@@ -176,7 +171,7 @@
 			<div class="modal-dialog  modal-lg">
 				<div class="modal-content">
 		      		<div class="modal-header">
-		      			<h4 class="modal-title"><i class="fa fa-stack-overflow"></i> Request for a feature</h4>
+		      			<h4 class="modal-title"><i class="fa fa-stack-overflow"></i> Request a feature</h4>
 		      		</div>
 		      		<div class="modal-body">
 		      			<div class="row">
@@ -211,6 +206,7 @@
 		      				<div class="col-md-12">
 		      					<h6>Please first make sure FABUI is updated to the last version</h6>
 		      					<h5>Our support forum is now live. Visit <a target="_blank" href="http://support.fabtotum.com/tickets/">http://support.fabtotum.com/tickets/</a></h5>
+		      					<p>Note: use this form only to report software's bugs</p>
 		      					<div class="form-group">
 		      						<input id="bug-title" class="form-control" type="text" placeholder="Subject">
 		      					</div>

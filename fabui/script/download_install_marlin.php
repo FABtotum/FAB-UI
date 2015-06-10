@@ -13,7 +13,6 @@ $_monitor = $argv[3];
 $_marlin_local_version   = marlin_get_local_version();
 $_marlin_remote_version  = marlin_get_remote_version();
 
-
 $_file_name = $_folder.MARLIN_DOWNLOAD_FILE;
 $_url       = MARLIN_DOWNLOAD_URL.$_marlin_remote_version.'/'.MARLIN_DOWNLOAD_FILE;
 

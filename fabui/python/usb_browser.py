@@ -60,5 +60,6 @@ if os.path.isdir(path):
     if(destination != ""):
         dest_file= open(destination, 'w')
         print>>dest_file, json.dumps(files)
+        dest_file.close()
 else:
     print str(path) + " is not a directory or doesn't exists"

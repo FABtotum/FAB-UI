@@ -22,7 +22,7 @@ scan_quality_info[<?php echo $quality->id ?>] = <?php echo json_encode($configur
 /* SCAN TASK INFO */
 var task_id                 =  <?php echo  $_task  ? $_task['id'] : 0 ?>;
 var scan_pid                =  <?php echo  $_task  ? $_task_attributes['scan_pid'] : 0 ?>;
-var scan_monitor_file       = '<?php echo  $_task  ? $_task_attributes['folder'].$_task_attributes['scan_monitor'] : '' ?>';
+var scan_monitor_file       = '<?php echo  $_task  ? $_task_attributes['scan_monitor'] : '' ?>';
 var scan_monitor_folder     = '<?php echo  $_task  ? $_task_attributes['folder'] : '' ?>';
 var scan_uri                = '<?php echo  $_task && isset($_task_attributes['scan_uri']) ? $_task_attributes['scan_uri'] : '' ?>';
 var pprocess_pid            =  <?php echo  $_task && isset($_task_attributes['pprocess_pid'])? $_task_attributes['pprocess_pid'] : 0 ?>;
@@ -33,7 +33,7 @@ var scan_finished            = <?php echo  $_task && is_array($_scan_monitor)  ?
 var scan_monitor_timeout     = 5000; 
 var scan_elapsed_time        =  <?php echo  $_task  ? (time() - intval($_monitor_attributes->scan->started)) : 0 ?>;
 var scan_estimated_time_left = 0;
-var scan_monitor_response;
+var scan_monitor_response = <?php echo $_scan_monitor_response; ?>;
 var scan_progress_step;
 var scan_second_for_step;
 var scan_array_progress_steps = new Array();
@@ -60,7 +60,7 @@ var pprocess_finished = <?php echo  $_task && isset($_pprocess_monitor['post_pro
 var pprocess_monitor_timeout = 5000;
 var pprocess_interval_monitor;
 var pprocess_elapsed_time = 0;
-var pprocess_monitor_response = 0;
+var pprocess_monitor_response = <?php echo $_pprocess_monitor_response; ?>;
 var pprocess_progress_step;
 var pprocess_second_for_step;
 var pprocess_array_progress_steps = new Array();
@@ -120,10 +120,11 @@ var probe_quality = '';
 var a_offset;
 
 var check_pre_scan_url = '<?php echo module_url('scan').'ajax/check_pre_scan.php' ?>';
-var pre_scan_url     = '<?php echo module_url('scan').'ajax/pre_scan.php' ?>';
-var macro_r_scan_url = '<?php echo module_url('scan').'ajax/macro_r_scan.php' ?>';
-var macro_s_scan_url = '<?php echo module_url('scan').'ajax/macro_s_scan.php' ?>';
-var macro_p_scan_url = '<?php echo module_url('scan').'ajax/macro_p_scan.php' ?>';
+var pre_scan_url       = '<?php echo module_url('scan').'ajax/pre_scan.php' ?>';
+var macro_r_scan_url   = '<?php echo module_url('scan').'ajax/macro_r_scan.php' ?>';
+var macro_s_scan_url   = '<?php echo module_url('scan').'ajax/macro_s_scan.php' ?>';
+var macro_p_scan_url   = '<?php echo module_url('scan').'ajax/macro_p_scan.php' ?>';
+var macro_pg_scan_url  = '<?php echo module_url('scan').'ajax/macro_pg_scan.php' ?>';
 
 /** NEED FOR JCROP API */
 var jcrop_api;
@@ -243,6 +244,10 @@ $(document).ready(function() {
                 $('#console-container').removeClass().addClass('col-sm-12');
                 ISPROBING = true;
                 break;
+            case 15: /** SFM*/
+           		instruction_page = 'pg_scan.php';
+           		settings_page = 'pg_scan_settings.php';
+           		ISPROBING = false;
         }
         
         
@@ -346,17 +351,22 @@ $(document).ready(function() {
 /** READ MACRO'S TRACE */    
 function ticker(){
     
-    if(ticker_url != ''){
-        
-         $.get( ticker_url , function( data ) {
-            
-            if(data != ''){
-                data = data.replace("\n", "<br>");
-                /*data = data.replace('<?php echo PHP_EOL; ?>', '<br>');*/
-                waitContent(data);
- 
-            }
-       });
+    
+    if(!SOCKET_CONNECTED){
+    	
+	    if(ticker_url != ''){
+	        
+	         $.get( ticker_url , function( data ) {
+	            
+	            if(data != ''){
+	                data = data.replace("\n", "<br>");
+	                /*data = data.replace('<?php echo PHP_EOL; ?>', '<br>');*/
+	                waitContent(data);
+	 
+	            }
+	       });
+	    }
+    
     }
 }
 
@@ -493,10 +503,6 @@ function check_wizard(){
 };
 
 
-
-
-
-
 /**
  *  START SCAN & PPROCESS
  */
@@ -509,13 +515,13 @@ function start(){
     end_degree = $("#end-degree").val();
     
     
-    
+    var data = { mode: scan_mode, new_object: new_object, obj_id : obj_id, obj_name : $("#name-object").val(),  quality: scan_quality, x1: x1, x2: x2, y1:y1, y2:y2, axis_increment: axis_increment, start_degree: start_degree, end_degree: end_degree, density:density, a_offset:a_offset, probe_quality : probe_quality, pg_iso:$( "#pg-iso" ).val(), pg_size:$("#pg-size").val(), pg_slices: $("#pg-slices").val() };
     
     
 	$.ajax({
 		  type: "POST",
 		  url: "<?php echo site_url('scan/start') ?>", 
-		  data: { mode: scan_mode, new_object: new_object, obj_id : obj_id, obj_name : $("#name-object").val(),  quality: scan_quality, x1: x1, x2: x2, y1:y1, y2:y2, axis_increment: axis_increment, start_degree: start_degree, end_degree: end_degree, density:density, a_offset:a_offset, probe_quality : probe_quality },
+		  data: data,
 		  dataType: 'json',
 		  asynch: true,
 		  beforeSend: function() {
@@ -531,18 +537,39 @@ function start(){
         probing_trace_file = response.probing_trace_file;
         scan_stats_file    = response.scan_stats_file;
         
-        /** PPROCESS ONLY FOR SCAN MODE 6 - 7 (rotating, sweep) */
-        if(!ISPROBING){
-            
-            pprocess_monitor_file = response.pprocess_monitor_file;
-            pprocess_pid          = response.pprocess_pid;
-            pprocess_stats_file   = response.pprocess_stats_file;
-            
-            $('.scan-quality-label').html(scan_quality_info[scan_quality].info.name);
-            $('.slices-label').html(scan_quality_info[scan_quality].values.slices);
-            $('.iso-label').html(scan_quality_info[scan_quality].values.iso);
-            $('.img-resolution-label').html(scan_quality_info[scan_quality].values.resolution.width + ' X ' + scan_quality_info[scan_quality].values.resolution.height);
-
+        
+        
+        if(scan_mode == 15){
+        	
+        	$(".pprocess").hide();
+	        $(".scan").hide();
+        	
+        }else{
+	        
+	        /** PPROCESS ONLY FOR SCAN MODE 6 - 7 (rotating, sweep) */
+	        if(!ISPROBING){
+	            
+	            pprocess_monitor_file = response.pprocess_monitor_file;
+	            pprocess_pid          = response.pprocess_pid;
+	            pprocess_stats_file   = response.pprocess_stats_file;
+	            
+	            $('.scan-quality-label').html(scan_quality_info[scan_quality].info.name);
+	            $('.slices-label').html(scan_quality_info[scan_quality].values.slices);
+	            $('.iso-label').html(scan_quality_info[scan_quality].values.iso);
+	            $('.img-resolution-label').html(scan_quality_info[scan_quality].values.resolution.width + ' X ' + scan_quality_info[scan_quality].values.resolution.height);
+	            $(".stats-scan-quality-name").html(scan_quality_info[scan_quality].info.name);
+				$(".stats-scan-quality-slices").html(scan_quality_info[scan_quality].values.slices);
+				$(".stats-scan-quality-iso").html(scan_quality_info[scan_quality].values.iso);
+				$(".stats-scan-quality-resolution").html(scan_quality_info[scan_quality].values.resolution.width + ' x ' + scan_quality_info[scan_quality].values.resolution.height);
+	            
+	            
+	
+	        }else{
+	        	$(".pprocess").hide();
+	        	$(".scan").hide();
+	        }
+        
+        
         }
         
 		/* SCAN LABELS */
@@ -560,6 +587,11 @@ function start(){
 		current_step = 4;
 		$('#btn-next').trigger('click');
         $("#stop-button").removeClass('disabled');
+        
+        $(".stats-scan-mode-name").html(scan_mode_info[scan_mode].name);
+		
+		
+        
 		closeWait();
 		    
 	});
@@ -571,29 +603,17 @@ function start(){
  */
 var print_monitor = function (){
 
-   
-	if(!scan_finished || (!ISPROBING && !pprocess_finished)){
-		monitor_call();
-                     	
-	}else{ 
-
-		/*se � finita, termino monitor*/
-		_stop_monitor();
-		_stop_timer();
-
-		current_step = 5;
-        
-		$('.progress').removeClass('active');
-		$('.estimated-time').html('-');
-		$('.estimated-time-left').html('-');
-        
-        openWait('Finalizing scan');
-        
-        setTimeout(function(){
-            get_info();
-            
-            /** get all info from the task */
-        }, 15000);
+	if(!SOCKET_CONNECTED){
+		
+		if(!scan_finished || (!ISPROBING && !pprocess_finished)){
+			monitor_call();
+	                     	
+		}else{
+			
+			finalize_scan(); 
+			
+		}
+	
 	}
 
 };
@@ -641,220 +661,14 @@ function monitor_call(){
 			  data : {task_id: task_id, scan_monitor_file: scan_monitor_file, pprocess_monitor_file: pprocess_monitor_file, isprobing: ISPROBING }
 		}).done(function(response) {
 			
-           /* try{ */ 
-                
-                if(response.scan == null){
-                    
-                    /*stop_scan('An error occured.. stopping scan');*/
-                    /*console.log('scan null');*/
-                    return;
-                }
-                
-    			monitor_count++;
-    			scan_monitor_response     = response.scan;
-                
-    			var scan_progress_percent = parseFloat(scan_monitor_response.scan.stats.percent);
-    
-    			/* SCAN  */
-    			$('#lines-progress').attr('style', 'width:' +scan_progress_percent + '%');
-    			$('#lines-progress').attr('aria-valuetransitiongoal', scan_progress_percent);
-    			$('#lines-progress').attr('aria-valuenow', scan_progress_percent);
-    			$('.progress-status').html(number_format(scan_progress_percent, 2, ',', '.') + ' %');
-                
-    
-    
-                 if(!ISPROBING){
-                    
-                    
-                    if(response.pprocess == null){
-                        /*stop_scan('An error occured.. stopping scan');*/
-                        
-                        
-                        /*console.log('pprocess null');*/
-                        return;
-                    }
-                    
-                    pprocess_monitor_response = response.pprocess;
-                    var pprocess_progress_percent = parseFloat(pprocess_monitor_response.post_processing.stats.percent);
-                    
-                    /* PPROCESS  */
-        			$('#pprocess-lines-progress').attr('style', 'width:' + pprocess_progress_percent + '%');
-        			$('#pprocess-lines-progress').attr('aria-valuetransitiongoal',  pprocess_progress_percent);
-        			$('#pprocess-lines-progress').attr('aria-valuenow', pprocess_progress_percent);
-        			$('.pprocess-progress-status').html(number_format(pprocess_progress_percent, 2, ',', '.') + ' %');
-                    
-                    
-                }
-                
-    			/*se il numero dell'immagine � minore al numero degli slice totali mostro l'immagine, evito che di caricare un immagine non esistente
-    			if(parseInt(scan_monitor_response.scan.stats.img_number) <= parseInt(scan_quality_info[scan_quality].values.slices)){
-    				
-    
-    				for(var i=scan_image_counter;i<scan_monitor_response.scan.stats.img_number; i++){
-    					
-    					var src_laser = scan_uri + 'images/'+ i +'_l.png';
-    					var new_laser_image = $('<div class="scan-preview"><a class="image-link-laser" href="'+ src_laser + '"><img src="' + src_laser +'" data-img="'+src_laser+'"  class="superbox-img"></a></div>');
-    					$('.laser').append(new_laser_image);
-    				}
-    
-    				
-    				scan_image_counter = scan_monitor_response.scan.stats.img_number;
-    			
-    				scan_image = scan_monitor_response.scan.stats.img_number; 
-    
-    				_init_gallery('.image-link-laser');
-    				
-    				
-    			}*/
-    
-    
-    
-    			/* CHECK IF SCAN IS COMPLETED */
-    			if(scan_monitor_response.scan.completed == 1){
-    				scan_finished = true;	
-    			}
-                
-                
-                if(!ISPROBING){
-                    
-                    /* CHECK IF POST-PROCESSING IS COMPLETED */
-                    /*console.log("check if pprocess is finished");*/
-        			if(pprocess_monitor_response.post_processing.completed == 1){
-        				pprocess_finished = true;	
-        			}
-                }
-    			
-    
-    
-    
-    			/* AL PRIMO GIRO */
-    			if(monitor_count == 1){
-    
-    				/* SCAN */
-    				scan_progress_step   = precise_round(scan_monitor_response.scan.stats.percent, precision);
-    				scan_second_for_step = elapsed_time;
-                    
-                    if(!ISPROBING){
-                        /* POST-PROCESS */
-        				pprocess_progress_step   = precise_round(pprocess_monitor_response.post_processing.stats.percent, precision);
-        				pprocess_second_for_step = elapsed_time;
-                    }
-    				
-    
-    				$('.estimated-time').html(' - ');
-    				$('.estimated-time-left').html(' - ');
-    			
-    			}
-    
-    			/**
-    			* CALCULING ESTIMATED TIME LEFT SCAN
-    			**/
-    			/* se cambia la percentuale verifico di quanta � cambiata ne calcolo il tempo e faccio una stima di quanto ci si mette a completare tutto al 100% */
-    			if(scan_progress_step != precise_round(scan_monitor_response.scan.stats.percent, precision)){
-    
-    				var second_for_this_step            = (elapsed_time - scan_second_for_step);
-    				var progress_for_this_step          = precise_round(Math.abs(precise_round(scan_monitor_response.scan.stats.percent, 2) - scan_progress_step), precision);
-    				var estimated_seconds_for_all_steps = precise_round(parseFloat((second_for_this_step * 100) / progress_for_this_step), precision);
-    
-    				/* calcolo la media ponderata per la stima del tempo totale di scansione */
-    				
-    				if(!isNaN(progress_for_this_step)){
-    					scan_array_progress_steps.push(progress_for_this_step);
-    				}
-    
-    
-    				var scan_estimated_time = precise_round(Math.abs(estimated_seconds_for_all_steps * progress_for_this_step), precision);
-    
-    				if(!isNaN(scan_estimated_time)){
-    					scan_array_estimated_time.push(scan_estimated_time);
-    				}
-    				
-    				scan_current_estimated_time = precise_round(parseFloat((eval(scan_array_estimated_time.join('+')))/(eval(scan_array_progress_steps.join('+')))), 0);
-    
-    				scan_estimated_time_left = (parseInt(scan_current_estimated_time) - parseInt(elapsed_time)); /* stima secondi rimasti = stima secondi totali - elapsed_time dall'inizio della scansione */
-    				scan_estimated_time_left = Math.abs(scan_estimated_time_left);
-    
-    				scan_progress_step   = precise_round(scan_monitor_response.scan.stats.percent, precision);
-    				scan_second_for_step = elapsed_time; 
-    
-    			}
-    
-                
-                if(!ISPROBING){
-        			/**
-        			* CALCULING ESTIMATED TIME LEFT POST PROCESSING
-        			**/
-        			/* se cambia la percentuale verifico di quanta � cambiata ne calcolo il tempo e faccio una stima di quanto ci si mette a completare tutto al 100% */
-        			if(pprocess_progress_step != precise_round(pprocess_monitor_response.post_processing.stats.percent, precision)){
-        
-        				var second_for_this_step            = (elapsed_time - pprocess_second_for_step);
-        				var progress_for_this_step          = precise_round(Math.abs(precise_round(pprocess_monitor_response.post_processing.stats.percent, 2) - pprocess_progress_step), precision);
-        				var estimated_seconds_for_all_steps = precise_round(parseFloat((second_for_this_step * 100) / progress_for_this_step), precision);
-        
-        				/* calcolo la media ponderata per la stima del tempo totale di scansione */
-        				if(!isNaN(progress_for_this_step)){
-        					pprocess_array_progress_steps.push(progress_for_this_step);
-        				}
-        				
-        				var pprocess_estimated_time = precise_round(Math.abs(estimated_seconds_for_all_steps * progress_for_this_step), precision);
-        
-        				if(!isNaN(pprocess_estimated_time)){
-        					pprocess_array_estimated_time.push(pprocess_estimated_time);
-        				}
-        				/*pprocess_array_estimated_time.push(precise_round(Math.abs(estimated_seconds_for_all_steps * progress_for_this_step), precision));*/
-        
-        				pprocess_current_estimated_time = precise_round(parseFloat((eval(scan_array_estimated_time.join('+')))/(eval(scan_array_progress_steps.join('+')))), 0);
-        
-        				pprocess_estimated_time_left = (parseInt(pprocess_current_estimated_time) - parseInt(elapsed_time)); /*stima secondi rimasti = stima secondi totali - elapsed_time dall'inizio della scansione*/
-        				pprocess_estimated_time_left = Math.abs(pprocess_estimated_time_left);
-        							
-        				pprocess_progress_step   = precise_round(pprocess_monitor_response.post_processing.stats.percent, precision);
-        				pprocess_second_for_step = elapsed_time; 
-        
-        			}
-                }
-    
-    
-    
-    			/** GLOBAL ESTIMATED TIME LEFT */
-    
-    			if(monitor_count > 1){
-    
-    
-    				var _array_temp_time = new Array(0);
-    				var _array_temp_step = new Array(0);
-    
-    				if(scan_finished == false){
-    					
-    					_array_temp_time.concat(scan_array_estimated_time);
-    					_array_temp_step.concat(scan_array_progress_steps);
-    					
-    				}
-    
-    				if(pprocess_finished == false){
-    
-    					_array_temp_time.concat(pprocess_array_estimated_time);
-    					_array_temp_step.concat(pprocess_array_progress_steps);
-    				}
-    					
-    				total_array_estimated_time = scan_array_estimated_time.concat(pprocess_array_estimated_time);
-    
-    				total_array_progress_steps = scan_array_progress_steps.concat(pprocess_array_progress_steps);
-    				
-    				total_current_estimated_time = precise_round(parseFloat((eval(total_array_estimated_time.join('+')))/(eval(total_array_progress_steps.join('+')))), 0);
-    
-    				estimated_time_left = (parseInt(total_current_estimated_time) - parseInt(elapsed_time));
-    				estimated_time_left = Math.abs(estimated_time_left);
-    				
-                    if(!isNaN(total_current_estimated_time)){
-                        $('.estimated-time').html(_time_to_string(total_current_estimated_time));
-                    }
-    				
-    			}
-
-            
-            
+			if(response.scan != null){
+				monitor_scan(response.scan);
+			}
 			
+			if(response.pprocess != null){
+				monitor_pprocessing(response.pprocess);
+			}
+
 		});
 
 
@@ -945,7 +759,17 @@ function _update_task(){
  */
 
 
- function _resume(){
+function _resume(){
+	 	
+	 	
+	 	
+	 	if(scan_mode == 8){
+	 		$('#pprocess-progress-container').hide();
+	 		
+	 		$(".scan").hide();
+	 		$(".pprocess").hide();
+	 		
+	 	}
 	 	
 		monitor_count = 1;
 		if(current_step <= 4){
@@ -958,8 +782,36 @@ function _update_task(){
 		}
 		_resume_images(1, scan_image, scan_uri);
 		_init_gallery('.image-link-laser');
-		$('.wizard').wizard('selectedItem', { step: current_step });		
-};
+		
+		$('.wizard').wizard('selectedItem', { step: current_step });
+		
+		
+		
+		$(".stats-scan-mode-name").html(scan_mode_info[scan_mode].name);
+		
+		
+		
+		/*$(".stats-scan-mode-description").html(scan_mode_info[scan_mode].description);*/
+		
+		
+		$('#lines-progress').attr('style', 'width:' + scan_monitor_response.scan.stats.percent + '%');
+		$('.progress-status').html(number_format(scan_monitor_response.scan.stats.percent, 2, ',', '.') + ' %');
+		
+		if(scan_mode != 8){
+			
+			$(".stats-scan-quality-name").html(scan_quality_info[scan_quality].info.name);
+			$(".stats-scan-quality-slices").html(scan_quality_info[scan_quality].values.slices);
+			$(".stats-scan-quality-iso").html(scan_quality_info[scan_quality].values.iso);
+			$(".stats-scan-quality-resolution").html(scan_quality_info[scan_quality].values.resolution.width + ' x ' + scan_quality_info[scan_quality].values.resolution.height);
+			
+			$('#pprocess-lines-progress').attr('style', 'width:' + pprocess_monitor_response.post_processing.stats.percent  + '%');
+			$('.pprocess-progress-status').html(number_format(pprocess_monitor_response.post_processing.stats.percent , 2, ',', '.') + ' %');
+			
+			
+			
+		}
+			
+}
 
 
 
@@ -1220,4 +1072,277 @@ function _stopper(){
         document.location.href = '<?php echo site_url('scan') ?>';
     }
 }
+
+
+
+/**
+ *  OVVERRIDE GENERAL MONITOR FUNCTION
+ */
+function manage_task_monitor(obj){
+	
+	if(obj.type=="monitor"){
+		if(obj.content != ""){
+			data = jQuery.parseJSON(obj.content);
+			monitor_scan(data);
+		}
+		
+	}
+}
+
+
+function manage_post_processing(obj){
+	
+	monitor_pprocessing(obj);
+	
+	
+}
+
+
+
+function monitor_scan(data){
+	
+			
+			if(data == null){
+				return;
+			}
+				
+    			monitor_count++;
+    			scan_monitor_response = data.scan;
+    			
+    			if (scan_monitor_response.completed == 1) {
+					scan_finished = true;
+					finalize_scan();
+					/*return;*/
+				}
+                
+    			var scan_progress_percent = parseFloat(scan_monitor_response.stats.percent);
+    
+    			/* SCAN  */
+    			$('#lines-progress').attr('style', 'width:' +scan_progress_percent + '%');
+    			$('#lines-progress').attr('aria-valuetransitiongoal', scan_progress_percent);
+    			$('#lines-progress').attr('aria-valuenow', scan_progress_percent);
+    			$('.progress-status').html(number_format(scan_progress_percent, 2, ',', '.') + ' %');
+                
+    
+    			/* AL PRIMO GIRO */
+    			if(monitor_count == 1){
+    
+    				/* SCAN */
+    				scan_progress_step   = precise_round(scan_monitor_response.stats.percent, precision);
+    				scan_second_for_step = elapsed_time;
+                    
+                    if(!ISPROBING){
+                       
+                    }
+    				
+    
+    				$('.estimated-time').html(' - ');
+    				$('.estimated-time-left').html(' - ');
+    			
+    			}
+				
+				
+				
+				
+				
+				
+				
+				    
+    			/**
+    			* CALCULING ESTIMATED TIME LEFT SCAN
+    			**/
+    			/* se cambia la percentuale verifico di quanta � cambiata ne calcolo il tempo e faccio una stima di quanto ci si mette a completare tutto al 100% */
+    			if(scan_progress_step != precise_round(scan_monitor_response.stats.percent, precision)){
+    
+    				var second_for_this_step            = (elapsed_time - scan_second_for_step);
+    				var progress_for_this_step          = precise_round(Math.abs(precise_round(scan_monitor_response.stats.percent, 2) - scan_progress_step), precision);
+    				var estimated_seconds_for_all_steps = precise_round(parseFloat((second_for_this_step * 100) / progress_for_this_step), precision);
+    
+    				/* calcolo la media ponderata per la stima del tempo totale di scansione */
+    				
+    				if(!isNaN(progress_for_this_step)){
+    					scan_array_progress_steps.push(progress_for_this_step);
+    				}
+    
+    
+    				var scan_estimated_time = precise_round(Math.abs(estimated_seconds_for_all_steps * progress_for_this_step), precision);
+    
+    				if(!isNaN(scan_estimated_time)){
+    					scan_array_estimated_time.push(scan_estimated_time);
+    				}
+    				
+    				scan_current_estimated_time = precise_round(parseFloat((eval(scan_array_estimated_time.join('+')))/(eval(scan_array_progress_steps.join('+')))), 0);
+    
+    				scan_estimated_time_left = (parseInt(scan_current_estimated_time) - parseInt(elapsed_time)); /* stima secondi rimasti = stima secondi totali - elapsed_time dall'inizio della scansione */
+    				scan_estimated_time_left = Math.abs(scan_estimated_time_left);
+    
+    				scan_progress_step   = precise_round(scan_monitor_response.stats.percent, precision);
+    				scan_second_for_step = elapsed_time; 
+    
+    			}
+    
+                
+                
+    
+    
+    
+    			/** GLOBAL ESTIMATED TIME LEFT */
+    
+    			if(monitor_count > 1){
+    
+    
+    				var _array_temp_time = new Array(0);
+    				var _array_temp_step = new Array(0);
+    
+    				if(scan_finished == false){
+    					
+    					_array_temp_time.concat(scan_array_estimated_time);
+    					_array_temp_step.concat(scan_array_progress_steps);
+    					
+    				}
+    
+    				if(pprocess_finished == false){
+    
+    					_array_temp_time.concat(pprocess_array_estimated_time);
+    					_array_temp_step.concat(pprocess_array_progress_steps);
+    				}
+    					
+    				total_array_estimated_time = scan_array_estimated_time.concat(pprocess_array_estimated_time);
+    
+    				total_array_progress_steps = scan_array_progress_steps.concat(pprocess_array_progress_steps);
+    				
+    				total_current_estimated_time = precise_round(parseFloat((eval(total_array_estimated_time.join('+')))/(eval(total_array_progress_steps.join('+')))), 0);
+    
+    				estimated_time_left = (parseInt(total_current_estimated_time) - parseInt(elapsed_time));
+    				estimated_time_left = Math.abs(estimated_time_left);
+    				
+                    if(!isNaN(total_current_estimated_time)){
+                        $('.estimated-time').html(_time_to_string(total_current_estimated_time));
+                    }
+    				
+    			}
+	
+	
+	
+	
+}
+
+
+
+
+function monitor_pprocessing(data){
+	
+	
+	
+			if(data == null){
+				return;
+			}
+	
+
+                    
+                    pprocess_monitor_response = data.post_processing;
+                    var pprocess_progress_percent = parseFloat(pprocess_monitor_response.stats.percent);
+                    
+                    
+                    
+                    if(pprocess_monitor_response.completed == 1){
+        				pprocess_finished = true;
+        				finalize_scan();	
+        			}
+                    
+                    
+                    
+                    
+                    /* AL PRIMO GIRO */
+    			if(monitor_count == 1){
+   
+                        /* POST-PROCESS */
+        				pprocess_progress_step   = precise_round(pprocess_monitor_response.stats.percent, precision);
+        				pprocess_second_for_step = elapsed_time;
+                 
+    			
+    			}
+                    
+                    
+                    
+                    
+                    /* PPROCESS  */
+        			$('#pprocess-lines-progress').attr('style', 'width:' + pprocess_progress_percent + '%');
+        			$('#pprocess-lines-progress').attr('aria-valuetransitiongoal',  pprocess_progress_percent);
+        			$('#pprocess-lines-progress').attr('aria-valuenow', pprocess_progress_percent);
+        			$('.pprocess-progress-status').html(number_format(pprocess_progress_percent, 2, ',', '.') + ' %');
+				
+					
+        			/**
+        			* CALCULING ESTIMATED TIME LEFT POST PROCESSING
+        			**/
+        			/* se cambia la percentuale verifico di quanta � cambiata ne calcolo il tempo e faccio una stima di quanto ci si mette a completare tutto al 100% */
+        			if(pprocess_progress_step != precise_round(pprocess_monitor_response.stats.percent, precision)){
+        
+        				var second_for_this_step            = (elapsed_time - pprocess_second_for_step);
+        				var progress_for_this_step          = precise_round(Math.abs(precise_round(pprocess_monitor_response.stats.percent, 2) - pprocess_progress_step), precision);
+        				var estimated_seconds_for_all_steps = precise_round(parseFloat((second_for_this_step * 100) / progress_for_this_step), precision);
+        
+        				/* calcolo la media ponderata per la stima del tempo totale di scansione */
+        				if(!isNaN(progress_for_this_step)){
+        					pprocess_array_progress_steps.push(progress_for_this_step);
+        				}
+        				
+        				var pprocess_estimated_time = precise_round(Math.abs(estimated_seconds_for_all_steps * progress_for_this_step), precision);
+        
+        				if(!isNaN(pprocess_estimated_time)){
+        					pprocess_array_estimated_time.push(pprocess_estimated_time);
+        				}
+        				/*pprocess_array_estimated_time.push(precise_round(Math.abs(estimated_seconds_for_all_steps * progress_for_this_step), precision));*/
+        
+        				pprocess_current_estimated_time = precise_round(parseFloat((eval(scan_array_estimated_time.join('+')))/(eval(scan_array_progress_steps.join('+')))), 0);
+        
+        				pprocess_estimated_time_left = (parseInt(pprocess_current_estimated_time) - parseInt(elapsed_time)); /*stima secondi rimasti = stima secondi totali - elapsed_time dall'inizio della scansione*/
+        				pprocess_estimated_time_left = Math.abs(pprocess_estimated_time_left);
+        							
+        				pprocess_progress_step   = precise_round(pprocess_monitor_response.stats.percent, precision);
+        				pprocess_second_for_step = elapsed_time; 
+        
+        			}
+               
+	
+	
+	
+	
+	
+}
+
+function finalize_scan(){
+	
+	
+		
+	if(ISPROBING){
+		if(scan_finished == false) return;
+	}else{
+		if(scan_finished == false || pprocess_finished == false) return;
+	}
+	
+	
+	/* */
+			_stop_monitor();
+			_stop_timer();
+	
+			current_step = 5;
+	        
+			$('.progress').removeClass('active');
+			$('.estimated-time').html('-');
+			$('.estimated-time-left').html('-');
+	        
+	        openWait('Finalizing scan');
+	        
+	        setTimeout(function(){
+	            get_info();
+	            
+	            /** get all info from the task */
+	        }, 15000);
+	
+	
+}
+
+
 </script>

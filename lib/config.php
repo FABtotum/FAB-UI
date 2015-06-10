@@ -56,6 +56,10 @@ defined("SOCKET_HOST")  ? null : define("SOCKET_HOST", '0.0.0.0');
 defined("SOCKET_PORT")  ? null : define("SOCKET_PORT", 9001);
 
 
+//====================== NETWORK INTERFACES ===============
+defined("NETWORK_INTERFACES")  ? null : define("NETWORK_INTERFACES", '/etc/network/interfaces');
+
+
 
 //==================================
 defined("TASK_TRACE")  ? null : define("TASK_TRACE", '/var/www/temp/task_trace');

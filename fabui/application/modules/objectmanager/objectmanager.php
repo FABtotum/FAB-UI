@@ -60,6 +60,8 @@ class Objectmanager extends Module {
 		$data['_disk_used_space'] = disk_total_space('/') - disk_free_space('/');
 
 		$this -> layout -> view('index/index', $data);
+		
+		
 
 	}
 
@@ -90,10 +92,10 @@ class Objectmanager extends Module {
 
 			foreach ($usb_files as $file) {
 				if ($file != '') {
-					
+
 					$tmp = str_replace(" ", "_", $file);
-					
-					array_push($usb_files_id, $this -> copy_from_usb('/media/'.$file));
+
+					array_push($usb_files_id, $this -> copy_from_usb('/media/' . $file));
 				}
 
 			}
@@ -110,21 +112,19 @@ class Objectmanager extends Module {
 		$this -> config -> load('upload');
 
 		/** LOAD FROM USB DISK FIRST TREE */
-		
+
 		$data['folder_tree'] = array();
-		
-		/** CHECK IF USB IS INSERTED 
-		if(file_exists('/dev/sda1')){
-			
-			$_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
-			$_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
-			shell_exec($_command);
-			//sleep ( 1);
-			$data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
-			
-		}*/
-		
-		
+
+		/** CHECK IF USB IS INSERTED
+		 if(file_exists('/dev/sda1')){
+
+		 $_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
+		 $_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
+		 shell_exec($_command);
+		 //sleep ( 1);
+		 $data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
+
+		 }*/
 
 		$js_data['accepted_files'] = $this -> config -> item('upload_accepted_files');
 		$j_data['_upload_max_filesize'] = ini_get("upload_max_filesize");
@@ -206,33 +206,40 @@ class Objectmanager extends Module {
 
 	}
 
-	public function delete($obj_id) {
+	public function delete() {
+
+		
 
 		//if is only an ajax call request
 		if ($this -> input -> is_ajax_request()) {
+
+			$ids = $this -> input -> post("ids");
 
 			//carico X class database
 			$this -> load -> database();
 			$this -> load -> model('objects');
 			$this -> load -> model('files');
 
-			$object = $this -> objects -> get_obj_by_id($obj_id);
-			$files = $this -> objects -> get_files($obj_id);
+			foreach ($ids as $obj_id) {
 
-			//cancello l'oggetto
-			if ($this -> objects -> delete($obj_id)) {
+				$object = $this -> objects -> get_obj_by_id($obj_id);
+				$files = $this -> objects -> get_files($obj_id);
 
-				//cancello i record dei file nella tabella di appoggio
-				$this -> objects -> delete_files($obj_id, $files);
+				//cancello l'oggetto
+				if ($this -> objects -> delete($obj_id)) {
 
-				//cancello i file
-				foreach ($files as $file) {
-					$this -> files -> delete($file);
+					//cancello i record dei file nella tabella di appoggio
+					$this -> objects -> delete_files($obj_id, $files);
+
+					//cancello i file
+					foreach ($files as $file) {
+						$this -> files -> delete($file);
+					}
+					//unlink($file->full_path);
 				}
-				//unlink($file->full_path);
-				echo json_encode(array('success' => TRUE, 'messagge' => ''));
-
 			}
+			
+			echo json_encode(array('success' => TRUE, 'messagge' => ''));
 
 		} else {
 			echo "call not valid";
@@ -415,7 +422,7 @@ class Objectmanager extends Module {
 				foreach ($usb_files as $file) {
 					if ($file != '') {
 						$tmp = str_replace(" ", "_", $file);
-						array_push($usb_files_id, $this -> copy_from_usb('/media/'.$file));
+						array_push($usb_files_id, $this -> copy_from_usb('/media/' . $file));
 					}
 
 				}
@@ -443,19 +450,19 @@ class Objectmanager extends Module {
 
 			/** LOAD FROM USB DISK FIRST TREE */
 			$data['folder_tree'] = array();
-			
+
 			/*
-			if(file_exists('/dev/sda1')){
-				
-				$_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
-				$_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
-				shell_exec($_command);
-				//sleep ( 1);
-	
-				$data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
-				
-			}
-			*/
+			 if(file_exists('/dev/sda1')){
+
+			 $_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
+			 $_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
+			 shell_exec($_command);
+			 //sleep ( 1);
+
+			 $data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
+
+			 }
+			 */
 
 			$data['_action'] = $action;
 
@@ -638,21 +645,24 @@ class Objectmanager extends Module {
 
 	}
 
-	public function delete_file($id_file) {
+	public function delete_file() {
 
 		if ($this -> input -> is_ajax_request()) {
+
+			$files = $this->input->post("ids");
 
 			//carico X class database
 			$this -> load -> database();
 			$this -> load -> model('files');
 			$this -> load -> model('objects');
-
-			$_file = $this -> files -> get_file_by_id($id_file);
-			$id_object = $this -> objects -> get_by_file($id_file);
-
-			$this -> objects -> delete_files($id_object, array($id_file));
-
-			$this -> files -> delete($id_file);
+			
+			foreach($files as $id_file){
+				
+				$_file = $this -> files -> get_file_by_id($id_file);
+				$id_object = $this -> objects -> get_by_file($id_file);
+				$this -> objects -> delete_files($id_object, array($id_file));
+				$this -> files -> delete($id_file);
+			}
 
 			header('Content-Type: application/json');
 			echo json_encode(array('success' => TRUE, 'messagge' => ''));
@@ -742,31 +752,29 @@ class Objectmanager extends Module {
 		$this -> load -> model('files');
 		$this -> load -> model('configuration');
 		$this -> load -> model('tasks');
-		
+
 		//load helpers
-		$this->load->helper("ft_file_helper");
+		$this -> load -> helper("ft_file_helper");
 
 		/** CHEK IF THERE IS AN OPEN TASK */
 		$_task = $this -> tasks -> get_running('objectmanager', 'slice');
 
 		$_file = $this -> files -> get_file_by_id($file);
-		
-		$file_size = filesize($_file->full_path);
-		
+
+		$file_size = filesize($_file -> full_path);
+
 		$_presets = json_decode($this -> configuration -> get_config_value('slicer_presets'), true);
-		
-		
-		
+
 		$data['_task'] = $_task;
 		$data['_object'] = $object;
 		$data['_file'] = $_file;
 		$data['_presets'] = $_presets;
 		$data['file_size'] = $file_size;
 		$data['alert_size'] = $file_size >= 10485760 ? true : false;
-		
+
 		//if file size bigger than 10MB
 		//if($file_size >= 10485760){
-		//	
+		//
 		//	$data['alert_size'] = true;
 		//}
 
@@ -780,8 +788,6 @@ class Objectmanager extends Module {
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
 		$this -> layout -> add_css_in_page(array('data' => $ccs_in_page, 'comment' => ''));
 		$this -> layout -> view('prepare/gcode/index', $data);
-		
-		
 
 	}
 
@@ -809,10 +815,6 @@ class Objectmanager extends Module {
 		$js_in_page = $this -> load -> view('prepare/stl/js', $data, TRUE);
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
 		$this -> layout -> view('prepare/stl/index', $data);
-		
-		
-		
-		
 
 	}
 
@@ -868,18 +870,12 @@ class Objectmanager extends Module {
 		$this -> load -> helper('file');
 		$this -> load -> helper('ft_file_helper');
 
-		
-			
-	
 		$file_name = explode("/", $file);
 		$file_name = end($file_name);
 
-
-
 		/** MOVE TO TEMP FOLDER */
-		$_command = 'sudo cp "' . $file . '"  "/var/www/temp/' . $file_name.'" ';
-		
-		
+		$_command = 'sudo cp "' . $file . '"  "/var/www/temp/' . $file_name . '" ';
+
 		shell_exec($_command);
 
 		$file = '/var/www/temp/' . $file_name;
@@ -893,10 +889,10 @@ class Objectmanager extends Module {
 		$file_name = set_filename($folder_destination, $file_name);
 
 		/** MOVE TO FINALLY FOLDER */
-		$_command = 'sudo cp "' . $file . '" "' . $folder_destination . $file_name.'" ';
+		$_command = 'sudo cp "' . $file . '" "' . $folder_destination . $file_name . '" ';
 		shell_exec($_command);
 		/** ADD PERMISSIONS */
-		$_command = 'sudo chmod 746 "' . $folder_destination . $file_name.'" ';
+		$_command = 'sudo chmod 746 "' . $folder_destination . $file_name . '" ';
 		shell_exec($_command);
 
 		/** INSERT RECORD TO DB */
@@ -976,20 +972,18 @@ class Objectmanager extends Module {
 	}
 
 	public function slicer_manual() {
-		
-		$this->load->helper('file');
+
+		$this -> load -> helper('file');
 
 		$manual_file = "./slic3r/manual.txt";
-		
-		
-		if(file_exists($manual_file)){
-			$manual = read_file($manual_file);	
-		}else{
+
+		if (file_exists($manual_file)) {
+			$manual = read_file($manual_file);
+		} else {
 			$manual = shell_exec('sudo /var/www/fabui/slic3r/slic3r --help');
 			write_file($manual_file, $manual);
 		}
-		
-		
+
 		$help = strstr($manual, '--help');
 
 		$contents = explode('--', $help);
@@ -1011,7 +1005,7 @@ class Objectmanager extends Module {
 		$no_show[] = 'post_process';
 		$no_show[] = 'export_svg';
 		$no_show[] = 'merge';
-		
+
 		$i = 0;
 
 		foreach ($contents as $line) {

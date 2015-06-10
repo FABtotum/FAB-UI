@@ -436,6 +436,12 @@ class PHPWebSocket {
 		return false;
 	}
 
+	
+	function wsGetClientsNumber(){
+		return count($this->wsClients);
+	}
+
+
 	function wsProcessClientFrame($clientID) {
 		// store the time that data was last received from the client
 		$this -> wsClients[$clientID][3] = time();

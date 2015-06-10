@@ -42,8 +42,6 @@ $layout['_header_js'][] = array('src'=>'application/layout/assets/js/libs/jquery
 $layout['_header_js'][] = array('src'=>'application/layout/assets/js/libs/jquery-ui-1.10.3.min.js', 'comment' => 'jQuery UI', 'external' => FALSE);
 
 $layout['_js'][] = array('src'=>'application/layout/assets/js/app.config.js', 'comment' => 'jQuery UI', 'external' => FALSE);
-
-
 $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/jquery-touch/jquery.ui.touch-punch.min.js', 'comment' => 'jQuery TOUCH', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/bootstrap/bootstrap.min.js', 'comment' => 'BOOTSTRAP JS', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/notification/SmartNotification.min.js', 'comment' => 'CUSTOM NOTIFICATION', 'external' => FALSE);
@@ -51,11 +49,7 @@ $layout['_js'][] = array('src'=>'application/layout/assets/js/smartwidgets/jarvi
 $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js', 'comment' => 'EASY PIE CHARTS', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/msie-fix/jquery.mb.browser.min.js', 'comment' => 'browser msie issue fix', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/fastclick/fastclick.min.js', 'comment' => 'SmartClick: For mobile devices', 'external' => FALSE);
-
-
 $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js', 'comment' => 'magnific-popup', 'external' => FALSE);
-
-$layout['_js'][] = array('src'=>'application/layout/assets/js/demo.min.js', 'comment' => 'Demo', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/app.min.js', 'comment' => 'Demo', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/fabwebsocket.js', 'comment' => 'fabtotum websocket', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/fabtotum.js', 'comment' => 'fabtotum utilities', 'external' => FALSE);

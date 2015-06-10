@@ -9,6 +9,7 @@ import serial
 import RPi.GPIO as GPIO
 import logging
 import os, sys
+from subprocess import call
 
 
 monitorPID = os.getpid()
@@ -16,6 +17,9 @@ monitorPID = os.getpid()
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
 
+'''### ###'''
+php_script_path = config.get('system', 'php_script_path')
+python_script_path = config.get('system', 'python_script_path')
 
 '''#### SAFETY ###'''
 safety_file=config.get('safety', 'file')
@@ -36,19 +40,24 @@ dev_path = config.get('system', 'dev_folder')
 
 '''#### LOG ####'''
 log_file=config.get('monitor', 'log_file')
-logging.basicConfig(filename=log_file,level=logging.INFO,format='[%(asctime)s] - %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+logging.basicConfig(filename=log_file,level=logging.INFO,format='%(message)s')
 
+'''### READ PRINTER SETTINGS ###'''
+json_f = open(config.get('printer', 'settings_file'))
+units = json.load(json_f)
 
 '''#### WEB SOCKET CLIENT ####'''
 host=config.get('socket', 'host')
 port=config.get('socket', 'port')
-ws = WebSocketClient('ws://'+host +':'+port+'/', protocols=['http-only', 'chat'])
-ws.connect();
+try:
+    ws = WebSocketClient('ws://'+host +':'+port+'/')
+    ws.connect();
+    SOCKET_CONNECTED = True
+except Exception as inst:
+    print inst
+    SOCKET_CONNECTED = False
 
-'''#### SERIAL PORT COMMUNICATION ####'''
-serail_port = config.get('serial', 'port')
-serail_baud = config.get('serial', 'baud')
-serial = serial.Serial(serail_port, serail_baud, timeout=0.6)
+
 
 '''#### SETTING GPIO ####'''
 GPIO.cleanup()
@@ -56,42 +65,101 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(2, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
 
+def killAndRaise():
+    '''
+    global php_script_path
+    command = 'sudo php ' + php_script_path +'/kill_raise.php ' + str(monitorPID) + ' "python" "' + python_script_path + '/monitor.py"  &'
+    print command
+    os.system(command)
+    '''
+    
+    global host
+    global port
+    global ws
+    global SOCKET_CONNECTED
+    try:
+        ws = WebSocketClient('ws://'+host +':'+port+'/')
+        ws.connect();
+        SOCKET_CONNECTED = True
+    except Exception as inst:
+        SOCKET_CONNECTED = False
+    
+
 def write_emergency(str):        
     safety = open(safety_file, 'w+')
     print >> safety, str
+    safety.close()
     return
 
 
-def safety_callback(channel):
+def safety_callback(channel):    
     
-    try:
-        code=""
+    global SOCKET_CONNECTED
+    
+    code=0
+    type=""
+    
+    if(GPIO.input(2) == GPIO.LOW):
+        
+        
+        '''#### SERIAL PORT COMMUNICATION ####'''
+        serail_port = config.get('serial', 'port')
+        serail_baud = config.get('serial', 'baud')
+        ser = serial.Serial(serail_port, serail_baud, timeout=0.6)
+        
+        ser.flushInput()
+        ser.write("M730\r\n")
+        reply=ser.readline()
+        ser.close();
+                   
+        type="emergency"
+        
+        try:
+            code=float(reply.split("ERROR : ")[1].rstrip())
+        except:
+            code=100
+        
+       
+            
+    
+    if(GPIO.input(2) == GPIO.HIGH):
         type=""
+        code=0
+    
+    
+    if(int(code) == 120 or int(code)==121):
         
-        if(GPIO.input(2) == GPIO.LOW):
-            #todo
-            type="emergency"
-            serial.flushInput()
-            serial.write("M730\r\n")
-            reply=serial.readline()
-            
-            try:
-                code=float(reply.split("ERROR : ")[1].rstrip())
-            except:
-                code=100
-            
-        
-        if(GPIO.input(2) == GPIO.HIGH):
-            #to do
-            type=""
-            code=""
+        if 'bothy' in units and units['bothy']:
+            if (units['bothy']=="Shutdown" and type=="emergency" and int(code)==120):
+                #print "call shutdown 1"
+                call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
                 
+                
+        if 'bothz' in units and units['bothz']:
+            if (units['bothz']=="Shutdown" and type=="emergency" and int(code)==121):
+                #print "call shutdown 2"
+                call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
+                    
+        GPIO.cleanup()
+        
+    else:                                 
+    
         message = {'type': str(type), 'code': str(code)}
-        ws.send(json.dumps(message))
         write_emergency(json.dumps(message))
         
-    except Exception, e:
-        logging.info(str(e))
+        try:
+            if(SOCKET_CONNECTED==False):
+                killAndRaise()
+            ws.send(json.dumps(message))
+                
+        except Exception, e:
+            logging.info(str(e))
+            killAndRaise()
+            
+    
+#except Exception, e:
+#    logging.info(str(e))
+#    killAndRaise()
         
  
 GPIO.add_event_detect(2, GPIO.BOTH, callback=safety_callback, bouncetime=300)
@@ -114,45 +182,42 @@ class MonitorHandler(PatternMatchingEventHandler):
         
         if event.is_directory:
             return
-
-        if(event.src_path == macro_trace_file):
-            content= open(macro_trace_file, 'r').read()
-            data = {'type': 'trace', 'content': str(content)}
-            messageType="macro"
-            #message = {'type': 'macro', 'data': data}
+        
+        try:
             
-        
-        elif(event.src_path == macro_response_file):
-            content= open(macro_response_file, 'r').read()
-            data= {'type': 'response', 'content': str(content)}
-            messageType="macro"
-            #message = {'type': 'macro', 'data': data}
-            #ws.send(json.dumps(message))
-        
-        elif(event.src_path == macro_status_file):
-            messageType="macro"
-            data=json.loads(open(macro_status_file, 'r').read())
-        
-        
-        elif(event.src_path == task_trace_file):
-            content= open(task_trace_file, 'r').read()
-            data = {'type': 'trace', 'content': str(content)}
-            messageType="task"
-            #message = {'type': 'task', 'data': data}
-            #ws.send(json.dumps(message))
-        
-        elif(event.src_path == task_monitor_file):
-            content=open(task_monitor_file, 'r').read()
-            data = {'type': 'monitor', 'content': str(content)}
-            messageType="task"
-            #message = {'type': 'task', 'data': data}
-        
-        elif(event.src_path == task_notifications_file):
-            data=json.loads(open(task_notifications_file, 'r').read())
-            messageType="task"
-            #message = {'type': 'tasks', 'data': str(content)}
-               
-        self.sendMessage(messageType, data)
+            obj = open(event.src_path, 'r')
+            content= obj.read()
+            obj.close()
+
+            if(event.src_path == macro_trace_file):
+                data = {'type': 'trace', 'content': str(content)}
+                messageType="macro"
+                
+            elif(event.src_path == macro_response_file):
+                data= {'type': 'response', 'content': str(content)}
+                messageType="macro"
+            
+            elif(event.src_path == macro_status_file):
+                messageType="macro"
+                data=json.loads(content)
+            
+            
+            elif(event.src_path == task_trace_file):
+                data = {'type': 'trace', 'content': str(content)}
+                messageType="task"
+            
+            elif(event.src_path == task_monitor_file):
+                data = {'type': 'monitor', 'content': str(content)}
+                messageType="task"
+            
+            elif(event.src_path == task_notifications_file):
+                data=json.loads(content)
+                messageType="task"
+                   
+            self.sendMessage(messageType, data)
+        except Exception, e:
+            print "Unexpected error:", str(e)
+            killAndRaise()
         
                 
     def on_modified(self, event):
@@ -161,11 +226,12 @@ class MonitorHandler(PatternMatchingEventHandler):
     def sendMessage(self, messageType, data):
         try:
             message = {'type': messageType, 'data':data}
-            ws.send(json.dumps(message))
-        except:
-            print "Unexpected error:", sys.exc_info()[0]
-            cmd = 'sudo php /var/www/fabui/script/kill_raise.php ' + str(monitorPID) + ' &'
-            os.system(cmd)
+            if SOCKET_CONNECTED:
+                ws.send(json.dumps(message))
+        except Exception, e:
+            print "Unexpected error:", str(e)
+            killAndRaise()
+            
         
 
 
@@ -180,7 +246,8 @@ class UsbEventHandler (FileSystemEventHandler):
         if(event.src_path == self.usb_file):
             data={'type': 'usb', 'status': True, 'alert':True}
             message={'type':'system', 'data':data}
-            ws.send(json.dumps(message))
+            if SOCKET_CONNECTED:
+                ws.send(json.dumps(message))
     
     def on_deleted(self, event):
         global ws
@@ -188,9 +255,9 @@ class UsbEventHandler (FileSystemEventHandler):
         if(event.src_path == self.usb_file):
             data={'type': 'usb', 'status':False, 'alert': True}
             message={'type': 'system', 'data':data}
-            ws.send(json.dumps(message))
+            if SOCKET_CONNECTED:
+                ws.send(json.dumps(message))
         
- 
 
 '''### FABUI FILE MONITOR ###'''        
 event_handler = MonitorHandler(patterns=[macro_trace_file,macro_response_file, task_trace_file, task_monitor_file, task_notifications_file, macro_status_file])

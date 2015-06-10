@@ -60,5 +60,7 @@ $route['maintenance/first-setup'] = "maintenance/firstsetup";
 $route['settings/set-eth']  = "settings/seteth";
 $route['settings/set-wifi'] = "settings/setwifi";
 
+$route['controller/stop-all']  = "controller/stop_all";
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

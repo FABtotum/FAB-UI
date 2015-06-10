@@ -1,31 +1,8 @@
-/*
- * It is advised not to edit the smartadmin_production.css
- * as this will override any changes you make in the 
- * later versions of this theme. 
- * 
- * We advise that you use use this CSS to override 
- * SmartAdmin styles. 
- * 
- * Rename the stylesheet to whatever your liking so it will stay
- * unique to you with each update of SmartAdmin.
- */
+.dotted {
+	border-style: dotted !important;
+}
 
-/*
- * INDEX
- * 
- * - HTML
- * - BODY
- * - CUSTOM STYLES
- */
- 
- .dotted {
- 
- 	border-style: dotted !important;
- 
- }
- 
- 
- .rotate-45 {
+.rotate-45 {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1 );
 	-webkit-transform: rotate(45deg);
 	-moz-transform: rotate(45deg);
@@ -43,7 +20,6 @@
 	transform: rotate(90deg);
 }
 
-
 .rotate-180 {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1 );
 	-webkit-transform: rotate(180deg);
@@ -52,8 +28,6 @@
 	-o-transform: rotate(180deg);
 	transform: rotate(180deg);
 }
-
-
 
 .rotate-270 {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1 );
@@ -64,7 +38,6 @@
 	transform: rotate(270deg);
 }
 
-
 .rotate-360 {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1 );
 	-webkit-transform: rotate(360deg);
@@ -74,168 +47,150 @@
 	transform: rotate(360deg);
 }
 
-
-
-.menu-disabled{
-	color:#514F4D !important;
+.menu-disabled {
+	color: #514F4D !important;
 	cursor: default !important;
 }
 
-
 .scan-preview {
-  display: inline-block;
-  *display: inline;
-  zoom: 1;
-  width: 10%;
-  padding: 5px;
-  position: relative;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	width: 10%;
+	padding: 5px;
+	position: relative;
 }
-
 
 @media only screen and (min-width: 320px) {
-  .scan-preview {
-    /*width: 50%*/;
-      width: 10%;
-  }
+	.scan-preview {
+		/*width: 50%*/;
+		width: 10%;
+	}
 }
 @media only screen and (min-width: 486px) {
-  .scan-preview {
-    /*width: 25%;*/
-      width: 10%;
-  }
+	.scan-preview {
+		/*width: 25%;*/
+		width: 10%;
+	}
 }
 @media only screen and (min-width: 768px) {
-  .scan-preview {
-    /*width: 16.66666667%;*/
-      width: 10%;
-  }
+	.scan-preview {
+		/*width: 16.66666667%;*/
+		width: 10%;
+	}
 }
 @media only screen and (min-width: 1025px) {
-  .scan-preview {
-    width: 10%;
-  }
+	.scan-preview {
+		width: 10%;
+	}
 }
 @media only screen and (min-width: 1824px) {
-  .scan-preview {
-    width: 10%;
-  }
+	.scan-preview {
+		width: 10%;
+	}
 }
 
-
-
-.console{
+.console {
 	max-height: 300px !important;
 	overflow: auto;
-	
 }
-
 
 .white-popup {
 	position: relative;
 	background: #FFF;
-	
-	
-    
-    padding: 20px;
+	padding: 20px;
 	width: auto;
 	max-width: 500px;
 	margin: 20px auto;
-    
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    /*
-    -webkit-box-shadow: 10px 2px 28px 0px rgba(0, 0, 0, 0.64);
-    -moz-box-shadow:    10px 2px 28px 0px rgba(0, 0, 0, 0.64);
-    box-shadow:         10px 2px 28px 0px rgba(0, 0, 0, 0.64);
-    background-clip: padding-box;
-    border: 1px solid rgba(0,0,0,0.2);
-    */
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	/*
+	 -webkit-box-shadow: 10px 2px 28px 0px rgba(0, 0, 0, 0.64);
+	 -moz-box-shadow:    10px 2px 28px 0px rgba(0, 0, 0, 0.64);
+	 box-shadow:         10px 2px 28px 0px rgba(0, 0, 0, 0.64);
+	 background-clip: padding-box;
+	 border: 1px solid rgba(0,0,0,0.2);
+	 */
 }
-
-
-
 
 /* overlay at start */
 .mfp-fade.mfp-bg {
-  opacity: 0;
-
-  -webkit-transition: all 0.15s ease-out;
-  -moz-transition: all 0.15s ease-out;
-  transition: all 0.15s ease-out;
+	opacity: 0;
+	-webkit-transition: all 0.15s ease-out;
+	-moz-transition: all 0.15s ease-out;
+	transition: all 0.15s ease-out;
 }
 /* overlay animate in */
 .mfp-fade.mfp-bg.mfp-ready {
-  opacity: 0.8;
+	opacity: 0.8;
 }
 /* overlay animate out */
 .mfp-fade.mfp-bg.mfp-removing {
-  opacity: 0;
+	opacity: 0;
 }
 
 /* content at start */
 .mfp-fade.mfp-wrap .mfp-content {
-  opacity: 0;
-
-  -webkit-transition: all 0.15s ease-out;
-  -moz-transition: all 0.15s ease-out;
-  transition: all 0.15s ease-out;
+	opacity: 0;
+	-webkit-transition: all 0.15s ease-out;
+	-moz-transition: all 0.15s ease-out;
+	transition: all 0.15s ease-out;
 }
 /* content animate it */
 .mfp-fade.mfp-wrap.mfp-ready .mfp-content {
-  opacity: 1;
+	opacity: 1;
 }
 /* content animate out */
 .mfp-fade.mfp-wrap.mfp-removing .mfp-content {
-  opacity: 0;
+	opacity: 0;
 }
 
-
-
 .progress {
-    border-radius: 4px !important;
+	border-radius: 4px !important;
 }
 
 .progress-bar {
-    border-radius: 4px !important;
+	border-radius: 4px !important;
 }
-
 
 /** NOUISLIDER */
 
-.noUi-base{
+.noUi-base {
 	border: 0px !important;
-}	
-	
+}
+
 .noUi-horizontal .noUi-handle {
-    top: 0px !important;
+	top: 0px !important;
 }
 
 /** DATATABLES */
 
-.dataTables_length{
-    float: right !important;
+.dataTables_length {
+	float: right !important;
 }
 
 .login-info img {
-		border-left: 0px !important;
+	border-left: 0px !important;
 }
 
-
-
-.updates-notify{
+.updates-notify {
 	min-height: 50px;
 	height: 50px;
 	border: 1px solid black;
 	width: 100%;
-	position:fixed;
-	top:0px;
+	position: fixed;
+	top: 0px;
 	background: #efe1b3;
 	border-color: #dfb56c;
 }
 
-.update-notify-wrap{
+.update-notify-wrap {
 	padding: 0 25px;
-margin: 8px 0;
-text-align: center;
+	margin: 8px 0;
+	text-align: center;
+}
+
+.btn-header {
+	margin-left: 3px !important;
 }

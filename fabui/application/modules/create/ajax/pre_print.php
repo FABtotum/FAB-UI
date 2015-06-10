@@ -25,7 +25,6 @@ if($_type == 'additive'){
 	
 	$_engage_feeder = isset($_POST['engage_feeder']) && $_POST['engage_feeder'] == 1 ? true : false;
 	
-	
 	$_raise_bed_macro = $_engage_feeder == true ? 'raise_bed_no_g27' : 'raise_bed';
 	
 	

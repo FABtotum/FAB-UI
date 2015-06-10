@@ -370,3 +370,54 @@ function setWifi($ssid, $password, $type="WPA"){
 	}
 	
 }
+
+
+
+/**
+ * GET PIDs process by command
+ * @param $string
+ * @return array
+ */
+function get_pids($command){
+	
+	$pids = array();
+	
+	
+	
+	$exec_response = shell_exec('sudo ps ax | grep '.$command);
+	
+	
+	$temp = explode(PHP_EOL, $exec_response);
+	
+	foreach($temp as $line){
+		$t = explode(' ',trim($line));
+		
+		$pid = trim($t[0]);
+		
+		if($pid != ''){
+			array_push($pids, $t[0]);
+		}	
+	}
+	return $pids;
+}
+
+
+/**
+ *  KILL process by PID
+ * @param $int
+ * @return void
+ */
+function kill_process($pid){
+	
+	$command = 'sudo kill -9 ';
+	
+	if(is_array($pid)){
+		$command .= implode(" ", $pid);
+	}else{
+		$command .= $pid;
+	}
+	
+	shell_exec($command);
+	
+	
+}

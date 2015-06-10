@@ -1,10 +1,4 @@
-/*         ______________________________________
-  ________|                                      |_______
-  \       |           SmartAdmin WebApp          |      /
-   \      |      Copyright © 2014 MyOrange       |     /
-   /      |______________________________________|     \
-  /__________)                                (_________\
-
+/*     
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
  * =======================================================================
@@ -19,11 +13,6 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * =======================================================================
- * original filename: app.config.js
- * filesize: 12kb
- * author: Sunny (@bootstraphunt)
- * email: info@myorange.ca
  * =======================================================================
  * 
  * GLOBAL ROOT (DO NOT CHANGE)
@@ -323,6 +312,9 @@
 		}; 
 		
 	};
+	
+	var pressedEmergencyButton = false;
+
 /*
  * END APP.CONFIG
  */ 

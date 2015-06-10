@@ -175,6 +175,36 @@ class Controller extends Module {
 	}
 
 
+	/**
+	 * STOP ALL 
+	 */
+	public function stop_all(){
+		
+		$this -> load -> helper('os_helper');
+		
+		
+		$macros_pids = get_pids('fabui/python/gmacro.py');
+		
+		$create_pids = get_pids('fabui/python/gpusher_fast.py');
+		
+		$selftest_pids = get_pids('python/self_test.py');
+		
+		$bed_cal_pids = get_pids('python/manual_bed_lev.py');
+		
+		$all_pids = array_merge($macros_pids, $create_pids, $selftest_pids, $bed_cal_pids);
+			
+		kill_process($all_pids);
+		
+		$_command = 'sudo python '.PYTHONPATH.'force_reset.py';
+		shell_exec($_command);
+		
+		sleep(3);
+		
+		echo 1;
+		
+		
+		
+	}
 
 
 }

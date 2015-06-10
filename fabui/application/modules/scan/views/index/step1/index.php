@@ -73,7 +73,7 @@
 	
 		<?php $configuration = json_decode($mode->values) ?>
 		
-		<?php if($mode->name != 'sweep'): ?>
+		<?php if($mode->name != 'sweep' && $mode->name != 'photogrammetry'): ?>
 		<div class="col-sm-6">
 		
 			<div class="scan-mode  well well-sm text-center " data-id="<?php echo $mode->id; ?>" data-type="<?php echo $mode->name ?>" data-title="<?php echo $configuration->info->name ?>">

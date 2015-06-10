@@ -30,11 +30,17 @@ class Settings extends Module {
 		
 		$_units = json_decode(file_get_contents($this->config->item('fabtotum_config_units', 'fabtotum')), TRUE);
         
-        $data['_standby_color'] = $_units['color'];
-		$data['_safety_door']     = isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
-		$data['_switch']          = isset($_units['switch']) ? $_units['switch']: '0';
-		$data['_feeder_disengage'] = isset($_units['feeder']['disengage-offset']) ? $_units['feeder']['disengage-offset']: 2;
-        
+        $data['_standby_color'] 						= $_units['color'];
+		$data['_safety_door']     						= isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
+		$data['_switch']          						= isset($_units['switch']) ? $_units['switch']: '0';
+		$data['_feeder_disengage'] 						= isset($_units['feeder']['disengage-offset']) ? $_units['feeder']['disengage-offset']: 2;
+		$data['_feeder_extruder_steps_per_unit_e_mode'] = isset($_units['e']) ? $_units['e']: 3048.1593;
+        $data['_feeder_extruder_steps_per_unit_a_mode'] = isset($_units['a']) ? $_units['a']: 177.777778;
+		$data['_both_y_endstops']                       = isset($_units['bothy']) ? $_units['bothy']: "None";
+		$data['_both_z_endstops']                       = isset($_units['bothz']) ? $_units['bothz']: "None";
+		$data['_upload_api_key']                        = isset($_units['api']['keys'][$_SESSION['user']['id']]) ? $_units['api']['keys'][$_SESSION['user']['id']]: '';
+		
+		
         /** LOAD TAB HEADER */
         $_tab_header = $this->tab_header();
         

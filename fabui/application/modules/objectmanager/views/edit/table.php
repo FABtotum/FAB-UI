@@ -1,13 +1,27 @@
 <div class="widget-body-toolbar">
 	<div class="row">
 		<div class="col-sm-12">
-			<a href="<?php  echo site_url('objectmanager/file/add/'.$_id_object)?>" class="btn btn-primary pull-right"> Add Files</a>
+			
+			<div class="form-inline">
+				<div class="form-group">
+					<select class="form-control bulk-select">
+						<option value="">Bulk Actions</option>
+						<option value="delete">Delete</option>
+					</select>
+				</div>
+				<button class="btn btn-primary bulk-button" type="button">Apply</button>
+				<a href="<?php  echo site_url('objectmanager/file/add/'.$_id_object)?>" class="btn btn-primary pull-right"> Add Files</a>
+				
+			</div>
+			
 		</div>
+		
 	</div>
 </div>
-<table class="table table-striped table-hover" id="files_table">
+<table class="table table-striped table-hover smart-form has-tickbox" id="files_table">
     <thead>
         <tr>
+        	<th><label class="checkbox"><input class="select-all" type="checkbox" name="checkbox-inline" /><i></i> </label></th>
             <th>Name</th>
             <th>Type</th>
             <th class="hidden-xs">Note</th>
@@ -19,6 +33,7 @@
     <tbody>
         <?php foreach($_files as $_file): ?>
         <tr>
+        	<td><label class="checkbox"><input id="check_<?php echo $_file->id ?>" type="checkbox" name="checkbox-inline" /><i></i> </label></td>
             <td><a href="<?php echo site_url('objectmanager/manage/'.$_id_object.'/'.$_file->id) ?>"><?php echo $_file -> raw_name; ?></a></td>
             <td><?php echo str_replace('.', '', $_file -> file_ext); ?> <?php echo $_file -> print_type != '' ? '(' . $_file -> print_type . ')' : ''; ?></td>
             <td class="hidden-xs"><?php echo $_file -> note; ?></td>

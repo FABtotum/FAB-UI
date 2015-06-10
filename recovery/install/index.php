@@ -1,4 +1,4 @@
-<?php 
+<?php
 include( "inc/header.php"); 
 ?>
 	<div id="main" role="main">
@@ -90,9 +90,7 @@ include( "inc/header.php");
 							</div>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">
-								Cancel
-							</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 							<button type="button" id="send-mail" class="btn btn-primary">
 								Send Mail
 							</button>

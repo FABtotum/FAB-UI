@@ -35,7 +35,7 @@ except:
 logfile=config.get('task', 'monitor_file')
 log_trace=config.get('task', 'trace_file')
 
-logging.basicConfig(filename=log_trace,level=logging.INFO,format='<span class="hidden-xs">[%(asctime)s] -</span> %(message)s',datefmt='%d/%m/%Y %H:%M:%S')
+logging.basicConfig(filename=log_trace,level=logging.INFO,format='%(message)s')
 
     
 #debug    
@@ -95,13 +95,18 @@ def is_number(s):
     
 def getLayers(file):
     layers=0
-    for line in reversed(open(file).readlines()):
-        match = re.search("G[0-1] Z\d*\.?\d+", line.strip())
-        if match:
-            temp = match.group().split()
-            layers=temp[1].replace("Z", "")
-            break
-    return float(layers)*10
+    for line in(open(file).readlines()):
+        
+        if(re.search('(?<=Z)([0-9]*.[0-9]*)', line)):
+            layers = layers + 1
+            
+        #match = re.search("G[0-1] Z\d*\.?\d+", line.strip())
+        #if match:
+            #temp = match.group().split()
+            #layers=temp[1].replace("Z", "")
+            #break
+    #return float(layers)*10
+    return layers
     
 def writeMonitor(percent,sent):
     
@@ -127,6 +132,7 @@ def writeMonitor(percent,sent):
     #write log
     handle=open(logfile,'w+')
     print>>handle, json.dumps(str_log)
+    handle.close()
     return    
 
 def trace(string):
@@ -185,7 +191,7 @@ def override_description(command):
         value = int((float(value) / 255) * 100)
         description+="Fan speed set to "+str(value)+"%"
     elif code=="M107":
-        description+="Fan turn off</strong>"
+        description+="Fan turn off"
         fan=0
     elif code=="M221":
         description+="Extruder factor override set to "+ str(value)+'%'
@@ -256,46 +262,54 @@ def sender():
                     if override[:1]=="!":
                         #if comand is non-serial comand
                         
-                        if override=="!kill": #stop print
+                        override_splitted = override.split(':')
+                        
+                        trace(override_splitted)
+                        
+                        
+                        if override_splitted[0]=="!kill": #stop print
                             trace("Terminating Process")
                             #kill the process
                             killed=True
                             EOF=True
                             break            
                      
-                        elif override=="!pause":
+                        elif override_splitted[0]=="!pause":
                             if not paused:
                                 serial.write("G0 X200 Y200\r\n") #move in the corner
                                 trace("Print is now paused")
                                 paused=True
                         
-                        elif override=="!resume":
+                        elif override_splitted[0]=="!resume":
                             if paused:
                                 trace("Resuming print")
                                 paused=False
                                 
-                        elif override=="!z_plus":    
-                            z_override +=0.1
+                        elif override_splitted[0]=="!z_plus":  
+                            #z_override +=0.1
+                            z_override += float(override_splitted[1])
+                            
                             serial.write("G91\r\n") 
-                            serial.write("G0 Z+0.1\r\n")  #move up
+                            serial.write("G0 Z+" + override_splitted[1] +"\r\n")  #move up
                             serial.write("G90\r\n") 
                             sent+=3
-                            trace("<span class='override-command'>Z height incresed by 0.1 mm</span>")
+                            trace("<span class='override-command'>Z height incresed by "+ override_splitted[1]+" mm</span>")
 
-                        elif override=="!z_minus":    
-                            z_override -=0.1                        
+                        elif override_splitted[0]=="!z_minus":
+                            #z_override -=0.1
+                            z_override -= float(override_splitted[1])                        
                             serial.write("G91\r\n") 
-                            serial.write("G0 Z-0.1\r\n")  #move down
+                            serial.write("G0 Z-"+ override_splitted[1] +"\r\n")  #move down
                             serial.write("G90\r\n") 
                             sent+=3
-                            trace("<span class='override-command'>Z height decreased by 0.1 mm</span>")
+                            trace("<span class='override-command'>Z height decreased by " + override_splitted[1] +" mm</span>")
                                             
-                        elif override=="!shutdown_on":
+                        elif override_splitted[0]=="!shutdown_on":
                             #will shutdown the machine after the print ends
                             trace("Auto-Shutdown engaged")
                             shutdown=True
 
-                        elif override=="!shutdown_off":
+                        elif override_splitted[0]=="!shutdown_off":
                             trace("Auto-Shutdown has been revoked")
                             #will not shutdown the machine.
                             shutdown=False
@@ -315,7 +329,9 @@ def sender():
                 if z_override!=0:
                     #check if line is a z change.
                     #G1 Z0.100 F15000.000
-                    z_str = re.search('Z(.+?) ', line)
+                    #z_str = re.search('Z(.+?) ', line)
+                    #z_str = re.search('(Z.*?) |(Z.*)', line)
+                    z_str = re.search('(?<=Z)([0-9]*.[0-9]*)', line)
                     if z_str:
                         z_c = z_str.group(1)
                         z_c = float(z_c)+z_override
@@ -366,11 +382,15 @@ def sender():
                         trace("Fan Off")
                         fan=0
                         doWriteMonitor=True
-                        
-                    elif(re.search("G[0-1] Z\d*\.?\d+", line)):
-                        match=re.search("G[0-1] Z\d*\.?\d+", line)
-                        tmp = match.group().split()
-                        actual_layer=float(tmp[1].replace("Z", ""))*10
+                    
+                    #elif(re.search('(?<=Z)([0-9]*.[0-9]*)', line)):    
+                    #elif(re.search("G[0-1] Z\d*\.?\d+", line)):
+                        #match=re.search("G[0-1] Z\d*\.?\d+", line)
+                        #match=re.search('(?<=Z)([0-9]*.[0-9]*)', line)
+                        #tmp = match.group().split()
+                        #actual_layer=float(tmp[1].replace("Z", ""))*10
+                        #actual_layer=float(tmp[0])*10
+                        #actual_layer = actual_layer + 1
                 else:    
                     if(line[0:2] == "M3" or line[0:2] == "M4"):
                         rpm=line.split("S")[1].strip()
@@ -586,8 +606,8 @@ observer.start()
 
 
 '''### GET TOTAL LAYERS ####'''
-if(isAdditive):
-    total_layers = getLayers(ncfile)            
+#if(isAdditive):
+#    total_layers = getLayers(ncfile)            
 #printlog initialization
 writeMonitor(0,0)
     
@@ -652,7 +672,15 @@ trace("Now finalizing...")
 #serial.flushInput()
 if print_type == "additive" and progress >= 0.2:
     trace("Moving to safe zone")
-    serial.write("G90\r\nG0 X210 Y210 Z240 F10000") #Setting Absolute movement and moving to safe zone
+    #serial.write("G90\r\nG0 X210 Y210 Z240 F10000") #Setting Absolute movement and moving to safe zone
+    serial.write("G91\r\n") #Setting Absolute movement and moving to safe zone
+    serial.write("G0 E-5 F1000\r\n")
+    serial.write("G0 Z+1 F1000\r\n")
+    serial.write("G90\r\n")
+    serial.write("G27 Z0\r\n")
+    serial.write("G0 X210 Y210\r\n")
+    
+    
 #finalize database-side operations
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print " +str(status)], shell=True)
 

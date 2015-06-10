@@ -1,14 +1,12 @@
 <?php
 session_start();
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && count($_POST) > 0){
-
-
+	
     //=========== CONFIG FILES
     include_once ('/var/www/lib/config.php');
     include_once ('/var/www/lib/database.php');
 	include_once ('/var/www/lib/serial.php');
     include_once ('/var/www/lib/utilities.php');
-	
 	
 	
     $_first_name   = $_POST['first_name'];
@@ -17,7 +15,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
     $_password     = $_POST['password'];
 	$_net          = $_POST['net'];
 	$_net_password = $_POST['net_password'];
-	
+	$_ip_address   = $_POST['ip_address'];
     
     /** CHECK IF IS WIFI CONNCECTION */
     $_temp    = explode('-', $_net);
@@ -38,8 +36,6 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 
     //inizialitizzo database
     $_command = 'sudo mysql -u '.DB_USERNAME.' -p'.DB_PASSWORD.' -h '.DB_HOSTNAME.'  < '.SQL_INSTALL_DB;
-	
-	
 	
     shell_exec($_command);
 	
@@ -136,8 +132,16 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 		unset($_SESSION[$key]);
 	}
 	
-      
-    header('Location: /');
+    
+	
+	//set ip ethernet static address
+	setEthIP($_ip_address);
+	
+	echo 1;
+	
+	//header('Location: http://169.254.1.'.$_ip_address);
+	  
+    //header('Location: /');
     
      
 }else{

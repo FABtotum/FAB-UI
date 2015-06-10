@@ -18,7 +18,7 @@ if($_tasks_number == 0){
 <div class="alert alert-transparent">
 	<h4 class="text-center">No tasks available</h4>
 </div>
-<?    
+<?php    
 }else{
 ?>
 <ul class="notification-body">
@@ -78,6 +78,6 @@ if($_tasks_number == 0){
 	</li>
     <?php endforeach; ?>
 </ul>
-<?
+<?php
 }
 ?>

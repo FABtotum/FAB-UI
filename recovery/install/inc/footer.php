@@ -1,3 +1,11 @@
+<?php 
+require_once '/var/www/lib/utilities.php';
+$networkConfiguration = networkConfiguration();
+$imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : false;
+
+
+
+?>
 <script src="/assets/js/app.config.js?"></script>
 <script src="/assets/js/bootstrap/bootstrap.min.js"></script>
 <script src="/assets/js/notification/SmartNotification.min.js"></script>
@@ -99,6 +107,12 @@
 				},
 				lan: {
 					required: true
+				},
+				ip_address : {
+					digits: true,
+					required : true,
+					max: 255,
+					min: 1
 				}
 
 			},
@@ -155,7 +169,7 @@
                         if(ask_wifi_password == true){
                             
                             $.SmartMessageBox({
-            					title : "Wifi",
+            					title : "<i class='fa fa-wifi'></i> Wifi password",
             					content : "Please enter wifi password",
             					buttons : "[Submit]",
             					input : "password",
@@ -183,9 +197,14 @@
                     }
                     
                     if(index == 4){
+                    	
+                    	
+                    	install();
+                    /*	
                        $("#wizard-1").submit();
                        $(".next").find('a').html('Installing...');
-                       $("a").addClass('disabled'); 
+                       $("a").addClass('disabled');
+                      */ 
                     }
 				}
 			},
@@ -214,6 +233,46 @@
 			
 			
 		}
+		
+		
+		
+		
+		function install(){
+			
+			
+			
+			$(".next").find('a').html('Installing...');
+            $("a").addClass('disabled');
+			
+			$.ajax({
+				<?php if(!$imOnCable): ?>
+			 	dataType: 'json',
+			 	<?php endif; ?>
+				type: "POST",
+				url: "install.php",
+				data: { first_name : $("#first_name").val(), last_name : $("#last_name").val(), email: $("#email").val(), password : $("#password").val(), net_password : $("#net_password").val(), net: '', ip_address: $("#ip_address").val() }
+			}).done(function( response ) {
+			
+				<?php if(!$imOnCable): ?>
+				
+					document.location.href= 'http://<?php echo $_SERVER['SERVER_ADDR'] ?>';
+				
+				<?php endif; ?>
+					      
+			});
+				
+				
+			<?php if($imOnCable): ?>
+				
+			 	setTimeout(function(){	
+			 		document.location.href= 'http://169.254.1.' + $("#ip_address").val();
+				}, 50000);
+			 	
+			<?php endif; ?>
+			 	
+			 	
+			 }
+		
 
 	});
 </script>

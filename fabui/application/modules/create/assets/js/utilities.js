@@ -311,17 +311,20 @@ function _trace_call() {
  * @param value
  */
 function _do_action(action, value) {
+	
+	
+	
 
 	if (SOCKET_CONNECTED) {
 
 		var jsonData = {};
 
-		jsonData['function'] = 'operation';
-		jsonData['id_task'] = id_task;
+		jsonData['function']  = 'operation';
+		jsonData['id_task']   = id_task;
 		jsonData['data_file'] = data_file;
-		jsonData['action'] = action;
-		jsonData['value'] = value;
-		jsonData['progress'] = progress;
+		jsonData['action']    = action;
+		jsonData['value']     = value;
+		jsonData['progress']  = progress;
 
 		var message = {};
 
@@ -504,7 +507,7 @@ function print_object() {
 		}
 	}).done(function(response) {
 		
-		console.log(response);
+		
 
 		if (response.response == true) {
 
@@ -552,6 +555,12 @@ function print_object() {
 				$(".additive-print").hide();
 				$(".speed-well").removeClass("col-sm-4").addClass("col-sm-6");
 				$(".stats-well").removeClass("col-sm-4").addClass("col-sm-12");
+				
+				
+				$(".controls-tab").removeClass("disabled");
+				$(".controls-tab").find("a").attr("data-toggle", "tab");
+				print_started = true;
+				
 			}
 			
 			
@@ -620,7 +629,14 @@ function _stop_monitor() {
 function _controls_listener(obj) {
 
 	var action = obj.attr('data-action');
-	var value = obj.val();
+	var value  = obj.val();
+	
+	if(action == 'zup' || action == 'zdown'){
+		
+		
+		value = $("#z-height").val();
+		
+	}
 
 	if (obj.attr("id") == 'light-switch') {
 

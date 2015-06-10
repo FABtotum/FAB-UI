@@ -5,6 +5,12 @@ include( "inc/utilities.php");
 $_wlan_list = scan_wlan(); 
 $_lan       = lan();
 
+
+
+$temp = explode('.', $_lan['ip']);
+
+$ipLastNum = $temp[3];
+
 ?>
 <div class="tab-pane" id="tab3">
 	<br>
@@ -56,6 +62,19 @@ $_lan       = lan();
 			</tbody>
 		</table>
 	</div>
+	
+	<div class="row">
+		<h5>Set ethernet static IP address</h5>
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon">169.254.1.</span>
+				<input class="form-control" placeholder="2" type="text" value="<?php echo $ipLastNum; ?>" name="ip_address" id="ip_address" />
+			</div>
+		</div>
+					
+	</div>
+	
+	<!--
 	<div class="row">
 		<table class="table table-striped table-forum smart-form">
 			<thead>
@@ -73,7 +92,7 @@ $_lan       = lan();
 			</thead>
 			<tbody style="display: none;">
 				<?php foreach($_wlan_list as $_wlan): ?>
-					<!-- TR -->
+					<!-- TR 
 					<tr>
 						<td style="width: 20px;">
 							<label class="radio">
@@ -101,12 +120,12 @@ $_lan       = lan();
 							</div>
 						</td>
 					</tr>
-					<!-- end TR -->
+					<!-- end TR 
 					<?php endforeach; ?>
 			</tbody>
 		</table>
 	</div>
-    
+    -->
     
    	
 
