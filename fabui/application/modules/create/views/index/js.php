@@ -250,7 +250,7 @@
         });
         
         $("#fan").noUiSlider({
-		        range: {'min': 0, 'max' : 100},
+		        range: {'min': 50, 'max' : 100},
                 /*range: [0, 500],*/
                	start: 255,
 		        handles: 1,

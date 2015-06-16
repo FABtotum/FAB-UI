@@ -36,7 +36,7 @@
     
             <!-- Blocco 2 -->
             <?php foreach($_blok_2 as $widget): ?>
-            <article class="col-xs-12 col-sm-4 col-md-6 col-lg-4">
+            <article class="col-xs-12 col-sm-3 col-md-6 col-lg-3">
                 <?php echo $widget; ?>
             </article>
             <?php endforeach; ?>
@@ -47,7 +47,7 @@
         
             
             <?php foreach($_blok_3 as $widget): ?>
-            <article class="col-xs-12 col-sm-8 col-md-6 col-lg-8">
+            <article class="col-xs-12 col-sm-9 col-md-6 col-lg-9">
                 <?php echo $widget; ?>
             </article>
             <?php endforeach; ?>

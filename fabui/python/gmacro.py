@@ -178,23 +178,28 @@ elif preset=="engage_feeder":
     if(safety_door == 1):
         macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
     macro("M744","TRIGGERED",1,"Spool panel control",1, warning=True)
-    macro("G27 Z200","ok",100,"zeroing Z axis",0.1,verbose=False)
+    macro("G27 Z206","ok",100,"Moving to engage position",0.1)
     #macro("G28 X0 Y0","ok",100,"Setting Z position",0.1,verbose=False)
-    macro("G91","ok",2,"Set relative movement",0.1,verbose=False)
+    #macro("G91","ok",2,"Set relative movement",0.1,verbose=False)
     #go to fixed position, so feeder botton can be pushed.
-    macro("G0 Z-4 F1000","ok",3,"Setting Z position",0.1,verbose=False)
-    macro("G90","ok",2,"Set absolute movement",0.1,verbose=False)
+    macro("G0 Z237 F10000","ok",3,"Setting Z position",1,verbose=False)
+    #macro("G90","ok",2,"Set absolute movement",0.1,verbose=False)
     macro("M92 E"+str(units['e']),"ok",2,"Setting steps/units for 3D printing",0.5,verbose=False)
-    macro("M18","ok",3,"Stopping motors",0.1,verbose=False)
+    #macro("M18","ok",3,"Stopping motors",0.1,verbose=False)
     macro("M300","ok",3,"Play beep sound",1,verbose=False)
+    
     
 elif preset=="engage_4axis":
     #Used for Jog
     trace("Engaging 4th Axis",log_trace)
-    macro("G27","ok",100,"Zeroing Z axis",1)
-    macro("G91","ok",2,"Setting Relative position",1,verbose=False)
-    macro("G0 Z+"+str(feeder_disengage_offset)+" F300","ok",5,"Engaging 4th Axis Motion",1)
-    macro("M92 E"+str(units['e']),"ok",1,"Setting 4th axis mode",0,verbose=False)
+    macro("G27 Z206","ok",100,"Zeroing Z axis",0.1)
+    macro("G91","ok",1,"Setting Relative position",0.1,verbose=False)
+    macro("G0 Z+"+str(feeder_disengage_offset)+" F300","ok",5,"Engaging 4th Axis Motion",0.1)
+    macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0,verbose=False)
+    macro("G92 Z241","ok",1,"Setting position",0.1, verbose=False)
+    macro("G90","ok",1,"Setting Absolute position",0.1,verbose=False)
+    macro("G0 Z234","ok",1,"Check position",0.1,verbose=False)
+    macro("M300","ok",3,"Play beep sound",1,verbose=False)
     
 elif preset=="4th_axis_mode":
     macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0,verbose=False)
@@ -204,7 +209,7 @@ elif preset=="jog_setup":
     #macro("G91","ok",1,"Setting relative positioning",0.5,verbose=False)
     macro("M92 E"+str(units['e']),"ok",1,"Setting 4th axis mode",0.5, verbose=False) #default 4th axis. require M302 S0 to disable cold extrusion (safety)
     #trace(macro("M105","ok T",2,"Getting nozzle temperatures",0.5, warning=True),log_trace)
-    macro("M106", "ok", 5, "Fan on!", 1, verbose=False) #Turn on the fan
+    macro("M106", "ok", 5, "Fan on", 1, verbose=False) #Turn on the fan
     trace ("Ready to jog",log_trace)
     
 #start print (valid for 3dprinting or milling)
@@ -264,15 +269,15 @@ elif preset=="raise_bed":
     #for homing procedure before probe calibration and print without homing.
     macro("M402","ok",4,"Raising probe",0.1)
     macro("G90","ok",2,"Setting absolute position",1)
-    macro("G27 Z200","ok",100,"Homing all axes",0.1)
-    macro("G0 Z50 F1000","ok",15,"raising",0.1)
+    macro("G27 Z206","ok",100,"Homing all axes",0.1)
+    macro("G0 Z10 F10000","ok",15,"raising",0.1)
     macro("G28","ok",100,"homing all axes",0.1)
     
 elif preset=="raise_bed_no_g27":
     #for homing procedure before probe calibration.
     macro("M402","ok",4,"Raising probe",0.1)
     macro("G90","ok",2,"Setting absolute position",1,verbose=False)
-    macro("G0 Z50 F1000","ok",15,"Raising bed",0.1,verbose=False)
+    macro("G0 Z10 F10000","ok",15,"Raising bed",0.1,verbose=False)
     macro("G28","ok",100,"Homing all axes",0.1)
         
 #Auto bed leveling
@@ -365,18 +370,20 @@ elif preset=="home_all":
 
 #unload spool    
 elif preset=="unload_spool":
+    
     trace("Unloading Spool : Procedure Started.",log_trace)
     macro("G90","ok",10,"set abs position",0,verbose=False)
-    macro("G27","ok",100,"zeroing Z axis",1,verbose=False)
-    macro("G0 X120 Y120 Z150 F1000","ok",10,"Moving to safe zone",0.1,verbose=False) #right top corner Z=150mm
+    macro("G27 Z206","ok",100,"zeroing Z axis",1,verbose=False)
+    macro("G0 Z150 F10000","ok",10,"Moving to safe zone",0.1,verbose=False) #right top corner Z=150mm
     macro("M83","ok",5,"setting relative estrusion",0.1,verbose=False)
     macro("G92 E0","ok",5,"set extruder to zero",0.1,verbose=False)
     macro("M92 E"+str(units['e']),"ok",30,"setting extruder mode",0.1,verbose=False)
     #heating nozzle
-    macro("M109 S220","ok",150,"Heating Nozzle... Get ready to pull the filament gently...",1)
+    #macro("M109 S220","ok",150,"Heating Nozzle... Get ready to pull the filament gently...",1)
     macro("M300","ok",2,"Start Pulling!",3)
-    macro("G0 E-50 F350","ok",10,"Leaving the heating chamber (slow!)",1)
+    #macro("G0 E-50 F350","ok",10,"Leaving the hotend (slow!)",1, verbose=False)
     macro("G0 E-800 F550","ok",10,"Expelling filament",1)
+    macro("G0 E-200 F550","ok",10,"Expelling filament",1, verbose=False)
     time.sleep(90)
     macro("M82","ok",2,"Restoring absolute estrusion mode",0,verbose=False)
     macro("M104 S0","ok",1,"Disabling Extruder",1)
@@ -386,21 +393,25 @@ elif preset=="unload_spool":
 elif preset=="load_spool":
     trace("Loading Spool : Procedure Started.",log_trace)
     macro("G90","ok",2,"set abs position",0)
-    macro("G27","ok",100,"zeroing Z axis",1)
-    macro("G0 X120 Y120 Z150 F1000","ok",10,"Moving to Safe Zone",0.1)
+    macro("G27 Z206","ok",100,"zeroing Z axis",1)
+    macro("G0 Z150 F10000","ok",10,"Moving to Safe Zone",0.1)
     macro("M302 S0","ok",5,"Enabling Cold extrusion",0.1,verbose=False)
     macro("M83","ok",5,"setting relative estrusion mode",0.1,verbose=False)
     macro("G92 E0","ok",5,"setting extruder position to 0",0.1,verbose=False)
     macro("M92 E"+str(units['e']),"ok",5,"Setting extruder mode",0.1,verbose=False)
     macro("M104 S190","ok",5,"Heating Nozzle. Get ready to push...",5) #heating and waiting.
     macro("M300","ok",5,"Start pushing!",3)
+    
     macro("G0 E110 F500","ok",1,"Loading filament (slow)",15)
     macro("G0 E660 F700","ok",1,"Loading filament (fast)",20)
-    macro("M109 S220","ok",100,"waiting to get to temperature...",1) #heating and waiting.
-    macro("G0 E100 F200","ok",1,"Entering heating chamber (slow)",5)
+    macro("M109 S210","ok",100,"waiting to get to temperature...",1) #heating and waiting.
+    
+    macro("G0 E100 F200","ok",1,"Entering the hotend (slow)",1)
+    
     macro("M82","ok",1,"setting back absolute estrusion",0,verbose=False)
+    time.sleep(25)
     macro("M104 S0","ok",1,"Disabling Extruder",0.1)
-    macro("M302 S160","ok",1,"Disabling Cold Extrusion Prevention",0.1,verbose=False)
+    macro("M302 S170","ok",1,"Disabling Cold Extrusion Prevention",0.1,verbose=False)
     
 #jog setup procedure
 elif preset=="jog_setup":
@@ -441,11 +452,11 @@ elif preset=="shutdown":
 elif preset=="probe_setup_prepare":
     trace("Preparing Calibration procedure",log_trace)
     trace("This may take a wile",log_trace)
-    macro("M104 S200","ok",90,"Heating extruder",1, verbose=True)
-    macro("M140 S70", "ok",90,"Heating Bed - fast ",20, verbose=True)
-    macro("G91","ok",2,"Relative mode",1)
-    macro("G0 X17 Y61.5 F6000","ok",2,"Offset",1)
-    macro("G90","ok",2,"Abs_mode",1)
+    macro("M104 S200","ok",90,"Heating extruder", 0.1, verbose=False)
+    macro("M140 S45", "ok",90,"Heating Bed - fast ", 0.1,verbose=False)
+    macro("G91","ok",2,"Relative mode",1, verbose=False)
+    macro("G0 X17 Y61.5 F6000","ok",2,"Offset",1, verbose=False)
+    macro("G90","ok",2,"Abs_mode",1, verbose=False)
     macro("G0 Z2 F1000","ok",2,"Moving to calibration position",1)
     
 elif preset=="probe_setup_calibrate":
@@ -579,7 +590,26 @@ elif preset == "temperature":
         bed_temp=-1
         trace("FAILURE : Sensors unresponsive",log_trace)
         s_error+=1
+
+elif preset=="pre_unload_spool":
     
+    serial.flushInput()
+    serial.write("M105\r\n")
+    time.sleep(1)
+    serial_reply=serial.readline().rstrip()
+    ext_temp=serial_reply.split( )[1]
+    ext_temp=ext_temp.split(":")[1]
+    
+    if(float(ext_temp) < 100):
+        time_to_wait = 60
+    elif(float(ext_temp) > 100 and float(ext_temp) < 150 ):
+        time_to_wait = 30
+    elif(float(ext_temp) > 150 and float(ext_temp) < 190 ):
+        time_to_wait = 10
+    elif(float(ext_temp) > 190):
+        time_to_wait = 0
+        
+    macro("M104 S190","ok", 5,"Heating Nozzle...", time_to_wait, verbose=True) #heating and waiting.    
         
 if s_error>0:
     response("false")

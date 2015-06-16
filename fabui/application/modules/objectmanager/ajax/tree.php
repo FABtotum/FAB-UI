@@ -10,7 +10,7 @@ $_folder    = str_replace("//", "/", (str_replace('/media', '', $_POST["folder"]
 
 /** LOAD FROM USB DISK */
 $_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
-$_command     = 'sudo python /var/www/fabui/python/usb_browser.py --path='.$_folder.'  --dest='.$_destination .' ';
+$_command     = 'sudo python /var/www/fabui/python/usb_browser.py --path="'.$_folder.'"  --dest="'.$_destination .'" ';
 shell_exec($_command);
 
 

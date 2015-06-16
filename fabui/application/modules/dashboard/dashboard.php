@@ -6,6 +6,8 @@ class Dashboard extends Module {
 		parent::__construct();
         
         $this->lang->load($_SESSION['language']['name'], $_SESSION['language']['name']);
+		
+		
         
         
 	}
@@ -71,6 +73,7 @@ class Dashboard extends Module {
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
 		
 		
+		$this->layout->set_layout_title(get_class($this));
         $this->layout->set_compress(false);
 		$this->layout->view('index/template/'.$_template, $data);
 		

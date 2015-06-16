@@ -7,6 +7,9 @@
 	var isMacro=false;
 	var showTemperatureConsole = false;
 	var maxIdleTime = 60;
+	
+	var EXT_TARGET_BLOCKED = false;
+	var BED_TARGET_BLOCKED = false;
 
 	
 	$(function() { 
@@ -122,6 +125,7 @@
             connect: 'lower'
 		});
 		
+		
 		$("#act-ext-temp").noUiSlider({
 	 	 	
 	        range: {'min': 0, 'max' : 230},
@@ -167,6 +171,7 @@
             connect: 'lower',
             behaviour: "none"
 		});
+      	
       	$("#act-bed-temp .noUi-handle").remove();
       	
       	
@@ -224,11 +229,13 @@
     	
     	
     	interval_temperature = setInterval(function(){
-    			if(SOCKET_CONNECTED && ticker_url == '' && IDLETIME < maxIdleTime) {
-    				showTemperatureConsole=false;
-    				make_call_ws("get_temperature", "");
-    			}
-    	}, 2000);
+    		
+			if(SOCKET_CONNECTED && ticker_url == '') {
+				showTemperatureConsole=false;
+				make_call_ws("get_temperature", "");
+			}
+    			
+    	}, 1500);
     	
     	
     	  	
@@ -326,12 +333,16 @@
 	}
 	
 	function extTempSlide(e){
+		
+		EXT_TARGET_BLOCKED = true;
     	var slide_val = parseInt($(this).val());
     	$("#ext-degrees").html(slide_val + '&deg;C');
     
 	}
 	
 	function extTempChange(e){
+		
+		EXT_TARGET_BLOCKED = false;
 		
 		if(SOCKET_CONNECTED){
 			make_call_ws("ext_temp", parseInt($(this).val()));
@@ -343,12 +354,13 @@
 	}
 	
 	function bedTempSlide(e){
+		BED_TARGET_BLOCKED = true;
     	var slide_val = parseInt($(this).val());
     	$("#bed-degrees").html(slide_val + '&deg;C');
 	}
 	
 	function bedTempChange(e){
-		
+		BED_TARGET_BLOCKED = false;
 		if(SOCKET_CONNECTED){
 			make_call_ws("bed_temp", parseInt($(this).val()));
 		}else{
@@ -677,52 +689,48 @@
 			
 			var temperature = str_temp.split(' ');
 
-			var ext_temp = temperature[0].split(':')[1];
+			var ext_temp   = temperature[0].split(':')[1];
 			var ext_target = temperature[1].split('/')[1];		
-			
-			var bed_temp = temperature[2].split(':')[1];
+			var bed_temp   = temperature[2].split(':')[1];
 			var bed_target = temperature[3].split('/')[1];
 			
 			
 			$("#ext-actual-degrees").html(parseInt(ext_temp) + '&deg;C');
+			
 		                	                
             $("#act-ext-temp").val( parseInt(ext_temp), {
             	set: true,
             	animate: true
             });
             
+            if(!EXT_TARGET_BLOCKED){
+            	$("#ext-target-temp").val( parseInt(ext_target), {
+            		set: true,
+            		animate: true
+            	});
+            	
+            	$("#ext-degrees").html(parseInt(ext_target) + '&deg;C');
+            }
             
             $("#bed-actual-degrees").html(parseInt(bed_temp) + '&deg;C');
-			 $("#act-bed-temp").val( parseInt(bed_temp), {
+			
+			$("#act-bed-temp").val( parseInt(bed_temp), {
             	set: true,
             	animate: true
             });
-			
-			
-			if(jogFirstEntry){
-				
-				$("#ext-degrees").html(parseInt(ext_target) + '&deg;C');
-				$("#bed-degrees").html(parseInt(bed_target) + '&deg;C');
-				
-				
-				$("#ext-target-temp").val( parseInt(ext_target), {
-		    		set: true,
-		    		animate: true
-		    	});
-
+            
+            if(!BED_TARGET_BLOCKED){
             	$("#bed-target-temp").val( parseInt(bed_target), {
             		set: true,
             		animate: true
             	});
-            	jogFirstEntry = false;
-           	}
+            	
+            	$("#bed-degrees").html(parseInt(bed_target) + '&deg;C');
+            }
 			
 			if(showTemperatureConsole){
 				write_to_console('Temperatures (M105) [Ext: ' + parseInt(ext_temp) + ' / ' + parseInt(ext_target)   + ' ---  Bed: ' + parseInt(bed_temp) + ' / ' + parseInt(bed_target) +  ']\n');	
-			}
-			
-			
-				
+			}	
 		}
 		
 	}

@@ -1,6 +1,8 @@
 <?php
 require_once '/var/www/lib/config.php';
 
+session_start();
+
 /** FORCE RESET CONTROLLER */
 $_command = 'sudo python '.PYTHON_PATH.'gmacro.py shutdown '.TEMP_PATH.'macro_trace '.TEMP_PATH.'macro_response'; 
 shell_exec($_command);

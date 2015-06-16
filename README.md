@@ -2,7 +2,27 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
-FABUI 0.9 (08/06/2014)
+FABUI 0.91 (16/06/2015)
+
+GENERAL
+- Added "Restart" button on top menu bar
+- Automated operations have been improved in speed and reliability.
+- Fixed wrong message and behavior on error code "110". This error code is now treated as an information alert 
+
+CREATE
+- Modified Fan slider to set a min value equal to 50%
+
+OBJECTMANAGER
+- Fixed bug on folders navigation on USB Drives
+
+MAINTENANCE
+- Spool: improved load and unload spool procedure
+
+NOTE
+In order to improve the machine performances some parameters will be updated 
+==================================================================
+
+FABUI 0.9 (08/06/2015)
 
 GENERAL
 - Improved Apache configuration to optimize server perfomance

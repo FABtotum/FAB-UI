@@ -21,9 +21,14 @@ chmod($_destination_trace, 0777);
 write_file($_destination_response, '', 'w');
 chmod($_destination_response, 0777);
 
+$end_command = ' & echo $!';
+
+if($_action == 'pre_unload'){
+	$end_command = '';
+}
 
 /** EXEC COMMAND */
-$_command        = 'sudo python /var/www/fabui/python/gmacro.py '.$_action.'_spool '.$_destination_trace.' '.$_destination_response.' > /dev/null & echo $!';
+$_command        = 'sudo python /var/www/fabui/python/gmacro.py '.$_action.'_spool '.$_destination_trace.' '.$_destination_response.' > /dev/null '.$end_command;
 $_output_command = shell_exec ( $_command );
 $_pid            = trim(str_replace('\n', '', $_output_command));
 

@@ -158,7 +158,8 @@ function save(){
 $("#feeder-disengage-offset").spinner({
 				step :0.5,
 				numberFormat : "n",
-				min: 0
+				min: 0,
+				max: 6
 		});
 
 /*

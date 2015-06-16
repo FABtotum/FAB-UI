@@ -36,7 +36,8 @@ task_notifications_file=config.get('task', 'notifications_file')
 
 '''### USB DEV FILE ###'''
 dev_usb_file = config.get('system', 'dev_usb_file')
-dev_path = config.get('system', 'dev_folder') 
+dev_path = config.get('system', 'dev_folder')
+usb_folder = config.get('system', 'usb_folder') 
 
 '''#### LOG ####'''
 log_file=config.get('monitor', 'log_file')
@@ -110,7 +111,7 @@ def safety_callback(channel):
         ser.flushInput()
         ser.write("M730\r\n")
         reply=ser.readline()
-        ser.close();
+        #ser.close();
                    
         type="emergency"
         
@@ -119,6 +120,14 @@ def safety_callback(channel):
         except:
             code=100
         
+        if(int(code) == 110):
+            type="alert"
+            ser.flushInput()
+            ser.write("M999\r\n")
+            
+        #close serial
+        ser.close();
+            
        
             
     
@@ -146,6 +155,8 @@ def safety_callback(channel):
     
         message = {'type': str(type), 'code': str(code)}
         write_emergency(json.dumps(message))
+        
+        print json.dumps(message)
         
         try:
             if(SOCKET_CONNECTED==False):
@@ -244,6 +255,9 @@ class UsbEventHandler (FileSystemEventHandler):
         global ws
         
         if(event.src_path == self.usb_file):
+            #mount usb disk usb_folder
+            #os.system('sudo mount ' + dev_usb_file + ' ' + usb_folder)
+            
             data={'type': 'usb', 'status': True, 'alert':True}
             message={'type':'system', 'data':data}
             if SOCKET_CONNECTED:
@@ -253,6 +267,8 @@ class UsbEventHandler (FileSystemEventHandler):
         global ws
         
         if(event.src_path == self.usb_file):
+            #unmount usb disk
+            #os.system('sudo umount ' + usb_folder)
             data={'type': 'usb', 'status':False, 'alert': True}
             message={'type': 'system', 'data':data}
             if SOCKET_CONNECTED:

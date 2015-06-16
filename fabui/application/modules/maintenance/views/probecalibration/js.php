@@ -121,7 +121,7 @@
 		
 		$(".re-choice").slideUp('slow');
 		
-		var message = mode == 'prepare' ? 'Preparing calibration<br>Heating extruder and bed<br>This operation would take a while' : 'Calibrating<br>please wait';
+		var message = mode == 'prepare' ? 'Preparing calibration<br>Heating extruder and bed<br>This operation will take a while' : 'Calibrating<br>please wait';
 		
 		openWait(message);
 		$.ajax({

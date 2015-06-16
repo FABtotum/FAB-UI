@@ -76,7 +76,7 @@
 				<!-- EMERGENCY BUTTON -->
 				<div class="btn-header transparent pull-right">
 					<span>
-						<?php echo anchor( '#', '<i class="glyphicon glyphicon-exclamation-sign"></i>', 'title="Emercengy Button" style="cursor: pointer !important" data-action="emergencyButton" data-reset-msg="This operation will stop all the operations, continue?"'); ?>
+						<?php echo anchor( '#', '<i class="fa fa-close"></i>', 'title="Emercengy Button"  style="cursor: pointer !important" data-action="emergencyButton" data-reset-msg="This button will stop all the operations, continue?"'); ?>
 					</span>
 				</div>
 				<!-- END EMERGENCY BUTTON-->

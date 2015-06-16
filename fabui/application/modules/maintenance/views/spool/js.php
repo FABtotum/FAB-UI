@@ -17,10 +17,20 @@
                 
             choice = $(this).attr('data-action');
             
+            var name_procedure = '';
+            
             $( ".choice" ).slideUp( "slow", function() {});
             $("." + choice + "-choice").slideDown('slow');
             $(".re-choice").slideDown('slow');
             $(".start").slideDown('slow');
+            
+            if(choice == 'unload' || choice == 'pre_unload'){
+            	name_procedure = 'Unload Filament';
+            }else{
+            	name_procedure = 'Load Filament';
+            }
+            
+            $(".procedure-name").html('>  <strong>' + name_procedure +' </strong>');
                 
         });
         
@@ -31,6 +41,8 @@
             $( ".choice" ).slideDown( "slow", function() {});
             $(".re-choice").slideUp('slow');
             $(".start").slideUp('slow');
+            
+            $(".procedure-name").html("");
             
         });
         
@@ -44,6 +56,13 @@
     
     
     function do_macro(){
+    	
+    	
+    	if(choice == 'pre_unload'){
+    		pre_unload();
+    		return;
+    	}
+    	
     	
     	$(".trace").slideDown('slow');
     	$(".new-spool").remove();
@@ -74,7 +93,30 @@
           
     }
     
-    
+    function pre_unload(){
+    	
+    	
+    	openWait("Plese wait");
+    	
+    	$.ajax({
+    		type:"POST",
+    		url: "<?php  echo module_url("maintenance").'ajax/spool.php' ?>",
+    		data: {action: choice},
+    		dataType: "json"
+    		
+    	}).done(function(response){
+    		choice = 'unload';
+    		
+    		closeWait();
+    		
+    		$(".pre_unload-choice").slideUp( "slow", function() {});
+    		$( ".choice" ).slideUp( "slow", function() {});
+            $("." + choice + "-choice").slideDown('slow');
+            $(".re-choice").slideDown('slow');
+    		
+    	});
+    	
+    }
     
     function do_monitor(){
         
@@ -137,7 +179,7 @@
     	clearInterval(interval_response);
         clearInterval(interval_trace);
     	
-    	$(".title").find("h2").html(choice.charAt(0).toUpperCase() + choice.slice(1) + 'ing filament completed <i class="fa fa-check text-success"></i>');
+    	$(".title").find("h2").html('Spool ' +  choice.charAt(0).toUpperCase() + choice.slice(1) + ' completed <i class="fa fa-check text-success"></i>');
     	
     	var act = choice == 'unload' ? 'load' : 'unload';
     		

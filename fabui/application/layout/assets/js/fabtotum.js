@@ -172,7 +172,7 @@ function openWait(title, content, spinner) {
 	var src_html = '<div class="white-popup animated bounceIn fast">';
 	
 	if(!pressedEmergencyButton){
-		src_html += '<a href="#" class="btn btn-default pull-right" title="Emergency Button" data-action="emergencyButton"><i class="glyphicon glyphicon-exclamation-sign txt-color-red"></i></a>';
+		src_html += '<a href="#" class="btn btn-default pull-right" data-action="emergencyButton"><i class="fa fa-times-circle txt-color-red"></i></a>';
 	}
 	
 	
@@ -264,9 +264,15 @@ var SOCKET;
 var SOCKET_CONNECTED = false;
 var interval_internet;
 var jogFirstEntry = true;
+var PAGE_ACTIVE = true;
+var PAGE_TITLE = '';
 
 /** CHECK PRINTE SAFETY AJAX MODE*/
 function safety() {
+	
+	if(!PAGE_ACTIVE){
+		return false;
+	}
 
 	if (!do_system_call) {
 		return false;
@@ -287,8 +293,6 @@ function safety() {
 }
 
 function secure(mode) {
-	
-	
 	
 	if(SOCKET_CONNECTED){
 		SOCKET.send('message', '{"name": "secure", "data":{"mode":'+ mode +' } }');
@@ -358,10 +362,10 @@ function update_notifications() {
 
 	if (total > 0) {
 		$("#activity").find('.badge').addClass('bg-color-red bounceIn animated');
-		document.title = 'FAB UI beta (' + total + ')';
+		document.title = PAGE_TITLE +' (' + total + ')';
 	} else {
 		$("#activity").find('.badge').removeClass('bg-color-red bounceIn animated');
-		document.title = 'FAB UI beta';
+		document.title = PAGE_TITLE;
 	}
 
 	if (number_tasks == 0) {
@@ -374,7 +378,11 @@ function update_notifications() {
 }
 
 function refresh_notifications() {
-
+	
+	if(!PAGE_ACTIVE){
+		return false;
+	}
+	
 	if (!do_system_call) {
 		return false;
 	}
@@ -391,7 +399,11 @@ function refresh_notifications() {
 
 /** CHECK TASKS, MENU AJAX MODE */
 function check_notifications() {
-
+	
+	if(!PAGE_ACTIVE){
+		return false;
+	}
+	
 	if (!do_system_call) {
 		return false;
 	}
@@ -429,6 +441,9 @@ function check_notifications() {
 /** ON LOAD */
 
 $(function() {
+	
+	
+	PAGE_TITLE = document.title;
 
 	if (fabui) {
 
@@ -454,6 +469,10 @@ $(function() {
 					
 				case 'emergency':
 					show_emergency(obj.code);
+					break;
+				case 'alert':
+					show_alert(obj.code);
+					//show_emergency(obj.code);
 					break;
 				case 'security':
 					EMERGENCY = false;
@@ -604,6 +623,38 @@ function shutdown() {
 
 	});
 }
+
+
+function restart(){
+	
+	openWait("Restart in progress");
+	
+	clearInterval(notifications_interval);
+	clearInterval(safety_interval);
+	clearInterval(idleInterval);
+	
+	
+	$.ajax({
+		type : "POST",
+		url : "/fabui/application/modules/controller/ajax/restart.php",
+		dataType : 'json'
+	}).done(function(response) {
+		
+		waitContent("Restarting please wait...");
+		
+		setTimeout(function() {
+			
+			document.location.href = '/fabui/login/out';
+
+		}, 70000);
+		
+
+	});
+	
+	
+}
+
+
 
 /** SHUTDOWN */
 function check_for_updates() {
@@ -784,16 +835,14 @@ function getTrace(url, type, contenitor) {
 
 ////////////////////////
 function show_emergency(code) {
-	
-	
+		
 	jogFirstEntry = true;
 	
 	if (EMERGENCY == true) {
 		return;
 	}
-
 	EMERGENCY = true;
-
+	
 	$.SmartMessageBox({
 		title : "<h4><span class='txt-color-orangeDark'><i class='fa fa-warning fa-2x'></i></span>&nbsp;&nbsp;" + decode_emergency_code(code) + "<br>&nbsp;Press OK to continue or Ignore to disable this warning</h4>",
 		buttons : '[OK][IGNORE]'
@@ -807,6 +856,21 @@ function show_emergency(code) {
 	});
 
 }
+
+function show_alert(code){
+	
+	$.smallBox({
+		title : "Message",
+		content : decode_emergency_code(code),
+		color : "#5384AF",
+		timeout: 10000,
+		icon : "fa fa-warning"
+	});
+	
+	
+	console.log(code);
+}
+
 
 function decode_emergency_code(code) {
 
@@ -841,7 +905,7 @@ function decode_emergency_code(code) {
 	case 109:
 		return 'Y min Endstop hit';
 		break;
-	case '110':
+	case 110:
 		return 'The FABtotum has been idling for more than 8 minutes. Temperatures and Motors have been turned off.';
 		break;
 	case 120:
@@ -857,6 +921,7 @@ function decode_emergency_code(code) {
 
 }
 
+
 function show_connected(bool) {
 	if (bool) {
 		$('.internet').show();
@@ -866,7 +931,9 @@ function show_connected(bool) {
 }
 
 function check_connected() {
-	if (SOCKET_CONNECTED) {
+	
+	
+	if (SOCKET_CONNECTED && PAGE_ACTIVE) {
 		SOCKET.send('message', '{"name": "getInternet"}');
 	}
 }
@@ -879,6 +946,7 @@ function socket_fallback() {
 }
 
 function write_to_console(text, type) {
+	
 
 	type = type || '';
 
@@ -993,7 +1061,27 @@ function stopAll(){
 			waitContent("Refreshing page");
 			document.location.href = document.location.href; 
 	    });
-	
-	
 }
+
+
+
+$(window).on("blur focus", function(e) {
+	
+    var prevType = $(this).data("prevType");
+
+    if (prevType != e.type) {
+        switch (e.type) {
+            case "blur":
+                PAGE_ACTIVE = false;
+                //document.title = document.title + ' (idle)';
+                break;
+            case "focus":
+                PAGE_ACTIVE = true;
+                //document.title = document.title.replace('(idle)', '');
+                break;
+        }
+    }
+
+    $(this).data("prevType", e.type);
+})
 

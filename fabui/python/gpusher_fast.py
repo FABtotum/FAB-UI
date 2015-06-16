@@ -264,7 +264,7 @@ def sender():
                         
                         override_splitted = override.split(':')
                         
-                        trace(override_splitted)
+                       
                         
                         
                         if override_splitted[0]=="!kill": #stop print
@@ -512,6 +512,8 @@ def tracker():
     global tip
     global tipMessage
     global progress
+    global print_started
+    global killed
     
     #mtime=os.path.getmtime(comfile) #update override file mtime.
     elapsed=0
@@ -521,6 +523,13 @@ def tracker():
     
     while not EOF:
         #print "tracker: " + str(EOF) + " " + str(killed)
+        
+        '''if(print_started==False):
+            if(time.time()-started>60):
+                trace("Attenzione Problema")
+                EOF=True
+                killed=True'''
+              
         if (time.time()-started>100 and sent<20):
             tip=True
             tipMessage="TIP: If the job hasn't started yet, check bed and head connections."

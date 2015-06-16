@@ -89,6 +89,8 @@ class Module extends CI_Controller {
             is_logged_in();
         }
 		
+		
+		$this->layout->set_layout_title(get_class($CI));
 		$this->layout->set_setup_wizard(need_setup_wizard());
         
 
