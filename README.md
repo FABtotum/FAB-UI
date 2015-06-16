@@ -18,8 +18,6 @@ OBJECTMANAGER
 MAINTENANCE
 - Spool: improved load and unload spool procedure
 
-NOTE
-In order to improve the machine performances some parameters will be updated 
 ==================================================================
 
 FABUI 0.9 (08/06/2015)
