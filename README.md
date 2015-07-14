@@ -2,6 +2,14 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.93 (hotfix) (14/07/2015)
+
+GENERAL
+- Fixed php error showed on version 0.925
+
+
+==================================================================
+
 FABUI 0.925 (14/07/2015)
 
 GENERAL
