@@ -150,7 +150,8 @@ class FT_Layout {
 	public function setFeeder(){
 		
 		$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
-		$this->_show_feeder = $fabtotum_config['feeder']['show'];
+		
+		$this->_show_feeder = isset($fabtotum_config['feeder']['show']) ? $fabtotum_config['feeder']['show'] : true;
 		
 		unset($fabtotum_config);
 		
