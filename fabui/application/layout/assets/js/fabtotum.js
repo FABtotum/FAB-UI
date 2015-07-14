@@ -266,6 +266,8 @@ var interval_internet;
 var jogFirstEntry = true;
 var PAGE_ACTIVE = true;
 var PAGE_TITLE = '';
+var RESETTING_CONTROLLER = false;
+var STOPPING_ALL = false;
 
 /** CHECK PRINTE SAFETY AJAX MODE*/
 function safety() {
@@ -1035,15 +1037,16 @@ function mange_usb_monitor(status, alert){
 
 function reset_controller(){
 		
+		RESETTING_CONTROLLER = true;
 		
 		openWait("Reset Controller...");
-		
 	    $.ajax({
 	      	url : '/fabui/application/modules/controller/ajax/reset_controller.php',
 		  	dataType : 'json',
 		 	type: 'post'
 		}).done(function(response) {
-			closeWait(); 
+			closeWait();
+			RESETTING_CONTROLLER = false; 
 	    });
 }
 
@@ -1053,16 +1056,21 @@ function stopAll(){
 	
 	openWait("Stopping all...");
 	
+	STOPPING_ALL = true;
+	
 	$.ajax({
 	      	url : '/fabui/application/modules/controller/ajax/stop_all.php',
 		  	dataType : 'json',
-		 	type: 'post'
+		 	type: 'post',
+		 	data : {'module': MODULE}
 		}).done(function(response) {
+			
+			/*$.xhrPool.abortAll();*/
 			waitContent("Refreshing page");
+			STOPPING_ALL = false;
 			document.location.href = document.location.href; 
 	    });
 }
-
 
 
 $(window).on("blur focus", function(e) {
@@ -1081,7 +1089,37 @@ $(window).on("blur focus", function(e) {
                 break;
         }
     }
-
+    
+        
     $(this).data("prevType", e.type);
-})
+    
+    
+    
+    
+    
+});
+
+
+$.xhrPool = [];
+$.xhrPool.abortAll = function(url) {
+    $(this).each(function(i, jqXHR) { //  cycle through list of recorded connection
+        console.log('xhrPool.abortAll ' + jqXHR.requestURL);
+        //if (!url || url === jqXHR.requestURL) {
+            jqXHR.abort(); //  aborts connection
+            $.xhrPool.splice(i, 1); //  removes from list by index
+        //}
+    });
+};
+$.ajaxSetup({
+    beforeSend: function(jqXHR) {
+        $.xhrPool.push(jqXHR); //  add connection to list
+    },
+    complete: function(jqXHR) {
+        var i = $.xhrPool.indexOf(jqXHR); //  get index for current connection completed
+        if (i > -1) $.xhrPool.splice(i, 1); //  soremoves from list by index
+    }
+});
+$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+    jqXHR.requestURL = options.url;
+});
 

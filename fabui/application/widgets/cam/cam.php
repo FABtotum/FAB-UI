@@ -53,6 +53,10 @@ class Cam_widget extends Widget {
 		$settings = json_decode(file_get_contents($settings_file), TRUE);
 		
 		$data['settings'] = $settings;
+		
+		if(!isset($data['settings']['flip'])){
+			$data['settings']['flip'] = 'hf';
+		}
 
 			
 				

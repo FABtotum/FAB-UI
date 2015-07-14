@@ -10,9 +10,38 @@
 	
 	var EXT_TARGET_BLOCKED = false;
 	var BED_TARGET_BLOCKED = false;
+	
+	var KEY_ALLOWED = false;
+	
+	var PRE_JOG = true;
 
 	
-	$(function() { 
+	$(function() {
+		
+		
+		
+		$(document).keyup(function(e) { 
+			KEY_ALLOWED = true;
+		});
+		
+		$(document).focus(function(e) { 
+			KEY_ALLOWED = true;
+		});
+		
+		
+		$(document).keydown(function(event){
+			
+			
+			if (event.repeat != undefined) {
+		    	KEY_ALLOWED = !event.repeat;
+		  	}
+		  	
+		  	if (!KEY_ALLOWED) return;
+		  	
+		  	KEY_ALLOWED = false;
+		  	
+        	keyboard(event);
+    	}); 
 		
 		/** MOTORS */
 		$("#motors").on('change', function(){
@@ -103,7 +132,7 @@
 				rotation(value);
 	        },
 	        cancel: function () {
-	            console.log("cancel : ", this);
+	           
 	        }
 		 });
 		 
@@ -227,12 +256,16 @@
 		/** TICKER */
     	interval_ticker   = setInterval(ticker, 500);
     	
-    	
     	interval_temperature = setInterval(function(){
     		
-			if(SOCKET_CONNECTED && ticker_url == '') {
-				showTemperatureConsole=false;
-				make_call_ws("get_temperature", "");
+    		
+    		if(PAGE_ACTIVE){    			
+
+				if(SOCKET_CONNECTED && ticker_url == '' && RESETTING_CONTROLLER == false && STOPPING_ALL == false && PRE_JOG == false) {
+					showTemperatureConsole=false;
+					make_call_ws("get_temperature", "");
+				}
+			
 			}
     			
     	}, 1500);
@@ -558,6 +591,8 @@
 	
 	function make_call_ws(func, value){
 		
+		
+		
 		var jsonData = {};
 		
 		jsonData['func']     = func;
@@ -633,25 +668,24 @@
 	
 	function pre_jog(){
 	    
-	    $(".status").html(' <i class="fa fa-spin fa-spinner fa-2x"></i>');
+	    
+	   
 	    $(".btn").addClass('disabled');
-	    var timestamp = new Date().getTime();        
-	    /*ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/pre_jog_' + timestamp + '.trace';*/
+	        
 	    ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/macro_trace';
 	   
 	    
 	    $.ajax({
-	              url : '<?php echo module_url('jog').'ajax/pre_jog.php' ?>',
-				  dataType : 'json',
-				  type: 'post',
-	              data: {time : timestamp}
-			}).done(function(response) {
-			  
-	             ticker_url = '';
-	             refresh_temperature();
-	             $(".btn").removeClass('disabled');
-	             $(".status").html('');
-	        });
+	    	url : '<?php echo module_url('jog').'ajax/pre_jog.php' ?>',
+			dataType : 'json',
+			type: 'post'
+		}).done(function(response) {
+	    	ticker_url = '';
+	        refresh_temperature();
+	        $(".btn").removeClass('disabled');
+	        
+	        PRE_JOG = false;
+	   });
 	    
 	}
 		
@@ -737,6 +771,9 @@
 	
 	
 	function write_to_console(text, type) {
+		
+		
+		
 
 		type = type || '';
 	
@@ -750,6 +787,57 @@
 		waitContent(text);
 		
 		$(".btn").removeClass('disabled');
+	}
+	
+	
+	function keyboard(event){
+		
+		var $focused = $(':focus');
+		
+		
+		if($focused.attr('id') == 'mdi' || $focused.is(':input')) return false;
+		
+		var keycode = (event.keyCode ? event.keyCode : event.which);
+		
+		var function_name = '';
+		var function_value = '';
+		
+		switch(keycode){
+			case 37:
+				function_name = 'directions';
+				function_value = 'left';
+				break;
+			case 38:
+				function_name = 'directions';
+				function_value = 'up';
+				break;
+			case 39:
+				function_name = 'directions';
+				function_value = 'right';
+				break;
+			case 40:
+				function_name = 'directions';
+				function_value = 'down';
+				break;
+			case 33:
+				function_name = 'zdown';
+				function_value = '';
+				break;
+			case 34:
+				function_name = 'zup';
+				function_value = '';
+		}
+		
+		
+		if(function_name != ''){
+			
+			if(SOCKET_CONNECTED){
+				make_call_ws(function_name, function_value);
+			}else{
+				make_call(function_name, function_value);
+			}
+		}
+		
 	}
 	
 	

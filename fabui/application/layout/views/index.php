@@ -76,7 +76,7 @@
 				<!-- EMERGENCY BUTTON -->
 				<div class="btn-header transparent pull-right">
 					<span>
-						<?php echo anchor( '#', '<i class="fa fa-close"></i>', 'title="Emercengy Button"  style="cursor: pointer !important" data-action="emergencyButton" data-reset-msg="This button will stop all the operations, continue?"'); ?>
+						<?php echo anchor( '#', '<i class="fa fa-close"></i>', 'title="Emergency Stop"  style="cursor: pointer !important" data-action="emergencyButton" data-reset-msg="This button will stop all the operations, continue?"'); ?>
 					</span>
 				</div>
 				<!-- END EMERGENCY BUTTON-->
@@ -238,6 +238,7 @@
 			var number_notifications = 0;
 			var max_idle_time = <?php echo isset($_SESSION['user']['lock-screen']) ? $_SESSION['user']['lock-screen'] : 0 ?>;
 			var setup_wizard = <?php echo $_setup_wizard == true && (isset($_SESSION['ask_wizard']) && $_SESSION['ask_wizard'] == true) ? 'true' : 'false' ?>;
+			var MODULE = '<?php echo $this->router->fetch_class(); ?>';
 		</script>
 		<!-- END JAVASCRIPT VARS -->
 		<!-- JAVASCRIPT INCLUSIONS -->

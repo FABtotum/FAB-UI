@@ -42,7 +42,6 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 			$Server -> wsSend($id, $message);
 			
 			
-			
 			//}
 
 		}

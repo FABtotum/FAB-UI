@@ -56,6 +56,8 @@ class Camera {
 
 			}
 		}
+		
+		
 
 	}
 	
@@ -90,7 +92,7 @@ class Camera {
 	 */
 	private function prepare_command() {
 
-		$this -> _command = 'sudo raspistill -n -hf -t 1 ';
+		$this -> _command = 'sudo raspistill -n -t 1  ';
 
 		foreach ($this as $key => $val) {
 			if (is_object($this -> $key)) {

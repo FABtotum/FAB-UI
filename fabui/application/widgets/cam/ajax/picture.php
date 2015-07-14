@@ -23,6 +23,7 @@ $ev_comp    = $_POST['ev_comp'];
 $exposure   = $_POST['exposure'];
 $rotation   = $_POST['rotation'];
 $metering   = $_POST['metering'];
+$flip       = $_POST['flip'];
 
 $split_size = explode('-', $size);
 $width = $split_size[0];
@@ -47,12 +48,15 @@ $settings['ev'] = $ev_comp;
 $settings['exposure'] = $exposure;
 $settings['rotation'] = $rotation;
 $settings['metering'] = $metering;
+$settings['flip']     = $flip;
 $settings['name'] = 'picture';
 $json = json_encode($settings);
 write_file($settings_file, $json, 'w');
 
 $camera = new Camera($settings);
 $camera->output->setValue(TEMP_PATH.'picture.'.$settings['encoding']);
+$camera->$flip->setValue(' ');
+
 $camera->doImage();
 
 

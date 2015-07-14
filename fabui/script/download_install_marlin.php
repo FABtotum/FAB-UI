@@ -82,6 +82,11 @@ if($do_update){
 	
    	$_command = 'sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:'.$_file_name.':i > '.$log;
     shell_exec($_command);
+	
+	sleep(1);
+	
+	//boot
+	include '/var/www/fabui/script/boot.php';
 		
 	/** UPDATE VERSION  */
 	/** LOAD DB */

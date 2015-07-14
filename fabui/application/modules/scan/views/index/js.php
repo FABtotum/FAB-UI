@@ -67,15 +67,20 @@ var pprocess_array_progress_steps = new Array();
 var pprocess_array_estimated_time = new Array();
 var pprocess_stats_file = '<?php echo $_task && isset($_task_attributes['pprocess_stats_file']) ? $_task_attributes['pprocess_stats_file'] : '' ?>';
 <?php 
+
+
+
 if($_task && isset($_pprocess_stats['progress_steps'])){
 	foreach($_pprocess_stats['progress_steps'] as $step){
 		if(is_numeric($step)){
 			echo 'pprocess_array_progress_steps.push('.$step.');'.PHP_EOL;
 		}
 	}
-	foreach($_pprocess_stats['estimated_time'] as $time){
-		if(is_numeric($time)){
-			echo 'pprocess_array_estimated_time.push('.$time.');'.PHP_EOL;
+	if(isset($_pprocess_stats['estimated_time'])){
+		foreach($_pprocess_stats['estimated_time'] as $time){
+			if(is_numeric($time)){
+				echo 'pprocess_array_estimated_time.push('.$time.');'.PHP_EOL;
+			}
 		}
 	}
 }

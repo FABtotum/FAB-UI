@@ -178,14 +178,14 @@ elif preset=="engage_feeder":
     if(safety_door == 1):
         macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
     macro("M744","TRIGGERED",1,"Spool panel control",1, warning=True)
-    macro("G27 Z206","ok",100,"Moving to engage position",0.1)
+    macro("G27 Z240","ok",100,"zeroing Z axis",0.1,verbose=False)
     #macro("G28 X0 Y0","ok",100,"Setting Z position",0.1,verbose=False)
-    #macro("G91","ok",2,"Set relative movement",0.1,verbose=False)
+    macro("G91","ok",2,"Set relative movement",0.1,verbose=False)
     #go to fixed position, so feeder botton can be pushed.
-    macro("G0 Z237 F10000","ok",3,"Setting Z position",1,verbose=False)
-    #macro("G90","ok",2,"Set absolute movement",0.1,verbose=False)
+    macro("G0 Z-4 F1000","ok",3,"Setting Z position",0.1,verbose=False)
+    macro("G90","ok",2,"Set absolute movement",0.1,verbose=False)
     macro("M92 E"+str(units['e']),"ok",2,"Setting steps/units for 3D printing",0.5,verbose=False)
-    #macro("M18","ok",3,"Stopping motors",0.1,verbose=False)
+    macro("M18","ok",3,"Stopping motors",0.1,verbose=False)
     macro("M300","ok",3,"Play beep sound",1,verbose=False)
     
     
@@ -277,7 +277,7 @@ elif preset=="raise_bed_no_g27":
     #for homing procedure before probe calibration.
     macro("M402","ok",4,"Raising probe",0.1)
     macro("G90","ok",2,"Setting absolute position",1,verbose=False)
-    macro("G0 Z10 F10000","ok",15,"Raising bed",0.1,verbose=False)
+    macro("G0 Z20 F10000","ok",15,"Raising bed",0.1,verbose=False)
     macro("G28","ok",100,"Homing all axes",0.1)
         
 #Auto bed leveling
@@ -299,9 +299,9 @@ elif preset=="r_scan":
         macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
     macro("M744","open",1,"Building plane (must be removed)",0.1)
     macro("M744","TRIGGERED",1,"Spool panel closed",0.1, warning=True)
-    macro("M701 S0","ok",2,"Turning off lights",0.1,verbose=False)
-    macro("M702 S0","ok",2,"Turning off lights",0.1,verbose=False)
-    macro("M703 S0","ok",2,"Turning off lights",0.1,verbose=False)
+    macro("M701 S255","ok",2,"Turning off lights",0.1,verbose=False)
+    macro("M702 S255","ok",2,"Turning off lights",0.1,verbose=False)
+    macro("M703 S255","ok",2,"Turning off lights",0.1,verbose=False)
     macro("G90","ok",2,"Setting Absloute position",1,verbose=False)
     macro("G0 X96 Y175 Z135 E0 F10000","ok",90,"Moving to collimation position",1)
     macro("M302 S0","ok",2,"Enabling cold extrusion",0,verbose=False)
@@ -314,9 +314,9 @@ elif preset=="pg_scan":
         macro("M741","TRIGGERED",2,"Front panel door control",0.1,verbose=False)
     macro("M744","open",1,"Building plane (must be removed)",0.1)
     macro("M744","TRIGGERED",1,"Spool panel closed",0.1, warning=True)
-    #macro("M701 S0","ok",2,"Turning off lights",0.1,verbose=False)
-    #macro("M702 S0","ok",2,"Turning off lights",0.1,verbose=False)
-    #macro("M703 S0","ok",2,"Turning off lights",0.1,verbose=False)
+    macro("M701 S255","ok",2,"Turning off lights",0.1,verbose=False)
+    macro("M702 S255","ok",2,"Turning off lights",0.1,verbose=False)
+    macro("M703 S255","ok",2,"Turning off lights",0.1,verbose=False)
     macro("G90","ok",2,"Setting Absloute position",1,verbose=False)
     macro("G0 X96 Y175 Z135 E0 F10000","ok",90,"Moving to collimation position",1)
     macro("M302 S0","ok",2,"Enabling cold extrusion",0,verbose=False)

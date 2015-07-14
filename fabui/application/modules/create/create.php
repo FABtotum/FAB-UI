@@ -286,7 +286,33 @@ class Create extends Module {
 
 	/** show additive o subtractive preparation print */
 	public function show($type){
-		$this->load->view('index/ajax/'.$type);	
+		
+		
+		
+		$this->load->helper('serial_helper');
+		
+		
+		if($type == 'additive'){
+			
+			
+			$label_button = 'Engage';
+			$action_button = 'feeder';
+			
+			$data['show_feeder'] = $this->layout->getFeeder();
+			
+			if(!$data["show_feeder"]){
+				$label_button = 'Continue';
+				$action_button = '';
+			}
+			
+			
+			$data['label_button'] = $label_button;
+			$data['action_button'] = $action_button;
+			
+		}
+		
+		
+		$this->load->view('index/ajax/'.$type, $data);	
 	}
 	
 	

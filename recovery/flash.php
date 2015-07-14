@@ -27,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		sleep(10);
 		$start_up = shell_exec('sudo python /var/www/fabui/python/gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log');
 		sleep(10);
+		include '/var/www/fabui/script/boot.php';
+		sleep(2);
 
 		if (strpos($response_flash, 'done with autoreset') !== false) {
 			$alert['type'] = 'success';
@@ -85,6 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$response_flash = file_get_contents($log);
 			shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log > /dev/null &');
 			sleep(10);
+			
+			include '/var/www/fabui/script/boot.php';
 			
 			$actual_version = get_fw_version();
 			

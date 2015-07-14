@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '/var/www/lib/config.php';
 
 /** FORCE RESET CONTROLLER */

@@ -171,7 +171,7 @@ def safety_callback(channel):
 #except Exception, e:
 #    logging.info(str(e))
 #    killAndRaise()
-        
+    
  
 GPIO.add_event_detect(2, GPIO.BOTH, callback=safety_callback, bouncetime=300)
 

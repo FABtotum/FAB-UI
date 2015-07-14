@@ -11,9 +11,9 @@ config.read('/var/www/fabui/python/config.ini')
 
 
 #startup script (see crontab)
-print "Boot script"
+#print "Boot script"
 #time.sleep(60) #wait 60 seconds so connections can be made.
-print "Start"
+#print "Start"
 
 #tell the board that the raspi has been connected.
 
@@ -58,9 +58,7 @@ except KeyError:
 
 ser.write("M732 S"+str(safety_door)+"\r\n")
 
-print "Safety door setted"
-
-
+#print "Safety door setted"
 
 try:
     switch = config['switch']
@@ -69,9 +67,7 @@ except KeyError:
 
 ser.write("M714 S"+str(switch)+"\r\n")
 
-print "Homing direction setted"
-
-
+#print "Homing direction setted"
 #clean the buffer and leave
 serial.flush()
 serial.close()

@@ -76,14 +76,12 @@ if (defined('ENVIRONMENT'))
  */
 	$application_folder = 'application';
 	
-	
-	
-	
 	$python_folder = 'python';
 	$script_folder = 'script';
 	$tasks_folder  = '../tasks';
 	$temp_folder   = '../temp';
 	$plugin_folder = 'application/plugins';
+	$config_folder = 'config';
 
 /*
  * --------------------------------------------------------------------
@@ -215,8 +213,15 @@ if (defined('ENVIRONMENT'))
 	
 	// ensure there's a trailing slash
 	$plugin_folder = rtrim($plugin_folder, '/').'/';
-
 	
+	
+	//set json config path
+	if(realpath($config_folder) !== FALSE){
+		$config_folder = realpath($config_folder).'/';
+	}
+
+	// ensure there's a trailing slash
+	$config_folder = rtrim($config_folder, '/').'/';
 	
 	
 	
@@ -249,6 +254,10 @@ if (defined('ENVIRONMENT'))
 	
 	define('PLUGINSPATH', str_replace("\\", "/", $plugin_folder));
 	
+	
+	//define FABTOTUM CONFIG
+	define('CONFIG_FOLDER', str_replace("\\", "/", $config_folder));
+	
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));
 
@@ -271,11 +280,14 @@ if (defined('ENVIRONMENT'))
 		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
 
-
+	
+	$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
+	
+	if(isset($fabtotum_config['hardware']['id'])){
+		define('HARDWARE_ID', $fabtotum_config['hardware']['id']);
+	}
 	
 	
-	
-
 
 /*
  * --------------------------------------------------------------------

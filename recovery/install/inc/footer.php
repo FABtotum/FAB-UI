@@ -3,8 +3,6 @@ require_once '/var/www/lib/utilities.php';
 $networkConfiguration = networkConfiguration();
 $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : false;
 
-
-
 ?>
 <script src="/assets/js/app.config.js?"></script>
 <script src="/assets/js/bootstrap/bootstrap.min.js"></script>
@@ -159,11 +157,8 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 				    
 					$('#bootstrap-wizard-1').find('.form-wizard').children('li').eq(index - 1).addClass('complete');
 					$('#bootstrap-wizard-1').find('.form-wizard').children('li').eq(index - 1).find('.step').html('<i class="fa fa-check"></i>');
-                    
-                    
-                    
-                    
-                    
+                   
+                   	
                     if(index == 3){
 
                         if(ask_wifi_password == true){
@@ -197,8 +192,7 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
                     }
                     
                     if(index == 4){
-                    	
-                    	
+
                     	install();
                     /*	
                        $("#wizard-1").submit();
@@ -238,18 +232,14 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 		
 		
 		function install(){
-			
-			
-			
-			$(".next").find('a').html('Installing...');
+
+			$(".next").find('a').html('<i class="fa fa-spinner fa-pulse"></i>');
             $("a").addClass('disabled');
 			
 			$.ajax({
-				<?php if(!$imOnCable): ?>
-			 	dataType: 'json',
-			 	<?php endif; ?>
 				type: "POST",
 				url: "install.php",
+				dataType: 'json',
 				data: { first_name : $("#first_name").val(), last_name : $("#last_name").val(), email: $("#email").val(), password : $("#password").val(), net_password : $("#net_password").val(), net: '', ip_address: $("#ip_address").val() }
 			}).done(function( response ) {
 			
@@ -258,18 +248,22 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 					document.location.href= 'http://<?php echo $_SERVER['SERVER_ADDR'] ?>';
 				
 				<?php endif; ?>
-					      
-			});
 				
+
+				<?php if($imOnCable): ?>
+			
 				
-			<?php if($imOnCable): ?>
 				
 			 	setTimeout(function(){	
 			 		document.location.href= 'http://169.254.1.' + $("#ip_address").val();
 				}, 50000);
 			 	
 			<?php endif; ?>
-			 	
+				
+				
+					      
+			});
+	
 			 	
 			 }
 		

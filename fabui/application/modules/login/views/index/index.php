@@ -264,6 +264,9 @@
 						<div class="blog-twitter">
 
 							<?php foreach($twitter_feed as $tweet): ?>
+								
+								
+								
 
 							<?php if($tweet->in_reply_to_user_id == ''): ?>
 
@@ -310,12 +313,15 @@
 							}
 							?>
 
-							<div class="blog-twitter-inner">
+							<div class="blog-twitter-inner" data-tweet-id="<?php echo $tweet->id_str;?>">
 								<i class="fa fa-twitter"></i>&nbsp;&nbsp;<a target="_blank"
 								href="https://twitter.com/Fabtotum">@Fabtotum</a>
 								<?php echo $text?>
-								<div class="margin-top-10">
+								<div class="margin-top-10" style="padding-left:5px; padding-right: 10px;">
 									<a href="javascript:void(0);"><i class="fa fa-clock-o"></i> <?php echo $created ?> ago</a>
+									
+									<a class="pull-right" target="_blank" href="http://twitter.com/Fabotum/status/<?php echo $tweet->id_str;?>"><i class="fa fa-eye"></i></a>
+									
 									<?php if($image_url != ''): ?>
 										<a style="margin-left:10px;" data-link="<?php echo $image_url; ?>" href="<?php echo $image_url; ?>" class="twitter-image "><i class="fa fa-photo txt-color-blue"></i></a> 
 									<?php endif; ?>

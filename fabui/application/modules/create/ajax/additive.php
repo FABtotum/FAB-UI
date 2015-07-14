@@ -1,8 +1,12 @@
-<!-- FIRST STEP WITH INFO TYPE PRINT - ADDITIVE OR SUB -->
-    
-    
-    <!-- SECOND RESULT OF MACRO -->
-    <!-- THIRD ASK FOR AUTO BED LEVELING -->
+<?php 
+
+
+
+?>
+
+<!-- FIRST STEP WITH INFO TYPE PRINT - ADDITIVE OR SUB -->    
+<!-- SECOND RESULT OF MACRO -->
+<!-- THIRD ASK FOR AUTO BED LEVELING -->
 
     
     <div id="row_0" class="row interstitial" >

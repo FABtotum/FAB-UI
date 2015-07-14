@@ -211,7 +211,13 @@ function finalize_print($tid, $status){
 	//WAIT FOR THE UI TO FINALIZE THE PROCESS
 	//sleep(7);
 	//REMOVE ALL TEMPORARY FILES
-	shell_exec('sudo rm -rf '.$attributes['folder']); 
+	shell_exec('sudo rm -rf '.$attributes['folder']);
+	
+	if($reset){
+			
+		sleep(2);
+		include '/var/www/fabui/script/boot.php';
+	} 
 	
 	//$log->info('Task #'.$tid.' end finalizing');
 	
@@ -384,7 +390,7 @@ function finalize_update_fw($tid, $status){
     shell_exec('sudo python '.PYTHON_PATH.'gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log > /dev/null &');
     sleep(10);
 	//REMOVE ALL TEMPORARY FILES
-	//shell_exec('sudo rm -rf '.$attributes['folder']); 
+	shell_exec('sudo rm -rf '.$attributes['folder']); 
 	//$log->info('Task #'.$tid.' end finalizing');
 	
 }

@@ -89,9 +89,7 @@ def convert_cloud(points):
 	cloud_file = open(output_file,"a")
 	if len(points)>4:
 		for row in range(0,len(points)-1):
-			#point_str=str(points[row][0]), "," , str(points[row][1]) , "," , str(points[row][2])
 			cloud_file.write(str(points[row][0]) + ',' + str(points[row][1]) + ',' + str(points[row][2]) + '\n')
-            #cloud_file.write(str(point_str) + '\n') 
 	cloud_file.close()
 	return 
 	
@@ -155,24 +153,15 @@ for opt, arg in opts:
 	elif opt in ("-d", "--d"):
 		debug = 1
  
- 
+#force debug
+debug=1
 
 #IMAGE PROCESSING SETTINGS
 mmpph=6.0							#mm per pixel height
-mmppl=6.111							#mm per pixel lenght 
+mmppl=6.0							#mm per pixel lenght 
 
 tresh=40							#noise treshold for difference operation (usually 10-45 works) lowest than tresh gets deleted.	
-subrange=30							#analysis subrange.lower values are faster but less reliable, usually 10-15 is fine with 200/255 PWM laser
-
-#Params for HSV thresholding
-hue_min=228
-hue_max=255
-
-sat_min=30
-sat_max=100
-
-val_min=30
-val_max=100
+subrange=15							#analysis subrange.lower values are faster but less reliable, usually 10-15 is fine with 200/255 PWM laser
 
 channels = {'hue': None,'saturation': None,'value': None,'laser': None,}
 
@@ -200,8 +189,8 @@ if debug:
 
 	
 while (cs < slices) :
-		filename=scan_dir +str(cs) + '.png'
-		filename_l=scan_dir +str(cs) + '_l.png'
+		filename=scan_dir +str(cs) + '.jpg'
+		filename_l=scan_dir +str(cs) + '_l.jpg'
 
 		#wait for the file to exist and be writeable + written (also, for real time processing!)
 		img_l=None
@@ -243,7 +232,7 @@ while (cs < slices) :
 			tresh_difference = cv2.cvtColor(or_difference, cv.CV_BGR2GRAY)
 			maxval=tresh_difference.max()
 			#print maxval
-			tresh= int(maxval*0.6)		 #use 60% of max value as a treshold
+			tresh= int(maxval*0.4)		 #use 40% of max value as a treshold
 			if debug:
 				print "Dynamic Treshold :" , tresh			
 			
@@ -252,32 +241,13 @@ while (cs < slices) :
 		ret,difference = cv2.threshold(or_difference,tresh,255,cv2.THRESH_TOZERO)
 				
 		#Create enhanced view of the Laser line
-		#hsv_img = cv2.cvtColor(difference, cv.CV_BGR2HSV)
 		difference = cv2.cvtColor(difference, cv.CV_BGR2GRAY)
-		
-		# split into color channels
-		##h, s, v = cv2.split(hsv_img)
-
-		##channels['hue'] = h
-		##channels['saturation'] = s
-		##channels['value'] = v
-		
-		# Threshold the HSV img
-		##threshold_image("hue") #not needed right now
-		##threshold_image("saturation")
-		##threshold_image("value")
-
-		#Getting the laser line
-		##channels['laser'] = cv2.bitwise_and(channels['saturation'],channels['value'])
-
-		#increasing precision by merging the Laser with Saturation (gives thinner line and bigger smooth subdomain)
-		#difference = cv2.bitwise_and(channels['laser'],s)
 
 		#max values for each column
 		ind=difference.argmax(axis=0)
 			
 		#declare empty position array for post process.
-		line_pos=np.zeros(img_height,dtype=np.int)
+		line_pos=np.zeros(img_height,dtype=np.float)
 		
 		for col,value in enumerate(ind):
 			if(value>0): #if column has a point to process. otherwise skip to next
@@ -378,11 +348,10 @@ while (cs < slices) :
 				
 			#------------------RECONSTRUCTION----------------------------
 			#-------Calculate XYZ coordinates for cloud points-----------						
-			#-------for reference: wiki.fabtotum.cc
 			
 			if reconstruct_mode=="r":
 				#ROTATIVE laser_scan reconstruction
-				a_deg=float((cs*(end-start)/slices)*math.pi/180)				#degrees for each shot in radiants
+				a_deg=-((float(cs*(end-start))/slices)*math.pi/180)				#+=CCW,degrees/shot in radiants
 				app_distance=float(abs((img_width/2)-line_pos[col])/mmppl)		#apparent distance in pixels *mm per pixels
 				ro=float(app_distance*tri_side)
 				x=float(ro*(np.cos(a_deg)))               						#switching to cartesian
@@ -419,7 +388,7 @@ while (cs < slices) :
 				print str(cs) + " :" + filename_l + " - Degrees : " + str(a_deg*180/3.14) + " - "+str(percent) + "%"
 			if reconstruct_mode=="s":
 				print str(cs) + " :" + filename_l + " - Sweep no.  " + str(cs) + "/"+ str(slices) + " - " +str(percent) + "%"
-			#computer vision png preview is written.	
+			#computer vision jpg preview is written.	
 			cv2.imwrite(scan_dir + str(cs) +'_vision.png',or_difference)
 			
 		#next slice
@@ -455,9 +424,6 @@ completed=1
 completed_time=float(time.time())
 percent=100
 printlog(percent,cs)
-
-if debug:
-	print "done, Elapsed time: " + str(delta_t) 
 	
 #finalize database-side operations
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" scan_"+reconstruct_mode], shell=True)

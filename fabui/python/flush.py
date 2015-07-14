@@ -1,10 +1,15 @@
-#SERIAL FLUSH PORT
-import sys
+''' SERIAL FLUSH INPUT & OUTPUT BUFFER '''
 import serial
+import ConfigParser
 
-port=str(sys.argv[1])
-baudrate=(sys.argv[2])
+config = ConfigParser.ConfigParser()
+config.read('/var/www/fabui/python/config.ini')
 
-ser = serial.Serial(port,baudrate,timeout=1)
-ser.flushInput()
-ser.flushOutput()
+serial_port = config.get('serial', 'port')
+serial_baud = config.get('serial', 'baud')
+
+serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
+serial.flushInput()
+serial.flushOutput()
+serial.flush()
+serial.close()

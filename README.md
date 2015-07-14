@@ -2,6 +2,27 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.925 (14/07/2015)
+
+GENERAL
+- Modified boot script to manage hardware id<br>
+- Minor bugfixes
+	
+JOG
+- Added keyboard shortcuts:
+	- for XY use arrows
+	- for Z use Page Down/Page Up 
+
+OBJECTMANAGER
+- Improved user experience during uploading files process
+	
+MAINTENANCE
+- Fixed engage feeder procedure
+
+
+
+==================================================================
+
 FABUI 0.91 (16/06/2015)
 
 GENERAL

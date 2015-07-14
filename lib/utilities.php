@@ -469,14 +469,21 @@ function get_pids($command){
 	$temp = explode(PHP_EOL, $exec_response);
 	
 	foreach($temp as $line){
-		$t = explode(' ',trim($line));
 		
-		$pid = trim($t[0]);
+		//if is grep process avoid
+		if (strpos($line, 'grep '.$command) === false) {
 		
-		if($pid != ''){
-			array_push($pids, $t[0]);
+			$t = explode(' ',trim($line));
+			
+			$pid = trim($t[0]);
+			
+			if($pid != ''){
+				array_push($pids, $t[0]);
+			}
+		
 		}	
 	}
+	
 	return $pids;
 }
 
@@ -488,7 +495,7 @@ function get_pids($command){
  */
 function kill_process($pid){
 	
-	$command = 'sudo kill -9 ';
+	$command = 'sudo kill -s9 ';
 	
 	if(is_array($pid)){
 		$command .= implode(" ", $pid);
@@ -624,12 +631,17 @@ function setEthIP($ip){
 	
 	$ip = '169.254.1.'.$ip;	 	
 	$networkConfiguration = networkConfiguration();
-	
 	setNetworkConfiguration($ip, $networkConfiguration['wifi']);
 	
 	$response = shell_exec("sudo service networking reload");
 }
 
 
+
+/**
+ * 
+ * 
+ * 
+ */
 
 ?>

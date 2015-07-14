@@ -112,7 +112,7 @@ class JogFactory {
 		$dir['right'] = 'GO X+%.2f F%.2f';
 
 		$command = sprintf($dir[$value], $this -> _step, $this -> _feedrate);
-		$this -> _command = 'G91' . PHP_EOL . $command;
+		$this -> _command = 'G91' . PHP_EOL . $command.PHP_EOL.'G90';
 		$this -> exec();
 
 		return $this -> returnResponse();

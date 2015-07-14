@@ -25,10 +25,11 @@ function take_photo (){
 	var exposure = $( "#exposure option:selected" ).val();
 	var rotation = $( "#rotation option:selected" ).val();
 	var metering = $( "#metering option:selected" ).val();
+	var flip     = $( "#flip option:selected" ).val();
 	
 	var data = {iso: iso, size: size, quality: quality, encoding: encoding, imxfx: imxfx, brightness:brightness, 
 		contrast: contrast, sharpness: sharpness, saturation: saturation, awb:awb, ev_comp: ev_comp, exposure:exposure, rotation: rotation,
-		metering:metering};
+		metering:metering, flip:flip};
 	
     
     $('#take_photo').addClass('disabled');

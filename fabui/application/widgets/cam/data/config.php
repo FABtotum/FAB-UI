@@ -116,5 +116,7 @@ $params['metering']['average'] = 'Average';
 $params['metering']['spot']    = 'Spot';
 $params['metering']['backlit'] = 'Backlit';
 $params['metering']['matrix']  = 'Matrix';
-
+// -- Flip
+$params['flip']['vflip'] = 'Vertical Flip';
+$params['flip']['hflip'] = 'Horizontal Flip';
 ?>

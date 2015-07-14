@@ -4,12 +4,13 @@
 
 		<div class="row margin-bottom-10">
 			<div class="col-sm-12">
-				<img id="raspi_picture" class="img-responsive rotate-180" src="<?php echo widget_url('cam').'media/image.php' ?>" />
+				<img id="raspi_picture" class="img-responsive" src="<?php echo widget_url('cam').'media/image.php' ?>" />
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="col-sm-8 margin-bottom-10">
+				
 				<div class="btn-group btn-group-justified">
 					<a data-attribue-direction="up" href="javascript:void(0);" class="btn btn-default btn-sm directions "> Y <i class="fa fa-arrow-up"></i></a>
 					<a href="javascript:void(0);" class="btn btn-default btn-sm" id="take_photo"><i class="fa fa-camera"></i> <span class="hidden-mobile hidden-tablet">Take a pic</span></a>
@@ -73,6 +74,13 @@
 									<label class="select">
 										<?php echo form_dropdown('imxfx', $params['imxfx'], $settings['imxfx'], 'id="imxfx" class="form-control"'); ?><i></i> </label>
 								</section>
+								
+								<section class="col col-6">
+									<label class="label">Flip</label>
+									<label class="select">
+										<?php echo form_dropdown('flip', $params['flip'], $settings['flip'], 'id="flip" class="form-control"'); ?><i></i> </label>
+								</section>
+								
 							</fieldset>
 
 						</div>

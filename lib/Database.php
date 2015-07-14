@@ -146,8 +146,13 @@ class Database {
         
         foreach($data as $key => $value){
             
-              
-            $_val = mysqli_real_escape_string($this->_db, $value);
+			if(is_array($value)){
+				
+				$_val = mysqli_real_escape_string($this->_db, implode(' ', $value));
+			}else{
+				$_val = mysqli_real_escape_string($this->_db, $value);
+			}
+			
             
             $_values .= $this->quote_value($_val).',';     
            

@@ -4,7 +4,7 @@
     <!-- SECOND RESULT OF MACRO -->
     <!-- THIRD ASK FOR AUTO BED LEVELING -->
 
-    
+    <?php if($show_feeder): ?>
     <div id="row_0" class="row interstitial" >
     	
     	
@@ -58,7 +58,9 @@
     	
     </div>
     
-    <div id="row_1" class="row interstitial" style="display: none;">
+    <?php endif; ?>
+    
+    <div id="row_1" class="row interstitial" style="<?php echo $show_feeder ? 'display:none' : '' ?>">
 
         <div class="col-sm-6">
             
@@ -219,59 +221,18 @@
 		
     </div>
     
-    <!-- 
-    <div id="row_3" class="row interstitial" style="display: none;">
 
-        <div class="col-sm-6">
-            <div class="well final-step">
-                <h2>Calibration</h2>
-                
-                
-                <div class="form-group">
-											
-					<div class="col-md-10">
-						<div class="radio">
-							<label>
-								<input type="radio" class="radiobox choose-calibration" checked="checked" name="calibration" value="homing">
-								<span>Simple homing</span> 
-							</label>
-						</div>
-						<div class="radio">
-							<label>
-								<input type="radio" class="radiobox choose-calibration"  name="calibration" value="abl"> 
-								<span>Auto bed leveling</span> 
-							</label>
-						</div>
-						
-					</div>
-				</div>
-                
-                
-                <div class="final-step-response"></div>
-            </div>
-        
-        </div>
-        
-        
-        <div class="col-sm-6">
-        	<div class="well">
-        		<img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/create/assets/img/homing.png" />
-        	</div>
-        </div>
-    
-    </div>
-    -->
-    
-    
     
     
     <div class="row button-print-container margin-bottom-10">
         <div class="col-sm-12 text-center ">
-        
-            <a id="modal_link" data-action="feeder" href="javascript:void(0);" class="btn btn-primary btn-lg">Engage</a>
-            
+        	
+            <a id="modal_link" data-action="<?php echo $action_button; ?>" href="javascript:void(0);" class="btn btn-primary btn-lg"><?php echo $label_button; ?></a>
+        	
+        	
+            <?php if($show_feeder):?>
             <a id="skip_engage"  href="javascript:void(0);" class="btn btn-primary btn-lg">Skip</a> 
-            
+            <?php endif; ?>
         </div>
     </div>
     

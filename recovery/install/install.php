@@ -37,6 +37,8 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
     //inizialitizzo database
     $_command = 'sudo mysql -u '.DB_USERNAME.' -p'.DB_PASSWORD.' -h '.DB_HOSTNAME.'  < '.SQL_INSTALL_DB;
 	
+	
+	
     shell_exec($_command);
 	
 	
@@ -77,24 +79,30 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 	$serial->confCharacterLength(8);
 	$serial->confStopBits(1);
 	$serial->deviceOpen();
-	$serial->sendMessage("M765\r\n");
-	$fw_verision_reply = $serial->readPort();
-	$serial->deviceClose();
 	
+	//firmware version
+	$serial->sendMessage("M765".PHP_EOL);
+	$fw_version_reply = $serial->readPort();
 	$fw_version = '';
 	
-	$temp = explode(PHP_EOL, $fw_verision_reply);
+	//hardware version
+	$serial->sendMessage('M763'.PHP_EOL);
+	$hw_id_reply = $serial->readPort();
+	$hw_id = '';
 	
-	if(isset($temp[0])){
+	$serial->deviceClose();
+	
 		
-		if(strpos($temp[0], 'V') !== false){
-			
-			$fw_version = trim(str_replace('V', '', $temp[0]));
-			
-		}
+	if(strpos($fw_version_reply, 'V') !== false){
+		$fw_version = trim(str_replace('V', '', $fw_version_reply));
+		$fw_version = trim(str_replace('ok', '', $fw_version));
 	}
 	
-	/** UPDATE FW VERSION */
+	
+	$hw_id = trim(str_replace('ok', '', $hw_id_reply));
+	
+	
+	/** UPDATE FW VERSION ON DB */
 	$_data_update = array();
 	$_data_update['value'] = $fw_version;
 	$db->update('sys_configuration', array('column' => 'sys_configuration.key', 'value' => 'fw_version', 'sign' => '='), $_data_update);
@@ -103,20 +111,40 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 	$db->close();
 	
 	
+	/** GET UNITS */
+	$configs = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);
+	
+	$configs['hardware']['id'] = $hw_id;
+	
+	file_put_contents(FABUI_PATH.'config/config.json', json_encode($configs));
+	
+	
 	
 	/** CLEAN UPLOAD DIRECTORY */
-	shell_exec('sudo rm '.UPLOAD_PATH.'*/*');
-	
+	$upload_folders = directory_map(UPLOAD_PATH);
+
+	foreach($upload_folders as $key => $val){
+		shell_exec('sudo rm -f '.UPLOAD_PATH.$key.'/*');
+	}
+
 	
 	/** CLEAN TEMP DIRECTORY */
 	clean_temp();
 
     /** DELETE AUTOINSTALL FILE */
-    shell_exec('sudo rm /var/www/AUTOINSTALL');
+    if(file_exists('/var/www/AUTOINSTALL')){
+    	shell_exec('sudo rm /var/www/AUTOINSTALL');
+    }
+    
 	
 	
-	/** */
-	shell_exec('sudo ln -s '.UPLOAD_PATH.' '.FABUI_PATH.'upload/');
+	/** UPLOAD SIMBOLIC LINK */
+	if(!is_link(FABUI_PATH.'upload')){
+		shell_exec('sudo ln -s '.UPLOAD_PATH.' '.FABUI_PATH.'upload');
+	}
+	
+	
+	
 	
 	
 	/** MOVE DEFAULT FILES TO FOLDERS */
@@ -132,18 +160,24 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
 		unset($_SESSION[$key]);
 	}
 	
-    
+	
 	
 	//set ip ethernet static address
-	setEthIP($_ip_address);
+	$actual_network_configuration = networkConfiguration();
 	
-	echo 1;
+	$network = false;
 	
-	//header('Location: http://169.254.1.'.$_ip_address);
-	  
-    //header('Location: /');
-    
-     
+	if($actual_network_configuration['eth'] != '169.254.1.'.$_ip_address){
+		setEthIP($_ip_address);
+		$network = true;
+	}
+	
+	
+	$response_items['installed'] = true;
+	$response_items['network'] = $network;
+	
+	echo json_encode($response_items);
+ 
 }else{
     
     echo "Access denied";

@@ -129,10 +129,9 @@ deg = abs((end-begin)/slices)  #degrees to move each slice
 def raspistill(string):
 #shell call raspistill
 	scanfile=scan_dir + string + str(i) + ".jpg"
-	#NEW raspistill -o test4.png -rot 90 -hf -vf -w 1944 -h 2592
-	#-cfx 128:128
+	#bw images: add -cfx 128:128
 	
-	call (["raspistill -hf -vf -awb sun -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 1"], shell=True)
+	call (["raspistill -rot 270 -awb off -awbg 1.5,1.2 -ss 45000 -q 100 -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 1"], shell=True)
 
 	while (not(os.access(scanfile, os.F_OK)) or not(os.access(scanfile, os.W_OK))):
 		#wait until the file has been written

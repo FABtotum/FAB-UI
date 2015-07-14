@@ -1,5 +1,13 @@
 <script type="text/javascript">
 
+	var uploadModal = $.magnificPopup.instance;
+		
+	var num_files = 0;
+	var current_file = 1;
+	
+	var MODAL_OPEN = false;
+	
+
     $(function() {
         
         /*init_tree();*/
@@ -13,9 +21,62 @@
             autoProcessQueue: false,
             dictDefaultMessage: '<span class="text-center"><span class="font-lg visible-xs-block visible-sm-block visible-lg-block"><span class="font-lg"><i class="fa fa-caret-right text-danger"></i> Drop files <span class="font-xs">to upload</span></span><span>&nbsp&nbsp<h4 class="display-inline"> (Or Click)</h4></span>',
 	        parallelUploads: 1,
-            
+            addRemoveLinks: true,
             /** INIT FUNCTION */
             init: function(){
+            	
+            	this.on("addedfile", function(file) { 
+     
+            		num_files ++;
+            		
+            		if($.trim($("#name").val()) == ''){
+            			
+            			var temp = file.name;
+            			temp = temp.split('.');
+            			var extension = temp.pop();
+            			
+            			$("#name").val(file.name.replace('.' + extension,'' ));
+            		
+            		}
+
+            	});
+            	
+            	this.on("removedfile", function(file) { 
+            		num_files--;
+            	});
+            	
+            	this.on("sending", function(file){
+            		$("#loader").attr('style', 'width:0%');
+            	});
+            	
+            	
+            	this.on("uploadprogress", function(file, progress) {
+			        
+			        $("#loader").attr('style', 'width:' + parseFloat(progress).toFixed(0) + '%');
+			        $(".file_name").html(file.name);
+			        
+			        if(parseInt(progress == 100)){
+			        	$("#loader").attr('style', 'width:0%');
+			        }
+			        
+			    });
+			    
+			    
+			    this.on("success", function(file, responseText) {
+		           
+		           if(current_file == num_files){
+		           	return false;
+		           }
+		           
+		           if(current_file < num_files){
+		           	current_file++;
+		           }
+		           	
+		           $("#loader").attr('style', 'width:0%');
+		           $(".current_file").html(current_file); 
+		            
+		            
+		        });
                 
                 var submitButton = document.querySelector("#save-object");
                 var myDropzone = this;
@@ -29,22 +90,17 @@
                     	$("#save-object").html('<i class="fa fa-save"></i> Saving');
                     	
                     	if(myDropzone.getQueuedFiles().length > 0){
-                            
-                            openWait("Uploading and saving files..")
+                    		                      
+                            /*openWait("Uploading and saving files..");*/
+                           	startUpload();
                             myDropzone.processQueue(); 
                         }else{
                         	
                         	add_usb_files();
-                        	
-                        	
-                        	
                         	$("#object-form").submit();
                         	return false;
                         	
                         }
-                    	
-                             
-                        
                     }else{
                       
                         
@@ -79,10 +135,7 @@
 
             }
         
-        
-        
        }
-       
        
        $("#object-form").validate({
         
@@ -309,5 +362,37 @@ function check_usb(){
     });
 }
 
+
+function startUpload(){
+	
+	if(!MODAL_OPEN){
+		
+		var html = '<div class="white-popup animated bounceIn fast">';
+		html += '<div class="row padding-10">';
+		html += '<div class="col-sm-12">';
+		html += '<h6 class="text-center">Uploading files</h6><hr class="simple">';
+		html += '<p><span class="file_name"></span> <span class="pull-right"><span class="current_file">' + current_file + '</span> of <span class="total_files">' + num_files  +'</span></span></p>';
+		html += '<div class="progress progress-sm progress-striped active"><div class="progress-bar bg-color-blue" id="loader"></div></div>'
+		
+		html += '</div>';
+		html += '</div>';
+		html += '</div>';
+		
+		uploadModal.open({
+			items : {
+				src : html
+			},
+			removalDelay : 1000, 
+			type : 'inline',
+			modal : true,
+			mainClass : 'mfp-zoom-in',
+			alignTop : false
+		});
+		
+		MODAL_OPEN = true;
+		
+	}
+	
+}
 
 </script>

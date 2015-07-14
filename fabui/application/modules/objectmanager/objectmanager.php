@@ -45,8 +45,17 @@ class Objectmanager extends Module {
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
-
-		$_table = $this -> load -> view('index/table', '', TRUE);
+		
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
+		
+		
+		$free_space = disk_free_space('/');
+		$total_space = disk_total_space('/');
+		$percent_free = intval(($free_space/$total_space) * 100);
+		$percent_used = 100 - $percent_free;
+		
+		$data_table['_disk_used_percent'] = $percent_used;
+		$_table = $this -> load -> view('index/table', $data_table, TRUE);
 
 		$attr['data-widget-icon'] = 'fa fa-cubes';
 		$_widget_table = widget('objects' . time(), 'Objects', $attr, $_table, false, true, true);
@@ -57,7 +66,7 @@ class Objectmanager extends Module {
 		$data['_table'] = $_widget_table;
 		$data['_disk_total_space'] = disk_total_space('/');
 		$data['_disk_free_space'] = disk_free_space('/');
-		$data['_disk_used_space'] = disk_total_space('/') - disk_free_space('/');
+		
 
 		$this -> layout -> view('index/index', $data);
 		

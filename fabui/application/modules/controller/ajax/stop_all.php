@@ -3,6 +3,15 @@ require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/utilities.php';
 
 
+
+$request_method = '_'.$_SERVER['REQUEST_METHOD'];
+$request_method = $$request_method;
+
+if(isset($request_method['module']) && $request_method['module'] != ''){	
+	$module = $request_method['module'];
+}
+
+
 /**
  * GET ALL POSSIBLE PIDS
  */
@@ -31,13 +40,19 @@ $end = time();
 
 
 //clean up memory
-shell_exec('echo 1 > /proc/sys/vm/drop_caches');
-shell_exec('echo 2 > /proc/sys/vm/drop_caches');
-shell_exec('echo 3 > /proc/sys/vm/drop_caches');
+//shell_exec('sudo chmod 0666 /proc/sys/vm/drop_caches');
+shell_exec('sudo sh -c "echo 1 >/proc/sys/vm/drop_caches"'); 
+shell_exec('sudo sh -c "echo 2 >/proc/sys/vm/drop_caches"'); 
+shell_exec('sudo sh -c "echo 3 >/proc/sys/vm/drop_caches"'); 
+//shell_exec('sudo chmod 0644 /proc/sys/vm/drop_caches');
 
 $_command = 'sudo python '.PYTHON_PATH.'force_reset.py';
 shell_exec($_command);
-sleep(3);
+sleep(1);
 
+include '/var/www/fabui/script/boot.php';
 echo json_encode($all_pids);
+
+
+
 ?>
