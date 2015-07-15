@@ -13,10 +13,10 @@ try:
 	logfile=str(sys.argv[1]) #param for the log file
 	log_trace=str(sys.argv[2])	#trace log file
 	fix_d=float(sys.argv[3]) #hight of the plane. (smaller=higher)
-	
+
 except:
 	print "Missing Log reference"
-	
+
 #vars
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
@@ -36,7 +36,7 @@ logging.basicConfig(filename=log_trace,level=logging.INFO,format='%(message)s')
 
 cycle=True
 s_warning=s_error=s_skipped=0
-
+probe_height=50.0
 screw_turns=["" for x in range(4)]
 screw_height=["" for x in range(4)]
 screw_degrees=["" for x in range(4)]
@@ -70,7 +70,7 @@ def trace(string):
 	'''
 	logging.info(string)
 	return
-	
+
 def printlog():
 	global logfile
 	global screw_turns
@@ -80,7 +80,7 @@ def printlog():
 	#write log
 	handle=open(logfile,'w+')
 	print>>handle, str_log
-	return	
+	return
 
 def fitPlaneSVD(XYZ):
 	#unused
@@ -90,14 +90,14 @@ def fitPlaneSVD(XYZ):
     # in the form b(1)*X + b(2)*Y +b(3)*Z + b(4) = 0.
     p = (np.ones((rows,1)))
     AB = np.hstack([XYZ,p])
-    [u, d, v] = np.linalg.svd(AB,0)        
+    [u, d, v] = np.linalg.svd(AB,0)
     B = v[3,:];                    # Solution is last column of v.
     nn = np.linalg.norm(B[0:3])
     B = B / nn
     return B[0:3] #a b c
-	
+
 from geometry import Point, Line, Plane
-     
+
 def fitplane(XYZ):
 	[npts,rows] = XYZ.shape
 
@@ -111,7 +111,7 @@ def fitplane(XYZ):
 		return None
 
 	# Set up constraint equations of the form  AB = 0,
-	
+
 	# where B is a column vector of the plane coefficients
 	# in the form   b(1)*X + b(2)*Y +b(3)*Z + b(4) = 0.
 	t = XYZ
@@ -128,20 +128,20 @@ def fitplane(XYZ):
 	B = B / nn
 	plane = Plane(Point(B[0],B[1],B[2]),D=B[3])
 	return plane
-	
+
 def read_serial(gcode):
 	serial.flushInput()
 	serial.write(gcode + "\r\n")
 	time.sleep(0.1)
-	
+
 	#return serial.readline().rstrip()
 	response=serial.readline().rstrip()
-	
+
 	if response=="":
 		return "NONE"
 	else:
 		return response
-		
+
 def macro(code,expected_reply,timeout,error_msg,delay_after,warning=False,verbose=True):
 	global s_error
 	global s_warning
@@ -198,47 +198,60 @@ try:
 except KeyError:
     safety_door = 0
 
+try:
+    milling_offset = settings['milling']['layer-offset']
+	trace("Milling sacrificial layer thickness: "+str(milling_offset))
+except KeyError:
+    milling_offset = 0
+	trace("Milling sacrificial layer thickness not configured - assuming zero")
+
 if(safety_door == 1):
 	macro("M741","TRIGGERED",2,"Front panel door control",1, verbose=False)
-	
-macro("M402","ok",2,"Retracting Probe (safety)",1, warning=True, verbose=False)	
-macro("G27","ok",100,"Homing Z - Fast",0.1)	
+
+#test millling side up, if so add milling sacrificial layer thickness
+macro("M744","TRIGGERED",2,"Heated bed control",1)
+if (s_error != 1):
+	probe_height += milling_offset
+s_error = 0
+
+macro("M402","ok",2,"Retracting Probe (safety)",1, warning=True, verbose=False)
+macro("G27","ok",100,"Homing Z - Fast",0.1)
 
 macro("G90","ok",5,"Setting abs mode",0.1, verbose=False)
 macro("G92 Z241.2","ok",5,"Setting correct Z",0.1, verbose=False)
 #M402 #DOUBLE SAFETY!
-macro("M402","ok",2,"Retracting Probe (safety)",1, verbose=False)	
-macro("G0 Z60 F5000","ok",5,"Moving to start Z height",10) #mandatory!
+macro("M402","ok",2,"Retracting Probe (safety)",1, verbose=False)
+macro("G0 Z"+str(probe_height+10)+" F5000","ok",5,"Moving to start Z height",10) #mandatory!
 
 for (p,point) in enumerate(probed_points):
 
 	#real carriage position
 	x=point[0]-17
 	y=point[1]-61.5
-	macro("G0 X"+str(x)+" Y"+str(y)+" Z45 F10000","ok",15,"Moving to Pos",3, warning=True,verbose=False)		
+	macro("G0 X"+str(x)+" Y"+str(y)+" Z"+str(probe_height-5)+" F10000","ok",15,"Moving to Pos",3, warning=True,verbose=False)
 	msg="Measuring point " +str(p+1)+ "/"+ str(len(probed_points)) + " (" +str(num_probes) + " times)"
 	trace(msg)
 	#Touches 4 times the bed in the same position
 	probes=num_probes #temp
 	for i in range(0,num_probes):
-		
+
 		#M401
-		macro("M401","ok",2,"Lowering Probe",1, warning=True, verbose=False)	
-		
+		macro("M401","ok",2,"Lowering Probe",1, warning=True, verbose=False)
+
 		serial.flushInput()
-		#G30	
+		#G30
 		serial.write("G30\r\n")
-		#time.sleep(0.5)			#give it some to to start  
+		#time.sleep(0.5)			#give it some to to start
 		probe_start_time = time.time()
 		while not serial_reply[:22]=="echo:endstops hit:  Z:":
-			serial_reply=serial.readline().rstrip()	
+			serial_reply=serial.readline().rstrip()
 			#issue G30 Xnn Ynn and waits reply.
 			if (time.time() - probe_start_time>20):  #timeout management
 				trace("Probe failed on this point")
 				probes-=1 #failed, update counter
-				break	
+				break
 			pass
-			
+
 		#print serial_reply
 		if probes==0:
 			trace("Not enough contacts. Check bed height.")
@@ -248,37 +261,37 @@ for (p,point) in enumerate(probed_points):
 			z=float(serial_reply.split("Z:")[1].strip())
 			#trace("probe no. "+str(i+1)+" = "+str(z) )
 			probed_points[p,2]+=z # store Z
-			
+
 		serial_reply=""
 		serial.flushInput()
-		
+
 		#G0 Z40 F5000
-		macro("G0 Z50 F5000","ok",10,"Rising Bed",1, warning=True, verbose=False)
-		
+		macro("G0 Z"+str(probe_height)+" F5000","ok",10,"Rising Bed",1, warning=True, verbose=False)
+
 	#mean of the num of measurements
 	probed_points[p,0]=probed_points[p,0]
 	probed_points[p,1]=probed_points[p,1]
 	probed_points[p,2]=probed_points[p,2]/probes; #mean of the Z value on point "p"
-	
+
 	#trace("Mean ="+ str(probed_points[p,2]))
-	
+
 	#msg="Point " +str(p+1)+ "/"+ str(len(probed_points)) + " , Z= " +str(probed_points[p,2])
 	#trace(msg)
-	
-	macro("M402","ok",2,"Raising Probe",1, warning=True, verbose=False)	
-	
+
+	macro("M402","ok",2,"Raising Probe",1, warning=True, verbose=False)
+
 	#G0 Z40 F5000
-	macro("G0 Z50 F5000","ok",2,"Rising Bed",0.5, warning=True, verbose=False)
-	
+	macro("G0 Z"+str(probe_height)+" F5000","ok",2,"Rising Bed",0.5, warning=True, verbose=False)
+
 #now we have all the 4 points.
-macro("G0 X5 Y5 Z50 F10000","ok",2,"Idle Position",0.5, warning=True, verbose=False)
+macro("G0 X5 Y5 Z"+str(probe_height)+" F10000","ok",2,"Idle Position",0.5, warning=True, verbose=False)
 
 macro("M18","ok",2,"Motors off",0.5, warning=True, verbose=False)
 
 #offset from the first calibration screw (lower left)
 probed_points=np.add(probed_points,screw_offset)
 
-#DEBUG 
+#DEBUG
 #print probed_points
 #print "-----"
 
@@ -309,7 +322,7 @@ z_probe=float(data.split("Z Probe Length: ")[1].split("\n")[0])
 d_ovr=d
 
 msg= "d_ovr="+str(d_ovr)
-#trace(msg) 
+#trace(msg)
 #eq of a plane= ax +by +cz = d
 
 msg= "Equation of the plane: \n "+ str(coeff[0]) +"x +"+ str(coeff[1]) +"y + "+ str(coeff[2]) +"z =" + str(d)
@@ -322,25 +335,25 @@ for (p,point) in enumerate(cal_point):
 	#cal_point[p][0][1]  => point[1]  #Y coordinate of point 0
 
 	z=(-coeff[0]*point[0] - coeff[1]*point[1] +d)/coeff[2]
-		
+
 	#difference from titled plane to straight plane
 	#distance=P2-P1
 	diff=abs(-d_ovr)-abs(z)
-	
-	#msg= "d :"+str(d)+", P :"+str(p)+" , Z:" +str(z) +" Diff: "+str(diff) +" d_ovr: "+str(d_ovr) 
+
+	#msg= "d :"+str(d)+", P :"+str(p)+" , Z:" +str(z) +" Diff: "+str(diff) +" d_ovr: "+str(d_ovr)
 	msg= str(d_ovr)+ "-"+str(abs(z))+" = " + str(diff)
-	
+
 	trace(msg)
-	
+
 	#number of screw turns, pitch 0.5mm
 	turns=round(diff/0.5, 2) #
 	degrees= turns*360
 	degrees=int(5 * round(float(degrees)/5))  #lets round to upper 5
-	
+
 	screw_turns[idx]=turns
 	screw_height[idx]=diff
 	screw_degrees[idx]=degrees
-	
+
 	idx+=1
 	#print "Calculated=" + str(z) + " Difference " + str(diff) +" Turns: "+ str(turns) + " deg: " + str(degrees)
 

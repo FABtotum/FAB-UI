@@ -59,6 +59,7 @@ $('.standby-green').noUiSlider({
 	}
 });
 
+
 $('.standby-blue').noUiSlider({
     /*range: [0, 255],*/   
 	start: <?php echo $_standby_color['b'] != '' ? $_standby_color['b'] : 0 ?>,
@@ -79,7 +80,6 @@ $('.standby-blue').noUiSlider({
         
 
 });
-
 
 
 function setColor() {
@@ -131,6 +131,7 @@ function save(){
           		feeder_disengage_feeder: $("#feeder-disengage-offset").val(), 
           		feeder_extruder_steps_per_unit_e_mode: $("#feeder-extruder-steps-per-unit-e").val(), 
           		feeder_extruder_steps_per_unit_a_mode: $("#feeder-extruder-steps-per-unit-a").val(),
+                        milling_sacrificial_layer_offset: $("#milling-sacrificial-layer-offset").val(),
           		both_y_endstops: $("#both-y-endstops").val(),
           		both_z_endstops: $("#both-z-endstops").val(),
           		upload_api_key: $("#upload-api-key").val()},
@@ -156,20 +157,38 @@ function save(){
 
 
 $("#feeder-disengage-offset").spinner({
-				step :0.5,
-				numberFormat : "n",
-				min: 0,
-				max: 6
-		});
+	step: 0.5,
+	numberFormat : "N1",
+	min: 0,
+	max: 6,
+	create: function () { $(this).number(true,1) },
+  	stop: function () { $(this).number(true,1) }
+});
 
-/*
-$("#feeder-extruder-steps-per-unit").spinner({
-				step :0.1,
-				numberFormat : "n",
-				min: 0
-		});
-*/
+$("#milling-sacrificial-layer-offset").spinner({
+	step: 0.5,
+	numberFormat : "N1",
+	min: 0,
+	max: 25,
+	create: function () { $(this).number(true,1) },
+  	stop: function () { $(this).number(true,1) }
+});
 
+$("#feeder-extruder-steps-per-unit-e").spinner({
+	step: 0.1,
+	numberFormat : "N6",
+	min: 0,
+	create: function () { $(this).number(true,6,'.','') },
+  	stop: function () { $(this).number(true,6,'.','') }
+});
+
+$("#feeder-extruder-steps-per-unit-a").spinner({
+	step :0.1,
+	numberFormat : "N6",
+	min: 0,
+	create: function () { $(this).number(true,6,'.','') },
+  	stop: function () { $(this).number(true,6,'.','') }
+});
 
 $('#gen-key-button').on('click', newKey);
 
