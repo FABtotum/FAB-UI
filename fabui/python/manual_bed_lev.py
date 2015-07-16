@@ -82,22 +82,6 @@ def printlog():
 	print>>handle, str_log
 	return
 
-def fitPlaneSVD(XYZ):
-	#unused
-    [rows,cols] = XYZ.shape
-    # Set up constraint equations of the form  AB = 0,
-    # where B is a column vector of the plane coefficients
-    # in the form b(1)*X + b(2)*Y +b(3)*Z + b(4) = 0.
-    p = (np.ones((rows,1)))
-    AB = np.hstack([XYZ,p])
-    [u, d, v] = np.linalg.svd(AB,0)
-    B = v[3,:];                    # Solution is last column of v.
-    nn = np.linalg.norm(B[0:3])
-    B = B / nn
-    return B[0:3] #a b c
-
-from geometry import Point, Line, Plane
-
 def fitplane(XYZ):
 	[npts,rows] = XYZ.shape
 
@@ -126,9 +110,8 @@ def fitplane(XYZ):
 	B = v[3,:];                         # Solution is last column of v.
 	nn = np.linalg.norm(B[0:3])
 	B = B / nn
-	plane = Plane(Point(B[0],B[1],B[2]),D=B[3])
-	return plane
-
+	return B[:]
+	
 def read_serial(gcode):
 	serial.flushInput()
 	serial.write(gcode + "\r\n")
@@ -256,6 +239,7 @@ for (p,point) in enumerate(probed_points):
 		if probes==0:
 			trace("Not enough contacts. Check bed height.")
 			sys.exit();
+
 		#get the z position
 		if serial_reply!="":
 			z=float(serial_reply.split("Z:")[1].strip())
@@ -291,71 +275,37 @@ macro("M18","ok",2,"Motors off",0.5, warning=True, verbose=False)
 #offset from the first calibration screw (lower left)
 probed_points=np.add(probed_points,screw_offset)
 
-#DEBUG
-#print probed_points
-#print "-----"
-
-#Working too
-#Fit= fitPlaneSVD(probed_points)
-
-Fit = str(fitplane(probed_points))
-
-#Plane(Point(0.003868641782933245, 0.003058519080316435, -0.999987839461956), 37.786092179315283)
-#Messy!
-coeff = Fit.split("(")[2]
-d = float(coeff.split(" ")[3][:9])
-coeff = coeff.split(")")[0].replace(" ","")
-#print coeff
-coeff = coeff.split(",")
-
-#convert to float
-for (i,c) in enumerate(coeff):
-	coeff[i]=float(c)
-	#print coeff[i]
-
-#we retrieve the height of the probe.
-serial.flushInput()
-serial.write("M503\r\n")
-data=serial.read(1024)
-z_probe=float(data.split("Z Probe Length: ")[1].split("\n")[0])
-
-d_ovr=d
-
-msg= "d_ovr="+str(d_ovr)
-#trace(msg)
-#eq of a plane= ax +by +cz = d
+Fit = fitplane(probed_points)
+coeff = Fit[0:3]
+d = Fit[3]
 
 msg= "Equation of the plane: \n "+ str(coeff[0]) +"x +"+ str(coeff[1]) +"y + "+ str(coeff[2]) +"z =" + str(d)
 trace(msg)
 #Calibration Points of the screws
 cal_point=np.array([[0-8.726,0-10.579,0],[0-8.726,257.5-10.579,0],[223-8.726,257.5-10.579,0],[223-8.726,0-10.579,0]])
 
-idx=0
 for (p,point) in enumerate(cal_point):
-	#cal_point[p][0][1]  => point[1]  #Y coordinate of point 0
+       #cal_point[p][0][1]  => point[1]  #Y coordinate of point 0
 
-	z=(-coeff[0]*point[0] - coeff[1]*point[1] +d)/coeff[2]
+       z=(-coeff[0]*point[0] - coeff[1]*point[1] +d)/coeff[2]
 
-	#difference from titled plane to straight plane
-	#distance=P2-P1
-	diff=abs(-d_ovr)-abs(z)
+       #difference from titled plane to straight plane
+       #distance=P2-P1
+       diff=abs(-d)-abs(z)
 
-	#msg= "d :"+str(d)+", P :"+str(p)+" , Z:" +str(z) +" Diff: "+str(diff) +" d_ovr: "+str(d_ovr)
-	msg= str(d_ovr)+ "-"+str(abs(z))+" = " + str(diff)
+       msg= str(d)+ "-"+str(abs(z))+" = " + str(diff)
+       trace(msg)
 
-	trace(msg)
+       #number of screw turns, pitch 0.5mm
+       turns=round(diff/0.5, 2)
+       degrees= turns*360
+       degrees=int(5 * round(float(degrees)/5))  #lets round to upper 5
 
-	#number of screw turns, pitch 0.5mm
-	turns=round(diff/0.5, 2) #
-	degrees= turns*360
-	degrees=int(5 * round(float(degrees)/5))  #lets round to upper 5
+       screw_turns[p]=turns
+       screw_height[p]=diff
+       screw_degrees[p]=degrees
 
-	screw_turns[idx]=turns
-	screw_height[idx]=diff
-	screw_degrees[idx]=degrees
-
-	idx+=1
-	#print "Calculated=" + str(z) + " Difference " + str(diff) +" Turns: "+ str(turns) + " deg: " + str(degrees)
+       #print "Calculated=" + str(z) + " Difference " + str(diff) +" Turns: "+ str(turns) + " deg: " + str(degrees)
 
 #save everything
 printlog()
