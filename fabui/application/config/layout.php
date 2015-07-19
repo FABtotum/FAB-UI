@@ -43,6 +43,7 @@ $layout['_header_js'][] = array('src'=>'application/layout/assets/js/libs/jquery
 
 $layout['_js'][] = array('src'=>'application/layout/assets/js/app.config.js', 'comment' => 'jQuery UI', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/jquery-touch/jquery.ui.touch-punch.min.js', 'comment' => 'jQuery TOUCH', 'external' => FALSE);
+$layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/jquery-number/jquery.number.min.js', 'comment' => 'jQuery number', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/bootstrap/bootstrap.min.js', 'comment' => 'BOOTSTRAP JS', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/notification/SmartNotification.min.js', 'comment' => 'CUSTOM NOTIFICATION', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/smartwidgets/jarvis.widget.min.js', 'comment' => 'JARVIS WIDGETS', 'external' => FALSE);
