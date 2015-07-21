@@ -39,6 +39,8 @@ class Settings extends Module {
 		$data['_both_y_endstops']                       = isset($_units['bothy']) ? $_units['bothy']: "None";
 		$data['_both_z_endstops']                       = isset($_units['bothz']) ? $_units['bothz']: "None";
 		$data['_upload_api_key']                        = isset($_units['api']['keys'][$_SESSION['user']['id']]) ? $_units['api']['keys'][$_SESSION['user']['id']]: '';
+		$data['_zprobe']								= isset($_units['zprobe']['disable']) ? $_units['zprobe']['disable']: '0';
+		$data['_zmax']									= isset($_units['zprobe']['zmax']) ? $_units['zprobe']['zmax']: '206';
 		
 		
         /** LOAD TAB HEADER */
