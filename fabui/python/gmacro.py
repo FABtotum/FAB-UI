@@ -22,6 +22,13 @@ try:
     safety_door = int(units['safety']['door'])
 except KeyError:
     safety_door = 0
+    
+try:
+    zprobe_disabled = int(units['zprobe']['disable']) == 1
+    zmax_home_pos = float(units['zprobe']['zmax'])
+except KeyError:
+    zmax_home_pos = 206.0
+    zprobe_disabled = False
 
 try:
     preset=str(sys.argv[1])  #param for the gcode to execute
@@ -264,21 +271,29 @@ elif preset=="end_print_additive_safe_zone":
     serial.flush()
     macro("G90","ok", 2, "Setting Absolute position", 0)
     macro("G0 X210 Y210 Z200 F10000", "ok", 100, "Moving to safe zone", 1)
-    
+ 
 elif preset=="raise_bed":
     #for homing procedure before probe calibration and print without homing.
     macro("M402","ok",4,"Raising probe",0.1)
     macro("G90","ok",2,"Setting absolute position",1)
-    macro("G27 Z206","ok",100,"Homing all axes",0.1)
-    macro("G0 Z10 F10000","ok",15,"raising",0.1)
-    macro("G28","ok",100,"homing all axes",0.1)
+    if zprobe_disabled:
+        macro("G27 X0 Y0 Z" + str(zmax_home_pos),"ok",100,"Homing all axes",0.1)
+        macro("G0 Z50 F10000","ok",15,"raising",0.1)
+    else:
+        macro("G27 Z206","ok",100,"Homing all axes",0.1)
+        macro("G0 Z10 F10000","ok",15,"raising",0.1)
+        macro("G28","ok",100,"homing all axes",0.1)
     
 elif preset=="raise_bed_no_g27":
     #for homing procedure before probe calibration.
     macro("M402","ok",4,"Raising probe",0.1)
     macro("G90","ok",2,"Setting absolute position",1,verbose=False)
-    macro("G0 Z20 F10000","ok",15,"Raising bed",0.1,verbose=False)
-    macro("G28","ok",100,"Homing all axes",0.1)
+    if zprobe_disabled:
+        macro("G27 X0 Y0 Z" + str(zmax_home_pos),"ok",100,"Homing all axes",0.1)
+        macro("G0 Z50 F10000","ok",15,"raising",0.1)
+    else:
+        macro("G0 Z20 F10000","ok",15,"Raising bed",0.1,verbose=False)
+        macro("G28","ok",100,"Homing all axes",0.1)
         
 #Auto bed leveling
 elif preset=="auto_bed_leveling":
@@ -366,7 +381,11 @@ elif preset=="end_scan":
 elif preset=="home_all":
     trace("Now homing all axes",log_trace)
     macro("G90","ok",2,"set abs position",0,verbose=False)
-    macro("G28","ok",100,"homing all axes",1,verbose=False)
+    if zprobe_disabled:
+        macro("G27 X0 Y0 Z" + str(zmax_home_pos),"ok",100,"Homing all axes",0.1)
+        macro("G0 Z50 F10000","ok",15,"raising",0.1)
+    else:
+        macro("G28","ok",100,"homing all axes",1,verbose=False)
 
 #unload spool    
 elif preset=="unload_spool":

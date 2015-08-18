@@ -133,7 +133,9 @@ function save(){
           		feeder_extruder_steps_per_unit_a_mode: $("#feeder-extruder-steps-per-unit-a").val(),*/
           		both_y_endstops: $("#both-y-endstops").val(),
           		both_z_endstops: $("#both-z-endstops").val(),
-          		upload_api_key: $("#upload-api-key").val()},
+          		upload_api_key: $("#upload-api-key").val(),
+          		zmax:$('#zmax-homing').val(),
+          		zprobe:$('[name="zprobe"]:checked').val()},
           dataType: 'json'
 		}).done(function(response) {
 			
@@ -161,6 +163,13 @@ $("#feeder-disengage-offset").spinner({
 				min: 0,
 				max: 6
 		});
+
+$("#zmax-homing").spinner({
+	step :0.05,
+	numberFormat : "n",
+	min: 150,
+	max: 250
+});
 
 /*
 $("#feeder-extruder-steps-per-unit").spinner({
