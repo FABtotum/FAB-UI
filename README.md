@@ -14,7 +14,7 @@ This is pretty usefull if you want to change some components of the machine or i
 This first step in revision numbering will be also used for the introduction of the Hybrid head v2.
 
 SCAN
-- Added photogrammetry Scanning module and Java Server: you can now scan an object and have the images stored on the PC/MAC/Linux running java. you can later use the images in a photogrammetry reconstruction software for textured results.
+- Added photogrammetry Scanning module and Java Server: you can now scan an object and have the images stored on the PC/MAC/Linux running java (need java version 1.8). you can later use the images in a photogrammetry reconstruction software for textured results. 
 - Fixed perspective distortion  in Rotative Scan overall quality improvements.
 - Sweeping Laser Scanning is back and improved.
 - Overall Improvement in laser line recognition at low light conditions
