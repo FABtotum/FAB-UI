@@ -144,6 +144,8 @@ class Scan extends Module {
 		*/
 		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/fuelux/wizard/wizard.min.js', 'comment' => 'javascript for the wizard'));
         
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/masked-input/jquery.maskedinput.min.js', 'comment' => 'masked input'));
+		
 		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.min.js', 'comment' => 'javascript for the noUISlider'));
         $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.css', 'comment' => 'javascript for the noUISlider'));
         
@@ -606,6 +608,7 @@ class Scan extends Module {
      */
     function scan_sweep($param){
         
+		
         
         $mode = 7;
         
@@ -641,11 +644,13 @@ class Scan extends Module {
         
         /** LAUNCH SCAN COMMAND */
         $_command_scan = 'sudo python /var/www/fabui/python/s_scan.py -s'.$quality_values->slices.' -i'.$quality_values->iso.' -d'.$task_files['destination_folder'].' -l'.$task_files['scan_monitor_file'].' -b'.$param['x1'].' -e'.$param['x2'].' -w'.$quality_values->resolution->width.' -h'.$quality_values->resolution->height.' 2>'.$task_files['destination_folder'].$task_files['scan_debug_file'].'  > /dev/null & echo $!';
+        
+        
         $_output_scan  = shell_exec ( $_command_scan );
 		$_scan_pid     = trim(str_replace('\n', '', $_output_scan));
         
         /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME */
-        while(file_get_contents($task_files['destination_folder'].$task_files['scan_monitor_file']) == ''){   
+        while(file_get_contents($task_files['scan_monitor_file'], FILE_USE_INCLUDE_PATH) == ''){   
             //aspetto
             sleep(0.5);
         }
@@ -653,16 +658,22 @@ class Scan extends Module {
         
         /** LAUNC PPROCESS COMMAND */
         $_param_for_triangulation = '-ms';
-        $_command_pprocessing     = 'sudo python /var/www/fabui/python/triangulation.py -i'.$task_files['destination_folder'].'images/ -o'.$task_files['destination_folder'].$task_files['pprocess_file'].' -s'.$quality_values->slices.' -b0 -e360 -w'.$quality_values->resolution->width.' -h'.$quality_values->resolution->height.' -z0 -a'.$param['a_offset'].' -l'.$task_files['destination_folder'].$task_files['pprocess_monitor_file'].' '.$_param_for_triangulation.' -t'.$id_task.' 2>'.$task_files['destination_folder'].$task_files['pprocess_debug_file'].' > /dev/null & echo $!';
+        $_command_pprocessing     = 'sudo python /var/www/fabui/python/triangulation.py -i'.$task_files['destination_folder'].'images/ -o'.$task_files['destination_folder'].$task_files['pprocess_file'].' -s'.$quality_values->slices.'  -b'.$param['x1'].' -e'.$param['x2'].' -w'.$quality_values->resolution->width.' -h'.$quality_values->resolution->height.' -z0 -a'.$param['a_offset'].' -l'.$task_files['destination_folder'].$task_files['pprocess_monitor_file'].' '.$_param_for_triangulation.' -t'.$id_task.' 2>'.$task_files['destination_folder'].$task_files['pprocess_debug_file'].' > /dev/null & echo $!';
         $_output_pprocessing      = shell_exec ( $_command_pprocessing );
 		$_pprocess_pid            = trim(str_replace('\n', '', $_output_pprocessing));
         
+		
+		
+		
+		
+		//echo $task_files['destination_folder'].$task_files['pprocess_monitor_file']; exit();
         
-        /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME */
+        /** WAIT FOR FILE TO BE WRITTEN FOR THE FIRST TIME
         while(file_get_contents($task_files['destination_folder'].$task_files['pprocess_monitor_file']) == ''){   
             //aspetto
             sleep(0.5); 
         }
+		 *  */
         
         
         /**
@@ -852,6 +863,9 @@ class Scan extends Module {
 		$split_size = explode('-', $param['pg_size']);
 		$width = $split_size[0];
 		$height = $split_size[1];
+		
+		$pc_host_address = $param['pc_host_address'];
+		$pc_host_port    = $param['pc_host_port'];
 		 
 		 
 		/** LOAD DATABASE */
@@ -885,11 +899,7 @@ class Scan extends Module {
 		
 		
 		/** LAUNCH SCAN COMMAND */
-        $_command_scan = 'sudo python /var/www/fabui/python/pg_scan.py -s'.$param['pg_slices'].' -i'.$param['pg_iso'].' -l'.$task_files['scan_monitor_file'].' -d'.$task_files['destination_folder'].' -b0 -e360 -w'.$width.' -h'.$height.'  > /dev/null & echo $!'; 
-        
-        
-      
-        
+        $_command_scan = 'sudo python /var/www/fabui/python/pg_scan.py -s'.$param['pg_slices'].' -i'.$param['pg_iso'].' -l'.$task_files['scan_monitor_file'].' -d'.$task_files['destination_folder'].' -b0 -e360 -w'.$width.' -h'.$height.' -t'.$id_task.' -a'.$pc_host_address.' -p'.$pc_host_port.' 2> /var/www/temp/krios.log > /var/www/temp/kk.log  & echo $!'; 
         
         $_output_scan  = shell_exec ( $_command_scan );
 		$_scan_pid     = intval(trim(str_replace('\n', '', $_output_scan)))+1;

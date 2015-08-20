@@ -18,17 +18,23 @@ json_f = open(config.get('printer', 'settings_file'))
 units = json.load(json_f)
 #process params
 
+if 'settings_type' in units and units['settings_type'] == 'custom':
+    json_f = open(config.get('printer', 'custom_settings_file'))
+    units = json.load(json_f)
+
+
 try:
     safety_door = int(units['safety']['door'])
-except KeyError:
-    safety_door = 0
-    
-try:
     zprobe_disabled = int(units['zprobe']['disable']) == 1
     zmax_home_pos = float(units['zprobe']['zmax'])
 except KeyError:
+    safety_door = 0
     zmax_home_pos = 206.0
     zprobe_disabled = False
+
+
+print zmax_home_pos
+print zprobe_disabled
 
 try:
     preset=str(sys.argv[1])  #param for the gcode to execute
@@ -250,6 +256,7 @@ elif preset=="end_print_subtractive":
     macro("M221 S100","ok",1,"Reset Extruder factor override",0.1,verbose=False)
     macro("M107","ok",50,"Turning Fan off",1,verbose=False) #should be moved to firmware
     macro("M18","ok",10,"Motor Off",1,verbose=False) #should be moved to firmware
+    macro("M728","ok",10,"Completed!",0.1) #should be moved to firmware
     trace("Completed",log_trace)
     
 elif preset=="end_print_additive":
@@ -271,11 +278,15 @@ elif preset=="end_print_additive_safe_zone":
     serial.flush()
     macro("G90","ok", 2, "Setting Absolute position", 0)
     macro("G0 X210 Y210 Z200 F10000", "ok", 100, "Moving to safe zone", 1)
- 
+    
 elif preset=="raise_bed":
     #for homing procedure before probe calibration and print without homing.
     macro("M402","ok",4,"Raising probe",0.1)
     macro("G90","ok",2,"Setting absolute position",1)
+    
+    #macro("G27 Z206","ok",100,"Homing all axes",0.1)
+    #macro("G0 Z10 F10000","ok",15,"raising",0.1)
+    #macro("G28","ok",100,"homing all axes",0.1)
     if zprobe_disabled:
         macro("G27 X0 Y0 Z" + str(zmax_home_pos),"ok",100,"Homing all axes",0.1)
         macro("G0 Z50 F10000","ok",15,"raising",0.1)
@@ -284,16 +295,23 @@ elif preset=="raise_bed":
         macro("G0 Z10 F10000","ok",15,"raising",0.1)
         macro("G28","ok",100,"homing all axes",0.1)
     
+    
 elif preset=="raise_bed_no_g27":
     #for homing procedure before probe calibration.
     macro("M402","ok",4,"Raising probe",0.1)
     macro("G90","ok",2,"Setting absolute position",1,verbose=False)
+    
+    #macro("G0 Z20 F10000","ok",15,"Raising bed",0.1,verbose=False)
+    #macro("G28","ok",100,"Homing all axes",0.1)
+    
     if zprobe_disabled:
         macro("G27 X0 Y0 Z" + str(zmax_home_pos),"ok",100,"Homing all axes",0.1)
         macro("G0 Z50 F10000","ok",15,"raising",0.1)
     else:
-        macro("G0 Z20 F10000","ok",15,"Raising bed",0.1,verbose=False)
-        macro("G28","ok",100,"Homing all axes",0.1)
+         macro("G0 Z20 F10000","ok",15,"Raising bed",0.1,verbose=False)
+         macro("G28","ok",100,"Homing all axes",0.1)
+        
+    
         
 #Auto bed leveling
 elif preset=="auto_bed_leveling":
@@ -381,7 +399,10 @@ elif preset=="end_scan":
 elif preset=="home_all":
     trace("Now homing all axes",log_trace)
     macro("G90","ok",2,"set abs position",0,verbose=False)
+    
+    #macro("G28","ok",100,"homing all axes",1,verbose=False)
     if zprobe_disabled:
+        print "Z probe disabled"
         macro("G27 X0 Y0 Z" + str(zmax_home_pos),"ok",100,"Homing all axes",0.1)
         macro("G0 Z50 F10000","ok",15,"raising",0.1)
     else:

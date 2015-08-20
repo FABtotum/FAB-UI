@@ -130,7 +130,12 @@ class Maintenance extends Module {
 	
 	public function firstsetup(){
 		
+		
 		$this->layout->add_js_file(array('src'=> 'application/layout/assets/js/plugin/fuelux/wizard/wizard.min.js', 'comment' => ''));
+		
+		
+		$data['show_feeder'] = $this->layout->getFeeder();
+		
 		
 		$data['step1'] = $this->load->view('firstsetup/step1/index', '', TRUE);
 		$data['step2'] = $this->load->view('firstsetup/step2/index', '', TRUE);

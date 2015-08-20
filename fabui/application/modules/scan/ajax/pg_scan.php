@@ -132,9 +132,31 @@ $("#check-pre-scan").on('click', check_pre_scan);
 
 $("#check-r-scan").on('click', check_r_scan);
 
-
-
 $("#start-r-scan").on('click', start);
+
+
+
+$(document).ready(function(){
+	
+	
+	$('#pc-host-address').mask('0ZZ.0ZZ.0ZZ.0ZZ', {
+    translation: {
+      'Z': {
+        pattern: /[0-9]/, optional: true
+      }
+    }
+  });
+  
+  
+  
+  $('#pc-host-address').mask('099.099.099.099');
+  $("#pc-host-port").mask("00000");
+	
+	
+});
+
+
+
 
 function check_pre_scan(){
     
@@ -218,22 +240,6 @@ function check_r_scan(){
         		
         	});
         	
-            
-           /** STEP SUCCESSIVO 
-            setTimeout(function(){ $("#row_3").slideUp('slow', function(){
-                closeWait();
-                 $("#row_4").slideDown('slow', function(){
-
-                 	setTimeout(function(){
-                 		$("#start-r-scan").trigger("click");
-                 	}, 1500);
-                 	
-                 	
-                 });
-             });}, 1000);
-             
-             */
-             
                       
         }else{
             closeWait();
@@ -286,8 +292,7 @@ function r_scan(){
          $('#do-scan').removeClass('disabled');
 	   
        
-	});
-    
+	});   
 }
 
 

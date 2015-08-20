@@ -151,6 +151,11 @@ class FT_Layout {
 		
 		$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
 		
+		if(isset($fabtotum_config['settings_type']) && $fabtotum_config['settings_type'] == 'custom' && file_exists(CONFIG_FOLDER.'custom_config.json')){
+			
+			$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER.'custom_config.json'), true);
+		}
+		
 		$this->_show_feeder = isset($fabtotum_config['feeder']['show']) ? $fabtotum_config['feeder']['show'] : true;
 		
 		unset($fabtotum_config);

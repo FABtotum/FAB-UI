@@ -217,10 +217,17 @@ class Widget {
 			$_html .= '<ul id="'.$id.$time.'-tab" class="nav nav-tabs pull-right">';
 			foreach($tabs as $tab){
 				
+				
 				$class = $count == 1 ? 'active' : '';
 				
+				
+				$icon = isset($tab['icon']) ? '<i class="fa fa-lg '.$tab['icon'].'"></i>' : '';
+				$href = isset($tab['href']) ? '#'.$tab['href'] : '#';
+				
+				
+				
 				$_html .= '<li class="'.$class.'">';
-				$_html .= '<a data-toggle="tab" href="#'.$tab['href'].'"><i class="fa fa-lg '.$tab['icon'].'"></i> <span class="hidden-mobile hidden-tablet">'.$tab['name'].'</span></a>';
+				$_html .= '<a data-toggle="tab" href="'.$href.'">'.$icon.'<span class="hidden-mobile hidden-tablet">'.$tab['name'].'</span></a>';
 				$_html .= '</li>';
 				$count++;
 			}

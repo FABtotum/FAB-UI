@@ -60,7 +60,7 @@ var pprocess_finished = <?php echo  $_task && isset($_pprocess_monitor['post_pro
 var pprocess_monitor_timeout = 5000;
 var pprocess_interval_monitor;
 var pprocess_elapsed_time = 0;
-var pprocess_monitor_response = <?php echo $_pprocess_monitor_response; ?>;
+var pprocess_monitor_response = <?php echo $_pprocess_monitor_response != '' ? $_pprocess_monitor_response : '{}' ; ?>;
 var pprocess_progress_step;
 var pprocess_second_for_step;
 var pprocess_array_progress_steps = new Array();
@@ -109,7 +109,7 @@ var elapsed_time = <?php echo  $_task  ? (time() - intval($_scan_monitor['scan']
 
 /** PROBING */
 var probing_trace_file;
-var ISPROBING = <?php echo $_task && $_task_attributes['mode'] == 8 ? 'true' : 'false' ?>;
+var POST_PROCESS = <?php echo $_task && ($_task_attributes['mode'] == 8 ||  $_task_attributes['mode'] == 15) ? 'false' : 'true' ?>;
 var x1;
 var x2;
 var y1;
@@ -124,12 +124,13 @@ var probe_quality = '';
 /** S SCAN */
 var a_offset;
 
-var check_pre_scan_url = '<?php echo module_url('scan').'ajax/check_pre_scan.php' ?>';
-var pre_scan_url       = '<?php echo module_url('scan').'ajax/pre_scan.php' ?>';
-var macro_r_scan_url   = '<?php echo module_url('scan').'ajax/macro_r_scan.php' ?>';
-var macro_s_scan_url   = '<?php echo module_url('scan').'ajax/macro_s_scan.php' ?>';
-var macro_p_scan_url   = '<?php echo module_url('scan').'ajax/macro_p_scan.php' ?>';
-var macro_pg_scan_url  = '<?php echo module_url('scan').'ajax/macro_pg_scan.php' ?>';
+var check_pre_scan_url  = '<?php echo module_url('scan').'ajax/check_pre_scan.php' ?>';
+var pre_scan_url        = '<?php echo module_url('scan').'ajax/pre_scan.php' ?>';
+var macro_r_scan_url    = '<?php echo module_url('scan').'ajax/macro_r_scan.php' ?>';
+var macro_s_scan_url    = '<?php echo module_url('scan').'ajax/macro_s_scan.php' ?>';
+var macro_p_scan_url    = '<?php echo module_url('scan').'ajax/macro_p_scan.php' ?>';
+var macro_pg_scan_url   = '<?php echo module_url('scan').'ajax/macro_pg_scan.php' ?>';
+var connection_test_url = '<?php echo module_url('scan').'ajax/connection_test.php' ?>';
 
 /** NEED FOR JCROP API */
 var jcrop_api;
@@ -215,6 +216,7 @@ $(document).ready(function() {
 	$('.scan-mode').on('click', function() {
 
 		$('.scan-mode').removeClass('my-selected');
+		
 		$(this).addClass('my-selected');
 		
 		scan_mode = parseInt($(this).attr('data-id'));
@@ -231,7 +233,7 @@ $(document).ready(function() {
                 $('#images-container').show();
                 $('#images-container').removeClass().addClass('col-sm-6');
                 $('#console-container').removeClass().addClass('col-sm-6');
-                
+                POST_PROCESS = true;
                 break;
             case 7 :/** SWEEP */
                 instruction_page = 's_scan.php';
@@ -240,6 +242,7 @@ $(document).ready(function() {
                 $('#images-container').show();
                 $('#images-container').removeClass().addClass('col-sm-6');
                 $('#console-container').removeClass().addClass('col-sm-6');
+                POST_PROCESS = true;
                 break;
             case 8 :/** PROBING */
                 instruction_page = 'p_scan.php';
@@ -247,12 +250,12 @@ $(document).ready(function() {
                 $('#pprocess-progress-container').hide();
                 $('#images-container').hide();
                 $('#console-container').removeClass().addClass('col-sm-12');
-                ISPROBING = true;
+                POST_PROCESS = false;
                 break;
             case 15: /** SFM*/
            		instruction_page = 'pg_scan.php';
            		settings_page = 'pg_scan_settings.php';
-           		ISPROBING = false;
+           		POST_PROCESS = false;
         }
         
         
@@ -466,6 +469,11 @@ function manageSlide(e){
         
 	   $('#quality').html(scan_quality_info[scan_quality].info.name);
 	   $('#quality-description').html(scan_quality_info[scan_quality].info.description);
+	   
+	   $('.quality-slices').html(scan_quality_info[scan_quality].values.slices);
+	   $('.quality-resolution').html(scan_quality_info[scan_quality].values.resolution.width + " X " + scan_quality_info[scan_quality].values.resolution.height);
+	   $('.quality-iso').html(scan_quality_info[scan_quality].values.iso);
+	   
 	}
 };
 
@@ -480,6 +488,9 @@ function check_wizard(){
 	
 
 	var item = $('.wizard').wizard('selectedItem');
+	
+	
+	
 
 	$('#btn-next').show();
 	
@@ -491,6 +502,14 @@ function check_wizard(){
 		$('#btn-prev').addClass('disabled');
 	}
 
+	if(item.step == 2 && scan_mode == 15){
+		
+		
+		$("#connection_test_button").removeClass("btn-success btn-warning").addClass("btn-primary");
+		$("#connection_test_button").html("Check connection");
+		
+		$('#btn-next').addClass('disabled');
+	}
 
 	if(item.step == 3){
 		
@@ -520,7 +539,7 @@ function start(){
     end_degree = $("#end-degree").val();
     
     
-    var data = { mode: scan_mode, new_object: new_object, obj_id : obj_id, obj_name : $("#name-object").val(),  quality: scan_quality, x1: x1, x2: x2, y1:y1, y2:y2, axis_increment: axis_increment, start_degree: start_degree, end_degree: end_degree, density:density, a_offset:a_offset, probe_quality : probe_quality, pg_iso:$( "#pg-iso" ).val(), pg_size:$("#pg-size").val(), pg_slices: $("#pg-slices").val() };
+    var data = { mode: scan_mode, new_object: new_object, obj_id : obj_id, obj_name : $("#name-object").val(),  quality: scan_quality, x1: x1, x2: x2, y1:y1, y2:y2, axis_increment: axis_increment, start_degree: start_degree, end_degree: end_degree, density:density, a_offset:a_offset, probe_quality : probe_quality, pg_iso:$( "#pg-iso" ).val(), pg_size:$("#pg-size").val(), pg_slices: $("#pg-slices").val(), pc_host_address : $("#pc-host-address").val(), pc_host_port: $("#pc-host-port").val()};
     
     
 	$.ajax({
@@ -552,7 +571,7 @@ function start(){
         }else{
 	        
 	        /** PPROCESS ONLY FOR SCAN MODE 6 - 7 (rotating, sweep) */
-	        if(!ISPROBING){
+	        if(POST_PROCESS){
 	            
 	            pprocess_monitor_file = response.pprocess_monitor_file;
 	            pprocess_pid          = response.pprocess_pid;
@@ -610,7 +629,7 @@ var print_monitor = function (){
 
 	if(!SOCKET_CONNECTED){
 		
-		if(!scan_finished || (!ISPROBING && !pprocess_finished)){
+		if(!scan_finished || (POST_PROCESS && !pprocess_finished)){
 			monitor_call();
 	                     	
 		}else{
@@ -655,7 +674,7 @@ function monitor_call(){
 
 
 	/*se la scansione non è finita*/
-	if(!scan_finished || (!ISPROBING && !pprocess_finished)){	
+	if(!scan_finished || (POST_PROCESS && !pprocess_finished)){	
 	
 		$.ajax({
               /*url : '<?php echo site_url('scan/monitor') ?>',*/
@@ -663,7 +682,7 @@ function monitor_call(){
 			  dataType : 'json',
 			  type: 'post',
 			  async : true,
-			  data : {task_id: task_id, scan_monitor_file: scan_monitor_file, pprocess_monitor_file: pprocess_monitor_file, isprobing: ISPROBING }
+			  data : {task_id: task_id, scan_monitor_file: scan_monitor_file, pprocess_monitor_file: pprocess_monitor_file, POST_PROCESS: POST_PROCESS }
 		}).done(function(response) {
 			
 			if(response.scan != null){
@@ -1110,6 +1129,8 @@ function monitor_scan(data){
 			if(data == null){
 				return;
 			}
+			
+			
 				
     			monitor_count++;
     			scan_monitor_response = data.scan;
@@ -1136,19 +1157,14 @@ function monitor_scan(data){
     				scan_progress_step   = precise_round(scan_monitor_response.stats.percent, precision);
     				scan_second_for_step = elapsed_time;
                     
-                    if(!ISPROBING){
+                    if(POST_PROCESS){
                        
                     }
-    				
-    
+    				    
     				$('.estimated-time').html(' - ');
     				$('.estimated-time-left').html(' - ');
     			
     			}
-				
-				
-				
-				
 				
 				
 				
@@ -1186,11 +1202,7 @@ function monitor_scan(data){
     
     			}
     
-                
-                
-    
-    
-    
+
     			/** GLOBAL ESTIMATED TIME LEFT */
     
     			if(monitor_count > 1){
@@ -1226,10 +1238,7 @@ function monitor_scan(data){
                     }
     				
     			}
-	
-	
-	
-	
+
 }
 
 
@@ -1320,19 +1329,26 @@ function monitor_pprocessing(data){
 function finalize_scan(){
 	
 	
-		
-	if(ISPROBING){
+	if(!POST_PROCESS){
 		if(scan_finished == false) return;
 	}else{
 		if(scan_finished == false || pprocess_finished == false) return;
 	}
-	
 	
 	/* */
 			_stop_monitor();
 			_stop_timer();
 	
 			current_step = 5;
+			
+			
+			if(scan_mode == 15){
+				$(".finish_option_1").hide();
+				$(".finish_option_2").show();
+			}else{
+				$(".finish_option_2").hide();
+				$(".finish_option_1").show();
+			}
 	        
 			$('.progress').removeClass('active');
 			$('.estimated-time').html('-');
@@ -1342,12 +1358,56 @@ function finalize_scan(){
 	        
 	        setTimeout(function(){
 	            get_info();
-	            
 	            /** get all info from the task */
 	        }, 15000);
 	
 	
 }
+
+
+
+function check_connection(obj){
+	
+	$("#connection_test_button").addClass("disabled");
+	$("#connection_test_button").html("Checking connection...");
+	
+	$('#btn-next').addClass('disabled');
+	
+	var data = {ip: $("#pc-host-address").val(), port:$("#pc-host-port").val()};
+
+	$.ajax({
+		  type: "POST",
+		  url: connection_test_url,
+		  data: data,
+		  dataType: 'json',
+	}).done(function( response ) {
+	   
+	   
+	   
+	   
+	   	if(response.connection == 'failed'){
+	   		
+	   		$("#connection_test_button").removeClass("disabled btn-primary btn-success").addClass("btn-warning");
+	   		$("#connection_test_button").html('<i class="fa fa-warning"></i> No connection. Please check desktop server and try again');
+	   		$('#btn-next').removeClass('disabled').addClass('disabled');
+	   		
+	   			   	
+	   	}else{
+	   		
+	   		$("#connection_test_button").html('<i class="fa fa-check"></i> Connection success!');
+	   		$("#connection_test_button").removeClass("disabled btn-primary btn-warning").addClass("btn-success");
+	   		$('#btn-next').removeClass('disabled');
+	   		
+	   	}
+	   
+    	
+		
+		
+		
+	});
+	
+}
+
 
 
 </script>

@@ -180,7 +180,7 @@ class JogFactory {
 	 */
 	public function extruder_e($value){
 		
-		$command = 'G0 E'.$value.' F'.$this->_feedrate;
+		$command = 'G0 E-'.$value.' F'.$this->_feedrate;
 		$this -> _command = 'G91' . PHP_EOL . $command;		
 		$this -> exec();
 		return $this -> returnResponse();	
@@ -198,7 +198,7 @@ class JogFactory {
 		
 		$_units = json_decode(file_get_contents(CONFIG_UNITS), TRUE);
 		
-		$_mode['a'] = 'M92 E'.$_units['a'];
+		$_mode['a'] = 'M92 E'.$_units['a'].PHP_EOL.'G92 E0';
 		$_mode['e'] = 'M92 E'.$_units['e'].PHP_EOL.'G92 E0';
 		
 		$this->_command = $_mode[$value];

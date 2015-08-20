@@ -3,6 +3,8 @@ import serial
 import time
 from subprocess import call
 import ConfigParser
+import logging
+import json
 
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
@@ -41,47 +43,52 @@ except getopt.GetoptError:
     print "\n\nERROR!\n Correct usage:\n\n",usage
     sys.exit(2)
 for opt, arg in opts:
-	if opt =='--help':
-		print usage 
-		sys.exit()
-	elif opt in ("-n", "--name"):
-		name = arg
-	elif opt in ("-s", "--slices"):
-		slices = int(arg)
-	elif opt in ("-i", "--ISO"):
-		iso = int(arg)
-	elif opt in ("-w", "--width"):
-		width = int(arg)
-	elif opt in ("-h", "--height"):
-		height = int(arg)
-	elif opt in ("-p", "--post"):
-		post = int(arg)
-	elif opt in ("-b", "--begin"):
-		begin = int(arg)
-	elif opt in ("-e", "--end"):
-		end = int(arg)
-	elif opt in ("-z", "--z-offset"):
-		z_offset = 200-float(arg) #can be float
-	elif opt in ("-a", "--a-offset"):
-		a_offset = arg #can be float
-	elif opt in ("-d", "--dest"):
-		destination = arg
-	elif opt in ("-l", "--log"):
-		logfile = arg
-	
+    if opt =='--help':
+        print usage 
+        sys.exit()
+    elif opt in ("-n", "--name"):
+        name = arg
+    elif opt in ("-s", "--slices"):
+        slices = int(arg)
+    elif opt in ("-i", "--ISO"):
+        iso = int(arg)
+    elif opt in ("-w", "--width"):
+        width = int(arg)
+    elif opt in ("-h", "--height"):
+        height = int(arg)
+    elif opt in ("-p", "--post"):
+        post = int(arg)
+    elif opt in ("-b", "--begin"):
+        begin = int(arg)
+    elif opt in ("-e", "--end"):
+        end = int(arg)
+    elif opt in ("-z", "--z-offset"):
+        z_offset = 200-float(arg) #can be float
+    elif opt in ("-a", "--a-offset"):
+        a_offset = arg #can be float
+    elif opt in ("-d", "--dest"):
+        destination = arg
+    elif opt in ("-l", "--log"):
+        logfile = arg
+
+'''#### LOG ####'''
+logfile=config.get('task', 'monitor_file')
+log_trace=config.get('task', 'trace_file')
+logging.basicConfig(filename=log_trace,level=logging.INFO,format='[%(asctime)s] - %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+        
 started=float(time.time())
 
 #compose destination
-scan_dir=destination+"images/"	
+scan_dir=destination+"images/"    
 
-def printlog(percent,num):		
-	str_log='{"scan":{"name": "'+name+'","pid": "'+str(myPID)+'","started": "'+str(started)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","stats":{"percent":"'+str(percent)+'","img_number":'+str(i)+',"tot_images":'+str(slices)+'}}}'
-	handle=open(destination+logfile,'w')
-	print>>handle, str_log
-	return
-	
+def printlog(percent,num):        
+    str_log='{"scan":{"name": "'+name+'","pid": "'+str(myPID)+'","started": "'+str(started)+'","completed": "'+str(completed)+'","completed_time": "'+str(completed_time)+'","stats":{"percent":"'+str(percent)+'","img_number":'+str(i)+',"tot_images":'+str(slices)+'}}}'
+    handle=open(logfile,'w')
+    print>>handle, str_log
+    return
+    
 printlog(0,0) #create log vuoto
-	
+    
 print 'SWEEP SCAN MODULE STARTING' 
 print 'scanning from'+str(begin)+"to"+str(end); 
 print 'Num of scans : ', slices
@@ -115,29 +122,24 @@ serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 serial.flushInput()
 serial.flushOutput()
 
-serial.write('M701 S0\r\n')# Turn red off
-serial.write('M702 S0\r\n')# Turn green off
-serial.write('M703 S0\r\n')# Turn blue off
-
-
 time.sleep(1) #give it a second!
 
-serial.write('G90\r\n')     		#set absolute movement
+serial.write('G90\r\n')             #set absolute movement
 
 if(begin!=0):
-	#if an offset is set, rotates to the specified A angle.
-	serial.write('G0 X' + str(begin) + '\r\n')  #set zero
-	pos=begin #set start position as defined offset.
+    #if an offset is set, rotates to the specified A angle.
+    serial.write('G0 X' + str(begin) + ' F5000\r\n')  #set zero
+    pos=begin #set start position as defined offset.
 
 if(a_offset!=0):
-	#if an offset is set, rotates to the specified A angle.
-	serial.write('G0 E' + str(a_offset) + '\r\n')  #set zero
-	pos=begin #set start position as defined offset.
-	
+    #if an offset is set, rotates to the specified A angle.
+    serial.write('G0 E' + str(a_offset) + '\r\n')  #set zero
+    pos=begin #set start position as defined offset.
+    
 if(z_offset!=0):
-	#if an offset for Z (Y in the rotated reference space) is set, moves to it.
-	serial.write('G0 Y' + str(z_offset) + '\r\n')  #go to y offset
-	
+    #if an offset for Z (Y in the rotated reference space) is set, moves to it.
+    serial.write('G0 Y' + str(z_offset) + '\r\n')  #go to y offset
+    
 #time.sleep((begin*0.01)+(a_offset*0.03)+float(z_offset*0.03))  #take its time to move
 time.sleep(5)
 # STARTING PARAMS //DO NOT CHANGE
@@ -149,37 +151,37 @@ dx = abs((float(end)-float(begin))/float(slices))  #mm to move each slice
 
 def raspistill(laser_string):
 #shell call raspistill
-   scanfile=scan_dir + str(i) + laser_string + ".png"
+   scanfile=scan_dir + str(i) + laser_string + ".jpg"
    #NEW raspistill -o test4.png -rot 90 -hf -vf -w 1944 -h 2592
    #
-   call (["raspistill -hf -vf -rot 90 --exposure off -awb sun -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 1"], shell=True)
+   call (["raspistill -rot 270 -awb off -awbg 1.5,1.2 -q 100 -ss 35000 -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 1"], shell=True)
    
    while (not(os.access(scanfile, os.F_OK)) or not(os.access(scanfile, os.W_OK))):
       #wait until the file has been written
-	  time.sleep(0.1)
-	  pass
+      time.sleep(0.1)
+      pass
    return
 
 while (i <= slices) :
-	#move the laser!
-	print str(i) + "/" + str(slices) +" (" + str(dx*i) + "/" + str(slices) +")"
-	serial.write('G0 X' + str(pos) + 'F2500\r\n') 
+    #move the laser!
+    print str(i) + "/" + str(slices) +" (" + str(dx*i) + "/" + str(slices) +")"
+    serial.write('G0 X' + str(pos) + 'F2500\r\n') 
 
-	serial.write('M700 S100\r\n') #turn laser ON
-	time.sleep(dx*0.02)  #take its time to move
-	raspistill("_l")   #snap a pic with laser
-	
-	serial.write('M700 S0\r\n')# Turn laser off
-	raspistill("")   #snap a pic without laser
-	
-	percent=100 * float(i)/float(slices)
-	printlog(percent,i)
-	pos+=dx
-	i+=1
-	
-	
+    serial.write('M700 S100\r\n') #turn laser ON
+    time.sleep(dx*0.02)  #take its time to move
+    raspistill("_l")   #snap a pic with laser
+    
+    serial.write('M700 S0\r\n')# Turn laser off
+    raspistill("")   #snap a pic without laser
+    
+    percent=100 * float(i)/float(slices)
+    printlog(percent,i)
+    pos+=dx
+    i+=1
+    
+    
 #END of S_SCAN
-serial.write('M700 S0\r\n')		 # Turn laser off
+serial.write('M700 S0\r\n')# Turn laser off (you never know!)
 serial.write('G0 X5 Y5\r\n')     #go to idle position
 
 serial.write('M701 S255\r\n')# Turn red on
@@ -188,7 +190,7 @@ serial.write('M703 S255\r\n')# Turn blue on
 
 time.sleep(3)
 serial.flush()
-serial.close()				#close serial
+serial.close()                #close serial
 
 
 print "Scan Completed!"

@@ -15,6 +15,7 @@
 
 <div class="row">
     
+    <!--
     <div class="col-sm-6">
         
         <div class="well">
@@ -31,7 +32,7 @@
             </div>
         </div>
     </div>
-    
+    -->
     
     
     
@@ -56,6 +57,7 @@
 
 <!-- ONLY FOR ASC FILE -->
 <?php if(strtolower($file->file_ext) == '.asc'): ?>
+<!--
 <div class="row">
     <div class="col-sm-6 text-center">
         
@@ -90,6 +92,7 @@
         </div>
     </div>
 </div>
+-->
 <?php  endif; ?>
 <!-- ONLY FOR GCODE FILE -->
 <?php if(strtolower($file->file_ext) == '.gc' || strtolower($file->file_ext) == '.gcode'  ): ?>

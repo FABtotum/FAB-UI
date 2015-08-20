@@ -133,7 +133,6 @@ $("#check-pre-scan").on('click', check_pre_scan);
 $("#check-r-scan").on('click', check_r_scan);
 
 
-
 $("#start-r-scan").on('click', start);
 
 function check_pre_scan(){

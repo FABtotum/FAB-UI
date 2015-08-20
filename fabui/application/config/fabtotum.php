@@ -2,6 +2,7 @@
 $config['fabtotum_network_interfaces']  = '/etc/network/interfaces';
 $config['fabtotum_config_folder']    = '/var/www/fabui/config/';
 $config['fabtotum_config_units']     = '/var/www/fabui/config/config.json';
+$config['fabtotum_custom_config_units']  = '/var/www/fabui/config/custom_config.json';
 $config['fabtotum_suggestions_url']  = 'http://update.fabtotum.com/mail/suggestions.php';
 $config['fabtotum_bugs_url']         = 'http://update.fabtotum.com/mail/bugs.php';
 $config['fabtotum_password_url']     = 'http://update.fabtotum.com/mail/recovery_password.php';

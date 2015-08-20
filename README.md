@@ -2,6 +2,46 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.94 (19/08/2015)
+
+GENERAL
+Out of the three first capabilities of the FABtotum, scanning option has always been difficult to be used. Results were not always reliable and satisfying. We worked hard on this as we wanted to offer you a better product. In the upcoming months we will focus even more to have you less stressed when postprocessing. Shapes will be less deformed, the camera is going to add colours and details to the final result. We will tell you more as soon as we have news and we will always update our development log on the forum as well.
+
+The FABtotum hardware can be updated with addons and so on.
+The latest FABUI will check the hardware revision number (Saved in the Totumduino EEPROM) and will apply custom preferences, show or hide menu options etc.)
+You can set or view the hardware revision of the FABtotum by going to the MDI  and looking up the Gcode M763 in the gcode table.
+This is pretty usefull if you want to change some components of the machine or if you follow the active project keeping the FABtotum up to date.
+This first step in revision numbering will be also used for the introduction of the Hybrid head v2.
+
+SCAN
+- Added photogrammetry Scanning module and Java Server: you can now scan an object and have the images stored on the PC/MAC/Linux running java. you can later use the images in a photogrammetry reconstruction software for textured results.
+- Fixed perspective distortion  in Rotative Scan overall quality improvements.
+- Sweeping Laser Scanning is back and improved.
+- Overall Improvement in laser line recognition at low light conditions
+- Scan images are now Jpeg instead of PNGs: performance boost
+- Removed reconstruction button as this feature will be back in another form
+
+CREATE
+- Minor bugfixes
+
+JOG
+- Minor bugfixes
+
+OBJECTMANAGER
+- Minor bugfixes
+
+SETTINGS
+- Modified "Advanced" tab for managing customs hardware settings
+- Minor bugfixes
+
+MAINTENANCE
+- Hide "Self Test" from menu
+- Minor bugfixes
+
+
+
+==================================================================
+
 FABUI 0.93 (hotfix) (14/07/2015)
 
 GENERAL

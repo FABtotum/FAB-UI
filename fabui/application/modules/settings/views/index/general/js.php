@@ -157,12 +157,6 @@ function save(){
 }
 
 
-$("#feeder-disengage-offset").spinner({
-				step :0.5,
-				numberFormat : "n",
-				min: 0,
-				max: 6
-		});
 
 $("#zmax-homing").spinner({
 	step :0.05,
@@ -170,6 +164,14 @@ $("#zmax-homing").spinner({
 	min: 150,
 	max: 250
 });
+
+
+$("#feeder-disengage-offset").spinner({
+				step :0.5,
+				numberFormat : "n",
+				min: 0,
+				max: 6
+		});
 
 /*
 $("#feeder-extruder-steps-per-unit").spinner({
