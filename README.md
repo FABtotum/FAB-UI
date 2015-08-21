@@ -2,6 +2,13 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.945 (hotfix) (20/08/2015)
+
+JOG
+- Fixed error on manual extrusion button
+
+==================================================================
+
 FABUI 0.94 (19/08/2015)
 
 GENERAL
