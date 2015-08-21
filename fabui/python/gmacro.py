@@ -365,7 +365,7 @@ elif preset=="s_scan":
     macro("M701 S0","ok",2,"Turning off lights",0.1)
     macro("M702 S0","ok",2,"Turning off lights",0.1)
     macro("M703 S0","ok",2,"Turning off lights",0.1)
-    macro("M744","open",2,"Working plane absent/tilted",0.1)
+    #macro("M744","open",2,"Working plane absent/tilted",0.1)
     macro("G28 X0 Y0","ok",90,"Homing all axis",1)
     macro("G90","ok",2,"Setting Absolute position",0)
     #macro("M92 E"+str(units['a']),"ok",1,"Setting 4th axis mode",0)
@@ -387,7 +387,7 @@ elif preset=="end_scan":
     macro("G90","ok",100,"Setting Absolute position",0) #long waiting time
     macro("G0 Z140 E0 F5000","ok",35,"Rasing",0.1)
     macro("M402","ok",100,"Disabling probe",0)
-    macro("M700","ok",3,"Shutting Down Laser",0)
+    macro("M700 S0","ok",3,"Shutting Down Laser",0)
     macro("M18","ok",3,"Motor Off",1) #should be moved to firmware
     #go back to user-defined colors
     macro("M701 S"+str(units['color']['r']),"ok",2,"Turning on lights",0.1,verbose=False)

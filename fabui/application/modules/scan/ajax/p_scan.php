@@ -103,13 +103,26 @@
     
             if(response.response == true){
               
+              
+              $("#row_1").slideUp('slow', function(){
+              	
+              	$("#row_2").slideDown('slow', function(){
+              		
+              		$("#check-p-scan").trigger('click');
+              		
+              	});
+              	
+              });
+              
+              
+              /*
                 setTimeout(function(){ $("#row_1").slideUp('slow', function(){
                       closeWait();
                      $("#row_2").slideDown('slow', function(){});
                      
                  });}, 3000);
                 
-                
+                */
                 /** STEP SUCCESSIVO */
                 
                           

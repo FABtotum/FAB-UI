@@ -9,7 +9,7 @@ $countLasts = 0;
 	
 	<div class="tab-pane active fade in" id="running">
 		
-		<div class="row">
+		<div class="row custom-scroll">
 		<?php if($running): ?>
 			
 			<div class="col-xs-3 col-sm-3">
@@ -50,7 +50,7 @@ $countLasts = 0;
 
 	<div class="tab-pane fade in" id="lasts">
 	
-		<div class="row">
+		<div id="lasts-wrap" class="row" style="height: 500px; overflow-y: auto;">
 		
 			
 			<?php foreach($lasts as $task): ?>

@@ -2,6 +2,17 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9475 (hotfix) (21/08/2015)
+
+GENERAL
+- Minor bugfixes
+
+SCAN
+- Fixed error on bed checking before starting sweep scan
+
+
+==================================================================
+
 FABUI 0.945 (hotfix) (20/08/2015)
 
 JOG

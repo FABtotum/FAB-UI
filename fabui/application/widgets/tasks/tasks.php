@@ -61,7 +61,7 @@ class Tasks_widget extends Widget {
 		
 		$tabs = array();
 		$tabs[0] = array('name' => 'Running', 'href'=>'running', 'icon'=>'');
-		$tabs[1] = array('name' => 'Lasts',   'href'=>'lasts', 'icon'=>'');
+		$tabs[1] = array('name' => 'Recent',   'href'=>'lasts', 'icon'=>'');
 		 
         $_widget_tasks = $this->get('tasks', 'Tasks',  $_html, false, false, $tabs);
                 

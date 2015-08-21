@@ -33,6 +33,11 @@
 	       if(response != ''){
 	       		$(".tasks-load-more").parent().before(response);
 	       		$(".tasks-load-more").html(button_html);
+	       		
+	       		
+	       		$("#lasts-wrap").animate({ scrollTop: $('#lasts-wrap')[0].scrollHeight}, 1000);
+	       		
+	       		
 	       }else{
 	       		$(".tasks-load-more").hide();
 	       		$(".tasks-load-more").html(button_html);
