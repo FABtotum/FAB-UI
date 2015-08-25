@@ -53,6 +53,7 @@ $countLasts = 0;
 		<div id="lasts-wrap" class="row" style="height: 500px; overflow-y: auto;">
 		
 			
+			<?php if(count($lasts) > 0): ?>
 			<?php foreach($lasts as $task): ?>
 				
 				<?php $countLasts++; ?>
@@ -90,6 +91,17 @@ $countLasts = 0;
 			<div class="col-sx-12 col-sm-12 text-center">
 				<a href="javascript:void(0)" class="btn btn-sm btn-default tasks-load-more"><i class="fa fa-arrow-down text-muted"></i> LOAD MORE</a>
 			</div>
+			
+			<?php else: ?>
+				
+				<div class="col-sm-12">
+				<div class="alert alert-info fade in">
+					<i class="fa-fw fa fa-info"></i>
+					 There aren't recent tasks
+				</div>
+			</div>
+				
+			<?php endif; ?>
 			
 		</div>
 	</div>

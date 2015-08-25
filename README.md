@@ -2,6 +2,17 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+
+FABUI 0.948 (hotfix) (21/08/2015)
+
+GENERAL
+- Minor bugfixes
+
+OBJECTMANAGER
+- Fixed error that hides "Print" function on "Manage File" view
+
+==================================================================
+
 FABUI 0.9475 (hotfix) (21/08/2015)
 
 GENERAL
