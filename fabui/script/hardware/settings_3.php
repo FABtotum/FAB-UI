@@ -11,8 +11,8 @@ require_once '/var/www/lib/serial.php';
 
 define('HARDWARE_ID', 3);
 define('SHOW_FEEDER', false);
-define('E_MODE', 177.777778);
-define('A_MODE',  88.888889);
+define('E_MODE', 3048.1593);
+define('A_MODE',  177.777778);
 
 //init serial
 $serial = new Serial;
@@ -37,7 +37,7 @@ sleep(0.5);
  * Maximum feedrates (mm/s):
  * 
  */
-$serial->sendMessage('M203 X550.00 Y550.00 Z15.00 E24.00'.PHP_EOL);
+$serial->sendMessage('M203 X550.00 Y550.00 Z15.00 E12.00'.PHP_EOL);
 sleep(0.5);
 $serial->sendMessage('M500'.PHP_EOL);
 //close serial
