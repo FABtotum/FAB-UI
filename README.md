@@ -2,6 +2,13 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9485 (hotfix) (26/08/2015)
+
+GENERAL
+- Fixed configuration file for hardware with version 3
+
+==================================================================
+
 
 FABUI 0.948 (hotfix) (21/08/2015)
 
