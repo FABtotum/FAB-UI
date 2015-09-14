@@ -114,20 +114,19 @@ function save(){
       url : '<?php echo module_url('settings').'ajax/general.php' ?>',
 		  dataType : 'json',
 		  type: 'post',
-      data: {
-					red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val(),
-          safety_door: $('[name="safety-door"]:checked').val(), switch:$('[name="switch"]:checked').val(),
-          feeder_disengage_feeder: $("#feeder-disengage-offset").val(),
-          milling_sacrificial_layer_offset: $("#milling-sacrificial-layer-offset").val(),
-          /*
-					feeder_extruder_steps_per_unit_e_mode: $("#feeder-extruder-steps-per-unit-e").val(),
-          feeder_extruder_steps_per_unit_a_mode: $("#feeder-extruder-steps-per-unit-a").val(),
-					*/
-          both_y_endstops: $("#both-y-endstops").val(),
-          both_z_endstops: $("#both-z-endstops").val(),
-          upload_api_key: $("#upload-api-key").val()},
-      dataType: 'json'
-	}).done(function(response) {
+
+          data: {red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val(),
+          		safety_door: $('[name="safety-door"]:checked').val(), switch:$('[name="switch"]:checked').val(),
+          		feeder_disengage_feeder: $("#feeder-disengage-offset").val(),
+          		/*feeder_extruder_steps_per_unit_e_mode: $("#feeder-extruder-steps-per-unit-e").val(),
+          		feeder_extruder_steps_per_unit_a_mode: $("#feeder-extruder-steps-per-unit-a").val(),*/
+          		both_y_endstops: $("#both-y-endstops").val(),
+          		both_z_endstops: $("#both-z-endstops").val(),
+          		upload_api_key: $("#upload-api-key").val(),
+          		zmax:$('#zmax-homing').val(),
+          		zprobe:$('[name="zprobe"]:checked').val()},
+          dataType: 'json'
+		}).done(function(response) {
 
 			$.smallBox({
 				  title : "Success",
@@ -143,6 +142,14 @@ function save(){
   });
 
 }
+
+$("#zmax-homing").spinner({
+	step :0.05,
+	numberFormat : "n",
+	min: 150,
+	max: 250
+});
+
 
 $("#feeder-disengage-offset").spinner({
 	  step: 0.5,

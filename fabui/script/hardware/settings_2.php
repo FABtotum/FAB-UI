@@ -31,6 +31,13 @@ $serial -> serialflush();
  */
 $serial->sendMessage('M747 X1'.PHP_EOL);
 sleep(0.5);
+/**
+ * Maximum feedrates (mm/s):
+ * 
+ */
+$serial->sendMessage('M203 X550.00 Y550.00 Z15.00 E12.00'.PHP_EOL);
+sleep(0.5);
+$serial->sendMessage('M500'.PHP_EOL);
 //close serial
 $serial->deviceClose();
 

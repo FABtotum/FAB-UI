@@ -7,9 +7,10 @@
         </div>
     
     </div>
-
-	<div class="row">
-    
+<!--
+	<div class="row finish_option_1">
+    	
+    	
         <div class="col-sm-6">
             
             <div class="well">
@@ -43,10 +44,11 @@
                 </div>
             </div>
         </div>
-        
+       
     </div>
- 
-    <div class="row">
+ -->
+    <div class="row finish_option_1">
+    	<!--
         <div class="col-sm-6 text-center">
             
             <div class="well">
@@ -63,6 +65,23 @@
                 </div>
             </div>
         </div>
+       -->
+       
+       <div class="col-sm-6 text-center">
+			<div class="well">
+                <div class="row">
+                
+                     <div class="col-sm-6">
+                        <a href="<?php echo site_url("scan"); ?>"  class="add-scan"><img style="max-width: 50%; display: inline;" class="img-responsive" src="<?php echo module_url('scan').'assets/img/add-scan.png' ?>" /></a>
+                    </div>
+                    <div class="col-sm-6">
+                        <h1 class="text-primary">Make a new scan</h1>
+                        <h2>Make a new scan </h2>
+                    </div>
+                
+                </div>
+            </div>
+		</div>
 
         <div class="col-sm-6 text-center">
             
@@ -82,5 +101,26 @@
         </div>
         
 	</div>
+	
+	
+	<div class="row finish_option_2">
+		<div class="col-sm-6 text-center">
+			<div class="well">
+                <div class="row">
+                
+                     <div class="col-sm-6">
+                        <a href="<?php echo site_url("scan"); ?>"  class="add-scan"><img style="max-width: 50%; display: inline;" class="img-responsive" src="<?php echo module_url('scan').'assets/img/add-scan.png' ?>" /></a>
+                    </div>
+                    <div class="col-sm-6">
+                        <h1 class="text-primary">Make a new scan</h1>
+                        <h2>Make a new scan </h2>
+                    </div>
+                
+                </div>
+            </div>
+		</div>
+	</div>
+	
+	
 </div>
 

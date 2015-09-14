@@ -198,7 +198,7 @@ class JogFactory {
 		
 		$_units = json_decode(file_get_contents(CONFIG_UNITS), TRUE);
 		
-		$_mode['a'] = 'M92 E'.$_units['a'];
+		$_mode['a'] = 'M92 E'.$_units['a'].PHP_EOL.'G92 E0';
 		$_mode['e'] = 'M92 E'.$_units['e'].PHP_EOL.'G92 E0';
 		
 		$this->_command = $_mode[$value];

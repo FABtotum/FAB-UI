@@ -20,7 +20,12 @@ $_status        = isset($argv[3]) && $argv[3] != '' ? $argv[3] : 'performed';
 //$_g_pusher_type = isset($argv[4]) && $argv[4] != '' ? $argv[4] : 'fast';
 
 
-
+/*
+echo "FINALIZE".PHP_EOL;
+echo $_task_id.PHP_EOL;
+echo $_type.PHP_EOL;
+echo $_status.PHP_EOL;
+*/
 
 switch($_type){
 
@@ -538,7 +543,7 @@ function finalize_general($tid,$type,$status){
 	
 	
 	
-	if($type == 'scan_r' || $type == 'scan_p' || $type="scan_s" ){
+	if($type == 'scan_r' || $type == 'scan_p' || $type=="scan_s" ){
 		
 		
 		sleep(5);
@@ -597,12 +602,10 @@ function finalize_general($tid,$type,$status){
 	    $_data_update['attributes'] = json_encode($attributes);
 	    $db->update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
 	    $db->close();
-		
-		
+	
 		
 	}
 		
-	
 	
 	// EXEC MACRO END_SCAN
 	

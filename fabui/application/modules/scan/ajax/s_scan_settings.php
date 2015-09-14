@@ -1,28 +1,44 @@
 <div class="row">
     <div class="col-sm-6">
     	<h2 class="text-primary">
-    		Select scan quality
+    		Select scan quality and area
     	</h2>
     </div>
 </div>
 
 <div class="row">
-	<div class="col-sm-12">
+	<div class="col-sm-6">
 		<div class="well well-light">
 			<div class="row margin-bottom-10" style="margin-top: 10px;">
-				<div class="col-sm-12">
+				<div class="col-sm-6">
 					<div class="text-center img-quality-container margin-bottom-10">
 						<img class="img-responsive img-quality-container" style="display: inline; max-width: 200px;" src="application/modules/scan/assets/img/duck0.png">
 					</div>
-					<div id="scan-quality" class="noUiSlider"></div>
+					
+				</div>
+				
+				<div class="col-sm-6 stats-well">
+					<p>Quality Parameters</p>
+					<hr>					
+					<p class="scan">Slices: <span class="quality-slices pull-right"></span></p>
+					<p class="scan">Resolution: <span class="quality-resolution pull-right"></span></p>
+					<p class="scan">Iso: <span class="quality-iso pull-right"></span></p>
+					<hr>
+				</div>
+				
+			</div>
+			
+			<div class="row">
+				<div class="col-sm-12">
+					<div id="scan-quality" class="noUiSlider fab-slider"></div>
 				</div>
 			</div>
+			
 			<div class="row">
 				<div class="col-sm-12">
 					<h5>
 						Quality:
-						<span id="quality">
-						</span>
+						<strong><span id="quality"></span></strong>
 					</h5>
 					<p id="quality-description">
 					</p>
@@ -30,19 +46,10 @@
 			</div>
 		</div>
 	</div>
-</div>
-
-<div class="row">
-    <div class="col-sm-12">
-        <h2 class="text-primary">Select Area </h2>
-    </div>
-</div>
-
-<div class="row">
+	
+	<div class="col-sm-6">
     
-    <div class="col-sm-12">
-    
-         <div class="well">
+         <div class="well well-light">
          
             <div class="row text-center">
                 <img id="plane" src="/fabui/application/modules/scan/assets/img/working_plane.png" />
@@ -51,29 +58,27 @@
             <div class="row">
             <div class="smart-form">
 				<fieldset style="background: transparent;">
-					<div class="row">
-						<label class="label">
-										Position (mm)
-									</label>
-						<section>
+					
+						
+						<section class="col col-4">
+							<label class="label">Start</label>
 							<label class="input">
-								<span class="icon-prepend label-x1">Start</span>
 								<input class="coordinates" id="x1" type="text" />
 							</label>
 						</section>
-						<section>
+						<section class="col col-4">
+							<label class="label">End</label>
 							<label class="input">
-								<span class="icon-prepend label-x2">End</span>
 								<input class="coordinates" id="x2" type="text" />
 							</label>
 						</section>
-                        <section>
+                        <section class="col col-4">
+                        	<label class="label">A</label>
 							<label class="input">
-								<span class="icon-prepend label-x2">A</span>
 								<input class="coordinates" id="a_offset" type="text" value="0" />
 							</label>
 						</section>
-					</div>
+					
 				</fieldset>
             </div>
             </div>
@@ -81,7 +86,7 @@
          </div>
     
     </div>
-    
+	
 </div>
 
 <script type="text/javascript">
@@ -103,6 +108,24 @@ $("#scan-quality").noUiSlider({
 	 change: manageSlide
 });
 
+
+
+setTimeout(function (){
+	 	
+	/* SCAN QUALITY SLIDER EVENTS */
+	 $("#scan-quality").on({
+		 slide: manageSlide,
+		 set: manageSlide,
+		 change: manageSlide
+	});
+	
+	$("#scan-quality").val( 20, {
+		set: true,
+		animate: true
+	});
+	
+
+ }, 1000);
 
 
 
@@ -131,11 +154,6 @@ $('.coordinates').on('keyup', function(e){
     jcrop_api.setSelect([x1,y1,x2,y2]);
 });
 
-
-$("#scan-quality").val( 20, {
-	set: true,
-	animate: true
-});
 
 </script>
 

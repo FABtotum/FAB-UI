@@ -147,9 +147,6 @@ if($do_update){
 	} 
 	 
 	
-	
-	
-	
 	$_monitor_items['install']['percent'] = 100;
     write_monitor();
     sleep(3);
@@ -161,12 +158,16 @@ if($do_update){
     shell_exec('sudo rm -rf /var/www/fabui_old/');
 
 	/** FILE PERMISSIONS */
-	shell_exec('sudo chmod 666 '.FABUI_PATH.'config/config.json');
+	shell_exec('sudo chmod 777 '.FABUI_PATH.'config/config.json');
 	
 	shell_exec('sudo chmod 777 '.FABUI_PATH.'application/layout/assets/img/avatar');
 	
 	/** simbolic link */
-	shell_exec('sudo ln -s /var/www/upload /var/www/fabui/upload');
+	if(!file_exists('/var/www/fabui/upload') || !is_link('/var/www/fabui/upload')){
+		
+		shell_exec('sudo ln -s /var/www/upload /var/www/fabui/upload');
+			
+	}
 	
 	
     $_monitor_items['completed'] = 1;

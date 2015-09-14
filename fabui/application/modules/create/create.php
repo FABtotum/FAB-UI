@@ -300,6 +300,8 @@ class Create extends Module {
 			
 			$data['show_feeder'] = $this->layout->getFeeder();
 			
+			echo $data['show_feeder'];
+			
 			if(!$data["show_feeder"]){
 				$label_button = 'Continue';
 				$action_button = '';

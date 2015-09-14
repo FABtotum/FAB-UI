@@ -147,9 +147,9 @@ def raspistill(laser_string):
     #--exposure off
     print "saving to ",scanfile
 
-	#raspistill -rot 270 -awb tungsten -ISO 100 -ss 45000
-	
-    call (["raspistill -rot 270 -awb off -awbg 1.5,1.2 -q 100 -ss 45000 -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 1"], shell=True)
+    #raspistill -rot 270 -awb tungsten -ISO 100 -ss 45000
+    
+    call (["raspistill -rot 270 -awb off -awbg 1.5,1.2 -q 100 -ss 35000 -ISO " + str(iso) + " -w "+ str(height) +" -h "+ str(width) +" -o " + scanfile + " -t 1"], shell=True)
 
     while (not(os.access(scanfile, os.F_OK)) or not(os.access(scanfile, os.W_OK))):
         #wait until the file has been written
@@ -166,7 +166,7 @@ while (i < slices) :
     print str(i) + "/" + str(slices) +" (" + str(deg*i) + "/360)"
     serial.write('G0 E' + str(pos) + 'F2500\r\n')
     time.sleep(deg*0.1)  #take its time to rotate
-    	
+        
     pwm_string='M700 S'+str(power)+'\r\n' 
 
     serial.write(pwm_string) #turn laser ON

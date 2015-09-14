@@ -15,6 +15,28 @@
 
 <div class="row">
     
+    
+    <?php if(strtolower($file->file_ext) == '.gc' || strtolower($file->file_ext) == '.gcode'  ): ?>
+    	<div class="col-sm-6">
+        
+        <div class="well">
+            <div class="row">
+            
+                <div class="col-sm-6 text-center">
+                    <a href="<?php echo site_url('create').'?obj='.$obj_id.'&file='.$file->id; ?>"><?php echo $first_box_img ?></a>
+                </div>
+                <div class="col-sm-6 text-center">
+                    <h1 class="text-primary"><a href="<?php echo site_url('create').'?obj='.$obj_id.'&file='.$file->id; ?>">Create</a></h1>
+                    <h2>Create the Object</h2>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+    	
+    	
+   	<?php endif; ?>
+    <!--
     <div class="col-sm-6">
         
         <div class="well">
@@ -31,7 +53,7 @@
             </div>
         </div>
     </div>
-    
+    -->
     
     
     
@@ -56,6 +78,7 @@
 
 <!-- ONLY FOR ASC FILE -->
 <?php if(strtolower($file->file_ext) == '.asc'): ?>
+<!--
 <div class="row">
     <div class="col-sm-6 text-center">
         
@@ -90,6 +113,7 @@
         </div>
     </div>
 </div>
+-->
 <?php  endif; ?>
 <!-- ONLY FOR GCODE FILE -->
 <?php if(strtolower($file->file_ext) == '.gc' || strtolower($file->file_ext) == '.gcode'  ): ?>

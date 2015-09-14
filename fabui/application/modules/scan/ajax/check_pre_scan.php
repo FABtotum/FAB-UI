@@ -17,6 +17,7 @@ chmod($_destination_trace, 0777);
 write_file($_destination_response, '', 'w');
 chmod($_destination_response, 0777);
 
+
 /** EXEC COMMAND */
 
 $_command        = 'sudo python '.PYTHON_PATH.'gmacro.py check_pre_scan '.$_destination_trace.' '.$_destination_response.' > /dev/null';

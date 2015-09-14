@@ -46,7 +46,7 @@
 	                    </td>
 	                    <td>
 	                    	<?php if($internet): ?>
-	                    		<h4><?php echo $fabui ? '<a> A new update is avaiable.<strong class="txt-color-red"> Get new version ' .$fabui_remote.' now!</strong></a> ' : 'Your FAB UI is updated to the latest version' ?>
+	                    		<h4><?php echo $fabui ? '<a> A new update is available.<strong class="txt-color-red"> Get new version ' .$fabui_remote.' now!</strong></a> ' : 'Your FAB UI is up-to-date' ?>
 	                    			
 	                    			<?php if($fabui): ?>
 	                    			<small><a data-toggle="modal" style="cursor:pointer" data-target="#fabui_changelog">See details</a></small>
@@ -79,7 +79,7 @@
                         </td>
                         <td>
                         	<?php if($internet): ?>
-                        		<h4><?php echo $marlin ? ' <a>A new update for FABlin Firmware is avaiable.<strong class="txt-color-red"> Get new version '.$marlin_remote.' now!</strong> </a>' : 'Your FABlin Firmware is updated to the latest version' ?>
+                        		<h4><?php echo $marlin ? ' <a>A new update for FABlin Firmware is available.<strong class="txt-color-red"> Get new version '.$marlin_remote.' now!</strong> </a>' : 'Your FABlin Firmware is up-to-date.' ?>
                         			
                         			<?php if($marlin): ?>
 	                    			<small><a data-toggle="modal" style="cursor:pointer" data-target="#fw_changelog">See details</a></small>

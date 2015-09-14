@@ -1,10 +1,3 @@
-<?php
-
-
-?>
-
-
-
 <div class="row">
 	<div class="col-sm-6">
 		<h2 class="text-primary">Ready to scan?</h2>
@@ -15,18 +8,8 @@
 <div class="row" id="row_1">
     <div class="col-sm-12">
     
-        <div class="well">
-        
-            <div class="row">
-                <div class="col-sm-6"></div>
-                <div class="col-sm-6">
-                
-                    
-                    <a id="check-pre-scan" href="javascript:void(0);" class="btn btn-primary btn-lg">Click here when ready</a>
-                
-                </div>
-            </div>
-            
+        <div class="well text-center">
+			<a id="check-pre-scan" href="javascript:void(0);" class="btn btn-primary btn-lg">Click here when ready</a>
         </div>
     
     </div>
@@ -80,6 +63,15 @@
     
     
     
+    
+    function start_s_scan(){
+    	
+    	
+    	
+    	
+    }
+    
+    
     function check_pre_scan(){
     
     
@@ -102,16 +94,19 @@
             if(response.response == true){
               
                 
+                $("#row_1").slideUp('slow', function(){
+                	
+                	
+                	$("#row_2").slideDown('slow', function(){
+                     	
+                     	
+                     	$("#check-s-scan").trigger("click");
+                     	
+                     });
+                	
+                });
                 
-                setTimeout(function(){ $("#row_1").slideUp('slow', function(){
-                      closeWait();
-                     $("#row_2").slideDown('slow', function(){});
-                     
-                 });}, 3000);
-                
-                
-                /** STEP SUCCESSIVO */
-                
+               
                           
             }else{
                 closeWait();
@@ -152,12 +147,18 @@
     	}).done(function( response ) {
     
             if(response.response == true){
-                
-               /** STEP SUCCESSIVO */
-                setTimeout(function(){ $("#row_2").slideUp('slow', function(){
-                    closeWait();
-                     $("#row_3").slideDown('slow', function(){});
-                 });}, 3000);
+            	
+            	$("#row_2").slideUp('slow', function(){
+            		
+            		$("#row_3").slideDown('slow', function(){
+            			
+            			$("#start-s-scan").trigger("click");
+            			
+            		});
+            		
+            	});
+            	
+             
                  
                           
             }else{

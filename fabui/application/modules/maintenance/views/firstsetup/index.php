@@ -22,25 +22,17 @@
 						<li data-target="#step3">
 							<span class="badge">3</span>Probe lenght Calibration<span class="chevron"></span>
 						</li>
+						<?php if($show_feeder): ?>
 						<li data-target="#step4">
 							<span class="badge">4</span>Engage Feeder<span class="chevron"></span>
 						</li>
+						<?php endif; ?>
 						<li data-target="#step5">
-							<span class="badge">5</span>Finish<span class="chevron"></span>
+							<span class="badge"><?php echo $show_feeder ? 5 : 4; ?></span>Finish<span class="chevron"></span>
 						</li>
 						
 					</ul>
-					<!--
-					<div class="actions">
-						<button type="button" class="btn btn-sm btn-primary btn-prev">
-							<i class="fa fa-arrow-left"></i>Prev
-						</button>
-						<button type="button" class="btn btn-sm btn-success btn-next" data-last="Finish">
-							Next<i class="fa fa-arrow-right"></i>
-						</button>
-					</div>
-					-->
-
+					
 				</div>
 				<div class="step-content">
 					<form class="form-horizontal" id="fuelux-wizard" method="post">

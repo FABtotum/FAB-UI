@@ -250,7 +250,7 @@ INSERT INTO `sys_configuration` (`id`, `key`, `value`) VALUES
 (18, 'language', 'english'),
 (19, 'languages', '{"english":{"code":"us","description":"English","name":"english"},"italian":{"code":"it","description":"Italiano","name":"italian"},"german":{"code":"de","description":"Deutsch","name":"german"}}'),
 (20, 'fw_version', ''),
-(21, 'fabui_version', '0.925'),
+(21, 'fabui_version', '0.948'),
 (22, 'wifi', '{"ssid":"","password":"","ip":""}');
 
 -- --------------------------------------------------------
@@ -492,7 +492,7 @@ INSERT INTO `sys_scan_configuration` (`id`, `type`, `name`, `values`) VALUES
 (12, 'probe_quality', 'High', '{"info":{"name":"High","description":""},"values":{"sqmm":64,"mm":8}}'),
 (13, 'probe_quality', 'Very High', '{"info":{"name":"Very High","description":""},"values":{"sqmm":100,"mm":10}}'),
 (14, 'probe_quality', 'Ultra High', '{"info":{"name":"Ultra High","description":""},"values":{"sqmm":256,"mm":16}}'),
-(15, 'mode', 'photogrammetry', '{"info":{"name":"Photogrammetry","description":"Structure from motion (SfM) is a range imaging technique; it refers to the process of estimating three-dimensional structures from two-dimensional image sequences which may be coupled with local motion signals. It is studied in the fields of computer vision and"},"values":{}}');
+(15, 'mode', 'photogrammetry', '{"info":{"name":"Photogrammetry","description":"Structure from motion (SfM) is a range imaging technique; it refers to the process of estimating three-dimensional structures from two-dimensional image sequences which may be coupled with local motion signals."},"values":{}}');
 
 -- --------------------------------------------------------
 

@@ -108,6 +108,8 @@ class Tasks extends CI_Model {
 		$this->db->order_by('start_date', 'desc');
 		$query = $this->db->get($this->_table_name, $limit_end, $limit_start);
 		
+		//echo $this->db->last_query(); exit();
+		
 	
 		return $query->result_array();
 	}

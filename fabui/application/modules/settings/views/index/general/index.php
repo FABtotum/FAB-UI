@@ -46,6 +46,25 @@
 								</div>
 							</div>
 						</div>
+						<div class="form-group">
+							<label class="col-md-2 control-label">Z-Probe</label>
+							<div class="col-md-2">
+								<div class="radio">
+									<label>
+										<input type="radio" class="radiobox style-0" name="zprobe" value="0" <?php echo $_zprobe == '0' ? 'checked="checked"' : '' ?>>
+										<span>Enable</span> </label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" class="radiobox style-0" name="zprobe" value="1" <?php echo $_zprobe == '1' ? 'checked="checked"' : '' ?>>
+										<span>Disable</span> </label>
+								</div>
+							</div>
+							<label class="col-md-2 control-label">Z Max Home Pos (mm)</label>
+							<div class="col-md-6">
+								<input class="form-control"  type="text" id="zmax-homing" value="<?php echo $_zmax; ?>">
+							</div>
+						</div>
 					</fieldset>
 
 					<fieldset>

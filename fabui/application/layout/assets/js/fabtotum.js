@@ -616,12 +616,14 @@ function shutdown() {
 	}).done(function(response) {
 
 		setTimeout(function() {
-
+			
+			
+			
 			$(".wait-spinner").remove();
 			waitTitle('Now you can switch off the power');
 			waitContent($("#power-off-img").html());
 
-		}, 5000);
+		}, 12000);
 
 	});
 }

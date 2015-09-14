@@ -1,164 +1,156 @@
-<div class="tasks">
+<?php
 
-	<?php if(!$running): ?>
+$totalLasts = count($lasts);
+$countLasts = 0;
+?>
+
+<div class="tab-content">
 	
-	<div class="alert alert-info fade in">
-		<i class="fa-fw fa fa-info"></i>
-		 No tasks running at this moment.
-	</div>
 	
-	<?php else: ?>
-    
-        <div class="table-responsive">
-        
-            <table class="table table-bordered table-striped">
-			<thead>
-				<tr>
-					<th colspan="3">Running Tasks</th>
-				</tr>
-			</thead>
-			<tbody>
-            
-                <?php
-                
-                 $_status_icon = '';
-                    
-                    switch($running['controller']){
-                        
-                        case 'scan':
-                            $_status_icon = 'fab-lg fab-fw icon-fab-scan';
-                            break;
-                        case 'create':
-                            $_status_icon = 'fab-lg fab-fw icon-fab-print';
-                            break;
-                        case 'updates':
-                            $_status_icon = 'fa fa-refresh';
-                            break;
-                        case 'objectmanager':
-                            $_status_icon = 'fab-lg fab-fw icon-fab-manager';
-                            break;
-                        case 'settings':
-                            $_status_icon = 'fa fa-cogs';
-                            break;
-						case 'maintenance':
-                            $_status_icon = 'fa fa-wrench';
-                            break;
-                    }   
-
-                    $_status = '';
-                    
-                    switch($running['status']){
-                        
-                        case 'performed':
-                            $_status = 'fa fa-check txt-color-green';
-                            break;
-                        case 'running':
-                            $_status = 'fa fa-cog fa-spin txt-color-green';
-                            break;
-                        case 'canceled':
-                            $_status = 'fa fa-times txt-color-red';
-                            break;
-                        case 'stopped':
-                            $_status = 'fa fa-stop txt-color-red';
-                            break;
-                        
-                    }
-
-                
-                
-                
-                
-                ?>
-
-				<tr class="warning">
-					<td style="width: 50px;" class="text-center"><?php echo $_status_icon != '' ? '<a title="'.ucfirst($running['controller']).'" href="javascript:void(0);"><i class=" '.$_status_icon.'"></i></a>'  :  $running['controller'] ?></td>
-						<td style="width: 50px;" class="text-center"><a href="javascript:void(0);" title="<?php echo ucfirst($running['status'])  ?>"><i class="<?php echo $_status?>"></i></a></td>
-						<td><b><?php echo ucfirst($running['type']) ?></b> -  <i class="fa fa-clock-o"></i> <?php echo elapsed_time( $running['status'] == 'running' ?  $running['start_date'] : $running['finish_date']) ?> </td>
-				</tr>
-
-			
-
-			</tbody>
-
-		</table>
-        
-        </div>
+	<div class="tab-pane active fade in" id="running">
 		
-	<?php endif; ?>
-
-	
-
-	<?php if(count($lasts) > 0): ?>
-	
-	<div class="table-responsive">
-
-		<table class="table table-bordered table-striped">
-			<thead>
-				<tr>
-					<th colspan="3">Last tasks</th>
-				</tr>
-			</thead>
-			<tbody>
-
-				<?php foreach($lasts as $task) : 
-
-                    $_status_icon = '';
-                    
-                    switch($task['controller']){
-                        
-                        case 'scan':
-                            $_status_icon = 'fab-lg fab-fw icon-fab-scan';
-                            break;
-                        case 'create':
-                            $_status_icon = 'fab-lg fab-fw icon-fab-print';
-                            break;
-                        case 'updates':
-                            $_status_icon = 'fa fa-refresh';
-                            break;
-                        case 'objectmanager':
-                            $_status_icon = 'fab-lg fab-fw icon-fab-manager';
-                            break;
-                        case 'settings':
-                            $_status_icon = 'fa fa-cogs';
-                            break;
-                       	case 'maintenance':
-                            $_status_icon = 'fa fa-wrench';
-                            break;
-                    }   
-
-                    $_status = '';
-                    
-                    switch($task['status']){
-                        
-                        case 'performed':
-                            $_status = 'fa fa-check txt-color-green';
-                            break;
-                        case 'running':
-                            $_status = 'fa fa-cog fa-spin txt-color-green';
-                            break;
-                        case 'canceled':
-                            $_status = 'fa fa-times txt-color-red';
-                         case 'stopped':
-                            $_status = 'fa fa-stop txt-color-red';
-                            break;
-                        
-                    }
-                ?>
-				<tr>
-					<td style="width: 50px;" class="text-center"><?php echo $_status_icon != '' ? '<a title="'.ucfirst($task['controller']).'" href="javascript:void(0);"><i class=" '.$_status_icon.'"></i></a>'  :  $task['controller'] ?></td>
-					<td style="width: 50px;" class="text-center"><a href="javascript:void(0);" title="<?php echo ucfirst($task['status'])  ?>"><i class="<?php echo $_status?>"></i></a></td>
-					<td><b><?php echo ucfirst($task['type']) ?></b> -  <i class="fa fa-clock-o"></i> <?php echo elapsed_time( $task['status'] == 'running' ?  $task['start_date'] : $task['finish_date']) ?> </td>
-				</tr>
-
-				<?php endforeach; ?>
-
-			</tbody>
-
-		</table>
+		<div class="row custom-scroll">
+		<?php if($running): ?>
+			
+			<div class="col-xs-3 col-sm-3">
+				<time datetime="<?php echo $running['finish_date'] ?>" class="icon">
+					<strong><?php echo date("M", strtotime($running['start_date'])); ?></strong>
+					<span><?php echo date("d", strtotime($running['start_date'])); ?></span>
+				</time>
+			</div>
+			
+			<div class="col-xs-9 col-sm-9">
+					<h6 class="no-margin">
+						<a href="<?php echo site_url($running['controller']); ?>"><?php echo getTaskTitle($running['controller'], $running['type']); ?></a>
+					</h6>
+					
+					<p></p>
+					
+					<ul class="list-inline">
+						<li>
+							<i class="fa fa-calendar"></i>
+							<a href="javascript:void(0);"> <?php echo date('F j, Y, g:i a', strtotime($running['start_date'])); ?> </a>
+						</li>
+					</ul>
+				</div>
+			
+		<?php else: ?>
+			
+			<div class="col-sm-12">
+				<div class="alert alert-info fade in">
+					<i class="fa-fw fa fa-info"></i>
+					 No tasks running at this moment.
+				</div>
+			</div>
+		<?php endif; ?>
+			
+		</div>
+		
 	</div>
-	
-	<?php else: ?>
-	
-	<?php endif; ?>
 
+	<div class="tab-pane fade in" id="lasts">
+	
+		<div id="lasts-wrap" class="row" style="height: 500px; overflow-y: auto;">
+		
+			
+			<?php if(count($lasts) > 0): ?>
+			<?php foreach($lasts as $task): ?>
+				
+				<?php $countLasts++; ?>
+				
+				<div class="col-xs-3 col-sm-3">
+					<time datetime="<?php echo $task['finish_date'] ?>" class="icon">
+						<strong><?php echo date("M", strtotime($task['finish_date'])); ?></strong>
+						<span><?php echo date("d", strtotime($task['finish_date'])); ?></span>
+					</time>
+				</div>
+				
+				
+				<div class="col-xs-9 col-sm-9">
+					<h6 class="no-margin">
+						<a href="javascript:void(0);"><?php echo getTaskTitle($task['controller'], $task['type']); ?></a>
+					</h6>
+					
+					<p></p>
+					
+					<ul class="list-inline">
+						<li>
+							<i class="fa fa-calendar"></i>
+							<a href="javascript:void(0);"> <?php echo date('F j, Y, g:i a', strtotime($task['finish_date'])); ?> </a>
+						</li>
+					</ul>
+				</div>
+				
+				<?php if($countLasts < $totalLasts): ?>
+				<div class="col-sx-12 col-sm-12"><hr></div>
+				<?php endif; ?>
+			<?php endforeach; ?>
+			
+			
+			<div class="col-sx-12 col-sm-12"><hr></div>
+			<div class="col-sx-12 col-sm-12 text-center">
+				<a href="javascript:void(0)" class="btn btn-sm btn-default tasks-load-more"><i class="fa fa-arrow-down text-muted"></i> LOAD MORE</a>
+			</div>
+			
+			<?php else: ?>
+				
+				<div class="col-sm-12">
+				<div class="alert alert-info fade in">
+					<i class="fa-fw fa fa-info"></i>
+					 There aren't recent tasks
+				</div>
+			</div>
+				
+			<?php endif; ?>
+			
+		</div>
+	</div>
 </div>
+
+
+
+<?php 
+
+function getTaskTitle($controller, $type){
+	
+	$icon = '';
+	$title = '';
+	
+	switch($controller){
+		
+		case 'updates':
+			$icon = 'fa fa-refresh';
+			$title = 'Update';			
+			
+			if($type == 'marlin'){
+				$title .= ' - Firmware';
+			}
+			
+			if($type == 'fabui'){
+				$title .= ' - FABUI';
+			}
+			
+			
+			
+			break;
+		case 'create':
+			$icon = 'icon-fab-print';
+			$title = 'Create';
+			break;
+		case 'scan':
+			$icon = 'icon-fab-scan';
+			$title = 'Scan';
+			break;
+		default:
+			$icon = '';
+			$title = ucfirst($controller);
+			break;
+		
+	}
+	
+	return '<i class="'.$icon.'"></i> '.$title;
+	
+}
+
+
+?>
