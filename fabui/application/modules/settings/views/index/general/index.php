@@ -122,19 +122,19 @@
 						-->
 					</fieldset>
 
-         	<br>
+					<br>
 
-          <fieldset>
-            <legend>
-              Milling
-            </legend>
-            <div class="form-group">
-              <label class="col-md-2 control-label">Sacrificial Layer Thickness (mm)</label>
-              <div class="col-md-10">
-                <input class="form-control"  type="text" id="milling-sacrificial-layer-offset" value="<?php echo $_milling_sacrificial_layer_offset; ?>">
-              </div>
-            </div>
-          </fieldset>
+					<fieldset>
+						<legend>
+							Milling
+						</legend>
+						<div class="form-group">
+							<label class="col-md0 control-label">Sacrificial Layer Thickness (mm)</label>
+							<div class="col-md-10">
+								<input class="form-control"  type="text" id="milling-sacrificial-layer-offset" value="<?php echo $_milling_sacrificial_layer_offset; ?>">
+							</div>
+						</div>
+					</fieldset>
 
 					<fieldset>
 						<legend>Api</legend>

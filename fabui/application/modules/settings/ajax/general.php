@@ -52,18 +52,18 @@ $_units['color']                                = $_custom_units['color'] = $_co
 $_units['safety']['door']                       = $_custom_units['safety']['door'] = $_safety_door;
 $_units['switch']                               = $_custom_units['switch']  = $_switch;
 $_units['feeder'] ['disengage-offset']          = $_custom_units['feeder']['disengage-offset'] = $_feeder_disengage;
-//$_units['e'] 		                            	= $_feeder_extruder_steps_per_unit_e_mode;
-//$_units['a'] 		                            	= $_feeder_extruder_steps_per_unit_a_mode;
+//$_units['e'] 		                       	= $_feeder_extruder_steps_per_unit_e_mode;
+//$_units['a'] 		                       	= $_feeder_extruder_steps_per_unit_a_mode;
 /* Save Milling */
 $_units['milling']['layer-offset']              = $_custom_units['milling']['layer-offset'] = $_milling_sacrificial_layer_offset
 
-$_units['bothy']	                            	= $_custom_units['bothy'] = $_both_y_endstops;
-$_units['bothz']	                            	= $_custom_units['bothz'] = $_both_z_endstops;
+$_units['bothy']	                       	= $_custom_units['bothy'] = $_both_y_endstops;
+$_units['bothz']	                       	= $_custom_units['bothz'] = $_both_z_endstops;
 
 $_units['api']['keys'][$_SESSION['user']['id']] = $_custom_units['api']['keys'][$_SESSION['user']['id']] = $_upload_api_key;
 
 $_units['zprobe']['disable']                    = $_custom_units['zprobe']['disable'] = $_zprobe;
-$_units['zprobe']['zmax']                    		= $_custom_units['zprobe']['zmax'] = $_zmax;
+$_units['zprobe']['zmax']              		= $_custom_units['zprobe']['zmax'] = $_zmax;
 
 
 file_put_contents(FABUI_PATH.'config/config.json', json_encode($_units));

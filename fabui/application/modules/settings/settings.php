@@ -21,23 +21,22 @@ class Settings extends Module
         $this->load->database();
         $this->load->model('configuration');
 
+        $this -> config->load('fabtotum', TRUE);
 
-		    $this -> config->load('fabtotum', TRUE);
+        $_units = json_decode(file_get_contents($this->config->item('fabtotum_config_units', 'fabtotum')), TRUE);
 
-		    $_units = json_decode(file_get_contents($this->config->item('fabtotum_config_units', 'fabtotum')), TRUE);
-
-        $data['_standby_color'] 				= $_units['color'];
-		    $data['_safety_door']     			= isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
-		    $data['_switch']          			= isset($_units['switch']) ? $_units['switch']: '0';
-		    $data['_feeder_disengage'] 			= isset($_units['feeder']['disengage-offset']) ? $_units['feeder']['disengage-offset']: 2;
-		    $data['_feeder_extruder_steps_per_unit_e_mode'] = isset($_units['e']) ? $_units['e']: 3048.1593;
+        $data['_standby_color']      = $_units['color'];
+        $data['_safety_door']        = isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
+        $data['_switch']             = isset($_units['switch']) ? $_units['switch']: '0';
+        $data['_feeder_disengage']   = isset($_units['feeder']['disengage-offset']) ? $_units['feeder']['disengage-offset']: 2;
+        $data['_feeder_extruder_steps_per_unit_e_mode'] = isset($_units['e']) ? $_units['e']: 3048.1593;
         $data['_feeder_extruder_steps_per_unit_a_mode'] = isset($_units['a']) ? $_units['a']: 177.777778;
         $data['_milling_sacrificial_layer_offset']      = isset($_units['milling']['layer-offset']) ? $_units['milling']['layer-offset'] : 12.0;
-		    $data['_both_y_endstops']       = isset($_units['bothy']) ? $_units['bothy']: "None";
-		    $data['_both_z_endstops']       = isset($_units['bothz']) ? $_units['bothz']: "None";
-		    $data['_upload_api_key']        = isset($_units['api']['keys'][$_SESSION['user']['id']]) ? $_units['api']['keys'][$_SESSION['user']['id']]: '';
-		    $data['_zprobe']								= isset($_units['zprobe']['disable']) ? $_units['zprobe']['disable']: '0';
-		    $data['_zmax']									= isset($_units['zprobe']['zmax']) ? $_units['zprobe']['zmax']: '206';
+        $data['_both_y_endstops']    = isset($_units['bothy']) ? $_units['bothy']: "None";
+        $data['_both_z_endstops']    = isset($_units['bothz']) ? $_units['bothz']: "None";
+        $data['_upload_api_key']     = isset($_units['api']['keys'][$_SESSION['user']['id']]) ? $_units['api']['keys'][$_SESSION['user']['id']]: '';
+        $data['_zprobe']             = isset($_units['zprobe']['disable']) ? $_units['zprobe']['disable']: '0';
+        $data['_zmax']	             = isset($_units['zprobe']['zmax']) ? $_units['zprobe']['zmax']: '206';
 
         /** LOAD TAB HEADER */
         $_tab_header = $this->tab_header();
@@ -107,29 +106,6 @@ class Settings extends Module
 
     public function advanced()
     {
-        $this->config->load('myfab', true);
-
-        $data['_breadcrumb'] = 'Advanced';
-        $_tab_header = $this->tab_header('advanced');
-        $data['_tab_header'] = $_tab_header;
-
-        if ($this->input->post()) {
-            $file_content = $this->input->post('file_content');
-            file_put_contents($this->config->item('script_boot', 'myfab'), $file_content, FILE_USE_INCLUDE_PATH);
-        }
-
-        $data['_boot_script_file'] = $this->config->item('script_boot', 'myfab');
-        $data['_boot_script'] = file_get_contents($this->config->item('script_boot', 'myfab'), FILE_USE_INCLUDE_PATH);
-
-        $data['_tab_content'] = $this->load->view('index/advanced/index', $data, true);
-
-        $js_in_page = $this->load->view('index/advanced/js', $data, true);
-        $this->layout->add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
-
-        $this->layout->add_js_file(array('src' => 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
-    
-    public function advanced()
-    {
 
         $this->config->load('fabtotum', TRUE);
 
@@ -137,37 +113,37 @@ class Settings extends Module
         $_tab_header = $this->tab_header('advanced');
         $data['_tab_header'] = $_tab_header;
 
-  	    $config_units = json_decode(file_get_contents($this->config->item('fabtotum_config_units', 'fabtotum')), TRUE);
+        $config_units = json_decode(file_get_contents($this->config->item('fabtotum_config_units', 'fabtotum')), TRUE);
 
-		    shell_exec('sudo chmod 0777 ' . CONFIG_FOLDER);
+        shell_exec('sudo chmod 0777 ' . CONFIG_FOLDER);
 
-		    if(!file_exists($this->config->item('fabtotum_custom_config_units', 'fabtotum'))){
-			      $this->load->helper('file');
-			      write_file($this->config->item('fabtotum_custom_config_units', 'fabtotum'), json_encode($config_units), 'w');
-		    }
+        if(!file_exists($this->config->item('fabtotum_custom_config_units', 'fabtotum'))){
+            $this->load->helper('file');
+            write_file($this->config->item('fabtotum_custom_config_units', 'fabtotum'), json_encode($config_units), 'w');
+        }
 
-		    $custom_config_units = json_decode(file_get_contents($this->config->item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
+        $custom_config_units = json_decode(file_get_contents($this->config->item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
 
-		    if(!isset($custom_config_units['custom_overrides'])){
-			      $custom_config_units['custom_overrides'] = '/var/www/fabui/config/custom_overrides.txt';
-		    }
+        if(!isset($custom_config_units['custom_overrides'])){
+            $custom_config_units['custom_overrides'] = '/var/www/fabui/config/custom_overrides.txt';
+        }
 
-		    if(!file_exists($custom_config_units['custom_overrides'])){
-			      $this->load->helper('file');
-			      write_file('/var/www/fabui/config/custom_overrides.txt', '', 'w');
-		    }
+        if(!file_exists($custom_config_units['custom_overrides'])){
+            $this->load->helper('file');
+            write_file('/var/www/fabui/config/custom_overrides.txt', '', 'w');
+        }
 
-		    $data['settings_type']                         = isset($config_units['settings_type']) ? $config_units['settings_type'] : 'default';
-		    $data['feeder_extruder_steps_per_unit_e_mode'] = isset($custom_config_units['e']) ? $custom_config_units['e']: 3048.1593;
+        $data['settings_type']                         = isset($config_units['settings_type']) ? $config_units['settings_type'] : 'default';
+        $data['feeder_extruder_steps_per_unit_e_mode'] = isset($custom_config_units['e']) ? $custom_config_units['e']: 3048.1593;
         $data['feeder_extruder_steps_per_unit_a_mode'] = isset($custom_config_units['a']) ? $custom_config_units['a']: 177.777778;
-		    $data['show_feeder']                           = isset($custom_config_units['feeder']['show']) ? $custom_config_units['feeder']['show'] : true;
-		    $data['custom_overrides']                      = isset($custom_config_units['custom_overrides']) ? file_get_contents($custom_config_units['custom_overrides']) : '';
-		    $data['invert_x_endstop_logic']                = isset($custom_config_units['invert_x_endstop_logic']) ? $custom_config_units['invert_x_endstop_logic'] : false;
+        $data['show_feeder']                           = isset($custom_config_units['feeder']['show']) ? $custom_config_units['feeder']['show'] : true;
+        $data['custom_overrides']                      = isset($custom_config_units['custom_overrides']) ? file_get_contents($custom_config_units['custom_overrides']) : '';
+        $data['invert_x_endstop_logic']                = isset($custom_config_units['invert_x_endstop_logic']) ? $custom_config_units['invert_x_endstop_logic'] : false;
 
         $data['_tab_content'] = $this->load->view('index/advanced/index', $data, TRUE);
 
         $js_in_page  = $this->load->view('index/advanced/js', $data, TRUE);
-		    $css_in_page = $this->load->view('index/advanced/css', '', TRUE);
+        $css_in_page = $this->load->view('index/advanced/css', '', TRUE);
 
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));
         $this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => ''));
