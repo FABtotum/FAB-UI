@@ -2,6 +2,14 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+
+FABUI 0.949 (16/11/2015)
+
+CREATE
+- Fixed override z height function during print process
+
+==================================================================
+
 FABUI 0.9485 (hotfix) (26/08/2015)
 
 GENERAL

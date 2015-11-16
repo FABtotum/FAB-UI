@@ -28,8 +28,8 @@ defined("DB_DATABASE")  ? null : define("DB_DATABASE", 'fabtotum');
 defined("SQL_INSTALL_DB")  ? null : define("SQL_INSTALL_DB", RECOVERY_PATH.'install/sql/fabtotum.sql');
 
 //===================================================================================================================================================
-defined("CONFIG_UNITS")  ? null : define("CONFIG_UNITS", FABUI_PATH.'config/config.json');
-
+defined("CONFIG_UNITS")         ? null : define("CONFIG_UNITS", FABUI_PATH.'config/config.json');
+defined("CUSTOM_CONFIG_UNITS")  ? null : define("CUSTOM_CONFIG_UNITS", FABUI_PATH.'config/custom_config.json');
 
 //===================================================================================================================================================
 defined("MYFAB_REMOTE_VERSION_URL")  ? null : define("MYFAB_REMOTE_VERSION_URL", 'http://update.fabtotum.com/FAB-UI/version.txt');
@@ -104,7 +104,10 @@ defined('INSTAGRAM_HASH_JSON') ? null : define("INSTAGRAM_HASH_JSON",      TEMP_
 defined('TWITTER_FEED_URL')  ? null : define("TWITTER_FEED_URL",      'http://www.fabtotum.com/twitter_feed.json');
 defined('TWITTER_FEED_JSON') ? null : define("TWITTER_FEED_JSON",      TEMP_PATH.'twitter.json');
 
-defined('FAQ_URL')  ? null : define("FAQ_URL", 'http://www.fabtotum.com/faq.json');
+defined('BLOG_FEED_URL')  ? null : define("BLOG_FEED_URL",      'http://blog.fabtotum.com/feed/');
+defined('BLOG_FEED_XML')  ? null : define("BLOG_FEED_XML",      TEMP_PATH.'blog.xml');
+
+defined('FAQ_URL')  ? null : define("FAQ_URL", 'http://www.fabtotum.com/faq_new.json');
 defined('FAQ_JSON') ? null : define("FAQ_JSON", TEMP_PATH.'faq.json');
 
 

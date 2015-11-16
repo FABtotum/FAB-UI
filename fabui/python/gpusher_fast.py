@@ -1,12 +1,14 @@
 #gpusher
 import os,sys,time
 import serial
+from serial import SerialException
 from threading import Thread
 from subprocess import call
 import re
 import json
 import ConfigParser
 import logging
+
 
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
@@ -291,6 +293,9 @@ def sender():
                             
                             serial.write("G91\r\n") 
                             serial.write("G0 Z+" + override_splitted[1] +"\r\n")  #move up
+                            
+                           
+                            
                             serial.write("G90\r\n") 
                             sent+=3
                             trace("<span class='override-command'>Z height incresed by "+ override_splitted[1]+" mm</span>")
@@ -300,6 +305,9 @@ def sender():
                             z_override -= float(override_splitted[1])                        
                             serial.write("G91\r\n") 
                             serial.write("G0 Z-"+ override_splitted[1] +"\r\n")  #move down
+                            
+                           
+                            
                             serial.write("G90\r\n") 
                             sent+=3
                             trace("<span class='override-command'>Z height decreased by " + override_splitted[1] +" mm</span>")
@@ -331,12 +339,16 @@ def sender():
                     #G1 Z0.100 F15000.000
                     #z_str = re.search('Z(.+?) ', line)
                     #z_str = re.search('(Z.*?) |(Z.*)', line)
-                    z_str = re.search('(?<=Z)([0-9]*.[0-9]*)', line)
+                    #z_str = re.search('(?<=Z)([0-9]*.[0-9]*)', line)
+                    z_str = re.search('(?<=Z)([+|-]*[0-9]*.[0-9]*)', line)
                     if z_str:
                         z_c = z_str.group(1)
-                        z_c = float(z_c)+z_override
-                        #update Z coords.
-                        line =re.sub('Z.*? ','Z'+str(z_c)+' ',line, flags=re.DOTALL)
+                        if is_number(z_c):
+                            new_z_c = float(z_c)+float(z_override)
+                            #z_c = float(z_c)+z_override
+                            #update Z coords.
+                            line = line.replace(str(z_c), str(new_z_c))
+                            #line =re.sub('Z.*? ','Z'+str(z_c)+' ',line, flags=re.DOTALL)
                         #trace(line)
 
 
@@ -345,43 +357,41 @@ def sender():
                     if line[0:2]== "G0" or line[0:2]=="G1":
                         trace("Print Started")
                         print_started=True
-                
-                
                 #if gcode_line<30:
                 #UPDATE TARGET TEMP, only for early printing stage.
-                
-                if(isAdditive):
-                    if line[0:4]=="M109":
-                        ext_temp_target=line.split("S")[1].strip()
-                        trace("Wait for nozzle temperature to reach "+ str(ext_temp_target)+"&deg;C")
+                    if isAdditive:
                         
-                    elif line[0:4]=="M104":
-                        ext_temp_target=line.split("S")[1].strip()
-                        trace("Nozzle temperature set to "+ str(ext_temp_target)+"&deg;C")
-                        doWriteMonitor=True
-                    
-                    elif line[0:4]=="M140":
-                        bed_temp_target=line.split("S")[1].strip()
-                        trace("Bed temperature set to "+ str(bed_temp_target)+"&deg;C")
-                        doWriteMonitor=True
+                        if line[0:4]=="M109":
+                            ext_temp_target=line.split("S")[1].strip()
+                            trace("Wait for nozzle temperature to reach "+ str(ext_temp_target)+"&deg;C")
                         
-                    elif line[0:4]=="M190":
-                        bed_temp_target=line.split("S")[1].strip()
-                        trace("Wait for bed temperature to reach "+ str(bed_temp_target)+"&deg;C")
+                        elif line[0:4]=="M104":
+                            ext_temp_target=line.split("S")[1].strip()
+                            trace("Nozzle temperature set to "+ str(ext_temp_target)+"&deg;C")
+                            doWriteMonitor=True
                         
-                    
-                    elif line[0:4]=="M106":                        
-                        fan=line.split("S")[1].strip()
-                        if(fan == 0):
-                            trace("Fan Off")
-                        else:
-                            trace("Fan value set to "+ str(int((float(fan) / 255) * 100)) + "%")
-                        doWriteMonitor=True
+                        elif line[0:4]=="M140":
+                            bed_temp_target=line.split("S")[1].strip()
+                            trace("Bed temperature set to "+ str(bed_temp_target)+"&deg;C")
+                            doWriteMonitor=True
                             
-                    elif line[0:4]=="M107":
-                        trace("Fan Off")
-                        fan=0
-                        doWriteMonitor=True
+                        elif line[0:4]=="M190":
+                            bed_temp_target=line.split("S")[1].strip()
+                            trace("Wait for bed temperature to reach "+ str(bed_temp_target)+"&deg;C")
+                            
+                        
+                        elif line[0:4]=="M106":                        
+                            fan=line.split("S")[1].strip()
+                            if(fan == 0):
+                                trace("Fan Off")
+                            else:
+                                trace("Fan value set to "+ str(int((float(fan) / 255) * 100)) + "%")
+                            doWriteMonitor=True
+                                
+                        elif line[0:4]=="M107":
+                            trace("Fan Off")
+                            fan=0
+                            doWriteMonitor=True
                     
                     #elif(re.search('(?<=Z)([0-9]*.[0-9]*)', line)):    
                     #elif(re.search("G[0-1] Z\d*\.?\d+", line)):
@@ -392,10 +402,14 @@ def sender():
                         #actual_layer=float(tmp[0])*10
                         #actual_layer = actual_layer + 1
                 else:    
-                    if(line[0:2] == "M3" or line[0:2] == "M4"):
-                        rpm=line.split("S")[1].strip()
-                        trace("RPM speed set to "+ str(rpm))
-                        doWriteMonitor=True
+                    if(line[0:2] == "M3" or line[0:2] == "M4" or line[0:2] == "M6"):
+                        
+                        has_S = re.search('[sS]', line)
+                        
+                        if has_S:
+                            rpm=line.split("S")[1].strip()
+                            trace("RPM speed set to "+ str(rpm))
+                            doWriteMonitor=True
                             
                 #Send the line
                 #print line
@@ -433,9 +447,12 @@ def listener():
     while not EOF:
         
         while serial_in=="":
-            serial_in=serial.readline().rstrip()
+            try:
+                serial_in=serial.readline().rstrip()
             #time.sleep(0.05)
-            pass #wait!
+                pass #wait!
+            except SerialException as err:
+                trace(str(err))
         
         #if there is serial in:
         #parse actions:
@@ -446,50 +463,54 @@ def listener():
             #print "received ok"
             received+=1
             #print "sent: "+str(sent) +" rec: " +str(received)
-
+        
         ##error
-        if serial_in[:6]=="Resend":
-            #resend line
-            resend=serial_in.split(":")[1].rstrip()
-            received-=1 #lost a line!
-            trace("Error: Line no "+str(resend) + " has not been received correctly")
-            
         
-        ##temperature report    
-        #if(isAdditive):
-        if serial_in[:4]=="ok T":
-            #Collected M105: Get Extruder & bed Temperature (reply)
-            #EXAMPLE:
-            #ok T:219.7 /220.0 B:26.3 /0.0 T0:219.7 /220.0 @:35 B@:0
-            #trace(serial_in);
-            temps=serial_in.split(" ")
+        try:
+            if serial_in[:6]=="Resend":
+                #resend line
+                resend=serial_in.split(":")[1].rstrip()
+                received-=1 #lost a line!
+                trace("Error: Line no "+str(resend) + " has not been received correctly")
+                
             
-            if is_number(temps[1].split(":")[1]):
-                ext_temp=float(temps[1].split(":")[1])
-            if is_number(temps[2].split("/")[1]):
-                ext_temp_target=float(temps[2].split("/")[1])
-            #print ext_temp_target
+            ##temperature report    
+            #if(isAdditive):
+            if serial_in[:4]=="ok T":
+                #Collected M105: Get Extruder & bed Temperature (reply)
+                #EXAMPLE:
+                #ok T:219.7 /220.0 B:26.3 /0.0 T0:219.7 /220.0 @:35 B@:0
+                #trace(serial_in);
+                temps=serial_in.split(" ")
+                
+                if is_number(temps[1].split(":")[1]):
+                    ext_temp=float(temps[1].split(":")[1])
+                if is_number(temps[2].split("/")[1]):
+                    ext_temp_target=float(temps[2].split("/")[1])
+                #print ext_temp_target
+                
+                if is_number(temps[3].split(":")[1]):
+                    bed_temp=float(temps[3].split(":")[1])
+                
+                if is_number(temps[4].split("/")[1]):
+                    bed_temp_target=float(temps[4].split("/")[1])
+                
+                received+=1
             
-            if is_number(temps[3].split(":")[1]):
-                bed_temp=float(temps[3].split(":")[1])
-            
-            if is_number(temps[4].split("/")[1]):
-                bed_temp_target=float(temps[4].split("/")[1])
-            
-            received+=1
+                ## temp report (wait)    
+            if serial_in[:2]=="T:":    
+                #collected M109/M190 Snnn temp (Set temp and  wait until reached)
+                #T:187.1 E:0 B:59
+                #print serial_in
+                temps=serial_in.split(" ")
+                
+                if is_number(temps[0].split(":")[1]):
+                    ext_temp=float(temps[0].split(":")[1])
+                if is_number(temps[2].split(":")[1]):
+                    bed_temp=float(temps[2].split(":")[1])
         
-            ## temp report (wait)    
-        if serial_in[:2]=="T:":    
-            #collected M109/M190 Snnn temp (Set temp and  wait until reached)
-            #T:187.1 E:0 B:59
-            #print serial_in
-            temps=serial_in.split(" ")
-            
-            if is_number(temps[0].split(":")[1]):
-                ext_temp=float(temps[0].split(":")[1])
-            if is_number(temps[2].split(":")[1]):
-                bed_temp=float(temps[2].split(":")[1])
-        
+        except IndexError as err:
+            trace(str(err))
         #print "BED: "+str(bed_temp) + " EXT: "+ str(ext_temp)
         #ok is sent separately.
         

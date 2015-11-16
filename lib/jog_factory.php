@@ -29,18 +29,22 @@ class JogFactory {
 	private $_command;        // command sent to the serial port
 	private $_response;       // serial port response
 	private $_type;           // type
+	private $_extruder_feedrate = 300;
+	
+	private $_detail_response = '';
 	
 	
 
 	/**
 	 * Constructor - Sets default valuue
 	 */
-	public function __construct($feedrate = '', $step = '', $zstep = '') {
+	public function __construct($feedrate = '', $step = '', $zstep = '', $extrude_feedrate = '') {
 
 		$this -> _serial = new Serial();
 		$this -> _feedrate = $feedrate;
 		$this -> _step = $step;
 		$this -> _z_step = $zstep;
+		$this ->_extruder_feedrate = $extrude_feedrate;
 		$this->_type = 'serial';
 
 	}
@@ -58,8 +62,9 @@ class JogFactory {
 		
 		$data = array();
 		
-		$data['command'] = $this->_command;
+		$data['command']  = $this->_command;
 		$data['response'] = $this->_response;
+		$data['detail']   = $this->_detail_response;
 		
 		$response_items['data'] = $data;
 
@@ -180,7 +185,7 @@ class JogFactory {
 	 */
 	public function extruder_e($value){
 		
-		$command = 'G0 E'.$value.' F'.$this->_feedrate;
+		$command = 'G0 E'.$value.' F'.$this ->_extruder_feedrate;
 		$this -> _command = 'G91' . PHP_EOL . $command;		
 		$this -> exec();
 		return $this -> returnResponse();	
@@ -196,7 +201,7 @@ class JogFactory {
 	 */
 	public function extruder_mode($value){
 		
-		$_units = json_decode(file_get_contents(CONFIG_UNITS), TRUE);
+		$_units = file_exists(CUSTOM_CONFIG_UNITS) ? json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE) : json_decode(file_get_contents(CONFIG_UNITS), TRUE);
 		
 		$_mode['a'] = 'M92 E'.$_units['a'].PHP_EOL.'G92 E0';
 		$_mode['e'] = 'M92 E'.$_units['e'].PHP_EOL.'G92 E0';
@@ -378,6 +383,44 @@ class JogFactory {
 		return $this -> returnResponse();
 		
 	}
+	
+	
+	/**
+	 * Set Fan On/Off
+	 *
+	 * @param  $value
+	 * @access	public
+	 * @return	json string
+	 */
+	public function fan($value){
+			
+		$_mode['on'] = 'M106';
+		$_mode['off'] = 'M107';
+		
+		$this->_command = $_mode[$value];
+		$this ->_detail_response = 'Fan '.$value;
+		
+		$this -> exec();
+
+		return $this -> returnResponse();
+	}
+	
+	
+	/**
+	 * Read EEPROM setting
+	 *
+	 * @access	public
+	 * @return	json string
+	 */
+	public function eeprom(){
+			
+		$this->_command = 'M503';
+		$this -> exec();
+		return $this -> returnResponse();
+	}
+	
+	
+	
 
 }
 ?>
