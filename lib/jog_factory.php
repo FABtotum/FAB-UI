@@ -185,6 +185,11 @@ class JogFactory {
 	 */
 	public function extruder_e($value){
 		
+		
+		if($this->_extruder_feedrate == ''){
+		 	$this->_extruder_feedrate = $this->_feedrate;
+		}
+		
 		$command = 'G0 E'.$value.' F'.$this ->_extruder_feedrate;
 		$this -> _command = 'G91' . PHP_EOL . $command;		
 		$this -> exec();
