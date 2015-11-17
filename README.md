@@ -2,6 +2,12 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9491 (hotfix) (17/11/2015)
+
+JOG
+- Fixed feederate value on extrurder mode
+
+==================================================================
 
 FABUI 0.949 (16/11/2015)
 
