@@ -5,11 +5,9 @@
 				<form class="form-horizontal" action="<?php echo site_url('settings') ?>" method="post">
 
 					<fieldset>
-
 						<legend>
 							Safety - enable/disable warnings
 						</legend>
-
 						<div class="form-group">
 							<label class="col-md-2 control-label"> Door </label>
 							<div class="col-md-10">
@@ -23,11 +21,12 @@
 										<input type="radio" class="radiobox style-0" name="safety-door" value="0" <?php echo $_safety_door == '0' ? 'checked="checked"' : '' ?>>
 										<span>Disable</span> </label>
 								</div>
-
 							</div>
 						</div>
 					</fieldset>
+
 					<br>
+
 					<fieldset>
 						<legend>
 							Homing preferences
@@ -47,7 +46,6 @@
 								</div>
 							</div>
 						</div>
-						
 						<div class="form-group">
 							<label class="col-md-2 control-label">Z-Probe</label>
 							<div class="col-md-2">
@@ -67,7 +65,6 @@
 								<input class="form-control"  type="text" id="zmax-homing" value="<?php echo $_zmax; ?>">
 							</div>
 						</div>
-
 					</fieldset>
 
 					<fieldset>
@@ -96,7 +93,9 @@
 							<b>Warning: You have to restart the FABtotum so that some customized input actions take effect</b>
 						</div>
 					</fieldset>
+
 					<br>
+
 					<fieldset>
 						<legend>
 							Feeder
@@ -122,7 +121,21 @@
 						</div>
 						-->
 					</fieldset>
-					
+
+					<br>
+
+					<fieldset>
+						<legend>
+							Milling
+						</legend>
+						<div class="form-group">
+							<label class="col-md0 control-label">Sacrificial Layer Thickness (mm)</label>
+							<div class="col-md-10">
+								<input class="form-control"  type="text" id="milling-sacrificial-layer-offset" value="<?php echo $_milling_sacrificial_layer_offset; ?>">
+							</div>
+						</div>
+					</fieldset>
+
 					<fieldset>
 						<legend>Api</legend>
 						<div class="form-group">
@@ -133,11 +146,8 @@
 							<button id="gen-key-button" class="btn btn-primary col-md-1" type="button">
 							New key
 							</button>
-							
 						</div>
-				
 					</fieldset>
-					
 
 					<fieldset>
 						<legend>
@@ -160,8 +170,8 @@
 							<input name="standby-color-green" id="standby-color-green" type="hidden" value="<?php echo $_standby_color['g'] != '' ? $_standby_color['g'] : 0 ?>"/>
 							<input name="standby-color-blue"  id="standby-color-blue"  type="hidden" value="<?php echo $_standby_color['b'] != '' ? $_standby_color['b'] : 0 ?>"/>
 						</div>
-
 					</fieldset>
+
 					<div class="form-actions">
 						<button id="save-button" class="btn btn-primary" type="button">
 							<i class="fa fa-save"></i>&nbsp;Save
