@@ -119,6 +119,8 @@
 	
 	function macro(mode, index){
 		
+		IS_MACRO_ON = true;
+		
 		$(".re-choice").slideUp('slow');
 		
 		var message = mode == 'prepare' ? 'Preparing calibration<br>Heating extruder and bed<br>This operation will take a while' : 'Calibrating<br>please wait';
@@ -151,6 +153,8 @@
 				
 				
 			});
+			
+			IS_MACRO_ON = false;
 			
 			
             
@@ -201,7 +205,7 @@
 	
 	
 	function jog_make_call(func, value){  
-
+		IS_MACRO_ON = true;
 		$(".z-action").addClass('disabled');
 		$.ajax({
 			type: "POST",
@@ -209,7 +213,8 @@
 			data : {function: func, value: value},
 			dataType: "json"
 		}).done(function( data ) {
-	       $(".z-action").removeClass('disabled'); 
+	       $(".z-action").removeClass('disabled');
+	       IS_MACRO_ON = false; 
 		});
 		
 	}
@@ -234,7 +239,7 @@
 		
 			openWait('please wait');
 			
-			
+			IS_MACRO_ON = true;
 			
 			$.ajax({
 				type: "POST",
@@ -252,6 +257,8 @@
 	           	
 	           	probe_length = data.probe_length;
 	           	$("#probe-lenght").html(Math.abs(data.probe_length));
+	           	
+	           	IS_MACRO_ON = false;
 		       
 			});
 		
@@ -272,7 +279,7 @@
 		
 		$(".re-choice").slideUp('slow');
 		openWait('please wait');
-		
+		IS_MACRO_ON = true;
 		
 		$.ajax({
 				type: "POST",
@@ -293,8 +300,9 @@
 		       $("#row-fast-1").slideUp('fast', function(){
 		       		 $("#row-fast-2").slideDown();
 		       });
-		      
+		      	
 		       closeWait();
+		       IS_MACRO_ON = false;
 		       
 		       
 			});

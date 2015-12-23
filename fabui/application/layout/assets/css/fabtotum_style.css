@@ -1,3 +1,4 @@
+
 .dotted {
 	border-style: dotted !important;
 }
@@ -194,3 +195,28 @@
 .btn-header {
 	margin-left: 3px !important;
 }
+
+.margin-right-10 {
+	margin-right: 10px !important;
+}
+.emergency-container{
+	margin-right: 10px !important;
+	border-right: 1px solid  #CCC;
+	padding-right:10px;
+}
+
+.top-bar-temperatures {
+	
+	margin-right: 10px !important;
+	border-right: 1px solid  #CCC;
+	padding-right:10px;
+}
+
+.top-bar-temperatures span:first-child{
+
+	display: inline-block;
+	margin: 13px 0 0;
+	font-size:18px
+	
+	
+}    

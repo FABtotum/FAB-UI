@@ -89,6 +89,7 @@
     float: none !important;
 }
 
+/*
 .smart-form .input .icon-prepend + input {
   padding-left: 57px !important;
 }
@@ -99,7 +100,7 @@
   border-right-width: 1px;
   border-right-style: solid;
 }
-
+*/
 
 .error{
     background-color: #fff0f0 !important;

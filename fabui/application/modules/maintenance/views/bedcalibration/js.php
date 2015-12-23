@@ -2,6 +2,8 @@
 	
 	var ticker_url = '';
 	var interval_ticker;
+	var num_probes = 1;
+	var skip_homing = 0;
 
 	$(function () {
 		
@@ -38,7 +40,7 @@
 	function do_calibration(){
 		
 		openWait('Calibration in process');
-		
+		IS_MACRO_ON = true;
 		var now = jQuery.now();
 		ticker_url = '/temp/macro_trace';
 		
@@ -47,11 +49,13 @@
 		$.ajax({
 			type: "POST",
 			url : "<?php echo module_url('maintenance').'ajax/bed_calibration.php' ?>",
-			data : {time: now},
+			data : {time: now, num_probes : num_probes, skip_homing: skip_homing},
 			dataType: "html"
 		}).done(function( data ) {
 			
 			
+			num_probes++;
+			skip_homing = 1;
 			closeWait();
 			ticker_url = '';
 			
@@ -67,7 +71,7 @@
 			
 			$(".todo").html(data);
 			
-			
+			IS_MACRO_ON = false;
 			
 		});
 		

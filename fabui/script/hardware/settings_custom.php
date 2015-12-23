@@ -9,8 +9,6 @@
 
 require_once '/var/www/lib/config.php';
 
-
-
 //load config
 $configs          = json_decode(file_get_contents(FABUI_PATH.'config/custom_config.json'), TRUE);
 $custom_overrides = file_get_contents($configs['custom_overrides']);

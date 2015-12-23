@@ -40,6 +40,7 @@ class Settings extends Module {
 		$data['_upload_api_key']                        = isset($_units['api']['keys'][$_SESSION['user']['id']]) ? $_units['api']['keys'][$_SESSION['user']['id']]: '';
 		$data['_zprobe']								= isset($_units['zprobe']['disable']) ? $_units['zprobe']['disable']: '0';
 		$data['_zmax']									= isset($_units['zprobe']['zmax']) ? $_units['zprobe']['zmax']: '206';
+		$data['_milling_sacrificial_layer_offset']      = isset($_units['milling']['layer-offset']) ? $_units['milling']['layer-offset'] : 12.0;
 		
         /** LOAD TAB HEADER */
         $_tab_header = $this->tab_header();
@@ -55,8 +56,8 @@ class Settings extends Module {
 		$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'settings js'));
         $this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => 'settings css'));
         
-        $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.min.js', 'comment' => 'javascript for the noUISlider'));
-        $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider/jquery.nouislider.css', 'comment' => 'javascript for the noUISlider'));
+       $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.all.min.js', 'comment' => 'javascript for the noUISlider'));
+        $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.min.css', 'comment' => 'javascript for the noUISlider'));
 
         
         
@@ -122,13 +123,13 @@ class Settings extends Module {
     
     
     
-    public function advanced(){
+    public function hardware(){
         
         
         $this->config->load('fabtotum', TRUE);
         
-        $data['_breadcrumb']  = 'Advanced';
-        $_tab_header = $this->tab_header('advanced');
+        $data['_breadcrumb']  = 'Hardware';
+        $_tab_header = $this->tab_header('hardware');
         $data['_tab_header'] = $_tab_header;
         
         
@@ -161,11 +162,11 @@ class Settings extends Module {
 		$data['invert_x_endstop_logic']                = isset($custom_config_units['invert_x_endstop_logic']) ? $custom_config_units['invert_x_endstop_logic'] : false;
 		
 		         
-        $data['_tab_content'] = $this->load->view('index/advanced/index', $data, TRUE);
+        $data['_tab_content'] = $this->load->view('index/hardware/index', $data, TRUE);
         
         
-        $js_in_page  = $this->load->view('index/advanced/js', $data, TRUE);
-		$css_in_page = $this->load->view('index/advanced/css', '', TRUE);
+        $js_in_page  = $this->load->view('index/hardware/js', $data, TRUE);
+		$css_in_page = $this->load->view('index/hardware/css', '', TRUE);
 		
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
         $this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => '')); 
@@ -310,13 +311,59 @@ class Settings extends Module {
         $this->layout->view('index/index', $data);
         
     }
+	
+	
+	
+	public function eeprom(){
+        
+		//$this->load->model('eeprom');
+		//$configs = $this->eeprom->get_all();
+		
+		//$data['configs']      = $configs;
+		$data['_tab_header']  = $this->tab_header('eeprom');
+		$data['_tab_content'] = $this->load->view('index/eeprom/index', $data, TRUE);
+		
+		
+		$js_in_page  = $this->load->view('index/eeprom/js', $data, TRUE);
+		$css_in_page = $this->load->view('index/eeprom/css', '', TRUE);
+		
+		// == LAYOUT
+		/*$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
+        */
+        
+		$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => '')); 
+        $this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => ''));
+		
+		
+		$this->layout->view('index/index', $data);
+		
+		
+        
+    }
+	
+	
+	public function getEepromLine($lines, $key){
+		
+		
+		foreach($lines as $line){
+			
+			if(strpos($line, $key) !== false ){
+				return $line;
+			}
+			
+		}
+		
+	}
     
 
 
     
     function tab_header($current = 'settings'){
  
-        $_tabs[] = array('name' => 'settings',    'label'=>'General',     'url' => site_url('settings'),             'icon' => 'fa fa-lg fa-fw fa fa-cogs');
+        $_tabs[] = array('name' => 'settings',    'label'=>'General',     'url' => site_url('settings'),             'icon' => 'fa fa-lg fa-fw fa fa-list-ul');
         //$_tabs[] = array('name' => 'scan',        'label'=>'Scan',        'url' => site_url('settings/scan'),        'icon' => 'fab-lg fab-fw icon-fab-scan');
         //$_tabs[] = array('name' => 'create',      'label'=>'Print',       'url' => site_url('settings/create'),      'icon' => 'fab-lg fab-fw icon-fab-print');
         //$_tabs[] = array('name' => 'jog',         'label'=>'Jog',         'url' => site_url('settings/jog'),         'icon' => 'fab-lg fab-fw icon-fab-jog');
@@ -324,13 +371,14 @@ class Settings extends Module {
         
 		//$_tabs[] = array('name' => 'maintenance', 'label'=>'Maintenance', 'url' => site_url('settings/maintenance'), 'icon' => 'fa fa-lg fa-fw fa-wrench');
         $_tabs[] = array('name' => 'network',     'label'=>'Network',     'url' => site_url('settings/network'),     'icon' => 'fa fa-lg fa-fw fa-sitemap');
-		$_tabs[] = array('name' => 'advanced',    'label'=>'Advanced',    'url' => site_url('settings/advanced'),    'icon' => 'fa fa-lg fa-fw fa-briefcase');
-        
+		$_tabs[] = array('name' => 'hardware',    'label'=>'Hardware',    'url' => site_url('settings/hardware'),    'icon' => 'fa fa-lg fa-fw fa-gear');
+        //$_tabs[] = array('name' => 'eeprom',      'label'=>'Firmware EEPROM Settings',      'url' => site_url('settings/eeprom'),      'icon' => 'fa fa-lg fa-fw fa-hdd-o');
+		
 
         $data['_current'] = $current;
         $data['_tabs']    = $_tabs;
         
-        return $this->load->view('index/tab_header', $data, TRUE);
+        return $this->load->view('index/tab_header', $data, TRUE); 
         
     }
 

@@ -2,9 +2,6 @@ import serial
 import json
 import ConfigParser
 
-
-EOL = '\r\n'
-
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
 
@@ -19,56 +16,44 @@ serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 
 
-''' FLUSH BUFFER FUNCTION '''
-def flush():
+
+def writeToSerial():
     
-    global serial
-    
-    print "FLUSH SERIAL"
-    #serial.flushInput()
-    serial.flushOutput()
-    #serial.flush()
+    #write to serial
+    #wait 
 
 
-''' FLUSH SERIAL '''
-#flush()
 
-''' ALIVE MACHINE '''
-serial.write('M728' + EOL)
-serial.flushOutput()
-#flush()
-
-''' SETTINGS AMBIENT COLOR '''
-color_red   = str(fabtotum_settings['color']['r'])
-color_green = str(fabtotum_settings['color']['g'])
-color_blue  = str(fabtotum_settings['color']['b'])
-
-serial.write('M701 S' + color_red + EOL)
-serial.flushOutput()
-serial.write('M702 S' + color_green + EOL)
-serial.flushOutput()
-serial.write('M703 S' + color_blue + EOL)
-serial.flushOutput()
-#flush()
-''' SETTING SAFETY PANEL DOOR WARNING '''
-safety_door = str(fabtotum_settings['safety']['door'])
-
-serial.write('M732 S' + safety_door + EOL)
-serial.flushOutput()
-#flush()
-''' SETTING HOMING PREFERENCES '''
-homing_preferences = str(fabtotum_settings['switch'])
-
-serial.write('M714 S' + homing_preferences + EOL)
-serial.flushOutput()
-#flush()
-
-''' FLUSH SERIAL '''
-#flush()
-
-''' GET HARDWARE VERSION '''
-serial.write('M763\r\n')
-print  serial.read(1024)
-
-
-serial.close()
+def macro(code,expected_reply,timeout,error_msg,delay_after,warning=False,verbose=True):
+    serial.flushInput()
+    if s_error==0:
+        serial_reply=""
+        macro_start_time = time.time()
+        serial.write(code+"\r\n")
+        if verbose:
+            trace(error_msg)
+        time.sleep(0.3) #give it some tome to start
+        while not (serial_reply==expected_reply or serial_reply[:4]==expected_reply):
+            #Expected reply
+            #no reply:
+            if (time.time()>=macro_start_time+timeout+5):
+                if serial_reply=="":
+                    serial_reply="<nothing>"
+                #trace_msg="failed macro (timeout):"+ code+ " expected "+ expected_reply+ ", received : "+ serial_reply
+                #trace(trace_msg,log_trace)
+                #print trace_msg
+                if not warning:
+                    trace(error_msg + ": Failed (" +serial_reply +")")
+                else:
+                    trace(error_msg + ": Warning! ")
+                return False #leave the function
+            serial_reply=serial.readline().rstrip()
+            #add safety timeout
+            time.sleep(0.2) #no hammering
+            pass
+        time.sleep(delay_after) #wait the desired amount
+    else:
+        trace(error_msg + ": Skipped")
+        
+        return False
+    return serial_reply

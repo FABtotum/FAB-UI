@@ -4,9 +4,16 @@ class Objectmanager extends Module {
 
 	public function __construct() {
 		parent::__construct();
+		
+		 $this->load->helper('print_helper');
+        /** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
+        if(is_printer_busy()){
+            //redirect('dashboard');
+            $this->layout->set_printer_busy(true);
+        }
 
 		$this -> lang -> load($_SESSION['language']['name'], $_SESSION['language']['name']);
-		$this -> layout -> add_css_file(array('src' => 'application/modules/objectmanager/assets/css/filemanager.css', 'comment' => 'css for filemanager module'));
+		shell_exec('sudo rm -r download');
 
 	}
 
@@ -40,20 +47,19 @@ class Objectmanager extends Module {
 		$this -> load -> helper('smart_admin_helper');
 		$this -> load -> helper('ft_date_helper');
 
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js', 'comment' => ''));
+		//$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js', 'comment' => ''));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js', 'comment' => ''));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
-		
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
-		
-		
+
+		//$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
+
 		$free_space = disk_free_space('/');
 		$total_space = disk_total_space('/');
-		$percent_free = intval(($free_space/$total_space) * 100);
+		$percent_free = intval(($free_space / $total_space) * 100);
 		$percent_used = 100 - $percent_free;
-		
+
 		$data_table['_disk_used_percent'] = $percent_used;
 		$_table = $this -> load -> view('index/table', $data_table, TRUE);
 
@@ -66,11 +72,8 @@ class Objectmanager extends Module {
 		$data['_table'] = $_widget_table;
 		$data['_disk_total_space'] = disk_total_space('/');
 		$data['_disk_free_space'] = disk_free_space('/');
-		
 
 		$this -> layout -> view('index/index', $data);
-		
-		
 
 	}
 
@@ -96,6 +99,8 @@ class Objectmanager extends Module {
 			$files = explode(',', $this -> input -> post('files'));
 
 			$usb_files = explode(',', $this -> input -> post('usb_files'));
+			
+			
 
 			$usb_files_id = array();
 
@@ -104,10 +109,12 @@ class Objectmanager extends Module {
 
 					$tmp = str_replace(" ", "_", $file);
 
-					array_push($usb_files_id, $this -> copy_from_usb('/media/' . $file));
+					array_push($usb_files_id, $this -> copy_from_usb('/media/usb0/' . $file));
 				}
 
 			}
+			
+			
 
 			$this -> objects -> insert_files($_obj_id, $files);
 			$this -> objects -> insert_files($_obj_id, $usb_files_id);
@@ -123,17 +130,23 @@ class Objectmanager extends Module {
 		/** LOAD FROM USB DISK FIRST TREE */
 
 		$data['folder_tree'] = array();
-
-		/** CHECK IF USB IS INSERTED
-		 if(file_exists('/dev/sda1')){
-
-		 $_destination = '/var/www/fabui/application/modules/objectmanager/temp/media.json';
-		 $_command = 'sudo python /var/www/fabui/python/usb_browser.py  --dest=' . $_destination;
-		 shell_exec($_command);
-		 //sleep ( 1);
-		 $data['folder_tree'] = json_decode(file_get_contents($_destination), TRUE);
-
-		 }*/
+		
+		
+		$this -> load -> helper('smart_admin_helper');
+		
+		/** LOAD FORM CONTENT */
+		$_form = $this -> load -> view('add/form', '', TRUE);
+		$_dropzone = $this -> load -> view('add/dropzone', '', TRUE);
+		
+		$form_attr['data-widget-icon'] = '';
+		$_form_widget = widget('form' . time(), 'Details ', $form_attr, $_form, false, true, true);
+		
+		$dropzone_attr['data-widget-icon'] = '';
+		$_dropzone_widget = widget('form' . time(), 'Upload ', $dropzone_attr, $_dropzone, false, true, true);
+		
+		$data['form'] = $_form_widget;
+		$data['dropzone'] = $_dropzone_widget;
+		
 
 		$js_data['accepted_files'] = $this -> config -> item('upload_accepted_files');
 		$j_data['_upload_max_filesize'] = ini_get("upload_max_filesize");
@@ -176,12 +189,16 @@ class Objectmanager extends Module {
 		/** LOAD FILES ID */
 		$_files_id = $this -> objects -> get_files($id_object);
 		$_files = array();
+		
+		
 
 		foreach ($_files_id as $id) {
 
 			$_files[] = $this -> files -> get_file_by_id($id);
 
 		}
+		
+		
 
 		$printable_files[] = '.gc';
 		$printable_files[] = '.gcode';
@@ -190,22 +207,31 @@ class Objectmanager extends Module {
 		$_widget_data['_id_object'] = $id_object;
 		$_widget_data['_files'] = $_files;
 		$_widget_data['_printable_files'] = $printable_files;
+		$_widget_data['_object'] = $_object;
 
 		/** LOAD TABLE CONTENT */
+		$_table_widget_toolbar = $this -> load -> view('edit/table_toolbar', $_widget_data, TRUE);
 		$_table = $this -> load -> view('edit/table', $_widget_data, TRUE);
 
+		/** LOAD FORM CONTENT */
+		$_form = $this -> load -> view('edit/form', $_widget_data, TRUE);
+
 		/** CREATE WIDGET */
-		$attr['data-widget-icon'] = 'fa fa-files-o';
-		$_widget_table = widget('objects' . time(), 'Files', $attr, $_table, false, true, true);
+		$attr['data-widget-icon'] = 'fa fa-th-list';
+		$_widget_table = widget('objects' . time(), 'Files', $attr, $_table, false, true, true, $_table_widget_toolbar);
+
+		$form_attr['data-widget-icon'] = '';
+		$_form_widget = widget('form' . time(), 'Details ', $form_attr, $_form, false, true, true);
 
 		/** LAYOUT */
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js', 'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js',     'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js',     'comment' => ''));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js',  'comment' => ''));
 
 		$data['_object'] = $_object;
 		$data['_widget'] = $_widget_table;
+		$data['_form'] = $_form_widget;
 
 		$js_in_page = $this -> load -> view('edit/js', $data, TRUE);
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => 'EDIT FUNCTIONS'));
@@ -216,8 +242,6 @@ class Objectmanager extends Module {
 	}
 
 	public function delete() {
-
-		
 
 		//if is only an ajax call request
 		if ($this -> input -> is_ajax_request()) {
@@ -247,7 +271,7 @@ class Objectmanager extends Module {
 					//unlink($file->full_path);
 				}
 			}
-			
+
 			echo json_encode(array('success' => TRUE, 'messagge' => ''));
 
 		} else {
@@ -431,7 +455,7 @@ class Objectmanager extends Module {
 				foreach ($usb_files as $file) {
 					if ($file != '') {
 						$tmp = str_replace(" ", "_", $file);
-						array_push($usb_files_id, $this -> copy_from_usb('/media/' . $file));
+						array_push($usb_files_id, $this -> copy_from_usb('/media/usb0/' . $file));
 					}
 
 				}
@@ -638,19 +662,91 @@ class Objectmanager extends Module {
 
 	}
 
-	public function download($id_file) {
+	public function download($type, $list) {
 
 		$this -> load -> database();
 		$this -> load -> model('files');
-
+		$this -> load -> model('objects');
+		
+		$download_folder = 'download';
+		//shell_exec('sudo rm -r download');
+		//mkdir(FCPATH.'/'.$download_folder, 0777);
+		shell_exec('sudo mkdir '.FCPATH.'/'.$download_folder);
+		shell_exec('sudo chmod 0777 ' . FCPATH.'/download');
+		
+		
 		/** LOAD HELPER */
 		$this -> load -> helper('download');
 
-		$_file = $this -> files -> get_file_by_id($id_file);
+		if ($type == 'file') {
+			$files = explode('-', $list);
+			
+			if (count($files) > 0) {
 
-		$data = file_get_contents($_file -> full_path);
+				if (count($files) == 1) {
 
-		force_download($_file -> file_name, $data);
+					$_file = $this -> files -> get_file_by_id($files[0]);
+					$data = file_get_contents($_file -> full_path);
+					force_download($_file -> file_name, $data);
+				} else {
+					
+					foreach ($files as $file_id) {
+
+						$file = $this -> files -> get_file_by_id($file_id);
+						shell_exec('cp ' . $file -> full_path . ' ' . $download_folder);
+						shell_exec('sudo cp "' . $file -> full_path . '" ' . FCPATH.'/'.$download_folder);
+					}
+					
+					shell_exec('sudo chmod -R 0777 ' . FCPATH.$download_folder);
+					
+					//zip file
+					$this -> load -> library('zip');
+					$this -> zip -> read_dir($download_folder . '/');
+					$this -> zip -> download('fabtotum_files.zip');
+
+				}
+			}
+		} else if ($type == 'object') {
+
+			$objects = explode('-', $list);
+			if (count($objects) > 0) {
+
+				//crate download temp folder
+				shell_exec('sudo chmod -R 0777 ' . FCPATH.'/'.$download_folder);
+
+				foreach ($objects as $obj_id) {
+
+					$obj = $this -> objects -> get_obj_by_id($obj_id);
+					
+					$obj_folder = $download_folder . '/' . str_replace(' ', '_', $obj -> obj_name);
+					
+					$obj_folder = str_replace('(', '_', $obj_folder);
+					$obj_folder = str_replace(')', '_', $obj_folder);
+
+					//create objec folder
+					
+					mkdir($obj_folder, 0777);
+					shell_exec('sudo chmod -R 0777 ' . FCPATH.$obj_folder);
+					
+					$files = $this -> objects -> get_files($obj_id);
+
+					foreach ($files as $file_id) {
+						$file = $this -> files -> get_file_by_id($file_id);
+						shell_exec('sudo cp "' . $file -> full_path . '" ' . FCPATH.$obj_folder.'/');
+					}
+				}
+				
+				//zip file
+				shell_exec('sudo chmod -R 0777 ' . FCPATH.$download_folder);
+				
+				
+				
+				$this -> load -> library('zip');
+				$this -> zip -> read_dir($download_folder.'/');
+				$this -> zip -> download('fabtotum_objects.zip');
+				
+			}
+		}
 
 	}
 
@@ -658,15 +754,15 @@ class Objectmanager extends Module {
 
 		if ($this -> input -> is_ajax_request()) {
 
-			$files = $this->input->post("ids");
+			$files = $this -> input -> post("ids");
 
 			//carico X class database
 			$this -> load -> database();
 			$this -> load -> model('files');
 			$this -> load -> model('objects');
-			
-			foreach($files as $id_file){
-				
+
+			foreach ($files as $id_file) {
+
 				$_file = $this -> files -> get_file_by_id($id_file);
 				$id_object = $this -> objects -> get_by_file($id_file);
 				$this -> objects -> delete_files($id_object, array($id_file));
@@ -884,6 +980,8 @@ class Objectmanager extends Module {
 
 		/** MOVE TO TEMP FOLDER */
 		$_command = 'sudo cp "' . $file . '"  "/var/www/temp/' . $file_name . '" ';
+		
+		//echo $_command.PHP_EOL;
 
 		shell_exec($_command);
 
@@ -900,6 +998,9 @@ class Objectmanager extends Module {
 		/** MOVE TO FINALLY FOLDER */
 		$_command = 'sudo cp "' . $file . '" "' . $folder_destination . $file_name . '" ';
 		shell_exec($_command);
+		
+		//echo $_command.PHP_EOL;
+		
 		/** ADD PERMISSIONS */
 		$_command = 'sudo chmod 746 "' . $folder_destination . $file_name . '" ';
 		shell_exec($_command);

@@ -1,14 +1,49 @@
 <?php
 class Dashboard extends Module {
 
+	private $_printer_busy = false;
+
 	public function __construct() {
+		
+		
+		
 		parent::__construct();
 
 		$this -> lang -> load($_SESSION['language']['name'], $_SESSION['language']['name']);
+		
+		$this->load->helper('print_helper');
+        /** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
+        if(is_printer_busy()){
+            $this->layout->set_printer_busy(true);
+        }
 
 	}
-
-	public function index() {
+	
+	
+	public function index(){
+		
+		
+		$this->load->helper('smart_admin_helper');
+		
+		$this -> load -> library('WidgetsFactory');
+		
+		$twitter_widget = $this -> widgetsfactory -> load('twitter');
+		$instagram_widget = $this->widgetsfactory->load('instagram');
+		$blog_widget = $this->widgetsfactory->load('blog');
+		
+		$data['twitter_widget'] = $twitter_widget->content();
+		$data['instagram_widget'] = $instagram_widget->content();
+		$data['blog_widget'] = $blog_widget->content();
+		
+		
+		//
+		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/fancybox/jquery.fancybox.pack.js', 'comment' => 'javascript for the noUISlider'));
+        $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/fancybox/jquery.fancybox.css', 'comment' => 'javascript for the noUISlider'));
+		
+		$this -> layout -> view('index/index', $data);
+	}
+	
+	public function index_old() {
 
 		$this->load->helper('serial_helper');
 

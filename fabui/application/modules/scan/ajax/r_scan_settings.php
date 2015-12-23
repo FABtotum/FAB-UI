@@ -10,7 +10,7 @@
 			<div class="row margin-bottom-10" style="margin-top: 10px;">
 				<div class="col-sm-6">
 					<div class="text-center img-quality-container margin-bottom-10">
-						<img class="img-responsive img-quality-container" style="display: inline; max-width: 200px;" src="application/modules/scan/assets/img/duck0.png">
+						<img class="img-responsive img-quality-container" style="display: inline; max-width: 200px;" src="../application/modules/scan/assets/img/duck0.png">
 					</div>
 					
 				</div>
@@ -47,6 +47,8 @@
 
 <script type="text/javascript">
 
+
+
 /*  SCAN QUALITY SLIDER */
 $("#scan-quality").noUiSlider({
     range: {'min': 20, 'max' : 100},
@@ -75,7 +77,7 @@ $("#scan-quality").noUiSlider({
 	});
 	
 
- }, 1000);
+ }, 100);
 
 </script>
 

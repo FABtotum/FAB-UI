@@ -17,6 +17,7 @@
 	 	
 	 	
 	 	openWait('Preparing procedure');
+	 	IS_MACRO_ON = true;
 	 	$.ajax({
               type: "POST",
               url: "<?php echo module_url("maintenance").'ajax/feeder.php' ?>",
@@ -47,7 +48,7 @@
                 }
                 
 			
-			
+			IS_MACRO_ON = false;
 			
 			closeWait();
   

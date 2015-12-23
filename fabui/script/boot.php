@@ -29,6 +29,11 @@ $serial->confStopBits(1);
 $serial->deviceOpen();
 $serial -> serialflush();
 //==================================================================
+//rise probe
+$serial -> serialflush();
+$serial->sendMessage('M402'.PHP_EOL);
+sleep(TIME_TO_SLEEP);
+$alive_machine = $serial->readPort();
 //alive machine
 $serial -> serialflush();
 $serial->sendMessage('M728'.PHP_EOL);
@@ -74,17 +79,15 @@ sleep(TIME_TO_SLEEP);
 $hw_id_reply = $serial->readPort();
 $hw_id = trim(str_replace('ok', '', $hw_id_reply));
 //==================================================================
-$serial->deviceClose();
+
 //==================================================================
-
-
 
 $hw_id = (isset($configs['settings_type']) && $configs['settings_type'] == 'custom') ? 'custom' : $hw_id;
 
 
+
 //include and exec specific hardware config settings
 if(file_exists(dirname(__FILE__).'/hardware/settings_'.$hw_id.'.php')){
-		
 	include dirname(__FILE__).'/hardware/settings_'.$hw_id.'.php';
 
 }else{

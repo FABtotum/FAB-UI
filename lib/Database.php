@@ -78,13 +78,7 @@ class Database {
 		
 		if(!$this->_result){
 			
-			if(class_exists('Logger')){
-				
-				//$this->_log->error("Query failed: ".$query); 
-				//$this->_log->error("Error message: ".$this->_db->error); 
-				return false;
-				
-			}
+			
 			
 		}
 		
@@ -102,11 +96,11 @@ class Database {
 	                $rows[] = $row;
 	            }
 				
-				
+				/*
 				if($this->_result->num_rows == 1){
 					return $rows[0];
 				}
-				
+				*/
 				return $rows;
 				
             	

@@ -15,6 +15,8 @@ if (!isset($_SESSION['updates']['time'])) {
 	$_SESSION['updates']['time'] = 0;
 }
 
+
+
 //IF IS PASSED MORE THAN TIME TO CHECK SO CHECK AGAIN IF THERE ARE UPDATES AVAIABLES
 
 if (($now - $_SESSION['updates']['time']) > $time_to_check) {
@@ -27,7 +29,7 @@ if (($now - $_SESSION['updates']['time']) > $time_to_check) {
 		$updates['time'] = time();
 
 		$fabui_update = myfab_get_local_version() < myfab_get_remote_version();
-		$fw_update = marlin_get_local_version() < marlin_get_remote_version();
+		$fw_update    = marlin_get_local_version() < marlin_get_remote_version();
 
 		$updates['number'] += $fabui_update ? 1 : 0;
 		$updates['number'] += $fw_update ? 1 : 0;

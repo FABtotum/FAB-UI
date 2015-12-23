@@ -1,11 +1,11 @@
 <div class="row">
 	<!-- col -->
-	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+	<!--<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fab-fw icon-fab-plugin"></i> Plugins </span>
 		</h1>
-	</div>
-    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 text-align-right">
+	</div>-->
+    <div class="col-xs-12 col-sm-6 col-md-12 col-lg-12 text-align-right">
         <div class="page-title">
             <a href="<?php echo site_url('plugin/upload'); ?>" class="btn btn-primary"><i class="fa fa-plus"></i> Add new</a>
         </div>

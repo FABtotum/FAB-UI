@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
-		<h1 class="page-title txt-color-blueDark"><i class="fa fa-fa-wrench"></i> Maintenance <span> > Spool - Load and unload spool</span> <span class="procedure-name"></span> </h1>
+		<h1 class="page-title txt-color-blueDark"><i class="fa fa-fa-wrench"></i> Maintenance <span> > Spool - Load and unload spool</span><span class="procedure-name"></span></h1>
 	</div>
 </div>
 
@@ -57,7 +57,6 @@
 
 				</div>
 
-				
 				<div class="col-sm-12">
 					<div class="well">
 						<div class="row">
@@ -67,14 +66,14 @@
 							<div class="col-sm-6 text-center">
 								<h1><span class="badge bg-color-blue txt-color-white">2</span></h1>
 								<h1 class="text-primary">Cut the filament</h1>
-								<h2>Prepare the filament by cutting it at an angle. <br>This helps the insertion of the filament</h2>
+								<h2>Prepare the filament by cutting it at an angle.
+								<br>
+								This helps the insertion of the filament</h2>
 							</div>
 						</div>
 					</div>
 				</div>
-				
-				
-				
+
 				<div class="col-sm-12">
 
 					<div class="well">
@@ -89,7 +88,8 @@
 								<h1><span class="badge bg-color-blue txt-color-white">3</span></h1>
 								<h1 class="text-primary">Insert the filament</h1>
 								<h2>Insert the filament in the white feeding tube in the spool compartment as shown.
-									<br>You should apply some force to make sure the filament is completely in.</h2>
+								<br>
+								You should apply some force to make sure the filament is completely in.</h2>
 							</div>
 
 						</div>
@@ -97,32 +97,22 @@
 					</div>
 
 				</div>
-				
-				
-				
-				
 
 			</div>
-			
-			
-			
+
 			<div class="row margin-top pre_unload-choice" style="display:none;">
-				
-				
+
 				<div class="col-sm-12">
-					
+
 					<div class="well text-center">
-						
+
 						<h2>Press start button to begin the procedure</h2>
-						
-						
+
 					</div>
-					
+
 				</div>
-				
-				
+
 			</div>
-			
 
 			<div class="row margin-top unload-choice" style="display: none;">
 
@@ -147,8 +137,7 @@
 					</div>
 
 				</div>
-				
-				
+
 				<div class="col-sm-12">
 
 					<div class="well">
@@ -170,8 +159,6 @@
 					</div>
 
 				</div>
-				
-				
 
 				<div class="col-sm-12">
 
@@ -221,6 +208,14 @@
 
 			</div>
 
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="alert alert-info animated fadeIn">
+			<h4 class="text-center"><i class="fa fa-shopping-cart"></i> <a target="_blank" href="https://store.fabtotum.com/eu/store/filaments.html?from=fabui">Get new filaments!</a></h4>
 		</div>
 	</div>
 </div>

@@ -50,17 +50,22 @@ $route['plugin/add']               = "plugin/add";
 $route['plugin/upload']            = "plugin/upload";
 $route['plugin/(:any)']            = "$1";
 
-$route['maintenance/4-axis'] = "maintenance/fourthaxis";
-$route['maintenance/self-test'] = "maintenance/selftest";
-$route['maintenance/bed-calibration'] = "maintenance/bedcalibration";
+/** maintenance route */
+$route['maintenance/4-axis']            = "maintenance/fourthaxis";
+$route['maintenance/self-test']         = "maintenance/selftest";
+$route['maintenance/bed-calibration']   = "maintenance/bedcalibration";
 $route['maintenance/probe-calibration'] = "maintenance/probecalibration";
-$route['maintenance/first-setup'] = "maintenance/firstsetup";
+$route['maintenance/first-setup']       = "maintenance/firstsetup";
+
+$route['settings/set-eth']    = "settings/seteth";
+$route['settings/set-wifi']   = "settings/setwifi";
+$route['controller/stop-all'] = "controller/stop_all";
 
 
-$route['settings/set-eth']  = "settings/seteth";
-$route['settings/set-wifi'] = "settings/setwifi";
-
-$route['controller/stop-all']  = "controller/stop_all";
+/** make route */
+$route['make/print'] = "create";
+$route['make/mill']  = "create/index/subtractive";
+$route['make/scan']  = 'scan';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

@@ -1,62 +1,42 @@
 <!DOCTYPE html>
-<html lang="en-us" id="extr-page">
+<html lang="en-us" id="extr-page" class="animated fadeInDown">
 	<head>
 		<meta charset="utf-8">
-		<title>FAB UI - Register</title>
-		<meta name="description" content="">
-		<meta name="author" content="">
+		<title>FAB UI - Login </title>
+		<meta name="description" content="Login Page">
+
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-		
-		<!-- #CSS Links -->
-		<!-- Basic Styles -->
+
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/font-awesome.min.css">
-
-		<!-- SmartAdmin Styles : Please note (smartadmin-production.css) was created using LESS variables -->
+		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/smartadmin-production-plugins.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/smartadmin-production.min.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/smartadmin-skins.min.css">
-
-		<!-- SmartAdmin RTL Support is under construction
-			 This RTL CSS will be released in version 1.5
-		<link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-rtl.min.css"> -->
-
-		<!-- We recommend you use "your_style.css" to override SmartAdmin
-		     specific styles this will also ensure you retrain your customization with each SmartAdmin update.
-		<link rel="stylesheet" type="text/css" media="screen" href="css/your_style.css"> -->
-
+		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/smartadmin-rtl.min.css">
 		<!-- Demo purpose only: goes with demo.js, you can delete this css when designing your own WebApp -->
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/css/demo.min.css">
 
-		<!-- #FAVICONS -->
+		<!-- FAVICONS -->
 		<link rel="shortcut icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon">
 		<link rel="icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon">
 
-		<!-- #GOOGLE FONT -->
-		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">
+		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fonts.css" />
+		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fabtotum_style.css" />
 
-		<!-- #APP SCREEN / ICONS -->
-		<!-- Specifying a Webpage Icon for Web Clip 
-			 Ref: https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html -->
-		
-		
+		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-2.1.1.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-ui-1.10.3.min.js"></script>
+
 		<!-- iOS web-app metas : hides Safari UI Components and Changes Status Bar Appearance -->
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
-		
-		
 
 	</head>
-	<body id="login">
-		<!-- possible classes: minified, no-right-panel, fixed-ribbon, fixed-header, fixed-width-->
+	<body >
 		<header id="header">
-			<!--<span id="logo"></span>-->
-
 			<div id="logo-group">
 				<span id="logo"> <img src="<?php echo base_url() ?>application/layout/assets/img/logo-0.png" /> </span>
 			</div>
-
+			<span id="extr-page-header-space">&nbsp; <a href="javascript:void(0);"  class="btn btn-danger power-off"><i class="fa fa-power-off"></i></a></span>
 			<span id="extr-page-header-space"> <span class="hidden-mobile">Already registered?</span> <a href="<?php echo site_url('login') ?>" class="btn btn-danger">Sign In</a> </span>
-
 		</header>
 
 		<div id="main" role="main">
@@ -65,25 +45,19 @@
 			<div id="content" class="container">
 
 				<div class="row">
-					<div class="col-xs-12 col-sm-12 col-md-7 col-lg-7 hidden-xs hidden-sm">
-						
-
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+					<div class="col-sm-2"></div>
+					<div class="col-sm-8">
 						<div class="well no-padding">
 
 							<form action="<?php echo site_url('login/do_registration') ?>" id="form-register" class="smart-form client-form" method="POST" >
-								<header>
-									Registration
-								</header>
-
+								<header><i class="fa fa-play rotate-90"></i> New Registration</header>
 								<fieldset>
 									<section>
 										<label class="input"> <i class="icon-append fa fa-user"></i>
 											<input type="text" name="first_name" placeholder="First name">
 											<b class="tooltip tooltip-bottom-right">Needed to enter the website</b> </label>
 									</section>
-									
+
 									<section>
 										<label class="input"> <i class="icon-append fa fa-user"></i>
 											<input type="text" name="last_name" placeholder="Last name">
@@ -109,149 +83,51 @@
 									</section>
 								</fieldset>
 
-								
 								<footer>
-									<button id="register-button" type="button" class="btn btn-primary">
-										Register
-									</button>
+									<button id="register-button" type="button" class="btn btn-primary">Register</button>
 								</footer>
 							</form>
 
 						</div>
-						
-						
 					</div>
+					<div class="col-sm-2"></div>
 				</div>
 			</div>
 
 		</div>
+		<!-- END MAIN PANEL -->
+		<!-- ==========================CONTENT ENDS HERE ========================== -->
+		<!--================================================== -->
+		<div id="power-off-img" style="display:none;"><img class="img-responsive" src="/assets/img/power-off.png">
+		</div>
 
-
-		<!--================================================== -->	
-
-		<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
+		<script src="<?php echo base_url() ?>application/layout/assets/js/app.config.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/pace/pace.min.js"></script>
-
-	    <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
-		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-2.0.2.min.js"></script>
-		<!-- BOOTSTRAP JS -->
-		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-ui-1.10.3.min.js"></script>
-
-		<!-- JS TOUCH : include this plugin for mobile drag / drop touch events 		
-		<script src="js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script> -->
-
-		<!-- BOOTSTRAP JS -->		
 		<script src="<?php echo base_url() ?>application/layout/assets/js/bootstrap/bootstrap.min.js"></script>
-
-		<!-- JQUERY VALIDATE -->
+		<script src="<?php echo base_url() ?>application/layout/assets/js/notification/SmartNotification.min.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/jquery-validate/jquery.validate.min.js"></script>
-		
-		<!-- JQUERY MASKED INPUT -->
-		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/masked-input/jquery.maskedinput.min.js"></script>
-		
-		<!--[if IE 8]>
-			
-			<h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
-			
-		<![endif]-->
-
-		<!-- MAIN APP JS FILE -->
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/fastclick/fastclick.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/app.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/demo.min.js?"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/fabtotum.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/app.min.js"></script>
+		<script src="<?php echo module_url('login') ?>assets/register.js"></script>
 
 		<script type="text/javascript">
-			runAllForms();
-			
-			
-			// Validation
-			$(function() {
-				// Validation
-				$("#form-register").validate({
-
-					// Rules for form validation
-					rules : {
-						email : {
-							required : true,
-							email : true,
-							remote: "<?php echo site_url('login/check_mail') ?>"
-						},
-						password : {
-							required : true,
-							minlength : 3,
-							maxlength : 20
-						},
-						passwordConfirm : {
-							required : true,
-							minlength : 3,
-							maxlength : 20,
-							equalTo : '#password'
-						},
-						first_name : {
-							required : true
-						},
-						last_name : {
-							required : true
-						}
-					},
-
-					// Messages for form validation
-					messages : {
-						login : {
-							required : 'Please enter your login'
-						},
-						email : {
-							required : 'Please enter your email address',
-							email : 'Please enter a VALID email address',
-							remote: 'Email already used. Please enter a new email address'
-						},
-						password : {
-							required : 'Please enter your password'
-						},
-						passwordConfirm : {
-							required : 'Please enter your password one more time',
-							equalTo : 'Please enter the same password as above'
-						},
-						firstname : {
-							required : 'Please select your first name'
-						},
-						lastname : {
-							required : 'Please select your last name'
-						},
-						gender : {
-							required : 'Please select your gender'
-						},
-						terms : {
-							required : 'You must agree with Terms and Conditions'
-						}
-					},
-
-					// Do not change code below
-					errorPlacement : function(error, element) {
-						error.insertAfter(element.parent());
-					}
-				});
-				
-				
-				
-				$("#register-button").click(function(){
-		
-					var $valid = $("#form-register").valid();
-					
-					if(!$valid){
-						
-						return false;
-					}else{
-					
-					$("#register-button").addClass('disabled');	
-					$("#form-register").submit();
-					
-					}
-					
-				});
-				
-				
-
-			});
+			var max_idle_time = 0;
+			var number_tasks = 0;
+			var number_updates = 0;
+			var number_notifications = 0;
+			var setup_wizard = false;
+			var fabui = false;
+			// DO NOT REMOVE : GLOBAL FUNCTIONS!
+			$(document).ready(function() {
+				pageSetUp();
+			})
 		</script>
 
 	</body>
+
 </html>

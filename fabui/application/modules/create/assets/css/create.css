@@ -75,8 +75,6 @@
 	background-color: #000000;
 }
 
-
-
 .rotondo {
 	border-radius: 50% !important;
 	-moz-border-radius: 50% !important;
@@ -119,7 +117,7 @@
 }
 
 .noUi-connect {
-	
+
 	background-color: #a65858 !important;
 }
 
@@ -155,19 +153,19 @@
 
 .label-warning {
 	font-size: 100% !important;
-	background-color: #568a89!important;
+	background-color: #568a89 !important;
 }
 
 .show-stat-microcharts > div {
 	height: 200px !important;
 }
 
-.model-info{
+.model-info {
 	background-color: #f7f7f9 !important;
 }
 
 .time {
-	
+
 }
 
 .noUi-horizontal {
@@ -182,11 +180,21 @@
 	margin-top: 30px !important;
 }
 
-#fan, #velocity, #flow-rate, #rpm{
-	
-	background-color: #568a89!important;
+#fan, #velocity, #flow-rate, #rpm {
+
+	background-color: #568a89 !important;
 }
 
-.progress-status{
-	
+.progress-status {
+
 }
+
+.nozzle-temperature, .bed-temperature {
+	color: #FF0000 !important;
+}
+
+.nozzle-target, .bed-target {
+	color: #57889c !important;
+}
+
+

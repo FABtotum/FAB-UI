@@ -5,6 +5,11 @@ class Plugin extends Module {
 	public function __construct() {
 		parent::__construct();
 		$this -> lang -> load($_SESSION['language']['name'], $_SESSION['language']['name']);
+		$this->load->helper('print_helper');
+		if(is_printer_busy()){
+            redirect('dashboard');
+            
+        }
 
 	}
 

@@ -236,10 +236,7 @@ function load_tree(obj){
                 
                 $.each(tree, function(i, item) {
                 
-                    var element = '';
-                    
-                   
-                    
+                    var element = '';                  
                     if(item.charAt((item.length - 1)) == '/'){
                         element = folder_item(item, folder);
                     }else{
@@ -343,7 +340,7 @@ function check_usb(){
     
     $.ajax({
     	   type: "POST",
-    	   url: "<?php echo module_url('objectmanager/ajax/check_usb.php') ?>",
+    	   url: "<?php echo module_url('objectmanager/ajax/') ?>check_usb.php",
     	   dataType: 'json'
    	}).done(function(response) {
         

@@ -16,10 +16,12 @@ shell_exec('sudo chmod 0777 ' . FABUI_PATH.'config/');
 
 if(!file_exists(FABUI_PATH.'config/custom_config.json')){
 	write_file(FABUI_PATH.'config/custom_config.json', '', 'w');
+	shell_exec('sudo chmod 0777 ' . FABUI_PATH.'config/custom_config.json');
 }
 
 if(!file_exists(FABUI_PATH.'config/custom_overrides.txt')){
 	write_file(FABUI_PATH.'config/custom_overrides.txt', '', 'w');
+	shell_exec('sudo chmod 0777 ' . FABUI_PATH.'config/custom_overrides.txt');
 
 }
 

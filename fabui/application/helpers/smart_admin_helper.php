@@ -8,7 +8,7 @@
  * @param unknown $content
  * @return string
  */
-function widget($id, $title,  $attributes = array(), $content, $well = false, $no_padding = false, $dark = false){
+function widget($id, $title,  $attributes = array(), $content, $well = false, $no_padding = false, $dark = false, $header_toolbar = ''){
 	
 	$_default_attributes['data-widget-colorbutton']      = 'false';
 	$_default_attributes['data-widget-editbutton']       = 'false';
@@ -57,6 +57,12 @@ function widget($id, $title,  $attributes = array(), $content, $well = false, $n
 	}
 	
 	$_html .= '<h2>'.$title.'</h2>';
+	
+	
+	if($header_toolbar != ''){
+		$_html .= $header_toolbar;
+	}
+	
 	$_html .= '</header>';
 	
 	

@@ -11,7 +11,7 @@
             <div class="well">
                 <div class="row">
                     <div class="col-sm-6 text-center">
-                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/scan/assets/img/rotating/1.png" />
+                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="../application/modules/scan/assets/img/rotating/1.png" />
                     </div>
                     <div class="col-sm-6 text-center">
                         <h1>
@@ -54,7 +54,7 @@
             <div class="row">
                     
                     <div class="col-sm-6 text-center">
-                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/scan/assets/img/rotating/2.png" />
+                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="../application/modules/scan/assets/img/rotating/2.png" />
                     </div>
                     
                     <div class="col-sm-6 text-center">
@@ -82,7 +82,7 @@
             <div class="row">
                     
                     <div class="col-sm-6 text-center">
-                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/scan/assets/img/rotating/3.png" />
+                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="../application/modules/scan/assets/img/rotating/3.png" />
                     </div>
                     
                     <div class="col-sm-6 text-center">
@@ -128,6 +128,7 @@
 /* START SCAN E PPROCESS BUTTON */
 
 
+
 $("#check-pre-scan").on('click', check_pre_scan);
 
 $("#check-r-scan").on('click', check_r_scan);
@@ -137,7 +138,7 @@ $("#start-r-scan").on('click', start);
 
 function check_pre_scan(){
     
-    
+    IS_MACRO_ON = true;
     $(".SmallBox").remove();
     $(".result-check-pre-scan").html('');
     openWait('Checking printer');
@@ -182,6 +183,7 @@ function check_pre_scan(){
         
         
         ticker_url = '';
+        IS_MACRO_ON = false;
 	});
  
 }
@@ -189,6 +191,7 @@ function check_pre_scan(){
 function check_r_scan(){
     
     
+    IS_MACRO_ON = true;
     $(".SmallBox").remove();
     
     openWait('Checking printer');
@@ -216,24 +219,7 @@ function check_r_scan(){
         		});
         		
         	});
-        	
-            
-           /** STEP SUCCESSIVO 
-            setTimeout(function(){ $("#row_3").slideUp('slow', function(){
-                closeWait();
-                 $("#row_4").slideDown('slow', function(){
-
-                 	setTimeout(function(){
-                 		$("#start-r-scan").trigger("click");
-                 	}, 1500);
-                 	
-                 	
-                 });
-             });}, 1000);
-             
-             */
-             
-                      
+        	                  
         }else{
             closeWait();
             $.smallBox({
@@ -245,7 +231,8 @@ function check_r_scan(){
             });     
         }
         
-        ticker_url = '';        
+        ticker_url = ''; 
+        IS_MACRO_ON = false;       
 	});
      
    
@@ -255,6 +242,7 @@ function check_r_scan(){
 
 function r_scan(){
     
+    IS_MACRO_ON = true;
     $("#res-icon").removeClass('fa-warning fa-check txt-color-green txt-color-red fa-spinner fa-spin');
     $("#res-icon").addClass('fa-spinner fa-spin');
     $('#do-scan').addClass('disabled');
@@ -283,6 +271,7 @@ function r_scan(){
             $("#do-scan").attr('data-action', 'check');    
          }
          $('#do-scan').removeClass('disabled');
+         IS_MACRO_ON = false;
 	   
        
 	});

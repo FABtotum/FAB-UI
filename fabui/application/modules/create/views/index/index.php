@@ -1,3 +1,4 @@
+<!--
 <div class="row">
 	<div class="col-xs-11 col-sm-11 col-md-11 col-lg-11">
 		<h1 class="page-title txt-color-blueDark">
@@ -12,6 +13,7 @@
 		</h1>
 	</div>
 </div>
+-->
 <div class="row">
 	<div class="col-sm-12">
 		<div class="well fuelux">
@@ -33,16 +35,6 @@
 						<span class="chevron">
 						</span>
 					</li>
-                    <!--
-					<li data-target="#step3" class="<?php echo $_running ? '' : ''; ?>">
-						<span class="badge">
-							3
-						</span>
-						Prepare print
-						<span class="chevron">
-						</span>
-					</li>
-                    -->
 					<li data-target="#step4" class="<?php echo $_running ? '' : ''; ?>">
 						<span class="badge">
 							3
@@ -55,7 +47,7 @@
 						<span class="badge">
 							4
 						</span>
-						Printing
+						<?php echo $label.'ing'; ?>
 						<span class="chevron">
 						</span>
 					</li>
@@ -86,7 +78,6 @@
 					<?php echo $_step_6; ?>
 				</form>
 				<hr class="simple">
-				
 					<div id="wizard-buttons" class="actions text-align-right" style="<?php echo $_running == true ? 'display:none' : '';  ?>">
 						<button id="btn-prev" type="button" class="btn btn-sm btn-primary btn-prev disabled"><i class="fa fa-arrow-left"></i>&nbsp;Prev</button>&nbsp;
 						<button id="btn-next" type="button" class="btn btn-sm btn-success disabled" data-last="Finish">Next&nbsp;<i class="fa fa-arrow-right"></i></button>

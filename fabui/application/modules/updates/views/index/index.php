@@ -1,9 +1,10 @@
-<div class="row">
+<div class="row margin-bottom-10">
+	<!--
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark"><i class="fa fa-fw fa-refresh"> </i> Update Center </h1>
 	</div>
-
-	<div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
+	-->
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		<ul id="sparks" class="">
 			<li class="sparks-info">
 				<h5> FAB UI beta <span class="txt-color-blue"><i class="fa fa-mobile"></i>&nbsp;v&nbsp;<?php echo $fabui_local ?></span></h5>

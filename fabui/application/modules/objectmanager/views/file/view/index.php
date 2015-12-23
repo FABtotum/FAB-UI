@@ -1,13 +1,7 @@
 <div class="row">
-	<div class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
-		<h1 class="page-title txt-color-blueDark"> 
-			<i class="icon-fab-manager fab-fw"></i> Objectmanager <span> > File > Edit</span>
-		</h1>
-	</div>
-	<div class="col-xs-6 col-sm-8 col-md-8 col-lg-8 text-align-right">
+	<div class="col-sm-12 text-align-right">
 		<div class="page-title">
-			<a href="<?php  echo site_url('objectmanager/manage/'.$_object_id.'/'.$_file->id)?>" class="btn btn-primary"> <i class="fa fa-th-large"></i> Manage</a>
-			<a href="<?php  echo site_url('objectmanager/edit/'.$_object_id)?>" class="btn btn-primary"> <i class="icon-fab-manager"></i> Back to object</a>
+			<a href="<?php  echo site_url('objectmanager/edit/'.$_object_id)?>" class="btn btn-primary"> <i class="fa fa-arrow-left"></i> Back to object</a>
 		</div>
 	</div>
 </div>

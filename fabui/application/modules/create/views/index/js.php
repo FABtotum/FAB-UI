@@ -1,7 +1,12 @@
 <script type="text/javascript">
-
+	
+	
+	IS_TASK_ON = <?php echo  $_running ? 'true' : 'false' ?>;
+	
 	var id_task = <?php echo $_id_task; ?>;
-	var pid     = <?php echo $_pid; ?>; 
+	var pid     = <?php echo $_pid; ?>;
+	var id_file = '';
+	var id_object = ''; 
 	/**/
 	var monitor_file = "<?php echo $_monitor_file; ?>";
 	var data_file    = "<?php echo $_data_file; ?>";
@@ -14,6 +19,7 @@
     var print_type   = "<?php echo $_print_type ?>";
     var progress_percent = <?php echo intval($progress_percent); ?>;
     var print_started = <?php echo $print_started ?>;
+    var attributes_file = '<?php echo $attributes_file; ?>';
     
     
 	/**/
@@ -57,7 +63,7 @@
     var interval_ticker;
     
     var extruder_target = <?php echo $ext_target == "" ? '0' : $ext_target ?>; 
-    var bed_target     = <?php echo $bed_target == "" ? '0': $bed_target; ?>;
+    var bed_target      = <?php echo $bed_target == "" ? '0': $bed_target; ?>;
     
     
     /** CALIBRATION */
@@ -79,11 +85,16 @@
 	var blockSliderBed = false;
 	
 	
-	var max_plot = 100;
+	var max_plot = 200;
 	var nozzle_temperatures = [];
+	var nozzle_target_temperatures = [];
 	var bed_temperatures = [];
+	var bed_target_temperatures = [];
 	var nozzlePlot = "";
 	var bedPlot = "";
+	
+	var interval_charts;
+	
 	var now = new Date().getTime();
 	var values = [];
 	
@@ -93,18 +104,29 @@
 	var layer_actual = <?php echo $layer_actual; ?>;
 	
 	var $chrt_border_color = "#efefef";
-			var $chrt_grid_color = "#DDD"
-			var $chrt_main = "#E24913";
-			/* red       */
-			var $chrt_second = "#6595b4";
-			/* blue      */
-			var $chrt_third = "#FF9F01";
-			/* orange    */
-			var $chrt_fourth = "#7e9d3a";
-			/* green     */
-			var $chrt_fifth = "#BD362F";
-			/* dark red  */
-			var $chrt_mono = "#000";
+	var $chrt_grid_color = "#DDD"
+	var $chrt_main = "#E24913";
+	/* red       */
+	var $chrt_second = "#6595b4";
+	/* blue      */
+	var $chrt_third = "#FF9F01";
+	/* orange    */
+	var $chrt_fourth = "#7e9d3a";
+	/* green     */
+	var $chrt_fifth = "#BD362F";
+	/* dark red  */
+	var $chrt_mono = "#000";
+	
+	var speed_slider;
+	var nozzle_slider;
+	var bed_slider;
+	var fan_slider;
+	var flow_rate_slider;
+	var rpm_slider;
+	
+	var z_override  = <?php echo $z_override; ?>;
+	
+	var interval_autostart;
 	
 		
 	$(document).ready(function() {
@@ -124,7 +146,7 @@
         /*
 		* WIZARD
 		*/
-		var wizard = $('.wizard').wizard();
+		var wizard = $('.wizard').wizard({});
 
 		$('#btn-next').on('click', function() {
 			$('.wizard').wizard('next');
@@ -240,81 +262,12 @@
         });
         
         
+        /** INIT SLIDERS */
+        initSliders();
         
-        $("#velocity").noUiSlider({
-		        range: {'min': 0, 'max' : 500},
-                /*range: [0, 500],*/
-		        start: <?php echo $_velocity != '' ? $_velocity : 100 ?>,
-		        handles: 1,
-                connect: 'lower'
-        });
+        /** DISABLE SLIDERS */
+        disableControlsTab();
         
-        $("#fan").noUiSlider({
-		        range: {'min': 50, 'max' : 100},
-                /*range: [0, 500],*/
-               	start: 255,
-		        handles: 1,
-                connect: 'lower'
-        });
-        
-        $("#flow-rate").noUiSlider({
-		        range: {'min': 0, 'max' : 500},
-                /*range: [0, 500],*/
-               	start: <?php echo $flow_rate; ?>,
-		        handles: 1,
-                connect: 'lower'
-        });
-        
-        $("#temp1").noUiSlider({
-		        range: {'min': 0, 'max' : 230},
-                /*range: [0, 250],*/
-		        start: <?php echo $ext_target != "" ? $ext_target : '0'; ?>,
-		        handles: 1,
-                connect: 'lower'
-        });
-        
-        
-        $("#act-ext-temp").noUiSlider({
-	 	 	
-	        range: {'min': 0, 'max' : 230},
-	        start: <?php echo intval($ext_temp) ?>,
-	        handles: 0,
-            connect: 'lower',
-            behaviour: "none"
-		});
-		
-		
-		$("#act-ext-temp .noUi-handle").remove();
-        
-        
-        
-        $("#temp2").noUiSlider({
-		        range: {'min': 0, 'max' : 100 },
-                /*range: [0, 100],*/
-                start: <?php echo $bed_target == "" ? "0" : $bed_target; ?>,
-		        handles: 1,
-                connect: 'lower'
-        });
-        
-        
-        $("#act-bed-temp").noUiSlider({
-	 	 	
-	        range: {'min': 0, 'max' : 100},
-	        start: <?php echo intval($bed_temp) ?>,
-	        handles: 0,
-            connect: 'lower',
-            behaviour: "none"
-		});
-      	$("#act-bed-temp .noUi-handle").remove();
-        
-     	$("#rpm").noUiSlider({
-		        range: {'min': 6000, 'max' : 14000 },
-                /*range: [0, 100],*/
-                start: <?php echo $_rpm != '' ? $_rpm : 6000 ?>,
-		        handles: 1,
-                connect: 'lower'
-        });
-		
         
         $(".sliders").on({
 		      slide: manage_slide,
@@ -322,57 +275,7 @@
 	   });
 	   
 	   
-	   $(".extruder-range").noUiSlider_pips({
-			mode: 'positions',
-			values: [0,25, 50, 75, 100],
-			density: 10,
-			format: wNumb({
-				prefix: '&deg;'
-			})
-		});
-		
-		
-		$(".bed-range").noUiSlider_pips({
-			mode: 'positions',
-			values: [0,25,50,75,100],
-			density: 10,
-			format: wNumb({
-				prefix: '&deg;'
-			})
-		});
-		
-		$(".speed-range").noUiSlider_pips({
-			mode: 'positions',
-			values: [0,20,40,60,80,100],
-			density: 10,
-			format: wNumb({
-			})
-		});
-		
-		$(".rpm-range").noUiSlider_pips({
-			mode: 'positions',
-			values: [0,20,40,60,80,100],
-			density: 10,
-			format: wNumb({
-			})
-		});
-		
-		$(".fan-range").noUiSlider_pips({
-			mode: 'positions',
-			values: [0,50,100],
-			density: 10,
-			format: wNumb({
-			})
-		});
-        
-        
-        $(".flow-rate-range").noUiSlider_pips({
-			mode: 'positions',
-			values: [0,20, 40, 60, 80,100],
-			density: 10,
-			format: wNumb({
-			})
-		});
+	   
 
 		/**
 		* Controls action (play, pause, stop, velocity, temperature) */
@@ -387,10 +290,11 @@
 	
 		
 		<?php if($_running): ?>
-
+	
+		$('.wizard').wizard('selectedItem', { step: 4 });
 		_resume();
         
-        $('.wizard').wizard('selectedItem', { step: 4 });
+        
 
 		<?php endif; ?>
         
@@ -408,7 +312,8 @@
                
             });
             
-            $("#btn-next").trigger('click');          
+            $("#btn-next").trigger('click');
+            $("#btn-next").trigger('click');             
         <?php endif; ?>
         
      
@@ -416,6 +321,11 @@
         interval_ticker   = setInterval(ticker, 2500);
         
         var $chrt_fourth = "#6595b4";
+        
+        
+       $(".restart").on('click', restart_create);
+       $(".new").on('click', new_create);
+       $(".save-z-override").on('click', save_z_override);
         
 	});
     
@@ -546,13 +456,18 @@ function monitor(data){
 		$(".create-monitor").slideDown("slow", function() {});
 		$('#stop-button').removeClass('disabled');
 		$('.controls').removeClass('disabled');
+		
+		
+		
 	}
 	
 	if(!print_started){
 		if(data.print.print_started == "True"){
 			$(".controls-tab").removeClass("disabled");
-			$(".controls-tab").find("a").attr("data-toggle", "tab");
+			$(".controls-tab").find("a").attr("data-toggle", "tab").trigger("click");
+			/*$(".controls-tab").find("a").trigger("click");*/
 			print_started = true;
+			enableControlsTab();
 		}
 	}
 	
@@ -572,6 +487,7 @@ function monitor(data){
 			animate : true
 		});
 		$("#label-temp1-target").html(parseInt(data.print.stats.extruder_target) + '&deg;C');
+		$(".nozzle-target").html(parseInt(data.print.stats.extruder_target));
 	}
 
 	if (!blockSliderBed) {
@@ -608,8 +524,7 @@ function monitor(data){
 	$('.position').html(data.print.stats.position);
 	
 	
-	addNozzleTemperature(data.print.stats.extruder);
-	addBedTemperature(data.print.stats.bed);
+	
 	
 	
 	$("#act-ext-temp").val(parseInt(data.print.stats.extruder), {
@@ -630,9 +545,11 @@ function monitor(data){
 	$('#label-progress').html('(' + number_format(parseFloat(data.print.stats.percent), 2, ',', '.') + ' % )');
 
 	$("#label-temp1").html(parseInt(data.print.stats.extruder) + '&deg;C');
-	$(".nozzle-temperature").html(parseInt(data.print.stats.extruder) + '&deg;C');
+	$(".nozzle-temperature").html(parseInt(data.print.stats.extruder));
+	$(".nozzle-target").html(parseInt(data.print.stats.extruder_target));
 	$("#label-temp2").html(parseInt(data.print.stats.bed) + '&deg;C');
-	$(".bed-temperature").html(parseInt(data.print.stats.bed) + '&deg;C');
+	$(".bed-temperature").html(parseInt(data.print.stats.bed));
+	$(".bed-target").html(parseInt(data.print.stats.bed_target));
 
 	extruder_target = parseInt(data.print.stats.extruder_target);
 
@@ -647,9 +564,15 @@ function monitor(data){
 	tip(data.print.tip.show, data.print.tip.message);
 	
 	
-	updateNozzleGraph();
-	updateBedGraph();
+	/*** GRAPHS ***/
+	addNozzleTemperature(data.print.stats.extruder);
+	addNozzleTargetTemperature(data.print.stats.extruder_target);
+	addBedTemperature(data.print.stats.bed);
+	addBedTargetTemperature(data.print.stats.bed_target);
 	
+	/*updateNozzleGraph();
+	updateBedGraph();*/
+		
 	
 	var fan_percent = (parseFloat(data.print.stats.fan) / 255) * 100;
 	
@@ -668,8 +591,17 @@ function monitor(data){
 		animate : true
 	});
 	
+	$(".z_override").html(data.print.stats.z_override);
+	z_override = data.print.stats.z_override;
+	
+	/******* TOP BAR *********************/
+	$("#top-bar-nozzle-actual").html(parseInt(data.print.stats.extruder));
+	$("#top-bar-nozzle-target").html(parseInt(extruder_target));
+	$("#top-bar-bed-actual").html(parseInt(data.print.stats.bed));
+	$("#top-bar-bed-target").html(parseInt(bed_target));
 	
 	
+	/***** *******/
 	
 
 	
@@ -692,14 +624,22 @@ function finalize_print(){
 	unfreeze_menu();
 	$("#wizard-buttons").hide();
 	
+	if(z_override != 0){
+		$(".z-override-alert").show();
+	}
+	
+	openWait('Finalizing task');
+	setTimeout(function() {
+		closeWait();
+		IS_TASK_ON = false;
+		}, 30000);
+	
+	
 	
 }
 
 
-function _resume() {
-
-	//$("#details").trigger('click');
-	
+function _resume() {	
 	
 	$(".create-monitor").slideDown("slow", function() {});
 	monitor_count = 0;
@@ -712,6 +652,7 @@ function _resume() {
 		$(".controls-tab").removeClass("disabled");
 		$(".controls-tab").find("a").attr("data-toggle", "tab");
 		print_started = true;
+		enableControlsTab();
 	}
 	
 	
@@ -727,15 +668,34 @@ function _resume() {
 		var layer_percent = (parseInt(layer_actual) / parseInt(layer_total) ) * 100;
 		$('.progress-layer').attr('style', 'width:' + parseFloat(layer_percent) + '%');
 		$('.layer-percent').html('('+number_format(parseFloat(layer_percent), 2, ',', '.') +'%)');
-		addNozzleTemperature(<?php echo intval($ext_temp) ?>);
-		addBedTemperature(<?php echo intval($bed_temp) ?>);
+		
+		if ( typeof (Storage) !== "undefined") {	
+			if(localStorage.getItem("nozzle_temperatures") !== null){			
+				nozzle_temperatures =  JSON.parse(localStorage.getItem("nozzle_temperatures"));
+			}
+			
+			if(localStorage.getItem("nozzle_target_temperatures") !== null){			
+				nozzle_target_temperatures =  JSON.parse(localStorage.getItem("nozzle_target_temperatures"));
+			}
+			
+			if(localStorage.getItem("bed_temperatures") !== null){			
+				bed_temperatures =  JSON.parse(localStorage.getItem("bed_temperatures"));
+			}
+			
+			if(localStorage.getItem("bed_target_temperatures") !== null){			
+				bed_target_temperatures =  JSON.parse(localStorage.getItem("bed_target_temperatures"));
+			}
+		}
 		initGraphs();
+
 	}else{
 		$(".speed-well").removeClass("col-sm-4").addClass("col-sm-6");
 		$(".stats-well").removeClass("col-sm-4").addClass("col-sm-12");
 		$(".additive-print").hide();
 	}
 
+	$(".steps >li").removeClass("complete");
+	
 }
 
 
@@ -763,41 +723,89 @@ function create_socket_response(jsonString){
 
 function addNozzleTemperature(temp){
 	
-	var now = new Date().getTime();
-	var obj = {'temp': parseFloat(temp), 'time': now};
+	var obj = {'temp': parseFloat(temp), 'time': new Date().getTime()};
 	
 	if(nozzle_temperatures.length == max_plot){
 		nozzle_temperatures.shift();
 	}
-	
 	nozzle_temperatures.push(obj);
+	
+	
+	if ( typeof (Storage) !== "undefined") {
+		localStorage.setItem('nozzle_temperatures', JSON.stringify(nozzle_temperatures));
+	}
+	
+	
+}
+
+
+function addNozzleTargetTemperature(temp){
+	var obj = {'temp': parseFloat(temp), 'time': new Date().getTime()};
+	
+	if(nozzle_target_temperatures.length == max_plot){
+		nozzle_target_temperatures.shift();
+	}
+	nozzle_target_temperatures.push(obj);
+	
+	if ( typeof (Storage) !== "undefined") {
+		localStorage.setItem('nozzle_target_temperatures', JSON.stringify(nozzle_target_temperatures));
+	}
 }
 
 
 
 function addBedTemperature(temp){
 	
-	var now = new Date().getTime();
-	var obj = {'temp': parseFloat(temp), 'time': now};
+	var obj = {'temp': parseFloat(temp), 'time': new Date().getTime()};
 	
 	if(bed_temperatures.length == max_plot){
 		bed_temperatures.shift();
 	}
-	
 	bed_temperatures.push(obj);
+	
+	if ( typeof (Storage) !== "undefined") {
+		localStorage.setItem('bed_temperatures', JSON.stringify(bed_temperatures));
+	}
+	
+	
+}
+
+
+function addBedTargetTemperature(temp){
+	
+	var obj = {'temp': parseFloat(temp), 'time': new Date().getTime()};
+	
+	if(bed_target_temperatures.length == max_plot){
+		bed_target_temperatures.shift();
+	}
+	bed_target_temperatures.push(obj);
+	
+	if ( typeof (Storage) !== "undefined") {
+		localStorage.setItem('bed_target_temperatures', JSON.stringify(bed_target_temperatures));
+	}
+	
+	
 }
 
 
 function getNozzlePlotTemperatures(){
 	
-	var res = [];
+	var res1 = [];
+	var res2 = [];
 	
 	for (var i = 0; i < nozzle_temperatures.length; ++i) {
 		var obj = nozzle_temperatures[i];
-		res.push([obj.time, obj.temp]);
+		res1.push([obj.time, obj.temp]);
 	}
-
-	return res;
+	
+	
+	for (var i = 0; i < nozzle_target_temperatures.length; ++i) {
+		var obj = nozzle_target_temperatures[i];
+		res2.push([obj.time, obj.temp]);
+	}
+	
+	return [{ label: "Actual", data: res1 },
+		    { label: "Target", data: res2 }];
 	
 }
 
@@ -805,47 +813,44 @@ function getNozzlePlotTemperatures(){
 
 
 function getBedPlotTemperatures(){
-	var res = [];
+	var res1 = [];
+	var res2 = [];
 	
 	for (var i = 0; i < bed_temperatures.length; ++i) {
 		var obj = bed_temperatures[i];
-		res.push([obj.time, obj.temp]);
+		res1.push([obj.time, obj.temp]);
+	}
+	
+	for (var i = 0; i < bed_target_temperatures.length; ++i) {
+		var obj = bed_target_temperatures[i];
+		res2.push([obj.time, obj.temp]);
 	}
 
-	return res;
+	return [{ label: "Actual", data: res1 },
+		    { label: "Target", data: res2 }];
 }
 
 
 function updateNozzleGraph(){
-	
-	
 	try{
-		
 		if(typeof nozzlePlot == "object" ){
-		
-			nozzlePlot.setData([getNozzlePlotTemperatures()]);
+			var data = 	getNozzlePlotTemperatures();
+			nozzlePlot.setData(data);
 			nozzlePlot.draw();
 			nozzlePlot.setupGrid();
-		
 		}
 		
 	}catch(e){
-		console.log(e);
 	}
-	
 	
 }
 
 
 function updateBedGraph(){
 	try{
-		
-		
 		if(typeof bedPlot == "object" ){
-			
-			
-			
-			bedPlot.setData([getBedPlotTemperatures()]);
+			var data = getBedPlotTemperatures()	
+			bedPlot.setData(data);
 			bedPlot.draw();
 			bedPlot.setupGrid();
 		}
@@ -861,12 +866,11 @@ function updateBedGraph(){
 function  initGraphs(){
 	
 	
-	
 	 nozzlePlot = $.plot("#nozzle-chart", [ getNozzlePlotTemperatures() ], {
         	series : {
 				lines : {
 					show : true,
-					lineWidth : 1.2,
+					lineWidth : 1,
 					fill : true,
 					fillColor : {
 						colors : [{
@@ -875,45 +879,47 @@ function  initGraphs(){
 							opacity : 0.15
 						}]
 					}
-				},
-				
-				shadowSize : 0
+				}
 			},
 			xaxis: {
 			    mode: "time",
-			    show: false
+			    show: true,
+			    tickFormatter: function (val, axis) {
+				    var d = new Date(val);
+				    return d.getHours() + ":" + d.getMinutes();
+				}
 			},
 			yaxis: {
 		        min: 0,
-		        max: 250,
-		        tickSize: 50,        
+		        max: 300,    
 		        tickFormatter: function (v, axis) {
 		            return v + "&deg;C";
 		        }
         
     		},
-			grid : {
-				hoverable : true,
-				clickable : true,
-				tickColor : $chrt_border_color,
-				borderWidth : 0,
-				borderColor : $chrt_border_color,
-			},
 			tooltip : true,
 			tooltipOpts : {
-				content : "%y &deg;C",
+				content : "%s: %y &deg;C",
 				defaultTheme : false
 			},
-			colors : [$chrt_main, $chrt_second],
+			colors : ["#FF0000", "#57889c", "#0000FF"],
+			legend: {
+				show : true
+			},
+			grid : {
+					hoverable : true,
+					clickable : true,
+					borderWidth : 0
+				},
+
 							
 			});
-	
 	
 		bedPlot = $.plot("#bed-chart", [ getBedPlotTemperatures() ], {
         	series : {
 				lines : {
 					show : true,
-					lineWidth : 1.2,
+					lineWidth : 1,
 					fill : true,
 					fillColor : {
 						colors : [{
@@ -923,12 +929,15 @@ function  initGraphs(){
 						}]
 					}
 				},
-				
 				shadowSize : 0
 			},
 			xaxis: {
 			    mode: "time",
-			    show: false
+			    show: true,
+			    tickFormatter: function (val, axis) {
+				    var d = new Date(val);
+				    return d.getHours() + ":" + d.getMinutes();
+				}
 			},
 			yaxis: {
 		        min: 0,
@@ -937,31 +946,28 @@ function  initGraphs(){
 		        tickFormatter: function (v, axis) {
 		            return v + "&deg;C";
 		        }
-        
     		},
-			grid : {
-				hoverable : true,
-				clickable : true,
-				tickColor : $chrt_border_color,
-				borderWidth : 0,
-				borderColor : $chrt_border_color,
-			},
 			tooltip : true,
 			tooltipOpts : {
-				content : "%y &deg;C",
+				content : "%s: %y &deg;C",
 				defaultTheme : false
 			},
-			colors : [$chrt_main, $chrt_second],
+			colors : ["#FF0000", "#57889c", "#0000FF"],
+			grid : {
+					hoverable : true,
+					clickable : true,
+					borderWidth : 0
+			},
 							
 	});
 	
-	
-	updateNozzleGraph();
-	updateBedGraph();
-	
+	interval_charts = setInterval(updateCharts, 1000);
 }
 
-
+function updateCharts(){
+	updateNozzleGraph();
+	updateBedGraph();
+}
 
 /*
  * OBJECT
@@ -972,7 +978,9 @@ $('.obj').click(function() {
 	$("#objects_table tbody tr").removeClass('success');
 	$(this).addClass('success');
 	var id = $(this).attr("data-id");
-
+	
+	id_object = id;
+	
 	$.ajax({
 		url : ajax_object_endpoint + 'ajax/object.php',
 		dataType : 'json',
@@ -980,7 +988,8 @@ $('.obj').click(function() {
 		async : true,
 		data : {
 			printable : true,
-			id_object : id
+			id_object : id,
+			print_type: print_type
 		},
 		beforeSend : function(xhr) {
 		}
@@ -996,8 +1005,219 @@ $('.obj').click(function() {
 
 function _stopper() {
 	waitContent('Refreshing page');
-	document.location.href = '<?php echo site_url("create"); ?>';
+	document.location.href = '<?php echo site_url("make/".strtolower($label)); ?>';
 }
 
+
+function initSliders() {
+	
+	
+	
+	$("#velocity").noUiSlider({
+		        range: {'min': 0, 'max' : 500},
+                /*range: [0, 500],*/
+		        start: <?php echo $_velocity != '' ? $_velocity : 100 ?>,
+		        handles: 1,
+                connect: 'lower'
+    });
+    
+    
+    
+    $("#fan").noUiSlider({
+	        range: {'min': 50, 'max' : 100},
+           	start: 255,
+	        handles: 1,
+            connect: 'lower'
+    });
+    
+    $("#flow-rate").noUiSlider({
+	        range: {'min': 0, 'max' : 500},
+            /*range: [0, 500],*/
+           	start: <?php echo $flow_rate; ?>,
+	        handles: 1,
+            connect: 'lower'
+    });
+    
+    $("#temp1").noUiSlider({
+	        range: {'min': 0, 'max' : 230},
+            /*range: [0, 250],*/
+	        start: <?php echo $ext_target != "" ? $ext_target : '0'; ?>,
+	        handles: 1,
+            connect: 'lower'
+    });
+    
+    
+    $("#act-ext-temp").noUiSlider({
+ 	 	
+        range: {'min': 0, 'max' : 230},
+        start: <?php echo intval($ext_temp) ?>,
+        handles: 0,
+        connect: 'lower',
+        behaviour: "none"
+	});
+	
+	
+	$("#act-ext-temp .noUi-handle").remove();
+    
+    
+    
+    $("#temp2").noUiSlider({
+	        range: {'min': 0, 'max' : 100 },
+            /*range: [0, 100],*/
+            start: <?php echo $bed_target == "" ? "0" : $bed_target; ?>,
+	        handles: 1,
+            connect: 'lower'
+    });
+    
+    
+    $("#act-bed-temp").noUiSlider({
+ 	 	
+        range: {'min': 0, 'max' : 100},
+        start: <?php echo intval($bed_temp) ?>,
+        handles: 0,
+        connect: 'lower',
+        behaviour: "none"
+	});
+	
+	
+  	$("#act-bed-temp .noUi-handle").remove();
+    
+ 	$("#rpm").noUiSlider({
+	        range: {'min': 6000, 'max' : 14000 },
+            /*range: [0, 100],*/
+            start: <?php echo $_rpm != '' ? $_rpm : 6000 ?>,
+	        handles: 1,
+            connect: 'lower'
+    });
+    
+    
+    speed_slider = document.getElementById('velocity');
+    nozzle_slider = document.getElementById('temp1');
+    bed_slider    = document.getElementById('temp2');
+    fan_slider    = document.getElementById('fan');
+    flow_rate_slider = document.getElementById('flow-rate');
+    rpm_slider = document.getElementById('rpm');
+    
+    $(".extruder-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,25, 50, 75, 100],
+			density: 10,
+			format: wNumb({
+				prefix: '&deg;'
+			})
+		});
+		
+		
+		$(".bed-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,25,50,75,100],
+			density: 10,
+			format: wNumb({
+				prefix: '&deg;'
+			})
+		});
+		
+		$(".speed-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,20,40,60,80,100],
+			density: 10,
+			format: wNumb({
+			})
+		});
+		
+		$(".rpm-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,20,40,60,80,100],
+			density: 10,
+			format: wNumb({
+			})
+		});
+		
+		$(".fan-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,50,100],
+			density: 10,
+			format: wNumb({
+			})
+		});
+        
+        
+        $(".flow-rate-range").noUiSlider_pips({
+			mode: 'positions',
+			values: [0,20, 40, 60, 80,100],
+			density: 10,
+			format: wNumb({
+			})
+		});
+    
+    
+	
+}
+
+function disableSliders(){
+	
+	speed_slider.setAttribute('disabled', true);
+    nozzle_slider.setAttribute('disabled', true);
+	bed_slider.setAttribute('disabled', true);
+	fan_slider.setAttribute('disabled', true);
+	flow_rate_slider.setAttribute('disabled', true);
+	rpm_slider.setAttribute('disabled', true);
+	
+}
+
+function enableSliders(){
+	
+	speed_slider.removeAttribute('disabled');
+    nozzle_slider.removeAttribute('disabled');
+	bed_slider.removeAttribute('disabled');
+	fan_slider.removeAttribute('disabled');
+	flow_rate_slider.removeAttribute('disabled');
+	rpm_slider.removeAttribute('disabled');	
+}
+
+
+function disableControlsTab(){
+	
+	disableSliders();
+	$("#controls").find('button').addClass('disabled');
+}
+
+function enableControlsTab(){
+	enableSliders();
+	$("#controls").find('button').removeClass('disabled');
+}
+
+
+function restart_create(){
+	document.location.href = '<?php echo site_url('make/'.strtolower($label)); ?>?obj='+id_object+'&file='+id_file;
+}
+
+function new_create(){
+	document.location.href = '<?php echo site_url('make/'.strtolower($label)); ?>';
+}
+
+function save_z_override(){
+
+	
+	$.ajax({
+		type: "POST",
+		url : "<?php echo module_url('maintenance').'ajax/override_probe_lenght.php' ?>",
+		data : {over : z_override},
+		dataType: "json"
+	}).done(function( data ) {
+		
+		$(".z-override-alert").slideUp('slow', function(){
+			
+			$.smallBox({
+				title : "Z Height",
+				content : 'New value saved',
+				color : "#5384AF",
+				timeout : 10000,
+				icon : "fa fa-check"
+			});
+				
+		});
+	});
+}
 
 </script>

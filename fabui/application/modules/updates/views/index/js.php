@@ -91,7 +91,7 @@
             
             function cancel_update(){
                 
-
+				
                  $.ajax({
 					  url: "<?php echo module_url('updates') ?>ajax/cancel.php",
 					  type: "POST",
@@ -107,8 +107,10 @@
             
             
             function start_update(){
+            	
+                IS_TASK_ON = true;
                 
-                 $.ajax({
+                $.ajax({
 					  url: "<?php echo module_url('updates') ?>ajax/update.php",
 					  type: "POST",
                       dataType: 'json', 
@@ -230,6 +232,7 @@
             }
             
             function resume_myfab(){
+            	IS_TASK_ON = true;
                 $('.download').addClass('disabled');
                 json_call();
                 $('.progress-container').slideDown('slow', function() {}); 

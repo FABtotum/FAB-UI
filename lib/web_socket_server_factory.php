@@ -47,7 +47,7 @@ class WebSocketServerFactory {
 
 	public function serial($data = '') {
 
-		$JogFactory = new JogFactory($data['feedrate'], $data['step'], $data['z_step']);
+		$JogFactory = new JogFactory($data['feedrate'], $data['step'], $data['z_step'], $data['extruderFeedrate']);
 
 		$function = $data['func'];
 

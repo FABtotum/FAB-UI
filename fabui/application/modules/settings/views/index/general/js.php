@@ -31,9 +31,9 @@ $('.standby-red').noUiSlider({
 	},
     
     serialization: {
-		format: {
+		format: wNumb({
 			decimals: 0
-		}
+		})
 	}
     
             
@@ -53,9 +53,9 @@ $('.standby-green').noUiSlider({
 		'max': 255
 	},
     serialization: {
-		format: {
+		format: wNumb({
 			decimals: 0
-		}
+		})
 	}
 });
 
@@ -71,9 +71,9 @@ $('.standby-blue').noUiSlider({
 		'max': 255
 	},
     serialization: {
-		format: {
+		format: wNumb({
 			decimals: 0
-		}
+		})
 	}
        
         
@@ -84,14 +84,15 @@ $('.standby-blue').noUiSlider({
 
 function setColor() {
 	
-	var color = 'rgb(' + $("#red").val() + ',' + $("#green").val() + ',' + $("#blue").val() + ')';
-	$("#standby-color-red").val($("#red").val());
-	$("#standby-color-green").val($("#green").val());
-	$("#standby-color-blue").val($("#blue").val());
+	var color = 'rgb(' + parseInt($("#red").val()) + ',' + parseInt($("#green").val()) + ',' + parseInt($("#blue").val()) + ')';
+	
+	$("#standby-color-red").val(parseInt($("#red").val()));
+	$("#standby-color-green").val(parseInt($("#green").val()));
+	$("#standby-color-blue").val(parseInt($("#blue").val()));
 
 	$(".result").css({
-		background: color,
-		color: color
+		"background": color,
+		"color:": color
 	});
     
 }
@@ -107,7 +108,7 @@ function color(){
 		  dataType : 'json',
 		  type: 'post',
 		  async : true,
-          data: {red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val()}
+          data: {red : parseInt($("#red").val()), green: parseInt($("#green").val()), blue: parseInt($("#blue").val())}
 		}).done(function(response) {
 		  
           
@@ -126,11 +127,12 @@ function save(){
         url : '<?php echo module_url('settings').'ajax/general.php' ?>',
 		  dataType : 'json',
 		  type: 'post',
-          data: {red : $("#red").val(), green: $("#green").val(), blue: $("#blue").val(), 
+          data: {red : parseInt($("#red").val()), green: parseInt($("#green").val()), blue: parseInt($("#blue").val()), 
           		safety_door: $('[name="safety-door"]:checked').val(), switch:$('[name="switch"]:checked').val(), 
-          		feeder_disengage_feeder: $("#feeder-disengage-offset").val(), 
-          		/*feeder_extruder_steps_per_unit_e_mode: $("#feeder-extruder-steps-per-unit-e").val(), 
-          		feeder_extruder_steps_per_unit_a_mode: $("#feeder-extruder-steps-per-unit-a").val(),*/
+          		feeder_disengage_feeder: $("#feeder-disengage-offset").val(),
+          		milling_sacrificial_layer_offset: $("#milling-sacrificial-layer-offset").val(), 
+          		feeder_extruder_steps_per_unit_e_mode: $("#feeder-extruder-steps-per-unit-e").val(), 
+          		feeder_extruder_steps_per_unit_a_mode: $("#feeder-extruder-steps-per-unit-a").val(),
           		both_y_endstops: $("#both-y-endstops").val(),
           		both_z_endstops: $("#both-z-endstops").val(),
           		upload_api_key: $("#upload-api-key").val(),
@@ -168,10 +170,24 @@ $("#zmax-homing").spinner({
 
 $("#feeder-disengage-offset").spinner({
 				step :0.5,
-				numberFormat : "n",
+				numberFormat : "N1",
 				min: 0,
-				max: 6
-		});
+				max: 6,
+				create: function () { $(this).number(true,1) },
+				stop: function () { $(this).number(true,1) }
+				
+});
+
+
+$("#milling-sacrificial-layer-offset").spinner({
+ 	step: 0.5,
+ 	numberFormat : "N1",
+ 	min: 0,
+ 	max: 25,
+ 	create: function () { $(this).number(true,1) },
+   	stop: function () { $(this).number(true,1) }
+ });
+
 
 /*
 $("#feeder-extruder-steps-per-unit").spinner({

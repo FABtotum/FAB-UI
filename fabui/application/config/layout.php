@@ -53,5 +53,6 @@ $layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/magnific-po
 $layout['_js'][] = array('src'=>'application/layout/assets/js/app.min.js', 'comment' => 'Demo', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/fabwebsocket.js', 'comment' => 'fabtotum websocket', 'external' => FALSE);
 $layout['_js'][] = array('src'=>'application/layout/assets/js/fabtotum.js', 'comment' => 'fabtotum utilities', 'external' => FALSE);
+$layout['_js'][] = array('src'=>'application/layout/assets/js/plugin/jquery-number/jquery.number.min.js', 'comment' => 'jQuery number', 'external' => FALSE);
 
 

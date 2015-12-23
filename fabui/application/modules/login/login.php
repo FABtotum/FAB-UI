@@ -54,30 +54,6 @@ class Login extends Module {
 
 		$url = $this -> config -> item('fabtotum_suggestions_url', 'fabtotum');
 
-		$data['fabui_version'] = $this -> configuration -> get_config_value('fabui_version');
-		$data['fw_version'] = $this -> configuration -> get_config_value('fw_version');
-
-		if (file_exists($this -> config -> item('fabtotum_instagram_hash', 'fabtotum'))) {
-
-			$instagram_hash = json_decode(file_get_contents($this -> config -> item('fabtotum_instagram_hash', 'fabtotum')), true);
-			$data['instagram_hash'] = $instagram_hash;
-
-		}
-
-		if (file_exists($this -> config -> item('fabtotum_instagram_feed', 'fabtotum'))) {
-
-			$instagram_feed = json_decode(file_get_contents($this -> config -> item('fabtotum_instagram_feed', 'fabtotum')), true);
-			$data['instagram_feed'] = $instagram_feed;
-
-		}
-
-		if (file_exists($this -> config -> item('fabtotum_twitter_feed', 'fabtotum'))) {
-
-			$twitter_feed = json_decode(file_get_contents($this -> config -> item('fabtotum_twitter_feed', 'fabtotum')));
-			$data['twitter_feed'] = $twitter_feed;
-
-		}
-
 		$this -> load -> view('index/index', $data);
 
 	}
@@ -121,10 +97,12 @@ class Login extends Module {
 				/** LOAD HELPER */
 				$this -> load -> helper('update_helper');
 				$this->load->helper('serial_helper');
-
+				
 				$_fabui_local = myfab_get_local_version();
-				$_fw_local    = firmware_version();
-
+				
+				/*$_fw_local    = firmware_version(); */
+				
+				 
 				$_fabui_update = false;
 				$_fw_update = false;
 

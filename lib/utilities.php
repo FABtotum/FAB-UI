@@ -228,7 +228,7 @@ function myfab_get_local_version(){
 	
 	/** GET TASK FROM DB */
 	$_version = $db->query('select sys_configuration.value from sys_configuration where sys_configuration.key="fabui_version"');
-	return $_version['value'];
+	return $_version[0]['value'];
 }
 
 /**
@@ -241,7 +241,7 @@ function marlin_get_local_version(){
 	/** GET TASK FROM DB */
 	$_version = $db->query('select sys_configuration.value from sys_configuration where sys_configuration.key="fw_version"');
 	$db->close();
-	return $_version['value'];
+	return $_version[0]['value'];
 	
 	
 

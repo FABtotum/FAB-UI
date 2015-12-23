@@ -42,6 +42,8 @@
 		
 		$('.finish').on('click', finish_wizard);
 		
+		$("#heads").on('change', set_head_img);
+		
 		
 		
 		
@@ -186,6 +188,7 @@
 	
 	function do_calibration(){
 		
+		IS_MACRO_ON = true;
 		openWait('Calibration in process');
 		
 		var now = jQuery.now();
@@ -237,41 +240,7 @@
 				}
 				
 				
-			});
-			
-			
-			/*
-			console.log(reds);
-			console.log(oranges);
-			console.log(greens);
-			*/
-			
-			/*
-			if(reds > 0){
-				
-				$(".bed-leveling-next").addClass('disabled');
-			}
-			
-			if(greens == 4){
-				$(".bed-leveling-next").removeClass('disabled');
-			}
-			*/
-			
-			
-			
-			/*
-			if(reds == 0){
-				isStep2Ok = true;
-			}
-			
-			isStep2Ok = true;
-			
-			
-			check_wizard();
-			*/
-			
-			
-			
+			});	
 			
 			if(reds > 0){
 				isStep2Ok = false;
@@ -283,7 +252,7 @@
 			
 			check_wizard();
 			
-			
+			IS_MACRO_ON = false;
 			
 		});
 		
@@ -345,6 +314,7 @@
 	
 	function macro(mode, index){
 		
+		IS_MACRO_ON = true;
 		$(".re-choice").slideUp('slow');
 		
 		var message = mode == 'prepare' ? 'Preparing calibration, please wait' : 'Calibrating';
@@ -378,7 +348,7 @@
 			});
 			
 			
-			
+			IS_MACRO_ON = false;
 			
             
             
@@ -404,7 +374,9 @@
 	
 	
 	function jog_make_call(func, value){  
-
+		
+		
+		IS_MACRO_ON = true;
 		$(".z-action").addClass('disabled');
 		$.ajax({
 			type: "POST",
@@ -413,6 +385,7 @@
 			dataType: "json"
 		}).done(function( data ) {
 	       $(".z-action").removeClass('disabled'); 
+	       IS_MACRO_ON = false;
 		});
 		
 	}
@@ -434,7 +407,8 @@
 		
 		
 		if(probe_length <= 0){
-		
+			
+			IS_MACRO_ON = true;
 			openWait('please wait');
 			
 			
@@ -457,6 +431,7 @@
 	           	$("#probe-lenght").html(Math.abs(data.probe_length));
 		       isStep3Ok = true;
 		       check_wizard();
+		       IS_MACRO_ON = false;
 		       
 			});
 		
@@ -475,6 +450,7 @@
 	
 	function override_probe_length(){
 		
+		IS_MACRO_ON = true;
 		$(".re-choice").slideUp('slow');
 		openWait('please wait');
 		
@@ -500,6 +476,7 @@
 		       });
 		      
 		       closeWait();
+		       IS_MACRO_ON = false;
 		       
 		       
 			});
@@ -511,6 +488,7 @@
 	
 	function prepare_feeder(){
 		
+		IS_MACRO_ON = true;
 	 	openWait('Preparing procedure');
 	 	$.ajax({
               type: "POST",
@@ -541,6 +519,7 @@
                 }
                 
 			closeWait();
+			IS_MACRO_ON = false;
   
         });
 	 }
@@ -549,6 +528,7 @@
 	 
 	 function finish_wizard(){
 	 	
+	 	IS_MACRO_ON = true;
 	 	openWait('Finalizing wizard');
 	 	$(".finish").addClass('disabled');
 	 	
@@ -566,6 +546,11 @@
 	 	
 	 	
 	 	
+	 }
+	 
+	 
+	 function set_head_img(){
+		$("#head_img").attr('src', '<?php echo module_url('maintenance') ?>assets/img/head/' + $(this).val() + '.png');	 
 	 }
 	
 	

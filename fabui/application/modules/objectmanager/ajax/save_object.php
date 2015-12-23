@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 $object_id     = $_POST['object_id'];
 $name          = $_POST["name"];
 $description   = $_POST['description'];
-$private       = $_POST['private'] == 1 ? 0 : 1;
+$private       = $_POST['private'];
 
 /** SAVE TO DB */
 $db = new Database();

@@ -180,7 +180,7 @@ class Objects extends CI_Model {
 		$query = $this->db->get_where('sys_obj_files', array('id_obj' => $id_obj));
 		$result = $query->result();
         
-        
+       
        
         
 		
@@ -244,6 +244,22 @@ class Objects extends CI_Model {
         
         
     }
+	
+	
+	function get_for_create($type){
+		
+		
+		
+		return $this->db->select('sys_objects.id as id, sys_objects.obj_name as obj_name, sys_objects.obj_description as description, sys_objects.date_insert as date_insert')
+						->from($this->_table_name)
+						->join('sys_obj_files', 'sys_obj_files.id_obj = sys_objects.id')
+						->join('sys_files', 'sys_files.id = sys_obj_files.id_file')
+						->where('print_type',$type)
+						->group_by('sys_objects.id')
+						->order_by('sys_objects.date_insert', 'DESC')
+						->get()
+						->result_array();
+	}
 	
 
 

@@ -16,11 +16,11 @@
 	</thead>
 	<tbody>
 		<?php foreach($objects as $_obj): ?>
-			<tr class="obj" data-id="<?php echo $_obj->id; ?>">
+			<tr class="obj" data-id="<?php echo $_obj['id']; ?>">
 				<td><label class="radio">	<input type="radio" name="checkbox-inline"><i></i></label></td>
-				<td><strong><?php echo $_obj->obj_name ?></strong></td>
-				<td class="hidden-xs"><i><?php echo $_obj->obj_description ?></i></td>
-				<td style="width: 200px;" class="hidden-xs"><?php echo mysql_to_human($_obj->date_insert); ?></td>
+				<td><strong><?php echo $_obj['obj_name'] ?></strong></td>
+				<td class="hidden-xs"><i><?php echo $_obj['obj_description'] ?></i></td>
+				<td style="width: 200px;" class="hidden-xs"><?php echo mysql_to_human($_obj['date_insert']); ?></td>
 			</tr>
 		<?php endforeach; ?>
 	</tbody>

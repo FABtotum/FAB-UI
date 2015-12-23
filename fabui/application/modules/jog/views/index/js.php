@@ -1,9 +1,9 @@
 <script type="text/javascript">
 
 	var positions = new Array();
-	var ticker_url = '';
+	
 	var interval_ticker;
-	var interval_temperature;
+	
 	var isMacro=false;
 	var showTemperatureConsole = false;
 	var maxIdleTime = 60;
@@ -19,6 +19,7 @@
 	$(function() {
 		
 		
+		initJogUI();
 		
 		$(document).keyup(function(e) { 
 			KEY_ALLOWED = true;
@@ -52,6 +53,9 @@
 	        }
 	    });
 	    
+	    $(".motors-off").on('click', function() {
+	    	motors('off');
+	    })
 	    
 	    /** COORDINATES */
 	    $("#coordinates").on('change', function(){
@@ -73,12 +77,7 @@
 	    });
 		
 		
-		/** INIT  */
-		<?php echo $_motors == "on" ? ' $("#motors").prop("checked", true);' : ''; ?>
-    
-    	<?php echo $_coordinates == "relative" ? ' $("#coordinates").prop("checked", true);' : ''; ?>
-    
-    	<?php echo $_lights == "on" ? ' $("#lights").prop("checked", true);' : ''; ?>
+		
     	
     	
     	/** EVENTS */
@@ -86,7 +85,7 @@
     
 		$(".directions").on("click", directions);
 	
-		$("#zero-all").on("click", zero_all);
+		$(".zero_all").on("click", zero_all);
 	    
 	    $("#position").on("click", position);
 	    
@@ -124,6 +123,9 @@
 		      keyboard(e);
 		});
 		
+		$('.fan').on('click', fan);
+		$('#eeprom').on('click', eeprom);
+		
 		/** KNOB */
 		$('.knob').knob({
 	        change: function (value) {
@@ -149,7 +151,7 @@
 	 	$("#ext-target-temp").noUiSlider({
 	 	 	
 	        range: {'min': 0, 'max' : 230},
-	        start: <?php echo $_ext_temp ?>,
+	        start: typeof (Storage) !== "undefined" ? localStorage.getItem("nozzle_temp_target") : 0,
 	        handles: 1,
             connect: 'lower'
 		});
@@ -158,7 +160,7 @@
 		$("#act-ext-temp").noUiSlider({
 	 	 	
 	        range: {'min': 0, 'max' : 230},
-	        start: <?php echo $_ext_temp ?>,
+	        start: typeof (Storage) !== "undefined" ? localStorage.getItem("nozzle_temp") : 0,
 	        handles: 0,
             connect: 'lower',
             behaviour: "none"
@@ -187,7 +189,7 @@
 	 	/** BED TEMPERATURE */
 	 	$("#bed-target-temp").noUiSlider({
 	        range: {'min': 0, 'max' : 100},
-	        start: <?php echo $_bed_temp ?>,
+	       	start: typeof (Storage) !== "undefined" ? localStorage.getItem("bed_temp_target") : 0,
 	        handles: 1,
 	        connect: 'lower'
       	});
@@ -195,7 +197,7 @@
       	$("#act-bed-temp").noUiSlider({
 	 	 	
 	        range: {'min': 0, 'max' : 100},
-	        start: <?php echo $_bed_temp ?>,
+	        start: typeof (Storage) !== "undefined" ? localStorage.getItem("bed_temp") : 0,
 	        handles: 0,
             connect: 'lower',
             behaviour: "none"
@@ -245,6 +247,19 @@
                 }
             }
     	});
+    	
+    	var max_mdi_rows = 10;
+    	
+    	$('#mdi').keydown(function(e) {
+
+	        newLines = $(this).val().split("\n").length;
+	        if(e.keyCode == 13 && newLines >= max_mdi_rows) {
+	            return false;
+	        }
+	        else {
+	            
+	        }
+	    });
 	   	
 	   	
 	   	$(".extruder-e-action").on('click', function(){
@@ -253,26 +268,10 @@
 	   	
 
 		pre_jog();
+	
 		/** TICKER */
     	interval_ticker   = setInterval(ticker, 500);
-    	
-    	interval_temperature = setInterval(function(){
-    		
-    		
-    		if(PAGE_ACTIVE){    			
-
-				if(SOCKET_CONNECTED && ticker_url == '' && RESETTING_CONTROLLER == false && STOPPING_ALL == false && PRE_JOG == false) {
-					showTemperatureConsole=false;
-					make_call_ws("get_temperature", "");
-				}
-			
-			}
-    			
-    	}, 1500);
-    	
-    	
-    	  	
-    	
+    	    	
     	/** RESET CONTROLLER */
     	$("#reset-controller").on('click', ask_reset);
 		
@@ -300,7 +299,13 @@
 		$("#extruder-e-value").spinner({
 			step:1,
 			numberFormat : "n",
-			min: 0
+			min: 1
+		});
+		
+		$("#extruder-feedrate").spinner({
+			step:50,
+			numberFormat : "n",
+			min: 1
 		});
 		
 		
@@ -315,13 +320,37 @@
 	
 	/** FUNCTIONS  */
 	
+	function eeprom(){
+		var func = 'eeprom'
+		
+		if(SOCKET_CONNECTED){
+	    	jog_make_call_ws(func, '');
+	    }else{
+	    	make_call(func, '');
+	    }
+	}
+	
+	
+	function fan(){
+		var func = 'fan';
+		var value = $(this).attr('data-action');
+		
+		if(SOCKET_CONNECTED){
+	    	jog_make_call_ws(func, value);
+	    }else{
+	    	make_call(func, value);
+	    }
+		
+		
+	}
+	
 	function axisz(){
     
 	    var func = $(this).attr("data-attribute-function");
 	    var step = $(this).attr("data-attribute-step");
 	    
 	    if(SOCKET_CONNECTED){
-	    	make_call_ws(func, step);
+	    	jog_make_call_ws(func, step);
 	    }else{
 	    	make_call(func, step);
 	    }
@@ -334,7 +363,7 @@
 		var value = $(this).attr("data-attribue-direction");
 		
 		if(SOCKET_CONNECTED){
-			make_call_ws("directions", value);
+			jog_make_call_ws("directions", value);
 		}else{
 			make_call("directions", value);
 		}
@@ -343,7 +372,7 @@
 	function zero_all(){
 		
 		if(SOCKET_CONNECTED){
-			make_call_ws("zero_all", true);
+			jog_make_call_ws("zero_all", true);
 		}else{
 			make_call("zero_all", true);
 		}
@@ -378,7 +407,7 @@
 		EXT_TARGET_BLOCKED = false;
 		
 		if(SOCKET_CONNECTED){
-			make_call_ws("ext_temp", parseInt($(this).val()));
+			jog_make_call_ws("ext_temp", parseInt($(this).val()));
 		}else{
 			make_call("ext_temp", parseInt($(this).val()));
 		}
@@ -395,7 +424,7 @@
 	function bedTempChange(e){
 		BED_TARGET_BLOCKED = false;
 		if(SOCKET_CONNECTED){
-			make_call_ws("bed_temp", parseInt($(this).val()));
+			jog_make_call_ws("bed_temp", parseInt($(this).val()));
 		}else{
 			make_call("bed_temp", parseInt($(this).val()));
 		}
@@ -411,7 +440,7 @@
 	    if(gcode != ''){
 	    	
 	    	if(SOCKET_CONNECTED){
-				 make_call_ws('mdi', gcode);
+				 jog_make_call_ws('mdi', gcode);
 			}else{
 				 make_call('mdi', gcode);
 			}
@@ -421,7 +450,7 @@
 	function extruder_mode(mode){
 	    
 	    if(SOCKET_CONNECTED){
-			 make_call_ws("extruder_mode", mode);
+			 jog_make_call_ws("extruder_mode", mode);
 		}else{
 			 make_call("extruder_mode", mode);
 		}
@@ -432,7 +461,7 @@
 		
 		
 		if(SOCKET_CONNECTED){
-			make_call_ws("motors", value);
+			jog_make_call_ws("motors", value);
 		}else{
 			make_call("motors", value);
 		}
@@ -450,7 +479,7 @@
 	function lights(value){
 
 		if(SOCKET_CONNECTED){
-			make_call_ws("lights", value);
+			jog_make_call_ws("lights", value);
 		}else{
 			make_call("lights", value);
 		}
@@ -460,7 +489,7 @@
 	function position(){
 		
 		if(SOCKET_CONNECTED){
-			make_call_ws("position", true);
+			jog_make_call_ws("position", true);
 		}else{
 			make_call("position", true);
 		}
@@ -473,7 +502,7 @@
 		
 		
 		if(SOCKET_CONNECTED){
-			make_call_ws("rotation", value);
+			jog_make_call_ws("rotation", value);
 		}else{
 			make_call("rotation", value);
 		}
@@ -484,7 +513,7 @@
 		
 		
 		if(SOCKET_CONNECTED){
-			make_call_ws("extruder_e", action + $("#extruder-e-value").val());
+			jog_make_call_ws("extruder_e", action + $("#extruder-e-value").val());
 		}else{
 			make_call("extruder_e", action + $("#extruder-e-value").val());
 		}
@@ -499,7 +528,7 @@
 		
 		if(SOCKET_CONNECTED){
 			
-			make_call_ws("get_temperature", "");
+			jog_make_call_ws("get_temperature", "");
 			
 		}else{
     
@@ -580,35 +609,10 @@
 	function ticker(){
 		
 		if(!SOCKET_CONNECTED){
-		    if(ticker_url != ''){
-				getTrace(ticker_url, 'GET', $(".console"));
+		    if(jog_ticket_url != ''){
+				getTrace(jog_ticket_url, 'GET', $(".console"));
 		    }
 	   }
-	}
-	
-	
-	
-	
-	function make_call_ws(func, value){
-		
-		
-		
-		var jsonData = {};
-		
-		jsonData['func']     = func;
-		jsonData['value']    = value;
-		jsonData['step']     = $("#step").val();
-		jsonData['z_step']   = $("#z-step").val();
-		jsonData['feedrate'] = $("#feedrate").val();
-		
-		var message = {};
-		
-		message['name'] = "serial";
-		message['data'] = jsonData;
-		
-		if(func != 'get_temperature') $(".btn").addClass('disabled');
-		SOCKET.send('message', JSON.stringify(message));
-		
 	}
 	
 	
@@ -620,8 +624,9 @@
 	    
 	    
 	    if(macro){
-	    	ticker_url = '/temp/macro_trace';
+	    	jog_ticket_url = '/temp/macro_trace';
 	    	isMacro=true;
+	    	IS_MACRO_ON = true;
 	    }
 	            
 	    $(".btn").addClass('disabled');
@@ -632,7 +637,7 @@
 		$.ajax({
 			type: "POST",
 			url : "<?php echo module_url('jog').'ajax/exec.php' ?>",
-			data : {function: func, value: value, time: timestamp, step:$("#step").val(), z_step:$("#z-step").val(), feedrate: $("#feedrate").val(), macro:macro},
+			data : {function: func, value: value, time: timestamp, step:$("#step").val(), z_step:$("#z-step").val(), feedrate: $("#feedrate").val(), macro:macro, extruderFeedrate: $("#extruder-feedrate").val()},
 			dataType: "json"
 		}).done(function( data ) {
 			
@@ -642,9 +647,10 @@
 	       	}
 	        
 	        isMacro=false;
+	        IS_MACRO_ON = false;
 	        $(".btn").removeClass('disabled');
 	        enable_save_position();
-	        ticker_url = '';
+	        jog_ticket_url = '';
 	        $(".status").html(' ');
 		});
 		
@@ -669,10 +675,10 @@
 	function pre_jog(){
 	    
 	    
-	   
+	   	IS_MACRO_ON = true;
 	    $(".btn").addClass('disabled');
 	        
-	    ticker_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/macro_trace';
+	    jog_ticket_url = 'http://<?php echo $_SERVER['HTTP_HOST'] ?>/temp/macro_trace';
 	   
 	    
 	    $.ajax({
@@ -680,11 +686,12 @@
 			dataType : 'json',
 			type: 'post'
 		}).done(function(response) {
-	    	ticker_url = '';
+	    	jog_ticket_url = '';
 	        refresh_temperature();
 	        $(".btn").removeClass('disabled');
 	        
 	        PRE_JOG = false;
+	        IS_MACRO_ON = false;
 	   });
 	    
 	}
@@ -713,68 +720,9 @@
 		
 	}
 	
-	
-	
-	function update_temperature_info(data){
-		
-		if(data.response.indexOf('ok T:') > -1){
-			
-			var str_temp = data.response.replace('ok ', '');
-			
-			var temperature = str_temp.split(' ');
 
-			var ext_temp   = temperature[0].split(':')[1];
-			var ext_target = temperature[1].split('/')[1];		
-			var bed_temp   = temperature[2].split(':')[1];
-			var bed_target = temperature[3].split('/')[1];
-			
-			
-			$("#ext-actual-degrees").html(parseInt(ext_temp) + '&deg;C');
-			
-		                	                
-            $("#act-ext-temp").val( parseInt(ext_temp), {
-            	set: true,
-            	animate: true
-            });
-            
-            if(!EXT_TARGET_BLOCKED){
-            	$("#ext-target-temp").val( parseInt(ext_target), {
-            		set: true,
-            		animate: true
-            	});
-            	
-            	$("#ext-degrees").html(parseInt(ext_target) + '&deg;C');
-            }
-            
-            $("#bed-actual-degrees").html(parseInt(bed_temp) + '&deg;C');
-			
-			$("#act-bed-temp").val( parseInt(bed_temp), {
-            	set: true,
-            	animate: true
-            });
-            
-            if(!BED_TARGET_BLOCKED){
-            	$("#bed-target-temp").val( parseInt(bed_target), {
-            		set: true,
-            		animate: true
-            	});
-            	
-            	$("#bed-degrees").html(parseInt(bed_target) + '&deg;C');
-            }
-			
-			if(showTemperatureConsole){
-				write_to_console('Temperatures (M105) [Ext: ' + parseInt(ext_temp) + ' / ' + parseInt(ext_target)   + ' ---  Bed: ' + parseInt(bed_temp) + ' / ' + parseInt(bed_target) +  ']\n');	
-			}	
-		}
-		
-	}
-	
-	
 	function write_to_console(text, type) {
-		
-		
-		
-
+			
 		type = type || '';
 	
 		if (type == 'macro' || type == "task") {
@@ -832,7 +780,7 @@
 		if(function_name != ''){
 			
 			if(SOCKET_CONNECTED){
-				make_call_ws(function_name, function_value);
+				jog_make_call_ws(function_name, function_value);
 			}else{
 				make_call(function_name, function_value);
 			}
@@ -841,5 +789,17 @@
 	}
 	
 	
+	function initJogUI(){
+		
+		if ( typeof (Storage) !== "undefined") {
+		
+			/******* TEMP SLIDERS *********************/
+			$("#ext-actual-degrees").html(parseInt(localStorage.getItem("nozzle_temp")) + '&deg;C');
+			$("#ext-degrees").html(parseInt(localStorage.getItem("nozzle_temp_target")) + '&deg;C');
+			$("#bed-actual-degrees").html(parseInt(localStorage.getItem("bed_temp"))+ '&deg;C');
+			$("#bed-degrees").html(parseInt(localStorage.getItem("bed_temp_target"))+ '&deg;C');
+		
+		}
+	}
 	
 </script>

@@ -54,6 +54,7 @@
 				</div>
 				<!-- END AJAX DROPDOWN -->
 			</div>
+			
 			<div class="pull-right">
 				<!-- collapse menu button -->
 				<div id="hide-menu" class="btn-header pull-right">
@@ -63,33 +64,62 @@
 				</div>
 				<!-- end collapse menu button -->
 				
-				
-				
 				<!-- PROFILE BUTTON -->
-				<div class="btn-header transparent pull-right">
+				<div class="btn-header transparent pull-right hidden-xs">
 					<span>
-						<?php echo anchor( 'profile', ' <i class="fa fa-user"></i> ', 'title="Profile" style="cursor: pointer !important"'); ?>
+						<?php echo anchor( 'profile', ' <i class="fa fa-user"></i> ', 'rel="tooltip" data-placement="left" title="Profile" style="cursor: pointer !important"'); ?>
 					</span>
 				</div>
 				<!-- END PROFILE BUTTON -->
 				
-				<!-- EMERGENCY BUTTON -->
-				<div class="btn-header transparent pull-right">
+				
+				
+				
+				<!-- LOGOUT BUTTON -->
+				<div id="log-out" class="btn-header transparent pull-right hidden-xs">
 					<span>
-						<?php echo anchor( '#', '<i class="fa fa-close"></i>', 'title="Emergency Stop"  style="cursor: pointer !important" data-action="emergencyButton" data-reset-msg="This button will stop all the operations, continue?"'); ?>
+						<?php echo anchor( 'login/out', '<i class="fa fa-power-off"></i>', ' rel="tooltip" data-placement="left"  title="Power Off/Log Out" data-user-name="'.$_SESSION['user']['first_name'].'" data-logout-msg="What do you want to do?" data-action="userLogout" style="cursor: pointer !important"'); ?>
+					</span>
+				</div>
+				<!-- END LOGOUT BUTTON -->
+			</div>
+			
+			<div class="pull-right emergency-container">
+				
+				<!-- EMERGENCY BUTTON -->
+				<div class="btn-header transparent">
+					<span>
+						<?php echo anchor( '#', '<i class="fa fa-bolt"></i>', 'rel="tooltip" data-placement="left" data-html="true" data-original-title="Reset Controller.<br>This will reset control board"  style="cursor: pointer !important" data-action="resetController" data-reset-msg="This button will reset control board, continue?"'); ?>
 					</span>
 				</div>
 				<!-- END EMERGENCY BUTTON-->
 				
+			</div>
+			
+			
+			<div class="pull-right emergency-container">
 				
-				<!-- LOGOUT BUTTON -->
-				<div id="log-out" class="btn-header transparent pull-right">
+				<!-- EMERGENCY BUTTON -->
+				<div class="btn-header transparent">
 					<span>
-						<?php echo anchor( 'login/out', '<i class="fa fa-power-off"></i>', 'title="Power Off" data-user-name="'.$_SESSION['user']['first_name'].'" data-logout-msg="What do you want to do?" data-action="userLogout" style="cursor: pointer !important"'); ?>
+						<?php echo anchor( '#', '<i class="fa fa-warning "></i>', 'rel="tooltip" data-placement="left" data-html="true" data-original-title="Emergency Button. <br>This will stop all operations on the FABtotum"  style="cursor: pointer !important" data-action="emergencyButton" data-reset-msg="This button will stop all the operations, continue?"'); ?>
 					</span>
 				</div>
-				<!-- END LOGOUT BUTTON -->
-			</div>			
+				<!-- END EMERGENCY BUTTON-->
+				
+			</div>
+	
+			
+			
+			<div class="pull-right top-bar-temperatures hidden-xs">
+					
+					<span>
+						<p><i class=" icon-fab-term"></i> [ Nozzle</a> <span id="top-bar-nozzle-actual">-</span>/<span id="top-bar-nozzle-target">-</span>&deg; ] - [ Bed <span id="top-bar-bed-actual">-</span>/<span id="top-bar-bed-target">-</span>&deg; ]
+					</span>
+				
+			</div>
+			
+						
 		</header>
 		<!-- END HEADER -->
 		<!-- LEFT PANEL -->
@@ -116,7 +146,7 @@
 			<div id="ribbon">
 				<!-- USB -->
 				<span class="ribbon-button-alignment usb-ribbon" style="display:none">
-					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="USB disk inserted" data-html="true"><i class="icon-fab-usb "></i></span>
+					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="USB disk inserted" data-html="true"><i class="fa fa-usb "></i></span>
 				</span>
 				<!-- END USB -->
 				
@@ -204,7 +234,7 @@
 		      		<div class="modal-body">
 		      			<div class="row">
 		      				<div class="col-md-12">
-		      					<h6>Please first make sure FABUI is updated to the last version</h6>
+		      					<h6>Please first make sure FABUI is up-to-date.</h6>
 		      					<h5>Our support forum is now live. Visit <a target="_blank" href="http://support.fabtotum.com/tickets/">http://support.fabtotum.com/tickets/</a></h5>
 		      					<p>Note: use this form only to report software's bugs</p>
 		      					<div class="form-group">
@@ -239,6 +269,8 @@
 			var max_idle_time = <?php echo isset($_SESSION['user']['lock-screen']) ? $_SESSION['user']['lock-screen'] : 0 ?>;
 			var setup_wizard = <?php echo $_setup_wizard == true && (isset($_SESSION['ask_wizard']) && $_SESSION['ask_wizard'] == true) ? 'true' : 'false' ?>;
 			var MODULE = '<?php echo $this->router->fetch_class(); ?>';
+			var pressedEmergencyButton = false;
+			var PRINTER_BUSY = <?php echo $_printer_busy; ?>;
 		</script>
 		<!-- END JAVASCRIPT VARS -->
 		<!-- JAVASCRIPT INCLUSIONS -->

@@ -11,7 +11,6 @@ require_once '/var/www/lib/serial.php';
 
 define('HARDWARE_ID', 3.5);
 define('SHOW_FEEDER', false);
-
 define('E_MODE', 177.777778);
 define('A_MODE',  88.888889);
 

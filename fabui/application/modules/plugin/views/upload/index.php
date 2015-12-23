@@ -1,9 +1,9 @@
 <div class="row">
-	<!-- col -->
+	<!-- col 
 	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 		<h1 class="page-title txt-color-blueDark"><i class="fab-fw icon-fab-plugin"></i> Plugins <span> > Upload</span></h1>
 	</div>
-
+-->
 </div>
 <?php if(isset($error)): ?>
 	<div class="row">

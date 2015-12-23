@@ -66,15 +66,12 @@
     
     function start_s_scan(){
     	
-    	
-    	
-    	
     }
     
     
     function check_pre_scan(){
     
-    
+    	IS_MACRO_ON = true;
         $(".SmallBox").remove();
         $(".result-check-pre-scan").html('');
         openWait('Checking printer');
@@ -121,6 +118,7 @@
             
             
             ticker_url = '';
+            IS_MACRO_ON = false;
     	});
      
     }
@@ -130,7 +128,8 @@
     
     function check_s_scan(){
     
-    
+    	
+    	IS_MACRO_ON = true;
         $(".SmallBox").remove();
         
         openWait('Checking printer');
@@ -156,11 +155,7 @@
             			
             		});
             		
-            	});
-            	
-             
-                 
-                          
+            	}); 
             }else{
                 closeWait();
                 $.smallBox({
@@ -172,7 +167,8 @@
                 });     
             }
             
-            ticker_url = '';        
+            ticker_url = '';
+            IS_MACRO_ON = false;        
     	});
          
        

@@ -1,4 +1,3 @@
-
 <script type="text/javascript">
 /* SCAN MODE */
 var scan_mode = <?php echo  $_task ? $_task_attributes['mode'] : 0 ?>;
@@ -67,9 +66,6 @@ var pprocess_array_progress_steps = new Array();
 var pprocess_array_estimated_time = new Array();
 var pprocess_stats_file = '<?php echo $_task && isset($_task_attributes['pprocess_stats_file']) ? $_task_attributes['pprocess_stats_file'] : '' ?>';
 <?php 
-
-
-
 if($_task && isset($_pprocess_stats['progress_steps'])){
 	foreach($_pprocess_stats['progress_steps'] as $step){
 		if(is_numeric($step)){
@@ -131,6 +127,7 @@ var macro_s_scan_url    = '<?php echo module_url('scan').'ajax/macro_s_scan.php'
 var macro_p_scan_url    = '<?php echo module_url('scan').'ajax/macro_p_scan.php' ?>';
 var macro_pg_scan_url   = '<?php echo module_url('scan').'ajax/macro_pg_scan.php' ?>';
 var connection_test_url = '<?php echo module_url('scan').'ajax/connection_test.php' ?>';
+var check_area_url      = '<?php echo module_url('scan').'ajax/check_area.php' ?>';
 
 /** NEED FOR JCROP API */
 var jcrop_api;
@@ -149,6 +146,14 @@ var obj_id      = 0;
 var obj_name    = '';
 var new_object  = true;
 var id_asc_file = 0;
+
+
+var X_MIN = 32;
+var Y_MIN = 66;
+var X_MAX = 223;
+var Y_MAX = 168;
+
+var check_skip_homing = 0;
 
 $(document).ready(function() {
 	  
@@ -199,8 +204,8 @@ $(document).ready(function() {
 
     /** HOVER SCAN MODE SELECTION EFFECT */
     $('.scan-mode').hover(function() {
+        
         var obj = $(this);
-
         obj.find('img').addClass('sfumatura');
         obj.find('.mode-description').slideDown('fast');
 
@@ -281,6 +286,7 @@ $(document).ready(function() {
 
 		/** WHEN A SCAN MODE IS SELECTED IS POSSIBLE TO CONTINUE */
 		$("#btn-next").removeClass('disabled');
+		$("#btn-next").trigger('click');
 		
 	});
     
@@ -379,48 +385,66 @@ function ticker(){
 }
 
 
-function setCoords(c)
+function setCoords(c, reDraw)
 {
+	
+	reDraw = reDraw || false;
+	
     x1 = c.x;
     y1 = c.y;
     x2 = c.x2;
     y2 = c.y2;
     
-    
-    
    
-    
-    var y_max = 235;
-    
-    y1 = y_max - y1;
-    y2 = y_max - y2;
-    
-    if(x1 < 32 ){
-    	x1 = 32;
-    	jcrop_api.setSelect([x1 ,y1, x2,y2]);
-    	return;
-    }
-    
-    
-    if(y2 < 66){
-    	y2 = 66;
-    	jcrop_api.setSelect([x1 ,y1, x2,y2]);
-    	return;
-    }
-    
- 
-    if(y1 >175){
+    /*** CHECK X1 */
+    if(x1 < X_MIN || x1 > X_MAX){
     	
-    	y1 = 175;
+    	if(x1 < X_MIN){
+    		x1 = X_MIN;
+    	}
+    	if(x1 > X_MAX){
+    		x1 = X_MAX;
+    	}
+    	
     	jcrop_api.setSelect([x1 ,y1, x2,y2]);
     	return;
     }
     
+    /*** CHECK X2 */
+    if(x2 < X_MIN || x2 > X_MAX){
+    	
+    	if(x2 < X_MIN){
+    		x2 = X_MIN;
+    	}
+    	if(x2 > X_MAX){
+    		x2 = X_MAX;
+    	}
+    	jcrop_api.setSelect([x1 ,y1, x2,y2]);
+    	return;
+    }
     
-    $('#x1').val(x1);
-    $('#y1').val(y2);
-    $('#x2').val(x2);
-    $('#y2').val(y1);
+    /*** CHECK Y2 */
+    if(y2 > Y_MAX){
+    	y2 = Y_MAX;
+    	jcrop_api.setSelect([x1 ,y1, x2,y2]);
+    	return;
+    }
+   
+   	var x1_label =  x1 - X_MIN;
+   	var x2_label =  x2 - X_MIN;
+   	var y1_label =  Y_MAX - y2;
+   	var y2_label =  Y_MAX - y1;
+   	
+   
+    $('#x1').val(x1_label);
+    $('#y1').val(y1_label);
+    $('#x2').val(x2_label);
+    $('#y2').val(y2_label);
+    
+    if(reDraw){
+    	jcrop_api.setSelect([x1 ,y1, x2,y2]);
+    	return;
+    }
    
 };
 
@@ -484,14 +508,8 @@ function manageSlide(e){
  */
 function check_wizard(){
 	
-	
-	
-
 	var item = $('.wizard').wizard('selectedItem');
 	
-	
-	
-
 	$('#btn-next').show();
 	
 	if(item.step > 1){
@@ -532,14 +550,22 @@ function check_wizard(){
  */
 function start(){
     
+    IS_MACRO_ON = true;
     a_offset =  $("#a_offset").val();
     
     axis_increment = $("#axis-increment").val();
     start_degree = $("#start-degree").val();
     end_degree = $("#end-degree").val();
     
+    x1 = $("#x1").val();
+    x2 = $("#x2").val();
+    y1 = $("#y1").val();
+    y2 = $("#y2").val();
     
-    var data = { mode: scan_mode, new_object: new_object, obj_id : obj_id, obj_name : $("#name-object").val(),  quality: scan_quality, x1: x1, x2: x2, y1:y1, y2:y2, axis_increment: axis_increment, start_degree: start_degree, end_degree: end_degree, density:density, a_offset:a_offset, probe_quality : probe_quality, pg_iso:$( "#pg-iso" ).val(), pg_size:$("#pg-size").val(), pg_slices: $("#pg-slices").val(), pc_host_address : $("#pc-host-address").val(), pc_host_port: $("#pc-host-port").val()};
+    z_hop = $("#z_hop").val();
+    probe_skip = $("#probe_skip").val();
+    
+    var data = { mode: scan_mode, new_object: new_object, obj_id : obj_id, obj_name : $("#name-object").val(),  quality: scan_quality, x1: x1, x2: x2, y1:y1, y2:y2, axis_increment: axis_increment, start_degree: start_degree, end_degree: end_degree, density:density, a_offset:a_offset, probe_quality : probe_quality,z_hop:z_hop, probe_skip:probe_skip, pg_iso:$( "#pg-iso" ).val(), pg_size:$("#pg-size").val(), pg_slices: $("#pg-slices").val(), pc_host_address : $("#pc-host-address").val(), pc_host_port: $("#pc-host-port").val()};
     
     
 	$.ajax({
@@ -552,6 +578,8 @@ function start(){
 			    openWait('Starting scan..');
 	      }
 	}).done(function( response ) {
+		
+		IS_TASK_ON = true;
 
 		task_id            = response.task_id;
 		scan_monitor_file  = response.scan_monitor_file;
@@ -613,10 +641,11 @@ function start(){
         $("#stop-button").removeClass('disabled');
         
         $(".stats-scan-mode-name").html(scan_mode_info[scan_mode].name);
-		
+		$('#btn-prev').addClass('disabled');
 		
         
 		closeWait();
+		IS_MACRO_ON = false;
 		    
 	});
 	
@@ -646,7 +675,7 @@ var print_monitor = function (){
 /** GET ALL INFO FROM THE TASK WHEN IS COMPLETED */
 function get_info(){
     
-    
+    IS_MACRO_ON = true;
     $.ajax({
 		url : '<?php echo module_url('scan').'ajax/info.php' ?>',
 		data : {task_id: task_id},
@@ -660,6 +689,7 @@ function get_info(){
         $(".download-scan").attr('href', '<?php echo site_url('objectmanager/download') ?>' + '/' + id_asc_file);
         
         $('#btn-next').trigger('click');
+        IS_MACRO_ON = false;
         closeWait();
 	});
     
@@ -675,7 +705,7 @@ function monitor_call(){
 
 	/*se la scansione non è finita*/
 	if(!scan_finished || (POST_PROCESS && !pprocess_finished)){	
-	
+		IS_MACRO_ON = true;
 		$.ajax({
               /*url : '<?php echo site_url('scan/monitor') ?>',*/
               url : '<?php echo module_url('scan').'ajax/monitor.php' ?>',
@@ -692,6 +722,8 @@ function monitor_call(){
 			if(response.pprocess != null){
 				monitor_pprocessing(response.pprocess);
 			}
+			
+			IS_MACRO_ON = false;
 
 		});
 
@@ -751,6 +783,8 @@ function _stop_timer(){
 function _update_task(){
 
 	var _async = true;
+	
+	
     
 	$.ajax({
 		url : '<?php echo module_url('scan').'ajax/update.php' ?>',
@@ -834,6 +868,8 @@ function _resume(){
 			
 			
 		}
+		
+		$("#btn-prev").addClass('disabled');
 			
 }
 
@@ -1001,6 +1037,9 @@ function _do_object(){
 
 
 	if(obj_created == false){
+		
+		IS_MACRO_ON = true;
+		
 		$.ajax({
 			  type: "POST",
 			  url: "<?php echo site_url('scan/object') ?>", 
@@ -1014,6 +1053,7 @@ function _do_object(){
 			obj_created = true;
 			obj_id = response.obj_id;
 
+			IS_MACRO_ON = false;
 			closeWait();
 			
 		});
@@ -1084,7 +1124,7 @@ function stop_scan(message){
 		}).done(function( data ) {
 		  
           if(data.status == 'ok'){
-                setTimeout(function(){document.location.href = '<?php echo site_url('scan') ?>';}, 1000); 
+                setTimeout(function(){document.location.href = '<?php echo site_url('make/scan') ?>';}, 1000); 
           }			
     });
     
@@ -1093,7 +1133,7 @@ function stop_scan(message){
 function _stopper(){
 	elapsed_time_stop = (parseInt(elapsed_time_stop) + 1);
     if(elapsed_time_stop == max_time_stop){
-        document.location.href = '<?php echo site_url('scan') ?>';
+        document.location.href = '<?php echo site_url('make/scan') ?>';
     }
 }
 
@@ -1409,5 +1449,9 @@ function check_connection(obj){
 }
 
 
-
+function debugCoords(c){
+	
+	console.log(c);
+	
+}
 </script>

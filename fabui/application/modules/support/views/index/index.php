@@ -1,84 +1,73 @@
-<div class="row">
-	<div class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
-		<h1 class="page-title txt-color-blueDark"><i class="fa fa-life-ring"></i> Support & Frequently Asked Questions </h1>
-	</div>
-</div>
-
-<div class="row">
-	<div class="col-sm-4">
-		<div class="well text-center">
-			<i class="fa fa-life-ring fa-2x"></i>
-			<h3><a href="<?php echo $support_url ?>" target="_blank">Online support</a></h3>
-			<p class="font-md">Need help? Access the support system</p>
-		</div>
-	</div>
-	
-	<div class="col-sm-4">
-		<div class="well text-center">
-			<i class="fa fa-book fa-2x"></i>
-			<h3><a href="<?php echo $manual_url ?>" target="_blank">Manual</a></h3>
-			<p class="font-md">Download the latest manuals</p>
-		</div>
-	</div>
-	
-	<div class="col-sm-4">
-		<div class="well text-center">
-			<i class="fa fa-puzzle-piece fa-2x"></i>
-			<h3><a href="<?php echo $wiki_url ?>" target="_blank">Wiki</a></h3>
-			<p class="font-md">Access the FABtotum Wiki</p>
-		</div>
-	</div>
-</div>
-
-<div class="row">
-	
+<div class="row margin-bottom-10">
 	<div class="col-sm-12">
-		<p class="font-md"><i class="fa fa-users"></i> In the <a target="_blank" href="<?php echo $forum_url; ?>"><u>forums</u></a> you will find interesting people, their projects and their expertise, and possibly ideas on how to use your <strong>FABtotum</strong> and what to do with it</p>
-		<p class="font-md"><i class="fa fa-comments-o"></i> Check out our development <a target="_blank" href="<?php echo $blog_url; ?>"><u>blog</u></a> for the latest updates and behind	the scenes of our development process.</p>
+		<h1>How can we help <span class="semi-bold">You</span>?</h1>
+		<select class="form-control input-lg" id="help">
+			<option value="0">Select topic</option>
+			<?php foreach($support_faq as $support): ?>
+			<option value="<?php echo $support['id'] ?>"><?php echo $support['desc_en'] ?></option>
+			<?php endforeach; ?>
+		</select>
 	</div>
-		
 </div>
 
-<?php if(isset($no_faq)): ?>
-	
-	<div class="row">
-		<div class="alert alert-warning fade in">
-			<i class="fa-fw fa fa-warning"></i>
-			<strong>Warning </strong> FAQs not avaiables. Please check internet connectivity, <a href="<?php echo site_url("settings/network") ?>">reconnect</a> and try again
+<div class="row margin-bottom-10" id="faq-content"></div>
+
+<div class="row margin-bottom-10">
+	<div class="col-sm-4">
+		<div class="well  well-light">
+			<h2 class="text-center"><a style="cursor:pointer;" target="_blank" href="http://wiki.fabtotum.com/doku.php"><i class="fa fa-wikipedia-w fa-border fa-2x"></i></a></h2>
+			<p class="text-center">Access the FABtotum Wiki</p>
 		</div>
 	</div>
-	
-<?php else: ?>
-	
-	<div class="row">
-		<h2 class="row-seperator-header"><i class="fa fa-question-circle "></i> FAQs </h2>
+	<div class="col-sm-4">
+		<div class="well  well-light">
+			<h2 class="text-center"><a style="cursor:pointer;" target="_blank" href="http://support.fabtotum.com/manual.pdf"><i class="fa fa-book fa-border fa-2x"></i></a></h2>
+			<p class="text-center">Download the latest manuals</p>
+		</div>
 	</div>
-	
-	<?php $count_group = 1; ?>
-	<?php foreach($faq as $group): ?>
-	<div class="row">
-		<div class="col-sm-12">
-			<h6 class=""><i class="fa fa-info-circle"></i> <?php echo $group['title']; ?></h6>
-			<div class="panel-group smart-accordion-default" id="accordion_<?php echo $count_group; ?>">
-				
-				<?php $count_item = 1; ?>
-				<?php foreach($group['faq'] as $item): ?>
-				
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion_<?php echo $count_group; ?>" href="#collapse_<?php echo $count_group.'_'.$count_item ?>" class="collapsed"> <i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> <?php echo $item['question'] ?> </a></h4>
-					</div>
-					<div id="collapse_<?php echo $count_group.'_'.$count_item ?>" class="panel-collapse collapse">
-						<div class="panel-body">
-							<p><?php echo $item['answer']; ?></p>
-						</div>
+	<div class="col-sm-4">
+		<div class="well  well-light">
+			<h2 class="text-center"><a style="cursor:pointer;" target="_blank" href="https://github.com/FABtotum/FAB_Configs/archive/master.zip"><i class="fa fa-cog fa-border fa-2x"></i></a></h2>
+			<p class="text-center">Download the latest slicing configurations</p>
+		</div>
+	</div>
+</div>
+
+<div class="row margin-bottom-10">
+	<div class="col-sm-12">
+		<div class="well  well-light">
+			<h2 class="text-center"><a style="cursor:pointer;" target="_blank" href="http://forum.fabtotum.com/"><i class="fa fa-comments fa-border fa-2x"></i></a></h2>
+			<h2 class="text-center">Support Communities</h2>
+			<p class="text-center">Find and share solutions with fellow Fabtotum users around the world</p>
+			<p class="text-center"><a href="http://forum.fabtotum.com/" target="_blank">Join the conversation</a></p>
+		</div>
+	</div>
+</div>
+
+<div class="row" id="faq-0"></div>
+<?php foreach($support_faq as $support): ?>
+<div class="row faq hidden " id="faq-<?php echo $support['id'] ?>">	
+	<div class="col-sm-12">
+		<div class="panel-group smart-accordion-default" id="accordion-<?php echo  $support['id']; ?>">
+			<?php foreach($support['faq'] as $faq): ?>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" data-parent="#<?php $support['id']; ?>" href="#answer-<?php echo $faq['id'] ?>" class="collapsed"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-red"></i> <?php echo $faq['question_en'] ?> </a>
+					</h4>
+				</div>
+				<div id="answer-<?php echo $faq['id'] ?>" class="panel-collapse collapse">
+					<div class="panel-body">
+						<?php echo $faq['answer_en']; ?>
+						<?php if($faq['support'] == 1): ?>
+						<a target="_blank" href="http://www.fabtotum.com/tickets" class="btn btn-sm btn-default"><strong>Contact support for this issue</strong></a>
+						<?php endif; ?>
 					</div>
 				</div>
-				<?php $count_item++; ?>
-				<?php endforeach; ?>
 			</div>
+			<?php endforeach; ?>
 		</div>
 	</div>
-	<?php $count_group++; ?>
-	<?php endforeach; ?>
-<?php endif; ?>
+</div>
+<hr>
+<?php endforeach; ?>

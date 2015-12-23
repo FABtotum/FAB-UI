@@ -6,6 +6,12 @@ class Support extends Module {
 		parent::__construct();
         
         $this->lang->load($_SESSION['language']['name'], $_SESSION['language']['name']);
+		$this->load->helper('print_helper');
+		
+		if(is_printer_busy()){
+            $this->layout->set_printer_busy(true);
+            
+        }
         
         
 	}
@@ -35,9 +41,11 @@ class Support extends Module {
 			$data['no_faq'] = true;
 			
 		}else{
-			$data['faq'] = json_decode(read_file($this->config->item('fabtotum_faq', 'fabtotum')), true);
+			$data['support_faq'] = json_decode(read_file($this->config->item('fabtotum_faq', 'fabtotum')), true);
 		}
 		
+        
+		$this->layout->add_js_in_page(array('data'=> $this->load->view('index/js', '', TRUE), 'comment' => 'settings js'));
 		
 		
 		$this->layout->view('index/index', $data);

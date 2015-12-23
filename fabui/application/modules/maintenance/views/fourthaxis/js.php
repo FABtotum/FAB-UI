@@ -39,6 +39,7 @@
 	function do_engage(){
 		
 		openWait('Engaging in process');
+		IS_MACRO_ON = true;
 		
 		var now = jQuery.now();
 		ticker_url = '/temp/macro_trace'; 
@@ -54,6 +55,7 @@
 			
 			closeWait();
 			ticker_url = '';
+			IS_MACRO_ON = false;
 			
 			
 		});

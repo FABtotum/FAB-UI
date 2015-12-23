@@ -28,6 +28,8 @@ class FT_Layout {
 	protected $_show_feeder = true;
 
 	protected $_ci;
+	
+	protected $_printer_busy = 'false';
 
 	/**
 	 *
@@ -210,10 +212,13 @@ class FT_Layout {
 
 		//load wizard
 		$data['_setup_wizard'] = $this -> get_setup_wizard();
+		
+		$data['_printer_busy'] = $this -> get_printer_busy();
 
 		return $this -> _ft_load(array('_ci_view' => 'index', '_ci_vars' => $this -> _ci_object_to_array($data), '_ci_return' => $return));
 	}
-
+	
+	
 	protected function _ft_load($_ci_data, $controller = FALSE) {
 		// Set the default data variables
 
@@ -596,6 +601,12 @@ class FT_Layout {
 			$html .= '</li>';
 
 		}
+
+
+		$html .= '<li class="visible-xs">';
+		$html .= '<a href="'.site_url('login/out').'" rel="tooltip" data-placement="right"  title="Power Off" data-user-name="'.$_SESSION['user']['first_name'].'" data-logout-msg="What do you want to do?" data-action="userLogout"  data-action="userLogout"><i class="fa fa-lg fa-fw fa-power-off"></i> Power Off</a>';
+		$html .= '</li>';
+		
 		return $html;
 
 	}
@@ -699,6 +710,24 @@ class FT_Layout {
 	 */
 	function get_setup_wizard() {
 		return $this -> _setup_wizard;
+	}
+	
+	/**
+	 * set javascritp costant to set if printer is busy or not
+	 */
+	function set_printer_busy($bool){
+		
+		$string = $bool ? 'true' : 'false';
+		
+		$this->_printer_busy = $string;
+		
+	}
+	
+	/**
+	 * get if printer is busy
+	 */
+	function get_printer_busy(){
+		return $this->_printer_busy;
 	}
 
 	/**

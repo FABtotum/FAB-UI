@@ -265,10 +265,6 @@ def sender():
                         #if comand is non-serial comand
                         
                         override_splitted = override.split(':')
-                        
-                       
-                        
-                        
                         if override_splitted[0]=="!kill": #stop print
                             trace("Terminating Process")
                             #kill the process
@@ -293,9 +289,6 @@ def sender():
                             
                             serial.write("G91\r\n") 
                             serial.write("G0 Z+" + override_splitted[1] +"\r\n")  #move up
-                            
-                           
-                            
                             serial.write("G90\r\n") 
                             sent+=3
                             trace("<span class='override-command'>Z height incresed by "+ override_splitted[1]+" mm</span>")
@@ -305,9 +298,6 @@ def sender():
                             z_override -= float(override_splitted[1])                        
                             serial.write("G91\r\n") 
                             serial.write("G0 Z-"+ override_splitted[1] +"\r\n")  #move down
-                            
-                           
-                            
                             serial.write("G90\r\n") 
                             sent+=3
                             trace("<span class='override-command'>Z height decreased by " + override_splitted[1] +" mm</span>")
@@ -340,6 +330,7 @@ def sender():
                     #z_str = re.search('Z(.+?) ', line)
                     #z_str = re.search('(Z.*?) |(Z.*)', line)
                     #z_str = re.search('(?<=Z)([0-9]*.[0-9]*)', line)
+                    
                     z_str = re.search('(?<=Z)([+|-]*[0-9]*.[0-9]*)', line)
                     if z_str:
                         z_c = z_str.group(1)

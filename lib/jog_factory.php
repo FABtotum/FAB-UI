@@ -185,11 +185,6 @@ class JogFactory {
 	 */
 	public function extruder_e($value){
 		
-		
-		if($this->_extruder_feedrate == ''){
-		 	$this->_extruder_feedrate = $this->_feedrate;
-		}
-		
 		$command = 'G0 E'.$value.' F'.$this ->_extruder_feedrate;
 		$this -> _command = 'G91' . PHP_EOL . $command;		
 		$this -> exec();
@@ -206,7 +201,12 @@ class JogFactory {
 	 */
 	public function extruder_mode($value){
 		
-		$_units = file_exists(CUSTOM_CONFIG_UNITS) ? json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE) : json_decode(file_get_contents(CONFIG_UNITS), TRUE);
+		//load default configs
+		$_units = json_decode(file_get_contents(CONFIG_UNITS), TRUE);
+		
+		if(isset($units['settings_type']) && $units['settings_type'] == 'custom'){
+			$_units = json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE);
+		}
 		
 		$_mode['a'] = 'M92 E'.$_units['a'].PHP_EOL.'G92 E0';
 		$_mode['e'] = 'M92 E'.$_units['e'].PHP_EOL.'G92 E0';

@@ -2,6 +2,46 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9495 (hotfix) (23/12/2015)
+
+GENERAL
+- Added temperatures info on top bar, so now temperatures are readable anywhere on the FABUI
+- Added "Reset Controller" button on top bar (clickable from  anywhere)
+- Merged pull requests #12 #15 #21
+
+LOGIN
+- Module UI fully simplified and minified to permit fastest access
+
+DASHBOARD
+- Module completly revamped with 3 new widgets
+	- Development Blog Widget
+	- Latest Twitter Widget
+	- Latest Posts On Intagram Widget
+	
+The module "Create" has been replace by the new module "Make" that groups the main functions of the FABtotum: Print - Mill - Scan
+
+
+JOG
+- Added feedrate input for Extruder Mode
+- Added Fan Off / Fan On buttons
+- Added "Read Config" button on MDI console that outputs command M503
+- On MDI console the number of executable lines has been reduced to maximum 10
+
+OBJECTMANAGER
+- All the UI interactions with the tables and the files has been improved in order to decrease number of clicks and increasing the speed of all operations
+- Add "Download" on bulk actions
+- Fixed bug on coping files from USB Disk
+
+MAINTENANCE
+- Added "Head" section in order to properly handle the change of heads 
+
+SETTINGS
+- Minor bugfixes
+
+SUPPORT
+- Module updated in order to easily support the new ticket system
+
+
 FABUI 0.9491 (hotfix) (17/11/2015)
 
 JOG

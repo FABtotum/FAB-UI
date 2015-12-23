@@ -202,12 +202,14 @@ function detail_files(object) {
 
 /**
  *
- * @param id_file
+ * @param fileID
  */
-function select_file(id_file) {
+function select_file(fileID) {
+
+	id_file = fileID;
 
 	$.each(object.files.data, function(index, file) {
-		if (file.id == id_file) {
+		if (file.id == fileID) {
 			file_selected = file;
 
 			$('.file-title').html(' > ' + file_selected.file_name);
@@ -240,6 +242,8 @@ function detail_file(file) {
  * @param object
  */
 function detail_object(object) {
+
+	id_object = object.object.id;
 
 	// azzerro lista file
 	$('#files-container').html('');
@@ -311,20 +315,18 @@ function _trace_call() {
  * @param value
  */
 function _do_action(action, value) {
-	
-	
-	
 
 	if (SOCKET_CONNECTED) {
 
 		var jsonData = {};
 
-		jsonData['function']  = 'operation';
-		jsonData['id_task']   = id_task;
+		jsonData['function'] = 'operation';
+		jsonData['id_task'] = id_task;
 		jsonData['data_file'] = data_file;
-		jsonData['action']    = action;
-		jsonData['value']     = value;
-		jsonData['progress']  = progress;
+		jsonData['action'] = action;
+		jsonData['value'] = value;
+		jsonData['progress'] = progress;
+		jsonData['attributes_file'] = attributes_file;
 
 		var message = {};
 
@@ -343,7 +345,8 @@ function _do_action(action, value) {
 				data_file : data_file,
 				action : action,
 				value : value,
-				progress : progress
+				progress : progress,
+				attributes_file : attributes_file
 			},
 			type : 'post',
 			dataType : 'json',
@@ -390,8 +393,6 @@ function stop_print() {
 
 }
 
-
-
 /**
  *
  */
@@ -403,7 +404,7 @@ function _update_task() {
 		jsonData['function'] = 'update';
 		jsonData['estimated_time'] = array_estimated_time;
 		jsonData['progress_steps'] = array_progress_steps;
-		jsonData['stats_file']     = stats_file;
+		jsonData['stats_file'] = stats_file;
 
 		var message = {};
 
@@ -486,6 +487,7 @@ var print_monitor = function() {
  */
 function print_object() {
 
+	IS_MACRO_ON = true;
 	$(".final-step-response").html("");
 	openWait('Starting');
 
@@ -493,21 +495,24 @@ function print_object() {
 	//ticker_url = '/temp/print_check_' + timestamp + '.trace';
 	ticker_url = '/temp/macro_trace';
 
+	nozzle_temperatures = [];
+	nozzle_target_temperatures = [];
+	bed_temperatures = [];
+	bed_target_temperatures = [];
+
 	$.ajax({
 		url : ajax_endpoint + 'ajax/create.php',
 		type : 'POST',
 		dataType : 'json',
 		async : true,
 		data : {
-			object : object.object.id,
-			file : file_selected.id,
+			object_id : id_object,
+			file : id_file,
 			print_type : print_type,
 			calibration : calibration,
 			time : timestamp
 		}
 	}).done(function(response) {
-		
-		
 
 		if (response.response == true) {
 
@@ -523,6 +528,7 @@ function print_object() {
 			uri_trace = response.uri_trace;
 			stats_file = response.stats;
 			folder = response.folder;
+			attributes_file = response.attributes_file;
 
 			var status = JSON.parse(response.status);
 			status = jQuery.parseJSON(status);
@@ -533,39 +539,34 @@ function print_object() {
 
 			interval_monitor = setInterval(print_monitor, monitor_timeout);
 			interval_timer = setInterval(_timer, 1000);
-
 			interval_trace = setInterval(_trace, 1000);
-			
-			
-			
 
 			//vado avanti negli step
 			$('#btn-next').trigger('click');
 			$('#status-icon').removeClass('hide');
 			$("#wizard-buttons").hide();
 			closeWait();
+
 			ticker_url = '';
 			$("#details").trigger('click');
 			$(".stop").removeClass('disabled');
-			
-			if(print_type == 'additive'){
+
+			if (print_type == 'additive') {
 				$(".subtractive-print").hide();
 				initGraphs();
-			}else{
+			} else {
 				$(".additive-print").hide();
 				$(".speed-well").removeClass("col-sm-4").addClass("col-sm-6");
 				$(".stats-well").removeClass("col-sm-4").addClass("col-sm-12");
-				
-				
 				$(".controls-tab").removeClass("disabled");
 				$(".controls-tab").find("a").attr("data-toggle", "tab");
 				print_started = true;
-				
+				enableSliders();
 			}
-			
-			
-			//setTimeout(initGraphs, 2000);
-			
+
+			IS_TASK_ON = true;
+			//disbale wizard previous steps button
+			$(".steps >li").removeClass("complete");
 
 		} else {
 
@@ -577,11 +578,11 @@ function print_object() {
 
 		}
 
+		IS_MACRO_ON = false;
+
 	});
 
 }
-
-
 
 function check_wizard() {
 
@@ -603,11 +604,11 @@ function check_wizard() {
 
 	if (item.step == 3) {
 		$('#btn-next').hide();
-		
-		if(typeof countdown_ticker == 'function') { 
-			clearInterval(countdown_ticker); 
+
+		if ( typeof countdown_ticker == 'function') {
+			clearInterval(countdown_ticker);
 		}
-		
+
 	}
 
 	if (item.step >= 4) {
@@ -629,13 +630,20 @@ function _stop_monitor() {
 function _controls_listener(obj) {
 
 	var action = obj.attr('data-action');
-	var value  = obj.val();
-	
-	if(action == 'zup' || action == 'zdown'){
-		
-		
-		value = $("#z-height").val();
-		
+	var value = obj.val();
+
+	if (action == 'zup' || action == 'zdown') {
+		value = parseFloat($("#z-height").val());
+		var z_override = parseFloat($(".z_override").html());
+
+		if (action == 'zup') {
+			var new_z_override = z_override + value;
+		} else {
+			var new_z_override = z_override - value;
+		}
+
+		$(".z_override").html(new_z_override.toPrecision(3));
+
 	}
 
 	if (obj.attr("id") == 'light-switch') {
@@ -668,19 +676,22 @@ function _controls_listener(obj) {
 		}
 	}
 
-	if (obj.attr("id") == 'send-mail') {
+	if (obj.attr("id") == 'mail') {
 
-		if (action == 'send-mail-true') {
-			obj.attr('data-action', 'send-mail-false');
-			obj.attr('title', "A mail will be send at the end of the print");
-			obj.removeClass('txt-color-red').addClass('txt-color-green');
-		} else {
-			obj.attr('data-action', 'send-mail-true');
-			obj.removeClass('txt-color-green').addClass('txt-color-red');
-		}
+		value = obj.is(':checked');
 
+		/*
+		 if (action == 'send-mail-true') {
+		 obj.attr('data-action', 'send-mail-false');
+		 obj.attr('title', "A mail will be send at the end of the print");
+		 obj.removeClass('txt-color-red').addClass('txt-color-green');
+		 } else {
+		 obj.attr('data-action', 'send-mail-true');
+		 obj.removeClass('txt-color-green').addClass('txt-color-red');
+		 }*/
 	}
 
+	console.log(action + ' ' + value);
 	_do_action(action, value);
 }
 

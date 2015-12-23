@@ -107,7 +107,7 @@
 								<input class="form-control"  type="text" id="feeder-disengage-offset" value="<?php echo $_feeder_disengage; ?>">
 							</div>
 						</div>
-						<!--
+						
 						<div class="form-group">
 							<label class="col-md-2 control-label">Extruder steps per unit E mode</label>
 							<div class="col-md-10">
@@ -120,8 +120,24 @@
 								<input class="form-control"  type="text" id="feeder-extruder-steps-per-unit-a" value="<?php echo $_feeder_extruder_steps_per_unit_a_mode; ?>">
 							</div>
 						</div>
-						-->
+						
+						<div class="margin-bottom-10">
+							<strong>NOTE: If you change values for Extruder steps you have to restart the FABtotum so that can values take effect</strong>
+						</div>
+						
 					</fieldset>
+					
+					<fieldset>
+						<legend>
+ 							Milling
+						</legend>
+ 						<div class="form-group">
+ 							<label class="col-md-2 control-label">Sacrificial Layer Thickness (mm)</label>
+ 							<div class="col-md-10">
+ 								<input class="form-control"  type="text" id="milling-sacrificial-layer-offset" value="<?php echo $_milling_sacrificial_layer_offset; ?>">
+ 							</div>
+ 						</div>
+				</fieldset>
 					
 					<fieldset>
 						<legend>Api</legend>

@@ -17,6 +17,9 @@ if(isset($request_method['module']) && $request_method['module'] != ''){
  */
 $macros_pids         = get_pids('fabui/python/gmacro.py');
 $create_pids         = get_pids('fabui/python/gpusher_fast.py');
+
+kill_process(array_merge($macros_pids,$create_pids));
+
 $selftest_pids       = get_pids('python/self_test.py');
 $bed_cal_pids        = get_pids('python/manual_bed_lev.py');
 $rscan_pids          = get_pids('/fabui/python/r_scan.py');
@@ -30,7 +33,7 @@ $meshlabserver_pids  = get_pids('meshlabserver');
 $xvfb_pids           = get_pids('xvfb-run');
 $slic3r_pids         = get_pids('/fabui/slic3r/slic3r');
 
-$all_pids = array_merge($macros_pids, $create_pids, $selftest_pids, $bed_cal_pids, $rscan_pids, $sscan_pids, $pscan_pids, $triangulation_pids, $join_pids);
+$all_pids = array_merge($selftest_pids, $bed_cal_pids, $rscan_pids, $sscan_pids, $pscan_pids, $triangulation_pids, $join_pids);
 $all_pids = array_merge($all_pids, $slic3rwrapper_pids, $meshlabwrapper_pids, $meshlabserver_pids, $xvfb_pids,$slic3r_pids  );
 
 //kill all pids

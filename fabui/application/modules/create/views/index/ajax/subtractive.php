@@ -40,7 +40,7 @@
 					<div class="text-center">
 						<div class="row">
 							<div class="col-sm-7">
-								<img style=" display: inline;" class="img-responsive" src="application/modules/create/assets/img/subtractive/1.png" />
+								<img style=" display: inline;" class="img-responsive" src="../application/modules/create/assets/img/subtractive/1.png" />
 							</div>
 							<div class="col-sm-5">
 								

@@ -5,7 +5,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 /** SAVE POST PARAMS */
-$_object_id   = $_POST['object'];
+$_object_id   = $_POST['object_id'];
 $_file_id     = $_POST['file'];
 $_print_type  = $_POST['print_type'];
 //$_skip_abl    = $_POST['skip'] == 0 ? false : true;
@@ -15,9 +15,6 @@ $_calibration = $_POST['calibration'];
 
 /** IF PRINT IS ADDITIVE */
 if($_print_type ==  'additive'){
-	
-	
-	//$_macro_trace    = TEMP_PATH.'print_check_'.$_time.'.trace';
 	$do_macro        = TRUE;
 	
 	switch($_calibration){
@@ -32,7 +29,6 @@ if($_print_type ==  'additive'){
 			$_macro_response = TEMP_PATH.'auto_bed_leveling'.$_time.'.log';
 			$do_macro        = TRUE;
 			break;
-		
 	}
 	
 	
@@ -59,7 +55,7 @@ if($_print_type ==  'additive'){
 		
 		/** WAIT MACRO TO FINISH */
 		while(str_replace(PHP_EOL, '', file_get_contents($_macro_response)) == ''){   
-			sleep(0.5);
+			sleep(0.2);
 		}
 		
 		
@@ -83,7 +79,7 @@ if($_print_type ==  'additive'){
 	
 	/** WAIT MACRO TO FINISH */
     while(str_replace(PHP_EOL, '', file_get_contents($_macro_response)) == ''){   
-        sleep(0.5);
+        sleep(0.2);
     }
 	
 	
@@ -121,7 +117,7 @@ if($_print_type ==  'additive'){
  		
 	/** WAIT MACRO TO FINISH */
     while(str_replace(PHP_EOL, '', file_get_contents($_macro_response)) == ''){   
-        sleep(0.5);
+        sleep(0.2);
     }
 	
 	
@@ -135,14 +131,14 @@ $db    = new Database();
 /** LOAD FILE */
 $_file = $db->query('select * from sys_files where id='.$_file_id);
 
-//$_file = $_file[0];
+$_file = $_file[0];
 
 /** ADD TASK */
 $_task_data['user']       = $_SESSION['user']['id'];
 $_task_data['controller'] = 'create';
 $_task_data['type']       = 'print';
 $_task_data['status']     = 'running';
-$_task_data['attributes'] = json_encode(array('id_object'=>$_object_id, 'id_file'=>$_file_id));
+$_task_data['attributes'] = '';
 $_task_data['start_date'] = 'now()';
 
 /** ADD TASK RECORD TO DB */ 
@@ -166,6 +162,7 @@ $_trace_file         = TEMP_PATH.'task_trace';
 
 $_debug_file         = $_destination_folder.'print_'.$id_task.'_'.$_time.'.debug';
 $_stats_file         = $_destination_folder.'print_'.$id_task.'_'.$_time.'_stats.json';
+$_attributes_file    = $_destination_folder.'print_'.$id_task.'_'.$_time.'_attributes.json';
 
 //$_uri_monitor        = '/tasks/print_'.$id_task.'_'.$_time.'/'.'print_'.$id_task.'_'.$_time.'.monitor';
 //$_uri_trace          = '/tasks/print_'.$id_task.'_'.$_time.'/'.'print_'.$id_task.'_'.$_time.'.trace';
@@ -188,15 +185,15 @@ chmod($_trace_file, 0777);
 /** create print stats file */
 write_file($_stats_file, '', 'w');
 chmod($_stats_file, 0777);
+
+write_file($_attributes_file, '', 'w');
+chmod($_attributes_file, 0777);
 /** create temp gcode file */
 //write_file($_gcode_file, '', 'w');
 //chmod($_gcode_file, 0777);
 
 $_time_monitor = 2;
 
-
-//$gcode_data = optimize_gcode(file_get_contents($_file['full_path']));
-//file_put_contents($_gcode_file, $gcode_data);
 
 
 //clean up memory
@@ -226,8 +223,12 @@ $_attributes_items['folder']      =  $_destination_folder;
 $_attributes_items['stats']       =  $_stats_file;
 $_attributes_items['speed']       =  100;
 $_attributes_items['print_type']  =  $_print_type;
+$_attributes_items['z_override']  =  0;
 
-$_data_update['attributes']= json_encode($_attributes_items);
+file_put_contents($_attributes_file, json_encode($_attributes_items));
+
+//$_data_update['attributes']= json_encode($_attributes_items);
+$_data_update['attributes']= $_attributes_file;
 /** UPDATE TASK INFO TO DB */
 $db->update('sys_tasks', array('column' => 'id', 'value' => $id_task, 'sign' => '='), $_data_update);
 $db->close();
@@ -250,6 +251,6 @@ while($_json_status == ''){
 //unlink($_macro_response);
             
 header('Content-Type: application/json');
-echo minify(json_encode(array('response' => true, 'status'=>$status, 'id_task' => $id_task, 'monitor_file'=>$_monitor_file, 'data_file'=>$_data_file, 'trace_file' => $_trace_file, 'command' => $_command, 'uri_monitor'=>$_uri_monitor, 'uri_trace' => $_uri_trace, "stats" => $_stats_file, "folder"=>$_destination_folder)));
+echo minify(json_encode(array('response' => true, 'status'=>$status, 'id_task' => $id_task, 'monitor_file'=>$_monitor_file, 'data_file'=>$_data_file, 'trace_file' => $_trace_file, 'command' => $_command, 'uri_monitor'=>$_uri_monitor, 'uri_trace' => $_uri_trace, "stats" => $_stats_file, "folder"=>$_destination_folder, 'attributes_file'=>$_attributes_file)));
 
 ?>

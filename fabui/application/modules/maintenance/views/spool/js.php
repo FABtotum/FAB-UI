@@ -58,12 +58,13 @@
     function do_macro(){
     	
     	
+    	
     	if(choice == 'pre_unload'){
     		pre_unload();
     		return;
     	}
     	
-    	
+    	IS_MACRO_ON = true;
     	$(".trace").slideDown('slow');
     	$(".new-spool").remove();
         $("." + choice + "-choice").slideUp('slow');
@@ -88,14 +89,19 @@
             $(".title").slideDown('slow', function () {});
             $(".console").slideDown('slow', function () {});
             
+             
+           
+             
             
         });
+        
+       
           
     }
     
     function pre_unload(){
     	
-    	
+    	IS_MACRO_ON = true;
     	openWait("Plese wait");
     	
     	$.ajax({
@@ -108,7 +114,8 @@
     		choice = 'unload';
     		
     		closeWait();
-    		
+    		 
+    		 
     		$(".pre_unload-choice").slideUp( "slow", function() {});
     		$( ".choice" ).slideUp( "slow", function() {});
             $("." + choice + "-choice").slideDown('slow');
@@ -146,6 +153,7 @@
     
     
     function monitor(){
+        
         
         $.ajax({
 		      url: response_file,
@@ -191,6 +199,8 @@
     	$(".trace").slideUp('slow');
     	
     	$(".console").html('');
+    	
+    	IS_MACRO_ON = false;
     }
     
     

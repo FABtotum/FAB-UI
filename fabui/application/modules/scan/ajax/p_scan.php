@@ -13,7 +13,7 @@
         
             <div class="row">
                 <div class="col-sm-6 text-center">
-                	 <img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/scan/assets/img/probing/1.png" />
+                	 <img style="max-width: 50%; display: inline;" class="img-responsive" src="../application/modules/scan/assets/img/probing/1.png" />
                 </div>
                 <div class="col-sm-6 text-center">
                 	 <h1><span class="badge">1</span></h1>
@@ -84,7 +84,10 @@
 
     function check_pre_scan(){
     
-    
+    	IS_MACRO_ON = true;
+        
+        console.log(IS_MACRO_ON);
+        
         $(".SmallBox").remove();
         $(".result-check-pre-scan").html('');
         openWait('Checking printer');
@@ -113,19 +116,7 @@
               	});
               	
               });
-              
-              
-              /*
-                setTimeout(function(){ $("#row_1").slideUp('slow', function(){
-                      closeWait();
-                     $("#row_2").slideDown('slow', function(){});
-                     
-                 });}, 3000);
-                
-                */
-                /** STEP SUCCESSIVO */
-                
-                          
+                                   
             }else{
                 closeWait();
                 $.smallBox({
@@ -139,7 +130,13 @@
             
             
             ticker_url = '';
+            
+            IS_MACRO_ON = false;
+    	
+            
     	});
+    	
+    	
      
     }
     
@@ -148,8 +145,9 @@
     
     function check_p_scan(){
     
-    
+    	IS_MACRO_ON = true;
         $(".SmallBox").remove();
+         console.log(IS_MACRO_ON);
         
         openWait('Checking printer');
         var timestamp = new Date().getTime();
@@ -177,19 +175,6 @@
             		
             	});
                 
-               /** STEP SUCCESSIVO 
-                setTimeout(function(){ $("#row_2").slideUp('slow', function(){
-                    closeWait();
-                     $("#row_3").slideDown('slow', function(){
-                     	
-                     	/*
-                     	$("#start-p-scan").trigger('click');
-                     	
-                     	
-                     	
-                     });
-                 });}, 3000);
-                 */
                           
             }else{
                 closeWait();
@@ -202,8 +187,11 @@
                 });     
             }
             
-            ticker_url = '';        
+            ticker_url = ''; 
+            IS_MACRO_ON = false;       
     	});
+    	
+    	
          
        
     }

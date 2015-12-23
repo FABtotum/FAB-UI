@@ -12,7 +12,7 @@
 			<div class="row margin-bottom-10" style="margin-top: 10px;">
 				<div class="col-sm-6">
 					<div class="text-center img-quality-container margin-bottom-10">
-						<img class="img-responsive img-quality-container" style="display: inline; max-width: 200px;" src="application/modules/scan/assets/img/duck0.png">
+						<img class="img-responsive img-quality-container" style="display: inline; max-width: 200px;" src="../application/modules/scan/assets/img/duck0.png">
 					</div>
 					
 				</div>
@@ -60,24 +60,27 @@
 				<fieldset style="background: transparent;">
 					
 						
-						<section class="col col-4">
+						<section class="col col-6">
 							<label class="label">Start</label>
 							<label class="input">
-								<input class="coordinates" id="x1" type="text" />
+								<input class="coordinates" id="x1" type="number" type="number" max="223" min="0" />
 							</label>
 						</section>
-						<section class="col col-4">
+						<section class="col col-6">
 							<label class="label">End</label>
 							<label class="input">
-								<input class="coordinates" id="x2" type="text" />
+								<input class="coordinates" id="x2" type="number" max="223" min="0" />
 							</label>
 						</section>
+						<!--
                         <section class="col col-4">
                         	<label class="label">A</label>
 							<label class="input">
 								<input class="coordinates" id="a_offset" type="text" value="0" />
 							</label>
 						</section>
+						-->
+						<input class="coordinates" id="a_offset" type="hidden" value="0" />
 					
 				</fieldset>
             </div>
@@ -90,6 +93,22 @@
 </div>
 
 <script type="text/javascript">
+
+$("#x1").spinner({
+	step :1,
+	numberFormat : "n",
+	min: 0,
+	max: 223
+});
+
+$("#x2").spinner({
+	step :1,
+	numberFormat : "n",
+	min: 0,
+	max: 223
+});
+
+
 /*  SCAN QUALITY SLIDER */
 $("#scan-quality").noUiSlider({
     range: {'min': 20, 'max' : 100},
@@ -125,18 +144,19 @@ setTimeout(function (){
 	});
 	
 
- }, 1000);
+ }, 100);
 
 
 
-/** PLANE COORDINATES */  
-var c = {"x":65,"y":64,"x2":152,"y2":164,"w":100,"h":100};
+/** PLANE COORDINATES */ 
+
+X_MIN = 0;
+Y_MAX = 220;
+
 var jcrop_api;   
 /**  JCROP */  
 $('#plane').Jcrop({
     bgFade: true,
-    allowSelect: false,
-    setSelect: [c.x,c.y,c.x2,c.y2],
     onChange: setCoords,
     onSelect: setCoords   
 },function(){
@@ -144,15 +164,19 @@ $('#plane').Jcrop({
 });
 
 
-jcrop_api.setSelect([0,101,223,141, 50, 50]);
+
 
 $('.coordinates').on('keyup', function(e){
-          x1 = $('#x1').val(),
-          x2 = $('#x2').val(),
-          y1 = $('#y1').val(),
-          y2 = $('#y2').val();
+	x1 = $('#x1').val(),
+    x2 = $('#x2').val(),
+    y1 = $('#y1').val(),
+    y2 = $('#y2').val();
     jcrop_api.setSelect([x1,y1,x2,y2]);
 });
+
+setTimeout(function() {
+	jcrop_api.setSelect([0,101,223,141, 50, 50]);
+}, 100);
 
 
 </script>

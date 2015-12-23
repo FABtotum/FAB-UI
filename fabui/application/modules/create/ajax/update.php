@@ -7,8 +7,8 @@ $_stats_file = isset($_POST['stats_file']) ? $_POST['stats_file'] : "";
 
 $data["estimated_time"] = $_estimated_time;
 $data["progress_steps"] = $_progress_steps;
-$data["stats_file"] = $_stats_file;
-$data['function'] = "update";
+$data["stats_file"]     = $_stats_file;
+$data['function']       = "update";
 
 $CreateFactory = new CreateFactory($data);
 echo $CreateFactory -> run();
