@@ -8,6 +8,7 @@ GENERAL
 - Added temperatures info on top bar, so now temperatures are readable anywhere on the FABUI
 - Added "Reset Controller" button on top bar (clickable from  anywhere)
 - Merged pull requests #12 #15 #21
+- The module "Create" has been replace by the new module "Make" that groups the main functions of the FABtotum: Print - Mill - Scan
 
 LOGIN
 - Module UI fully simplified and minified to permit fastest access
@@ -18,8 +19,15 @@ DASHBOARD
 	- Latest Twitter Widget
 	- Latest Posts On Intagram Widget
 	
-The module "Create" has been replace by the new module "Make" that groups the main functions of the FABtotum: Print - Mill - Scan
+PRINT
+- Minor bugfixes
 
+MILL
+- Minor bugfixes
+
+SCAN
+- Probe Scan add "Test Area" function before starting the scan in order to make a better area selection 
+- Minor bugfixes
 
 JOG
 - Added feedrate input for Extruder Mode
