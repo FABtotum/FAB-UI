@@ -41,6 +41,7 @@ SETTINGS
 SUPPORT
 - Module updated in order to easily support the new ticket system
 
+==================================================================
 
 FABUI 0.9491 (hotfix) (17/11/2015)
 
