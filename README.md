@@ -2,7 +2,7 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
-FABUI 0.9495 (hotfix) (23/12/2015)
+FABUI 0.9495 (23/12/2015)
 
 GENERAL
 - Added temperatures info on top bar, so now temperatures are readable anywhere on the FABUI
