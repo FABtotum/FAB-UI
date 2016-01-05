@@ -44,7 +44,7 @@ class Scan extends Module {
 		/**
 		 * CHECK IF IS TASK RUNNING
 		*/
-		$_task             = $this->tasks->get_running('scan', 'scan');
+		$_task             = $this->tasks->get_running('make', 'scan');
 		$_scan_monitor     = '';
 		$_pprocess_monitor = '';
 
@@ -628,7 +628,7 @@ class Scan extends Module {
 		 * ADD TASK
 		 */
         $_task_data['user']       = $_SESSION['user']['id'];
-		$_task_data['controller'] = 'scan';
+		$_task_data['controller'] = 'make';
 		$_task_data['type']       = 'scan';
 		$_task_data['status']     = 'running';
         

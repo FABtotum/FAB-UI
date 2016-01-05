@@ -49,7 +49,12 @@ class Create extends Module {
 		/**
 		 * check if printer is already printing
 		*/
-		$_task = $this->tasks->get_running('create', 'print');
+        if ($type == 'subtractive') {
+        	$_task = $this->tasks->get_running('make', 'mill');
+        } else {
+        	$_task = $this->tasks->get_running('make', 'print');
+        }
+		
 		
 		
 		

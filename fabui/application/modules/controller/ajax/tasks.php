@@ -30,18 +30,31 @@ if($_tasks_number == 0){
         
         switch($_task['controller']){
             
-            case 'create':
-                $_icon    = 'icon-fab-print';
-                $_monitor = json_decode(file_get_contents($_task_attributes['monitor']), TRUE);
-                $_percent = $_monitor['print']['stats']['percent'];
-				$_detail  = site_url($_task['controller']);
-                break;
-            case 'scan':
-                $_icon = 'icon-fab-scan';
-				$_monitor = json_decode(file_get_contents($_task_attributes['folder'].$_task_attributes['scan_monitor']), TRUE);
-				$_percent = $_monitor['scan']['stats']['percent'];
-				$_detail  = site_url($_task['controller']);
-                break;
+            case 'make':
+            	switch($_task['type']){
+            		case 'print':
+		                $_icon    = 'icon-fab-print';
+		                $_monitor = json_decode(file_get_contents($_task_attributes['monitor']), TRUE);
+		                $_percent = $_monitor['print']['stats']['percent'];
+						$_detail  = site_url($_task['controller'].'/'.$_task['type']);
+		                break;
+		                
+	                case 'mill':
+	                	$_icon    = 'icon-fab-print';
+	                	$_monitor = json_decode(file_get_contents($_task_attributes['monitor']), TRUE);
+	                	$_percent = $_monitor['print']['stats']['percent'];
+	                	$_detail  = site_url($_task['controller'].'/'.$_task['type']);
+	                	break;
+            	
+		            case 'scan':
+		                $_icon = 'icon-fab-scan';
+						$_monitor = json_decode(file_get_contents($_task_attributes['folder'].$_task_attributes['scan_monitor']), TRUE);
+						$_percent = $_monitor['scan']['stats']['percent'];
+						$_detail  = site_url($_task['controller'].'/'.$_task['type']);
+		                break;
+		                
+            	}
+            	break;
             case 'objectmanager':
                 $_icon    = 'icon-fab-manager';
                 $_monitor = json_decode(file_get_contents($_task_attributes['monitor']), TRUE);				

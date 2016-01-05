@@ -582,7 +582,7 @@ class FT_Layout {
 						$active = isset($uri[2]) && $uri[2] == $son['name'] ? 'active' : '';
 						$html .= '<li class="' . $active . '">';
 						$href = site_url($item['name'] . '/' . $son['name']);
-						$html .= '<a data-href="' . $href . '"  href="' . $href . '">';
+						$html .= '<a data-controller="' . $item['name'] . '/' . $son['name'] .'" data-href="' . $href . '"  href="' . $href . '">';
 
 						if (isset($son['icon'])) {
 							$html .= $son['icon'] . ' ';
