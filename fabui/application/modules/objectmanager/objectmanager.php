@@ -840,7 +840,7 @@ class Objectmanager extends Module {
 				$this -> merge($object, $file);
 				break;
 			case 'print' :
-				redirect('create?obj=' . $object . '&file=' . $file);
+				redirect('make/print?obj=' . $object . '&file=' . $file);
 				break;
 		}
 
