@@ -313,6 +313,7 @@
             var action = $(this).attr('data-action');
             
             if(action == "exec"){
+            	clearInterval(interval_autostart);
                 print_object();
                 return false; 
             }
@@ -396,7 +397,6 @@
         	
         	if(autostart_timer == 0){
         		$("#modal_link").trigger('click');
-        		clearInterval(interval_autostart);
         	}
         	
         }
