@@ -23,16 +23,6 @@ if($_tasks_number == 0){
 ?>
 <ul class="notification-body">
 	
-	<?php  
-	
-	if($_tasks_number == 1){
-		
-		$_temp  = $_tasks;
-		$_tasks = array();
-		$_tasks[] = $_temp;
-		
-	}
-	?>
 	
     <?php foreach($_tasks as $_task): ?>
     <?php 
@@ -62,6 +52,8 @@ if($_tasks_number == 0){
                 $_icon    = 'fa fa-cogs';
 				$_detail  = site_url($_task['controller']);
                 break;
+            default:
+            	$_detail  = site_url($_task['controller']);
         }
     ?>
 	<li>
