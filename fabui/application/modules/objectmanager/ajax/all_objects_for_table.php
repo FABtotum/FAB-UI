@@ -11,7 +11,7 @@ $_objects = array();
 /** LOAD DATABASE */
 $db = new Database();
 
-$query_objects = 'SELECT `sys_objects`.`id`, `sys_objects`.`obj_name`, `sys_objects`.`obj_description`, `sys_objects`.`date_insert`, `sys_objects`.`date_updated`, count(id_file) as num_files
+$query_objects = 'SELECT `sys_objects`.`user`, `sys_objects`.`private`, `sys_objects`.`id`, `sys_objects`.`obj_name`, `sys_objects`.`obj_description`, `sys_objects`.`date_insert`, `sys_objects`.`date_updated`, count(id_file) as num_files
 					FROM (`sys_objects`)
 					LEFT JOIN `sys_obj_files` ON `sys_obj_files`.`id_obj` = `sys_objects`.`id`
 					WHERE `user` =  '.$_SESSION['user']['id'].'
