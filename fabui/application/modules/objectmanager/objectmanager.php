@@ -13,7 +13,9 @@ class Objectmanager extends Module {
         }
 
 		$this -> lang -> load($_SESSION['language']['name'], $_SESSION['language']['name']);
-		shell_exec('sudo rm -r download');
+		if (file_exists('download')) {
+			shell_exec('sudo rm -r download');
+		}
 
 	}
 
