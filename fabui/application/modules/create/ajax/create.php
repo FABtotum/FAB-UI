@@ -197,7 +197,7 @@ $_time_monitor = 2;
 
 
 //clean up memory
-shell_exec('sudo echo 1 > /proc/sys/vm/drop_caches');
+shell_exec('sudo sh -c "echo 1 >/proc/sys/vm/drop_caches"');
 //shell_exec('echo 2 > /proc/sys/vm/drop_caches');
 //shell_exec('echo 3 > /proc/sys/vm/drop_caches');
 
