@@ -22,16 +22,10 @@ if($_tasks_rows){
 
 	$_tasks['number'] = $_tasks_number;
 	
-	if($_tasks_number >  1){
+	if($_tasks_number >  0){
 	    foreach($_tasks_rows as $_t){
 	        $_tasks['items'][] = $_t;
 	    }   
-	}
-
-	if($_tasks_number == 1){
-		
-		$_tasks['items'][] = $_tasks_rows;
-		
 	}
 		
 }

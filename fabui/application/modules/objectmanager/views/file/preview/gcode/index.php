@@ -2,7 +2,7 @@
 	<div class="col-sm-12 text-align-right">
 		<div class="page-title">
 			<a href="<?php  echo site_url('objectmanager/edit/'.$_object_id)?>" class="btn btn-primary"> <i class="fa fa-arrow-left"></i> Back to object</a>
-			<a href="<?php  echo site_url('create?obj='.$_object_id.'&file='.$file->id)?>" class="btn btn-primary"> <i class="fa fa-play rotate-90"></i> Print</a>
+			<a href="<?php  echo site_url('make/print?obj='.$_object_id.'&file='.$file->id)?>" class="btn btn-primary"> <i class="fa fa-play rotate-90"></i> Print</a>
 		</div>
 	</div>
 </div>

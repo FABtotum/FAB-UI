@@ -135,8 +135,8 @@ $_file = $_file[0];
 
 /** ADD TASK */
 $_task_data['user']       = $_SESSION['user']['id'];
-$_task_data['controller'] = 'create';
-$_task_data['type']       = 'print';
+$_task_data['controller'] = 'make';
+$_task_data['type']       = $_print_type ==  'additive' ? 'print' : 'mill';;
 $_task_data['status']     = 'running';
 $_task_data['attributes'] = '';
 $_task_data['start_date'] = 'now()';
@@ -197,7 +197,7 @@ $_time_monitor = 2;
 
 
 //clean up memory
-shell_exec('sudo echo 1 > /proc/sys/vm/drop_caches');
+shell_exec('sudo sh -c "echo 1 >/proc/sys/vm/drop_caches"');
 //shell_exec('echo 2 > /proc/sys/vm/drop_caches');
 //shell_exec('echo 3 > /proc/sys/vm/drop_caches');
 

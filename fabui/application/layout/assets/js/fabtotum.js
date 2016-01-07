@@ -87,7 +87,7 @@ function freeze_menu(except) {
 	excepet_item_menu[1] = 'objectmanager';
 	excepet_item_menu[2] = except;
 
-	$("#left-panel nav > ul > li > a").each(function(index, element) {
+	$("#left-panel nav > ul > li:not(:has(ul)) > a, #left-panel nav > ul > li > ul > li > a").each(function(index, element) {
 		var controller = $(this).attr('data-controller');
 
 		// se non è nella lista allora la rendo disabled
@@ -335,6 +335,9 @@ function set_tasks(data) {
 		$.each(data.items, function() {
 			var row = this;
 			controller = row.controller;
+			if (controller == 'make') {
+				controller += '/' + row.type;
+			}
 		});
 
 	}

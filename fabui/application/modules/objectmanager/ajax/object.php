@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 /** SAVE POST PARAMETERS */
 $_object_id = $_POST["id_object"];
 $_printable = $_POST["printable"];
-$_type      = $_POST['type'];
+
 
 
 $print_type = $_POST['print_type'];

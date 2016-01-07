@@ -15,8 +15,8 @@ if ( ! function_exists('is_printer_busy'))
 		$CI->load->model('tasks');
         
         
-        $_print = $CI->tasks->get_running('create',  'print');
-        $_scan  = $CI->tasks->get_running('scan',    'scan');
+        $_print = $CI->tasks->get_running('make', 'print');
+        $_scan  = $CI->tasks->get_running('make', 'scan');
 		
 		
 		

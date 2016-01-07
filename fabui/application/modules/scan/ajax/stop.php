@@ -13,7 +13,7 @@ $db = new Database();
 
 /** GET TASK FROM DB */
 $_task = $db->query('select * from sys_tasks where id='.$_task_id);
-//$_task = $_task[0];
+$_task = $_task[0];
 
 $_attributes = json_decode($_task['attributes'], true);
 

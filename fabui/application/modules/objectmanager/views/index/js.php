@@ -141,7 +141,7 @@
     function delete_objects(list){
     	
     	$(".bulk-button").addClass("disabled");
-    	$(".bulk-button").html("Deleting...");
+    	$(".bulk-button[data-action='delete']").html("<i class='fa fa-spinner'></i> Deleting...");
     	
     	$.ajax({
 				type: "POST",
@@ -158,8 +158,7 @@
 				}
 				
 				$(".bulk-button").removeClass("disabled");
-				$(".bulk-button").html("Apply");
-				
+				$(".bulk-button[data-action='delete']").html("<i class='fa fa-trash'></i> Delete");
 			});
 
     }
