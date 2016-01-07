@@ -35,7 +35,7 @@ $_command_finalize = 'sudo php '.FABUI_PATH.'script/finalize.php '.$_task_id. ' 
 $_output_command   = shell_exec ( $_command_finalize );
 
 
-$_response_items['command'] = $_command;
+$_response_items['command'] = $_command_finalize;
 $_response_items['status'] = 'ok';
 
 header('Content-Type: application/json');

@@ -46,7 +46,7 @@
 						<?php echo $step3; ?>
 						<?php echo $step4; ?>
 						<?php echo $step5; ?>
-						<?php echo $step5; ?>
+						<?php echo $step6; ?>
 						
 					</form>
 					

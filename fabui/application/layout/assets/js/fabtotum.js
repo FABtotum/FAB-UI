@@ -335,9 +335,11 @@ function set_tasks(data) {
 		$.each(data.items, function() {
 			var row = this;
 			controller = row.controller;
+			
 			if (controller == 'make') {
-				controller += '/' + row.type;
+ 				controller += '/' + row.type;
 			}
+			
 		});
 
 	}

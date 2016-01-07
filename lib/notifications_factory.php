@@ -33,9 +33,9 @@ class NotificationsFactory {
 		if ($this -> _number > 0) {
 
 			foreach ($this->_rows as $t) {
-
-				$this -> _items[] = $t;
-			}
+  
+ 				$this -> _items[] = $t;
+  			}
 
 		}
 

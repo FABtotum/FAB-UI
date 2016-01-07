@@ -150,7 +150,7 @@ class Maintenance extends Module {
 		$data['step3'] = $this->load->view('firstsetup/step3/index', '', TRUE);
 		$data['step4'] = $this->load->view('firstsetup/step4/index', '', TRUE);
 		$data['step5'] = $this->load->view('firstsetup/step5/index', '', TRUE);
-		$data['step5'] = $this->load->view('firstsetup/step6/index', '', TRUE);
+		$data['step6'] = $this->load->view('firstsetup/step6/index', '', TRUE);
 		
 		$js_in_page = $this->load->view('firstsetup/js', $data, TRUE);
         $this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => ''));

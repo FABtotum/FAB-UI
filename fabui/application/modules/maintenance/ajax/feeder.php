@@ -9,10 +9,10 @@ $_destination_trace    = TEMP_PATH.'macro_trace';
 $_destination_response = TEMP_PATH.'macro_response';
 
 write_file($_destination_trace, '', 'w');
-chmod($_destination_trace, 0777);
+//chmod($_destination_trace, 0777);
 
 write_file($_destination_response, '', 'w');
-chmod($_destination_response, 0777);
+//chmod($_destination_response, 0777);
 
 /** WAIT JUST 1 SECOND */
 sleep(1);

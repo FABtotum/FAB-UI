@@ -527,10 +527,10 @@ elif preset=="probe_setup_calibrate":
     serial.write("M710 S"+str(z_probe_new)+"\r\n")
     ####
     macro("G90","ok",2,"Abs_mode",1, verbose=False)
-    macro("G0 Z50 F1000","ok",3,"Moving the plane ",1,verbose=False )
-    macro("G28","ok",90,"homing all axis",verbose=False)
+    macro("G0 Z50 F1000","ok",3,"Moving the plane",1,verbose=False)
+    macro("G28","ok",90,"homing all axis",1,verbose=False)
     trace("Probe calibrated : "+str(z_probe_new)+" mm",log_trace)
-    macro("M300","ok",5,"Done!")
+    macro("M300","ok",5,"Done!",1)
     
 elif preset=="laser":
     trace("Checking Laser",log_trace)

@@ -38,10 +38,10 @@ if($_print_type ==  'additive'){
 	
 	/** CRAETE TEMPORARY FILES */
 	write_file($_macro_trace, '', 'w');
-	chmod($_macro_trace, 0777);
+	//chmod($_macro_trace, 0777);
 
 	write_file($_macro_response, '', 'w');
-	chmod($_macro_response, 0777); 
+	//chmod($_macro_response, 0777); 
 	
 	
 	

@@ -157,8 +157,8 @@
 					show_error(response.message);
 				}
 				
-				$(".bulk-button").removeClass("disabled");
 				$(".bulk-button[data-action='delete']").html("<i class='fa fa-trash'></i> Delete");
+				
 			});
 
     }

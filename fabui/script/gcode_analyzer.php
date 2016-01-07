@@ -11,6 +11,8 @@ $db = new Database();
 
 $file = $db->query('select * from sys_files where id='.$file_id);
 
+$file = $file[0];
+
 if($file){
 	
 	
