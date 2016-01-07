@@ -2,6 +2,15 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9496 (07/01/2016)
+
+GENERAL
+Merged pull requests <a target="_blank" href="https://github.com/FABtotum/FAB-UI/pull/25">#25</a>
+
+MAINTENANCE
+- First Setup 
+	- Fixed behaviour with "Engage Feeder" Step
+
 FABUI 0.9495 (23/12/2015)
 
 GENERAL
