@@ -8,7 +8,8 @@
 		</div>
 	</div>
 </div>
-<table class="table table-striped table-bordered table-hover" id="objects_table">
+
+<table class="table table-responsive table-striped table-bordered table-hover has-tickbox" id="objects_table">
 	<thead>
 		<tr>
 			<th class="hidden"></th>

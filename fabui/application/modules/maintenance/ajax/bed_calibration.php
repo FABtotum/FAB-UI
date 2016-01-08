@@ -5,8 +5,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 /** CREATE LOG FILES */
 $_time                 = $_POST['time'];
-$_num_probes           = $_POST['num_probes'];
-$_skip_homing          = $_POST['skip_homing'];
+$_num_probes           = isset($_POST['num_probes']) ? $_POST['num_probes'] : 4;
+$_skip_homing          = isset($_POST['skip_homing']) ? $_POST['skip_homing'] : 0;
 $_destination_trace    = TEMP_PATH.'macro_trace';
 $_destination_response = TEMP_PATH.'macro_response';
 
@@ -22,7 +22,7 @@ sleep(1);
 /** EXEC COMMAND */
 $h_over = 38;
 //$num_probes=2; #num probes to execute for each point
-$skip_homing=1; #set 1 to skip homing the second time
+//$skip_homing=1; #set 1 to skip homing the second time
 
 $_command = 'sudo python ' . PYTHON_PATH . 'manual_bed_lev.py ' . $_destination_response . ' ' . $_destination_trace . ' ' . $h_over . ' ' . $_num_probes . ' ' . $_skip_homing;
 

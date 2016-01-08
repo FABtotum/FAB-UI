@@ -6,17 +6,19 @@
         
        oTable = $('#objects_table').dataTable({
             "aaSorting": [],
+            "autoWidth": false,
             "bProcessing": true,
             "sAjaxSource": '<?php echo module_url('objectmanager').'ajax/all_objects_for_table.php' ?>',
             "fnDrawCallback" : fnCallBack,
-       
-  			"fnRowCallback": function ( row, data, index ){
+  			"fnRowCallback": function (row, data, index ){
   				$('td', row).eq(0).addClass('hidden');
   				$('td', row).eq(1).attr('width', '20px');
   				$('td', row).eq(2).addClass('center table-checkbox');
   				$('td', row).eq(2).attr('width', '20px');
+  				
   				$('td', row).eq(4).addClass('hidden-xs');
   				$('td', row).eq(5).addClass('hidden-xs');
+  				$('td', row).eq(6).addClass('hidden-xs');
   			}
             
        });

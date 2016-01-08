@@ -1,4 +1,4 @@
-<div class="tab-pane animate fadeIn fade in active" id="tab_network">
+<div class="tab-pane animated fadeIn fade in active" id="tab_network">
 
     
     <div class="row margin-top-10">

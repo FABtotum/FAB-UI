@@ -2,6 +2,21 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9497 (08/01/2016)
+
+GENERAL
+- Changed behaviour of wizard first setup popup: if you press "don't ask me anymore" the popup will not appear again
+- Minor bugfixes
+
+OBJECTMANAGER
+- Fixed table not responsive
+- Changed sort order for objects list 
+
+SETTINGS
+- Added tab with Raspi Cam widget
+
+==================================================================
+
 FABUI 0.9496 (07/01/2016)
 
 GENERAL
@@ -10,6 +25,8 @@ Merged pull requests <a target="_blank" href="https://github.com/FABtotum/FAB-UI
 MAINTENANCE
 - First Setup 
 	- Fixed behaviour with "Engage Feeder" Step
+	
+==================================================================
 
 FABUI 0.9495 (23/12/2015)
 

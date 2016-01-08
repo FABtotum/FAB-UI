@@ -59,6 +59,7 @@ $route['maintenance/first-setup']       = "maintenance/firstsetup";
 
 $route['settings/set-eth']    = "settings/seteth";
 $route['settings/set-wifi']   = "settings/setwifi";
+$route['settings/raspi-cam']   = "settings/raspicam";
 $route['controller/stop-all'] = "controller/stop_all";
 
 

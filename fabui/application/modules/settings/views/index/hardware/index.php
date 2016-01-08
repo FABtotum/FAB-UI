@@ -1,4 +1,4 @@
-<div class="tab-pane animate fadeIn fade in active" id="tab2">
+<div class="tab-pane animated fadeIn fade in active" id="tab2">
 
 	<div class="row padding-10">
 

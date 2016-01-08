@@ -78,7 +78,7 @@ class Cam_widget extends Widget {
 		//$tabs[] = array('name'=>'Settings', 'icon'=>'fa-cogs', 'href'=>'settings-tab');
 		
         
-        $_widget_tasks = $this->get('tasks', 'RaspiCam',  $_html, false, false, null);
+        $_widget_tasks = $this->get('tasks', 'RaspiCam',  $_html, true, false, null);
                 
         return $_widget_tasks;
 

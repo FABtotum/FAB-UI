@@ -9,8 +9,11 @@ $data = explode('preset=="', $data);
 $options = array();
 
 for ($i = 1; $i <= count($data); $i++) {
-	$macroname = explode('":', $data[$i]);
-	if($macroname[0]!='') array_push($options, $macroname[0]);
+	if(isset($data[$i])){
+		$macroname = explode('":', $data[$i]);
+		if($macroname[0]!='') array_push($options, $macroname[0]);
+	}
+	
 }
 
 if(isset($_GET['macro']) && $_GET['macro']!='' && in_array($_GET['macro'], $options)){
@@ -31,6 +34,8 @@ if(isset($_GET['macro']) && $_GET['macro']!='' && in_array($_GET['macro'], $opti
 	
 	
 }
+
+if(!isset($macro)) $macro = '';
 
 include 'header.php';
 ?>

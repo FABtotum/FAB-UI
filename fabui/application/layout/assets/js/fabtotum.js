@@ -818,7 +818,7 @@ function check_for_wizard_setup() {
 
 			$.smallBox({
 				title : "Wizard Setup",
-				content : "It seems that you still did not complete the first recommended setup:<ul><li>Manual Bed Calibration</li><li>Probe Lenght Calibration</li><li>Engage Feeder</li></ul><br>Without a proper calibration you will not be able to use the FABtotum correctly<br>Do you want to do it now?<br><br><p class='text-align-right'><a href='/fabui/maintenance/first-setup' class='btn btn-primary btn-sm'>Yes</a> <a href='javascript:void(0);' class='btn btn-danger btn-sm'>No</a> <a href='javascript:dont_ask_wizard();' class='btn btn-warning btn-sm'>Don't ask me anymore</a> </p>",
+				content : "It seems that you still did not complete the first recommended setup:<ul><li>Manual Bed Calibration</li><li>Probe Lenght Calibration</li><li>Engage Feeder</li></ul><br>Without a proper calibration you will not be able to use the FABtotum correctly<br>Do you want to do it now?<br><br><p class='text-align-right'><a href='/fabui/maintenance/first-setup' class='btn btn-primary btn-sm'>Yes</a> <a href='javascript:dont_ask_wizard();' class='btn btn-danger btn-sm'>No</a> <a href='javascript:finalize_wizard();' class='btn btn-warning btn-sm'>Don't ask me anymore</a> </p>",
 				color : "#296191",
 				icon : "fa fa-warning swing animated"
 			});
@@ -838,7 +838,20 @@ function dont_ask_wizard() {
 	}).done(function(response) {
 
 	});
+}
 
+function finalize_wizard(){
+	
+	
+	$.ajax({
+		type : "POST",
+		url : "/fabui/application/modules/maintenance/ajax/finish_wizard.php",
+		dataType : 'json'
+	}).done(function(response) {
+
+	});
+	
+	
 }
 
 /** GET TRACE */

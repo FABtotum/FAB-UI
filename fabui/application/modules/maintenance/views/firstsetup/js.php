@@ -537,11 +537,7 @@
               url: "<?php echo module_url("maintenance").'ajax/finish_wizard.php' ?>",
               dataType: 'json'
         }).done(function( response ) { 
-			
-			
 			setTimeout(function () {document.location.href = '/fabui';}, 3000);
-					
-  		
         })
 	 	
 	 	

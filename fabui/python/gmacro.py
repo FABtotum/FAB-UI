@@ -503,7 +503,7 @@ elif preset=="probe_setup_prepare":
     macro("G91","ok",2,"Relative mode",1, verbose=False)
     macro("G0 X17 Y61.5 F6000","ok",2,"Offset",1, verbose=False)
     macro("G90","ok",2,"Abs_mode",1, verbose=False)
-    macro("G0 Z2 F1000","ok",2,"Moving to calibration position",1)
+    macro("G0 Z5 F1000","ok",2,"Moving to calibration position",1)
     
 elif preset=="probe_setup_calibrate":
     trace("Calibrating probe",log_trace)

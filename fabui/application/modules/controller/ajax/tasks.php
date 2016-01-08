@@ -34,14 +34,14 @@ if($_tasks_number == 0){
             	switch($_task['type']){
             		case 'print':
 		                $_icon    = 'icon-fab-print';
-		                $_monitor = json_decode(file_get_contents($_task_attributes['monitor']), TRUE);
+		                $_monitor = json_decode(file_get_contents($_task['attributes']), TRUE);
 		                $_percent = $_monitor['print']['stats']['percent'];
 						$_detail  = site_url($_task['controller'].'/'.$_task['type']);
 		                break;
 		                
 	                case 'mill':
 	                	$_icon    = 'icon-fab-print';
-	                	$_monitor = json_decode(file_get_contents($_task_attributes['monitor']), TRUE);
+	                	$_monitor = json_decode(file_get_contents($_task['attributes']), TRUE);
 	                	$_percent = $_monitor['print']['stats']['percent'];
 	                	$_detail  = site_url($_task['controller'].'/'.$_task['type']);
 	                	break;

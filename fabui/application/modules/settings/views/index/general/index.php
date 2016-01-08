@@ -1,4 +1,4 @@
-<div class="tab-pane fade in active" id="tab1">
+<div class="tab-pane animated fadeIn fade in active" id="tab1">
 	<div class="row margin-top-10">
 		<div class="col-md-12">
 			<div class="well no-border">

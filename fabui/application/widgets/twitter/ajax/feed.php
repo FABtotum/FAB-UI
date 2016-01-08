@@ -2,6 +2,13 @@
 require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/utilities.php';
 
+$reload = isset($_GET['manually']) ? filter_var($_GET['manually'], FILTER_VALIDATE_BOOLEAN) : false;
+
+if($reload || !file_exists(TWITTER_FEED_JSON)){
+	require_once '/var/www/fabui/script/twitter_feed.php';
+}
+
+
 $twitter = json_decode(file_get_contents(TWITTER_FEED_JSON), true);
 //print_r($twitter);
 ?>

@@ -9,11 +9,10 @@ $settings = json_decode(file_get_contents($settings_file), true);
 
 if(!file_exists('/var/www/temp/'.$settings['name'].'.'.$settings['encoding'])){
 
-	require_once $_SERVER['DOCUMENT_ROOT'] .'/lib/pi_camera/Camera.php';
+	require_once '/var/www/lib/pi_camera/Camera.php';
 	$camera = new Camera($settings);
 	$camera->output->setValue('/var/www/temp/'.$settings['name'].'.'.$settings['encoding']);
-	$camera->create();
-	
+	$camera->doImage();
 	
 }
 

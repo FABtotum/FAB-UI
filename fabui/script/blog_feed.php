@@ -11,7 +11,8 @@ if (is_internet_avaiable()) {
 	$blog_xml = curl_exec($ch);
 	$info = curl_getinfo($ch);
 	curl_close($ch);
-
+	
+	
 	if ($info['http_code'] == 200) {
 		write_file(BLOG_FEED_XML, $blog_xml, 'w');
 	}
