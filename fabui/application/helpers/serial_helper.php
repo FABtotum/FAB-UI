@@ -42,7 +42,6 @@ function sendAndGet($message){
 function firmware_version() {
 
 	$response = sendAndGet('M765'.PHP_EOL);
-	
 	$version = str_replace('V', '', $response);
 	$version = str_replace('ok', '', $version);
 	$version = trim($version);
@@ -64,7 +63,6 @@ function firmware_version() {
 	$response = sendAndGet('M763'.PHP_EOL);
 	$version = trim($response);
 	$version = str_replace('ok', '', $version);
-	
 	
 	return $version;
  	

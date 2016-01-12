@@ -12,7 +12,14 @@ import os
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
 
-macro_status = config.get('macro', 'status_file')
+
+#check if LOCK FILE EXISTS
+if os.path.isfile(config.get('task', 'lock_file')):
+    print "printer busy"
+    sys.exit()
+
+
+#macro_status = config.get('macro', 'status_file')
 
 #read config steps/units
 json_f = open(config.get('printer', 'settings_file'))
@@ -46,8 +53,9 @@ try:
 except:
     print("Missing params")
     sys.exit()
-    
 
+#write LOCK FILE    
+open(config.get('task', 'lock_file'), 'w').close()
 #generic errors
 probe_start_time=0 #start time
 s_error=0
@@ -69,13 +77,14 @@ logging.basicConfig(filename=log_trace,level=logging.INFO,format=' %(message)s',
 open(trace_file, 'w').close() #reset trace file
 open(response_file, 'w').close() #reset trace file
 
+'''
 def write_status(status):
-    global macro_status
+    #global macro_status
     json='{"type": "status", "status": ' + str(status).lower() +'}'
     handle=open(macro_status,'w+')
     print>>handle, json
     handle.close()
-    return
+    return'''
 
 #track trace
 def trace(string,destination_file):
@@ -158,7 +167,7 @@ def macro(code,expected_reply,timeout,error_msg,delay_after,warning=False,verbos
     return serial_reply
 
 
-write_status(True)
+#write_status(True)
 '''#### SERIAL PORT COMMUNICATION ####'''
 serial_port = config.get('serial', 'port')
 serial_baud = config.get('serial', 'baud')
@@ -244,7 +253,7 @@ elif preset=="start_print":
     macro("M140 S50","ok",3,"Pre Heating Bed (fast) ",20)
     macro("M220 S100","ok",1,"Reset Speed factor override",0.1,verbose=False)
     macro("M221 S100","ok",1,"Reset Extruder factor override",0.1,verbose=False)
-    macro("M106 S255","ok",50,"Turning Fan On",1)
+    macro("M106 S255","ok",1,"Turning Fan On",1)
     macro("M92 E"+str(units['e']),"ok",1,"Setting extruder mode",0.1,verbose=False)
     
     
@@ -402,6 +411,7 @@ elif preset=="end_scan":
     macro("M701 S"+str(units['color']['r']),"ok",2,"Turning on lights",0.1,verbose=False)
     macro("M702 S"+str(units['color']['g']),"ok",2,"Turning on lights",0.1,verbose=False)
     macro("M703 S"+str(units['color']['b']),"ok",2,"Turning on lights",0.1,verbose=False)
+    macro("M402","ok",1,"Rise Probe",1,verbose=False)
     macro("M300","ok",1,"Scan completed",1,verbose=False)
     
 #zero_all
@@ -669,6 +679,7 @@ else:
 #clean the buffer and leave
 serial.flush()
 serial.close()
-write_status(False)
+#write_status(False)
+os.remove(config.get('task', 'lock_file'))
 #open(trace_file, 'w').close() #reset trace file
 sys.exit()

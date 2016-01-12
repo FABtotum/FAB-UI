@@ -7,6 +7,8 @@
 require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/serial.php';
 
+//==== LOCK FILE
+fopen(LOCK_FILE, "w");
 
 define('TIME_TO_SLEEP', 1);
 
@@ -89,13 +91,14 @@ $hw_id = (isset($configs['settings_type']) && $configs['settings_type'] == 'cust
 //include and exec specific hardware config settings
 if(file_exists(dirname(__FILE__).'/hardware/settings_'.$hw_id.'.php')){
 	include dirname(__FILE__).'/hardware/settings_'.$hw_id.'.php';
+	shell_exec('sudo rm '.LOCK_FILE);
 
 }else{
 		
 	$configs = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);	
 	$configs['feeder']['show'] = true;
-
 	file_put_contents(FABUI_PATH.'config/config.json', json_encode($configs));
+	shell_exec('sudo rm '.LOCK_FILE);
 }
 //==================================================================
 ?>

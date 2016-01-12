@@ -8,8 +8,17 @@ import json
 import ConfigParser
 import logging
 
-#Args
 
+
+config = ConfigParser.ConfigParser()
+config.read('/var/www/fabui/python/config.ini')
+
+#check if LOCK FILE EXISTS
+if os.path.isfile(config.get('task', 'lock_file')):
+    print "printer busy"
+    sys.exit()
+
+#Args
 try:
 	logfile=str(sys.argv[1]) #param for the log file
 	log_trace=str(sys.argv[2])	#trace log file
@@ -29,10 +38,10 @@ except:
 	skip_homing=0 #default num probes
 	
 #vars
-config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
-macro_status=config.get('macro', 'status_file')
+#write LOCK FILE    
+open(config.get('task', 'lock_file'), 'w').close()
 
+macro_status=config.get('macro', 'status_file')
 log_trace=config.get('macro', 'trace_file')
 logfile=config.get('macro', 'response_file')
 
@@ -375,6 +384,7 @@ printlog()
 
 #end
 trace("Done!")
+os.remove(config.get('task', 'lock_file'))
 write_status(False)
 #open(log_trace, 'w').close() #reset trace file
 sys.exit()

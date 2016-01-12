@@ -6,11 +6,6 @@
   		</div>
   	</div>
   </div>
-
-		</div>
-	</div>
-</div>
-
 <div id="no-webgl" class="alert alert-warning fade in" style="display:none;">
 	<button class="close" data-dismiss="alert"></button>
 	<i class="fa-fw fa fa-warning"></i>

@@ -12,7 +12,9 @@ function createObjectFromGCode(gcode) {
 
   var parser = new GCodeParser({
 
-    G1: function(args, line) {
+    
+    G0: function(args, line) {
+   
       // Example: G1 Z1.0 F3000
       //          G1 X99.9948 Y80.0611 Z15.0 F1500.0 E981.64869
       //          G1 E104.25841 F1800.0
@@ -33,12 +35,46 @@ function createObjectFromGCode(gcode) {
       var color = new THREE.Color(newLine.extruding ? 0xFFFFFF : 0x0000FF);
 
       if (newLine.extruding) {
-        geometry.vertices.push(
-            new THREE.Vector3(lastLine.x, lastLine.y, lastLine.z));
-        geometry.vertices.push(
-            new THREE.Vector3(newLine.x, newLine.y, newLine.z));
+        geometry.vertices.push(new THREE.Vector3(lastLine.x, lastLine.y, lastLine.z));
+        geometry.vertices.push(new THREE.Vector3(newLine.x, newLine.y, newLine.z));
         geometry.colors.push(color);
+        
+         geometry.colors.push(color);
+       
+      }
+
+      lastLine = newLine;
+    },
+    
+    
+    G1: function(args, line) {
+    	
+      // Example: G1 Z1.0 F3000
+      //          G1 X99.9948 Y80.0611 Z15.0 F1500.0 E981.64869
+      //          G1 E104.25841 F1800.0
+      // Go in a straight line from the current (X, Y) point
+      // to the point (90.6, 13.8), extruding material as the move
+      // happens from the current extruded length to a length of
+      // 22.4 mm.
+
+      var newLine = {
+        x: args.x !== undefined ? args.x : lastLine.x,
+        y: args.y !== undefined ? args.y : lastLine.y,
+        z: args.z !== undefined ? args.z : lastLine.z,
+        e: args.e !== undefined ? args.e : lastLine.e,
+        f: args.f !== undefined ? args.f : lastLine.f,
+      };
+
+      newLine.extruding = (newLine.e - lastLine.e) > 0;
+      var color = new THREE.Color(newLine.extruding ? 0xFFFFFF : 0x0000FF);
+
+      if (newLine.extruding) {
+        geometry.vertices.push(new THREE.Vector3(lastLine.x, lastLine.y, lastLine.z));
+        geometry.vertices.push(new THREE.Vector3(newLine.x, newLine.y, newLine.z));
         geometry.colors.push(color);
+        
+         geometry.colors.push(color);
+       
       }
 
       lastLine = newLine;
@@ -86,6 +122,46 @@ function createObjectFromGCode(gcode) {
 
       // No-op, so long as M83 is not supported.
     },
+    
+    M190: function(args) {
+      //TODO: Only support E0
+    },
+    
+    M109: function(args) {
+      //TODO: Only support E0
+    },
+    
+    M204: function(args) {
+      //TODO: Only support E0
+    },
+    
+    M205: function(args) {
+      //TODO: Only support E0
+    },
+    
+    M117: function(args) {
+      //TODO: Only support E0
+    },
+    
+    M104: function(args) {
+      //TODO: Only support E0
+    },
+    
+    M140: function(args) {
+      //TODO: Only support E0
+    },
+    
+    M106: function(args) {
+      //TODO: Only support E0
+    },
+    
+    M107: function(args) {
+      //TODO: Only support E0
+    },
+    
+    G28: function(args) {
+      //TODO: Only support E0
+    },
 
     M84: function(args) {
       // M84: Stop idle hold
@@ -102,6 +178,7 @@ function createObjectFromGCode(gcode) {
     'default': function(args, info) {
       console.error('Unknown command:', args.cmd, args, info);
     },
+    
   });
 
   parser.parse(gcode);
@@ -115,12 +192,11 @@ function createObjectFromGCode(gcode) {
 
   // Center
   geometry.computeBoundingBox();
-  var center = new THREE.Vector3()
-      .addVectors(geometry.boundingBox.min, geometry.boundingBox.max)
-      .divideScalar(2);
-  var scale = 3; // TODO: Auto size
-  object.position = center.multiplyScalar(-scale);
-  object.scale.multiplyScalar(scale);
+  //var center = new THREE.Vector3().addVectors(geometry.boundingBox.min, geometry.boundingBox.max).divideScalar(2);
+  var center = new THREE.Vector3().add(geometry.boundingBox.min, geometry.boundingBox.max).divideScalar(2);
+  object.position = center.multiplyScalar(-1);
+  
+ 
 
   return object;
 }

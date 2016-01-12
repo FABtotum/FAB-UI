@@ -5,7 +5,7 @@
 	</div>
 	-->
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-		<ul id="sparks" class="">
+		<ul id="sparks">
 			<li class="sparks-info">
 				<h5> FAB UI beta <span class="txt-color-blue"><i class="fa fa-mobile"></i>&nbsp;v&nbsp;<?php echo $fabui_local ?></span></h5>
 				

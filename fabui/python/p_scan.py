@@ -13,6 +13,11 @@ import ConfigParser
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
 
+#check if LOCK FILE EXISTS
+if os.path.isfile(config.get('task', 'lock_file')):
+    print "printer busy"
+    sys.exit()
+
 #PARAMS
 
 #get process pid so the GUI can kill it if needed
@@ -113,6 +118,10 @@ for opt, arg in opts:
 		z_hop = float(arg)			#the amount to hop (also known as safe Z)
 	elif opt in ("-p", "--p"):
 		probe_skip = float(arg)		#adaptive control
+
+
+#write LOCK FILE    
+open(config.get('task', 'lock_file'), 'w').close()
 
 started=float(time.time())	#start counting
 
@@ -429,6 +438,7 @@ percent=100
 printlog(percent,i)
 
 #finalize database-side operations
+os.remove(config.get('task', 'lock_file'))
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" scan_p"], shell=True)
 
 #goodbye!

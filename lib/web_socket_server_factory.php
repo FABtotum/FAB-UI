@@ -5,7 +5,6 @@ require_once '/var/www/lib/jog_factory.php';
 require_once '/var/www/lib/create_factory.php';
 require_once '/var/www/lib/notifications_factory.php';
 
-
 class WebSocketServerFactory {
 
 	private $_data;
@@ -26,11 +25,11 @@ class WebSocketServerFactory {
 	}
 
 	public function getTasks($data = '') {
-		
+
 		$notifications = new NotificationsFactory();
-		
+
 		$this -> _type = 'task';
-		$this -> _data = $notifications->getTasks();
+		$this -> _data = $notifications -> getTasks();
 
 		return $this -> returnResponse();
 
@@ -47,14 +46,18 @@ class WebSocketServerFactory {
 
 	public function serial($data = '') {
 
-		$JogFactory = new JogFactory($data['feedrate'], $data['step'], $data['z_step'], $data['extruderFeedrate']);
+		if (!file_exists(LOCK_FILE)) {
+			$JogFactory = new JogFactory($data['feedrate'], $data['step'], $data['z_step'], $data['extruderFeedrate']);
 
-		$function = $data['func'];
+			$function = $data['func'];
 
-		if (method_exists($JogFactory, $function)) {
-			return $JogFactory -> $function($data['value']);
-		} else {
-			return '{"type": "error", "error": "Serial Unknown function "}';
+			if (method_exists($JogFactory, $function)) {
+				return $JogFactory -> $function($data['value']);
+			} else {
+				return '{"type": "error", "error": "Serial Unknown function "}';
+			}
+		}else{
+			return '{"type": "warning", "message": "Printer now is busy"}';
 		}
 
 	}
@@ -94,44 +97,40 @@ class WebSocketServerFactory {
 	}
 
 	function create($data) {
-		
+
 		$CreateFactory = new CreateFactory($data);
-		
+
 		$this -> _type = 'create';
-		$this -> _data = $CreateFactory->run();
-		
+		$this -> _data = $CreateFactory -> run();
+
 		return $this -> returnResponse();
 	}
-	
-	
-	
-	function secure($param){
-			
+
+	function secure($param) {
+
 		$mode = $param['mode'] == 1 ? true : false;
-		
+
 		$JogFactory = new JogFactory();
-		
-		$response = $JogFactory->secure($mode);
-		
+
+		$response = $JogFactory -> secure($mode);
+
 		$this -> _type = 'security';
-		$this ->_data = $response;
-		
+		$this -> _data = $response;
+
 		return $this -> returnResponse();
 	}
-	
-	
-	function getUsb(){
-		
+
+	function getUsb() {
+
 		$this -> _type = 'system';
-		
-		
+
 		$data['type'] = 'usb';
 		$data['status'] = is_usb_inserted();
 		$data['alert'] = false;
-		
+
 		$this -> _data = $data;
 		return $this -> returnResponse();
-		
+
 	}
 
 }

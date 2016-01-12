@@ -587,7 +587,7 @@ $(function() {
 		notifications_interval = setInterval(check_notifications, 10000);
 		idleInterval = setInterval(timerIncrement, 1000);
 		safety_interval = setInterval(safety, 3000);
-		interval_temperature = setInterval(get_temperatures, 2000);
+		interval_temperature = setInterval(get_temperatures, 2500);
 
 		/* START TIMER... */
 		$("#refresh-notifications").on('click', refresh_notifications);

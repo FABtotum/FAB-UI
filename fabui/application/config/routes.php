@@ -56,6 +56,7 @@ $route['maintenance/self-test']         = "maintenance/selftest";
 $route['maintenance/bed-calibration']   = "maintenance/bedcalibration";
 $route['maintenance/probe-calibration'] = "maintenance/probecalibration";
 $route['maintenance/first-setup']       = "maintenance/firstsetup";
+$route['maintenance/system-info']       = "maintenance/systeminfo";
 
 $route['settings/set-eth']    = "settings/seteth";
 $route['settings/set-wifi']   = "settings/setwifi";

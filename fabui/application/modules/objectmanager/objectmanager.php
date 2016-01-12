@@ -58,13 +58,13 @@ class Objectmanager extends Module {
 
 		//$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
 
-		$free_space = disk_free_space('/');
-		$total_space = disk_total_space('/');
-		$percent_free = intval(($free_space / $total_space) * 100);
-		$percent_used = 100 - $percent_free;
+		//$free_space = disk_free_space('/');
+		//$total_space = disk_total_space('/');
+		//$percent_free = intval(($free_space / $total_space) * 100);
+		//$percent_used = 100 - $percent_free;
 
-		$data_table['_disk_used_percent'] = $percent_used;
-		$_table = $this -> load -> view('index/table', $data_table, TRUE);
+		
+		$_table = $this -> load -> view('index/table', '', TRUE);
 
 		$attr['data-widget-icon'] = 'fa fa-cubes';
 		$_widget_table = widget('objects' . time(), 'Objects', $attr, $_table, false, true, true);

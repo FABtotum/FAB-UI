@@ -2,6 +2,21 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9498(12/01/2016)
+
+GENERAL
+- Merged pull request <a target="_blank" href="https://github.com/FABtotum/FAB-UI/pull/26">#26</a>
+- Added logics to prevent conflicts on the serial buffer if there are more pages or tabs opened
+- Minor bugfixes
+
+OBJECTMANAGER
+- Fixed bug on gcode preview page
+
+MAINTENANCE
+- Added "System Info" page
+
+==================================================================
+
 FABUI 0.9497 (08/01/2016)
 
 GENERAL

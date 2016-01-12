@@ -1,7 +1,7 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/ajax/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/ajax/lib/database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/ajax/lib/utilities.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 
 
@@ -51,7 +51,7 @@ if($key_match){
 		/** CHECK FOR OBJ OR CREATE IT */
 		
 		$cmd  = "SELECT id FROM sys_objects WHERE obj_name='Slic3r Upload' AND user=$api_user";
-		$obj_id  = $db->query($cmd)['id'];
+		$obj_id  = $db->query($cmd)[0]['id'];
 		if (!$obj_id){
 			$_obj_insert['obj_name'] = "Slic3r Upload";
 			$_obj_insert['obj_description'] = "Objects uploaded from Slic3r";

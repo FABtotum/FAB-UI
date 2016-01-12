@@ -16,6 +16,12 @@ from watchdog.events import PatternMatchingEventHandler
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
 
+#check if LOCK FILE EXISTS
+if os.path.isfile(config.get('task', 'lock_file')):
+    print "printer busy"
+    sys.exit()
+
+
 #process params
 try:
     ncfile=str(sys.argv[1])  #param for the gcode to execute
@@ -33,6 +39,8 @@ try:
 except:
     print "running with no UI..."
 
+#write LOCK FILE    
+open(config.get('task', 'lock_file'), 'w').close()
 
 logfile=config.get('task', 'monitor_file')
 log_trace=config.get('task', 'trace_file')
@@ -700,8 +708,9 @@ if print_type == "additive" and progress >= 0.2:
     serial.write("G90\r\n")
     serial.write("G27 Z0\r\n")
     serial.write("G0 X210 Y210\r\n")
-    
-    
+
+#remove LOCK FILE    
+os.remove(config.get('task', 'lock_file'))    
 #finalize database-side operations
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print " +str(status)], shell=True)
 

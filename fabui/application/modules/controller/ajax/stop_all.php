@@ -40,14 +40,10 @@ $all_pids = array_merge($all_pids, $slic3rwrapper_pids, $meshlabwrapper_pids, $m
 kill_process($all_pids);
 $end = time();
 
-
-
 //clean up memory
-//shell_exec('sudo chmod 0666 /proc/sys/vm/drop_caches');
 shell_exec('sudo sh -c "echo 1 >/proc/sys/vm/drop_caches"'); 
 shell_exec('sudo sh -c "echo 2 >/proc/sys/vm/drop_caches"'); 
 shell_exec('sudo sh -c "echo 3 >/proc/sys/vm/drop_caches"'); 
-//shell_exec('sudo chmod 0644 /proc/sys/vm/drop_caches');
 
 $_command = 'sudo python '.PYTHON_PATH.'force_reset.py';
 shell_exec($_command);

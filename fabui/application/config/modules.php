@@ -25,6 +25,7 @@ $_maintenance_sons[] = array('name' => 'bed-calibration',   'label'=> 'Bed Calib
 $_maintenance_sons[] = array('name' => 'probe-calibration', 'label'=> 'Probe Calibration', 'icon' => '<i class="fa fa-lg fa-fw fa-crosshairs"></i>');
 //$_maintenance_sons[] = array('name' => 'self-test',         'label'=> 'Self Test',         'icon' => '<i class="fa fa-lg fa-fw  fa-dashboard"></i>');
 $_maintenance_sons[] = array('name' => 'first-setup',       'label'=> 'First Setup',       'icon' => '<i class="fa fa-lg fa-fw  fa-magic"></i>');
+$_maintenance_sons[] = array('name' => 'system-info',       'label'=> 'System Info',       'icon' => '<i class="fa fa-lg fa-fw  fa-info-circle"></i>');
 
 
 

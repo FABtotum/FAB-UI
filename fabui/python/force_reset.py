@@ -5,12 +5,15 @@ import time,sys
 import serial
 import ConfigParser
 import logging
+import os
 
 
 
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
 
+#write LOCK FILE    
+open(config.get('task', 'lock_file'), 'w').close()
 
 trace_file=config.get('macro', 'trace_file')
 response_file=config.get('macro', 'response_file')
@@ -52,6 +55,7 @@ serial.flush()
 serial.close()
 
 GPIO.cleanup()
-
 trace("Controller ready")
+#write_status(False)
+os.remove(config.get('task', 'lock_file'))
 sys.exit()

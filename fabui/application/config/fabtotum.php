@@ -47,4 +47,7 @@ $config['heads_descriptions']= array(
 );
 
 
+$config['git_releases_json'] = '/var/www/temp/git_releases.json';
+$config['git_latest_release_json'] = '/var/www/temp/git_latest_release.json';
+
 ?>

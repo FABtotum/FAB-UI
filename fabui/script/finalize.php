@@ -164,6 +164,7 @@ function finalize_print($tid, $status) {
 	
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
+	unlock();
 
 	if ($reset) {
 		sleep(2);
@@ -254,6 +255,7 @@ function finalize_slice($tid, $status) {
 
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
+	unlock();
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -292,6 +294,7 @@ function finalize_self_test($tid, $status) {
 
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
+	unlock();
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -328,6 +331,7 @@ function finalize_update_fw($tid, $status) {
 	sleep(10);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
+	unlock();
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -401,6 +405,7 @@ function finalize_mesh($tid, $status) {
 	sleep(10);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
+	unlock();
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -435,8 +440,9 @@ function finalize_general($tid, $type, $status) {
 	//UPDATE TASK
 	update_task($tid, $status);
 	sleep(10);
+	unlock();
 	//REMOVE ALL TEMPORARY FILES
-	//shell_exec('sudo rm -rf '.$attributes['folder']);
+	shell_exec('sudo rm -rf '.$attributes['folder']);
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -561,6 +567,7 @@ function finalize_scan($tid, $type, $status) {
 	sleep(5);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
+	unlock();
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -583,4 +590,12 @@ function send_mail($attributes, $user) {
 	mail($to, $subject, $message, $headers);
 
 }
+
+
+function unlock(){
+	if(file_exists(LOCK_FILE)){
+		shell_exec('sudo rm '.LOCK_FILE);
+	}
+}
+
 ?>

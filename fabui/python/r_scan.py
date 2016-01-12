@@ -9,6 +9,12 @@ import json
 
 config = ConfigParser.ConfigParser()
 config.read('/var/www/fabui/python/config.ini')
+
+#check if LOCK FILE EXISTS
+if os.path.isfile(config.get('task', 'lock_file')):
+    print "printer busy"
+    sys.exit()
+
 #PARAMS
 
 #get process pid so the GUI can kill it if needed
@@ -69,6 +75,8 @@ for opt, arg in opts:
    elif opt in ("-l", "--log"):
       logfile = arg
 
+#write LOCK FILE    
+open(config.get('task', 'lock_file'), 'w').close()
 
 '''#### LOG ####'''
 logfile=config.get('task', 'monitor_file')
@@ -190,5 +198,6 @@ completed=1
 completed_time=float(time.time())
 percent=100
 printlog(percent,i)
-
+#write_status(False)
+os.remove(config.get('task', 'lock_file'))
 sys.exit()  

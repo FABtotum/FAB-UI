@@ -12,6 +12,7 @@ defined('RECOVERY_PATH') ? null : define("RECOVERY_PATH", WWW_PATH.'recovery/');
 defined('TEMP_PATH')     ? null : define("TEMP_PATH",     WWW_PATH.'temp/');
 defined('UPLOAD_PATH')   ? null : define("UPLOAD_PATH",   WWW_PATH.'upload/');
 defined('LIB_PATH')      ? null : define("LIB_PATH",      WWW_PATH.'lib/');
+defined('LOCK_FILE')     ? null : define("LOCK_FILE",     WWW_PATH.'temp/LOCK');
 
 //===================================================================================================================================================
 /** SERIAL PORT CONSTANTS */
@@ -116,5 +117,12 @@ defined('WIZARD_FILE') ? null : define("WIZARD_FILE", WWW_PATH.'WIZARD');
 defined('USB_SYSTEM_FILE') ? null : define("USB_SYSTEM_FILE", '/dev/sda1');
 defined('USB_FOLDER') ? null : define("USB_FOLDER", '/media');
 
+
+// ============ GIT ========================================================
+defined('GIT_RELEASES_URL')  ? null : define("GIT_RELEASES_URL", 'https://api.github.com/repos/FABtotum/dev-fabui/releases');
+defined('GIT_LATEST_RELEASE_URL')  ? null : define("GIT_LATEST_RELEASE_URL", 'https://api.github.com/repos/FABtotum/dev-fabui/releases/latest');
+
+defined('GIT_RELEASES_JSON')  ? null : define("GIT_RELEASES_JSON",TEMP_PATH.'git_releases.json');
+defined('GIT_LATEST_RELEASE_JSON')  ? null : define("GIT_LATEST_RELEASE_JSON",TEMP_PATH.'git_latest_release.json');
 
 ?>

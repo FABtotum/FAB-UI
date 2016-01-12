@@ -172,3 +172,9 @@ function dateDiff($time1, $time2, $precision = 6) {
 	// Return string with times
 	return $times;
 }
+
+function seconds_to_time($seconds) {
+	$dtF = new DateTime("@0");
+	$dtT = new DateTime("@$seconds");
+	return $dtF -> diff($dtT) -> format('%ad %hh %im');
+}
