@@ -12,6 +12,7 @@ shell_exec($_command);
 
 sleep(5);
 //close session
+require_once SCRIPT_PATH.'shutdown.php';
 session_destroy();
 
 shell_exec('sudo reboot');

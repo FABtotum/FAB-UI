@@ -18,7 +18,7 @@ session_start();
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	define('ENVIRONMENT', 'development');
+	define('ENVIRONMENT', 'production');
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
@@ -296,12 +296,17 @@ if (defined('ENVIRONMENT'))
 		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
 
+	if(file_exists(CONFIG_FOLDER.'config.json')){
+		
+		$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
 	
-	$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
+		if(isset($fabtotum_config['hardware']['id'])){
+			define('HARDWARE_ID', $fabtotum_config['hardware']['id']);
+		}
 	
-	if(isset($fabtotum_config['hardware']['id'])){
-		define('HARDWARE_ID', $fabtotum_config['hardware']['id']);
 	}
+	
+	
 	
 	
 

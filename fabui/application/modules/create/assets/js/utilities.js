@@ -59,6 +59,7 @@ function detail_files(object) {
 		html += '<tr>';
 		html += '<th></th>';
 		html += '<th>File</th>';
+		html += '<th class="hidden-xs">Note</th>';
 		html += '<th class="hidden-xs">Type</th>';
 		html += '</tr>';
 		html += '</thead>';
@@ -79,8 +80,9 @@ function detail_files(object) {
 
 			html += '<tr class="file-row ' + extended_class + '" data-id="' + file.id + '">';
 			html += '<td><label class="radio"><input class="obj-file" value="' + file.id + '" type="radio" name="file-selected"><i></i> </label></td>';
-			html += '<td><strong><i class="fa ' + icon_type + '"></i>  ' + file.file_name + status + '</strong> </td>';
-
+			html += '<td><strong><i class="fa ' + icon_type + '"></i>  ' + file.raw_name + status + '</strong> </td>';
+			
+			html += '<td class="hidden-xs">' + file.note + ' </td>';
 			var icon_src = '<span class="icon-fab-additive"></span>';
 			html += '<td class="hidden-xs">' + file.print_type + icon_src + ' </td>';
 
@@ -212,7 +214,7 @@ function select_file(fileID) {
 		if (file.id == fileID) {
 			file_selected = file;
 
-			$('.file-title').html(' > ' + file_selected.file_name);
+			$('.file_name').html(file_selected.raw_name);
 
 			/** ABLE NEXT BUTTON */
 			$('#btn-next').removeClass('disabled');
@@ -234,7 +236,7 @@ function detail_file(file) {
 	$('#file_size').html(file.file_size);
 	$('#insert_date').html(file.insert_date);
 
-	$('.file-title').html(' > ' + file_selected.file_name);
+	$('.file_name').html(' > ' + file_selected.raw_name);
 }
 
 /**
@@ -254,8 +256,8 @@ function detail_object(object) {
 	$('#date_updated').html(object.object.date_updated);
 
 	$('#btn-next').removeClass('disabled');
-	$('.object-title').html(' > ' + object.object.obj_name);
-	$('.file-title').html('');
+	$('.object_name').html(object.object.obj_name);
+	$('.file_name').html('');
 
 	file_selected = '';
 
@@ -490,6 +492,7 @@ function print_object() {
 	IS_MACRO_ON = true;
 	$(".final-step-response").html("");
 	openWait('Starting');
+	waitHideEmergencyButton();
 
 	var timestamp = new Date().getTime();
 	//ticker_url = '/temp/print_check_' + timestamp + '.trace';
@@ -679,16 +682,10 @@ function _controls_listener(obj) {
 	if (obj.attr("id") == 'mail') {
 
 		value = obj.is(':checked');
-
-		/*
-		 if (action == 'send-mail-true') {
-		 obj.attr('data-action', 'send-mail-false');
-		 obj.attr('title', "A mail will be send at the end of the print");
-		 obj.removeClass('txt-color-red').addClass('txt-color-green');
-		 } else {
-		 obj.attr('data-action', 'send-mail-true');
-		 obj.removeClass('txt-color-green').addClass('txt-color-red');
-		 }*/
+	}
+	
+	if(action == 'notes'){
+		value = $("#notes").val();
 	}
 
 	console.log(action + ' ' + value);

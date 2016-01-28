@@ -117,6 +117,9 @@ $params['metering']['spot']    = 'Spot';
 $params['metering']['backlit'] = 'Backlit';
 $params['metering']['matrix']  = 'Matrix';
 // -- Flip
+$params['flip']['no']    = 'No Flip';
 $params['flip']['vflip'] = 'Vertical Flip';
 $params['flip']['hflip'] = 'Horizontal Flip';
+$params['flip']['bflip'] = 'Flip Both';
+
 ?>

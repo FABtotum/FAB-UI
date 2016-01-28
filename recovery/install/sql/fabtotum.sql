@@ -241,7 +241,7 @@ INSERT INTO `sys_configuration` (`id`, `key`, `value`) VALUES
 (18, 'language', 'english'),
 (19, 'languages', '{"english":{"code":"us","description":"English","name":"english"},"italian":{"code":"it","description":"Italiano","name":"italian"},"german":{"code":"de","description":"Deutsch","name":"german"}}'),
 (20, 'fw_version', ''),
-(21, 'fabui_version', '0.9498'),
+(21, 'fabui_version', '0.9499'),
 (22, 'wifi', '{"ssid":"","password":"","ip":""}');
 
 -- --------------------------------------------------------
@@ -273,53 +273,9 @@ CREATE TABLE IF NOT EXISTS `sys_files` (
   `note` text NOT NULL,
   `attributes` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Svuota la tabella prima dell'inserimento `sys_files`
---
 
-TRUNCATE TABLE `sys_files`;
---
--- Dump dei dati per la tabella `sys_files`
---
-
-INSERT INTO `sys_files` (`id`, `file_name`, `file_type`, `file_path`, `full_path`, `raw_name`, `orig_name`, `client_name`, `file_ext`, `file_size`, `print_type`, `is_image`, `image_width`, `image_height`, `image_type`, `image_size_str`, `insert_date`, `update_date`, `note`, `attributes`) VALUES
-(1, 'Marvin_KeyChain_FABtotum.gcode', 'text/plain', '/var/www/upload/gcode/', '/var/www/upload/gcode/Marvin_KeyChain_FABtotum.gcode', 'Marvin Key Chain FABtotum', 'Marvin_KeyChain_FABtotum.gcode', 'Marvin_KeyChain_FABtotum.gcode', '.gcode', 2176020, 'additive', 0, 0, 0, 0, '', now(), now(), 'Marvin sample', '{"dimensions": {"x" : "109.444000244", "y": "116.483001709", "z": "50.0"}, "number_of_layers" : 203, "filament": "1276.94702148", "estimated_time":"0:25:07" }'),
-(2, 'bracelet.gcode', 'text/plain', '/var/www/upload/gcode/', '/var/www/upload/gcode/bracelet.gcode', 'Bracelet', 'bracelet.gcode', 'bracelet.gcode', '.gcode', 1467880, 'additive', 0, 0, 0, 0, '', now(),now(), 'Bracelet sample', '{"dimensions":{"x":"101.062004089","y":"101.062004089","z":"9.80000019073"},"number_of_layers":98,"filament":"3229.01245117","estimated_time":"1:11:07"}');
-
--- --------------------------------------------------------
-
---
--- Struttura della tabella `sys_menu`
---
-
-DROP TABLE IF EXISTS `sys_menu`;
-CREATE TABLE IF NOT EXISTS `sys_menu` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL,
-  `page` varchar(255) DEFAULT NULL,
-  `parent_id` int(11) DEFAULT NULL,
-  `item_order` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
-
---
--- Svuota la tabella prima dell'inserimento `sys_menu`
---
-
-TRUNCATE TABLE `sys_menu`;
---
--- Dump dei dati per la tabella `sys_menu`
---
-
-INSERT INTO `sys_menu` (`id`, `title`, `page`, `parent_id`, `item_order`) VALUES
-(1, 'Plugin', 'plugin.php', NULL, 2),
-(2, 'Settings', 'settings.php', NULL, 3),
-(3, 'Dashboard', 'dashboard.php', NULL, 1),
-(4, 'Filemanager', 'filemanager.php', NULL, 4);
-
--- --------------------------------------------------------
 
 --
 -- Struttura della tabella `sys_modules`
@@ -364,19 +320,8 @@ CREATE TABLE IF NOT EXISTS `sys_objects` (
   `date_updated` datetime DEFAULT NULL,
   `private` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Svuota la tabella prima dell'inserimento `sys_objects`
---
-
-TRUNCATE TABLE `sys_objects`;
---
--- Dump dei dati per la tabella `sys_objects`
---
-
-INSERT INTO `sys_objects` (`id`, `user`, `obj_name`, `obj_description`, `date_insert`, `date_updated`, `private`) VALUES
-(1, 1, 'Samples', 'FABtotum samples', now(), NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -390,20 +335,7 @@ CREATE TABLE IF NOT EXISTS `sys_obj_files` (
   `id_obj` int(11) DEFAULT NULL,
   `id_file` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
-
---
--- Svuota la tabella prima dell'inserimento `sys_obj_files`
---
-
-TRUNCATE TABLE `sys_obj_files`;
---
--- Dump dei dati per la tabella `sys_obj_files`
---
-
-INSERT INTO `sys_obj_files` (`id`, `id_obj`, `id_file`) VALUES
-(1, 1, 1),
-(2, 1, 2);
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- --------------------------------------------------------
 
@@ -492,17 +424,19 @@ INSERT INTO `sys_scan_configuration` (`id`, `type`, `name`, `values`) VALUES
 --
 
 DROP TABLE IF EXISTS `sys_tasks`;
-CREATE TABLE IF NOT EXISTS `sys_tasks` (
+CREATE TABLE `sys_tasks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user` int(11) NOT NULL,
   `controller` varchar(255) NOT NULL,
   `type` varchar(255) DEFAULT NULL,
+  `id_object` int(11) NOT NULL,
+  `id_file` int(11) NOT NULL,
   `status` varchar(255) DEFAULT NULL,
   `attributes` text,
   `start_date` datetime NOT NULL,
   `finish_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Svuota la tabella prima dell'inserimento `sys_tasks`
@@ -511,30 +445,6 @@ CREATE TABLE IF NOT EXISTS `sys_tasks` (
 TRUNCATE TABLE `sys_tasks`;
 -- --------------------------------------------------------
 
---
--- Struttura della tabella `sys_themes`
---
-
-DROP TABLE IF EXISTS `sys_themes`;
-CREATE TABLE IF NOT EXISTS `sys_themes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `location` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Svuota la tabella prima dell'inserimento `sys_themes`
---
-
-TRUNCATE TABLE `sys_themes`;
---
--- Dump dei dati per la tabella `sys_themes`
---
-
-INSERT INTO `sys_themes` (`id`, `location`) VALUES
-(1, 'smart-admin.theme.php');
-
--- --------------------------------------------------------
 
 --
 -- Struttura della tabella `sys_user`

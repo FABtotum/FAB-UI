@@ -1,29 +1,31 @@
 <?php
 
 class Settings extends Module {
-
-	public function __construct() {
-		parent::__construct();
-
-		$this -> load -> helper('print_helper');
-		/** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
-		if (is_printer_busy()) {
-			redirect('dashboard');
-		}
-
-		$this -> lang -> load($_SESSION['language']['name'], $_SESSION['language']['name']);
-
-	}
-
+	
 	public function index() {
-
-		$this -> load -> database();
-		$this -> load -> model('configuration');
-
+		
+		$this->general();
+		
+	}
+	
+	
+	public function general(){
+		
+		$this -> load -> helper('smart_admin_helper');
+		$this->load->helper('form');
 		$this -> config -> load('fabtotum', TRUE);
-
+		
+		
+		if(!file_exists($this -> config -> item('fabtotum_config_units', 'fabtotum'))){
+			$this->load->helper('print_helper');
+			create_default_config();
+		}
+		
+		
 		$_units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
-
+		
+		$data = array();
+		
 		$data['_standby_color'] = $_units['color'];
 		$data['_safety_door'] = isset($_units['safety']['door']) ? $_units['safety']['door'] : '1';
 		$data['_switch'] = isset($_units['switch']) ? $_units['switch'] : '0';
@@ -36,86 +38,40 @@ class Settings extends Module {
 		$data['_zprobe'] = isset($_units['zprobe']['disable']) ? $_units['zprobe']['disable'] : '0';
 		$data['_zmax'] = isset($_units['zprobe']['zmax']) ? $_units['zprobe']['zmax'] : '206';
 		$data['_milling_sacrificial_layer_offset'] = isset($_units['milling']['layer-offset']) ? $_units['milling']['layer-offset'] : 12.0;
-
-		/** LOAD TAB HEADER */
-		$_tab_header = $this -> tab_header();
-
-		$data['_breadcrumb'] = 'General';
-		$data['_tab_header'] = $_tab_header;
-		$data['_tab_content'] = $this -> load -> view('index/general/index', $data, TRUE);
-
-		/** LAYOUT */
-		$js_in_page = $this -> load -> view('index/general/js', $data, TRUE);
-		$css_in_page = $this -> load -> view('index/general/css', '', TRUE);
-
-		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => 'settings js'));
-		$this -> layout -> add_css_in_page(array('data' => $css_in_page, 'comment' => 'settings css'));
-
+		
+		$data['options_customized_actions'] = array('None'=>'None', 'Shutdown'=>'Shutdown');
+		
+		$data['show_feeder'] = $this -> layout -> getFeeder();
+		
+		
+		// == LAYOUT
+		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('general/js', $data, TRUE), 'comment' => 'settings js'));
+		$this -> layout -> add_css_in_page(array('data' => $this -> load -> view('general/css', $data, TRUE), 'comment' => 'settings css'));
 		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.all.min.js', 'comment' => 'javascript for the noUISlider'));
 		$this -> layout -> add_css_file(array('src' => 'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.min.css', 'comment' => 'javascript for the noUISlider'));
-
-		$this -> layout -> view('index/index', $data);
+		
+		
+		$data['widget'] = $this -> load -> view('general/widget', $data, TRUE);
+		$attr['data-widget-icon'] = 'fa fa-list';
+		$attr['data-widget-fullscreenbutton'] = 'false';
+		
+		$toolbar = $this -> load -> view('general/widget_toolbar', $data, TRUE);
+		
+		$data['widget'] = widget('general' . time(), 'General', $attr, $data['widget'], false, true, false, $toolbar);
+		
+		
+		$this -> layout -> view('general/index', $data);
+		
 	}
 
-	public function create() {
-
-		$this -> load -> database();
-		$this -> load -> model('configuration');
-
-		if ($this -> input -> post()) {
-			foreach ($this->input->post() as $key => $value) {
-				$this -> configuration -> save_confi_value($key, $value);
-			}
-
-		}
-
-		$data['_start_gcode'] = $this -> configuration -> get_config_value('start_gcode');
-		$data['_end_gcode'] = $this -> configuration -> get_config_value('end_gcode');
-		$data['_slicer_presets'] = json_decode($this -> configuration -> get_config_value('slicer_presets'), TRUE);
-
-		$_tab_header = $this -> tab_header('create');
-
-		$data['_breadcrumb'] = 'Print';
-		$data['_tab_header'] = $_tab_header;
-		$data['_tab_content'] = $this -> load -> view('index/create/index', $data, TRUE);
-
-		$js_in_page = $this -> load -> view('index/create/js', '', TRUE);
-		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
-
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
-		$this -> layout -> set_compress(false);
-		$this -> layout -> view('index/index', $data);
-
-	}
-
-	public function scan() {
-
-		$_tab_header = $this -> tab_header('scan');
-
-		/** LOAD DATABASE */
-		$this -> load -> model('scan_model');
-
-		/** LOAD SCAN CONFIGURATIONS */
-		$quality_list = $this -> scan_model -> get(array('type' => 'quality'));
-
-		$data['_breadcrumb'] = 'Scan';
-		$data['_tab_header'] = $_tab_header;
-		$data['_tab_content'] = $this -> load -> view('index/scan/index', '', TRUE);
-
-		$this -> layout -> view('index/index', $data);
-
-	}
-
-	public function hardware() {
-
+	public function hardware(){
+		
 		$this -> config -> load('fabtotum', TRUE);
-
-		$data['_breadcrumb'] = 'Hardware';
-		$_tab_header = $this -> tab_header('hardware');
-		$data['_tab_header'] = $_tab_header;
-
+		$this -> load -> helper('smart_admin_helper');
+		
+		$data = array();
+		
 		$config_units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
-
 		shell_exec('sudo chmod 0777 ' . CONFIG_FOLDER);
 
 		if (!file_exists($this -> config -> item('fabtotum_custom_config_units', 'fabtotum'))) {
@@ -133,183 +89,29 @@ class Settings extends Module {
 			$this -> load -> helper('file');
 			write_file('/var/www/fabui/config/custom_overrides.txt', '', 'w');
 		}
-
+		
+		
 		$data['settings_type'] = isset($config_units['settings_type']) ? $config_units['settings_type'] : 'default';
 		$data['feeder_extruder_steps_per_unit_e_mode'] = isset($custom_config_units['e']) ? $custom_config_units['e'] : 3048.1593;
 		$data['feeder_extruder_steps_per_unit_a_mode'] = isset($custom_config_units['a']) ? $custom_config_units['a'] : 177.777778;
 		$data['show_feeder'] = isset($custom_config_units['feeder']['show']) ? $custom_config_units['feeder']['show'] : true;
 		$data['custom_overrides'] = isset($custom_config_units['custom_overrides']) ? file_get_contents($custom_config_units['custom_overrides']) : '';
 		$data['invert_x_endstop_logic'] = isset($custom_config_units['invert_x_endstop_logic']) ? $custom_config_units['invert_x_endstop_logic'] : false;
-
-		$data['_tab_content'] = $this -> load -> view('index/hardware/index', $data, TRUE);
-
-		$js_in_page = $this -> load -> view('index/hardware/js', $data, TRUE);
-		$css_in_page = $this -> load -> view('index/hardware/css', '', TRUE);
-
-		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
-		$this -> layout -> add_css_in_page(array('data' => $css_in_page, 'comment' => ''));
-
-		$this -> layout -> set_compress(false);
-		$this -> layout -> view('index/index', $data);
-
+		
+		
+		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('hardware/js', $data, TRUE), 'comment' => ''));
+		$this -> layout -> add_css_in_page(array('data' => $this -> load -> view('hardware/css', '', TRUE), 'comment' => ''));
+		
+		
+		$data['widget'] = $this -> load -> view('hardware/widget', $data, TRUE);
+		
+		$attr['data-widget-icon'] = 'fa fa-cog';
+		$data['widget'] = widget('hardware' . time(), 'Hardware', $attr, $data['widget'], false, true, false);
+		
+		$this -> layout -> view('hardware/index', $data);
+			
 	}
 
-	function network() {
-
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/masked-input/jquery.maskedinput.min.js', 'comment' => ''));
-
-		/** LOAD HELPERS */
-		$this -> load -> helper("os_helper");
-
-		$this -> load -> database();
-		$this -> load -> model('configuration');
-
-		$saved_wifi = $this -> configuration -> get_config_value('wifi');
-		$saved_wifi = json_decode($saved_wifi, true);
-
-		$networkConfiguration = networkConfiguration();
-
-		$ethEndIp = explode('.', $networkConfiguration['eth']);
-		$ethEndIp = end($ethEndIp);
-
-		//current_wlan();
-		$data['ethEndIp'] = $ethEndIp;
-		$_tab_header = $this -> tab_header('network');
-		$data['wifi_saved'] = $saved_wifi;
-		$data['_breadcrumb'] = 'Network';
-		$data['_tab_header'] = $_tab_header;
-		$data['lan'] = lan();
-		$data['con_wlan'] = wlan();
-		$data['wlan'] = scan_wlan();
-		$data['networkConfiguration'] = $networkConfiguration;
-
-		$data['imOnCable'] = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : false;
-
-		$data['_tab_content'] = $this -> load -> view('index/network/index', $data, TRUE);
-
-		$js_in_page = $this -> load -> view('index/network/js', $data, TRUE);
-		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
-
-		//$this->layout->set_compress(false);
-		$this -> layout -> view('index/index', $data);
-	}
-
-	public function seteth() {
-
-		$number = $this -> input -> post('number');
-		/** LOAD HELPERS */
-		$this -> load -> helper("os_helper");
-
-		setEthIP($number);
-
-		echo true;
-	}
-
-	public function setwifi() {
-
-		$net = $this -> input -> post('net');
-		$password = $this -> input -> post('password');
-		$address = $this -> input -> post('address');
-		/** LOAD HELPERS */
-		$this -> load -> helper("os_helper");
-
-		$wlans = scan_wlan();
-
-		$type = '';
-
-		foreach ($wlans as $wl) {
-			if ($wl['address'] == $address) {
-				$type = $wl['type'];
-			}
-		}
-
-		if (setWifi($net, $password, $type)) {
-
-			$wlan = wlan();
-			$wlan_ip = isset($wlan['ip']) ? $wlan['ip'] : '';
-
-			$this -> load -> database();
-			$this -> load -> model('configuration');
-
-			/** SAVE NEW WIFI CONFIGURATION TO DB */
-			$this -> configuration -> save_confi_value('wifi', json_encode(array('ssid' => $net, 'password' => $password, 'ip' => $wlan_ip)));
-
-			$response_items['wlan_ip'] = $wlan_ip;
-			$response_items['response'] = 'OK';
-
-		} else {
-			$response_items['response'] = 'KO';
-		}
-
-		echo json_encode($response_items);
-
-	}
-
-	function jog() {
-
-		$this -> load -> database();
-		$this -> load -> model('configuration');
-
-		if ($this -> input -> post()) {
-
-			foreach ($this->input->post() as $key => $value) {
-				$this -> configuration -> save_confi_value($key, $value);
-			}
-
-		}
-
-		$_tab_header = $this -> tab_header('jog');
-
-		$data['_unit'] = $this -> configuration -> get_config_value('unit');
-		$data['_step'] = $this -> configuration -> get_config_value('step');
-		$data['_feedrate'] = $this -> configuration -> get_config_value('feedrate');
-
-		$data['_breadcrumb'] = 'Jog';
-		$data['_tab_header'] = $_tab_header;
-		$data['_tab_content'] = $this -> load -> view('index/jog/index', $data, TRUE);
-
-		$this -> layout -> view('index/index', $data);
-
-	}
-
-	public function eeprom() {
-
-		//$this->load->model('eeprom');
-		//$configs = $this->eeprom->get_all();
-
-		//$data['configs']      = $configs;
-		$data['_tab_header'] = $this -> tab_header('eeprom');
-		$data['_tab_content'] = $this -> load -> view('index/eeprom/index', $data, TRUE);
-
-		$js_in_page = $this -> load -> view('index/eeprom/js', $data, TRUE);
-		$css_in_page = $this -> load -> view('index/eeprom/css', '', TRUE);
-
-		// == LAYOUT
-		/*$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js', 'comment' => ''));
-		 $this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
-		 $this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
-		 $this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
-		 */
-
-		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
-		$this -> layout -> add_css_in_page(array('data' => $css_in_page, 'comment' => ''));
-
-		$this -> layout -> view('index/index', $data);
-
-	}
-
-	public function getEepromLine($lines, $key) {
-
-		foreach ($lines as $line) {
-
-			if (strpos($line, $key) !== false) {
-				return $line;
-			}
-
-		}
-
-	}
 
 	public function raspicam() {
 		
@@ -318,34 +120,72 @@ class Settings extends Module {
 		$raspicam_widget = $this -> widgetsfactory -> load('cam');
 		$data['raspicam_widget'] = $raspicam_widget->content();
 		
-		
-		$data['_tab_header'] = $this -> tab_header('raspicam');
-		$data['_tab_content'] = $this -> load -> view('index/raspicam/index', $data, TRUE);
-		
-		$this -> layout -> view('index/index', $data);
-
+		$this -> layout -> view('raspicam/index', $data);
 	}
 
-	function tab_header($current = 'settings') {
+	
+	public function wlan(){
+		
+		
+		$this->load->helper('os_helper');
+		$this -> load -> helper('smart_admin_helper');
+		
+		
+		if($this->input->post()){
 
-		$_tabs[] = array('name' => 'settings', 'label' => 'General', 'url' => site_url('settings'), 'icon' => 'fa fa-lg fa-fw fa fa-list-ul');
-		//$_tabs[] = array('name' => 'scan',        'label'=>'Scan',        'url' => site_url('settings/scan'),        'icon' => 'fab-lg fab-fw icon-fab-scan');
-		//$_tabs[] = array('name' => 'create',      'label'=>'Print',       'url' => site_url('settings/create'),      'icon' => 'fab-lg fab-fw icon-fab-print');
-		//$_tabs[] = array('name' => 'jog',         'label'=>'Jog',         'url' => site_url('settings/jog'),         'icon' => 'fab-lg fab-fw icon-fab-jog');
-		//$_tabs[] = array('name' => 'plugin',    'label'=>'Plugin',   'url' => site_url('settings/plugin'),   'icon' => 'fab-lg fab-fw icon-fab-plugin');
-
-		//$_tabs[] = array('name' => 'maintenance', 'label'=>'Maintenance', 'url' => site_url('settings/maintenance'), 'icon' => 'fa fa-lg fa-fw fa-wrench');
-		$_tabs[] = array('name' => 'network', 'label' => 'Network', 'url' => site_url('settings/network'), 'icon' => 'fa fa-lg fa-fw fa-sitemap');
-		$_tabs[] = array('name' => 'hardware', 'label' => 'Hardware', 'url' => site_url('settings/hardware'), 'icon' => 'fa fa-lg fa-fw fa-gear');
-		$_tabs[] = array('name' => 'raspicam', 'label' => 'Raspi Cam', 'url' => site_url('settings/raspi-cam'), 'icon' => 'fa fa-lg fa-fw fa-camera');
-		//$_tabs[] = array('name' => 'eeprom',      'label'=>'Firmware EEPROM Settings',      'url' => site_url('settings/eeprom'),      'icon' => 'fa fa-lg fa-fw fa-hdd-o');
-
-		$data['_current'] = $current;
-		$data['_tabs'] = $_tabs;
-
-		return $this -> load -> view('index/tab_header', $data, TRUE);
-
+			$essid = $this->input->post('essid');
+			$response = $this->input->post('response');
+			
+			if($response == 'true'){				
+				$data['message'] = array('type' => 'alert-success', 'text' => '<h4 class="alert-heading"><i class="fa fa-check"></i> Great!</h4>Network connection established successfully');
+			}else{
+				$data['message'] = array('type' => 'alert-danger', 'text' => '<h4 class="alert-heading"><i class="fa fa-warning"></i> Error!</h4> Unable to connect to <strong>'.$essid.'</strong> Please check the password and try again');
+			}			
+		} 
+		
+		$data['info'] = wlan_info();
+		$data['widget'] = $this -> load -> view('network/wlan/widget', $data, TRUE);
+		$attr['data-widget-icon'] = 'fa fa-wifi';
+		$attr['data-widget-fullscreenbutton'] = 'false';
+		
+		$switch = '<div class="widget-toolbar" id="switch-1">
+				<span class="onoffswitch-title">Enable</span>
+				<span class="onoffswitch">
+					<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="wifi-switch">
+					<label class="onoffswitch-label" for="wifi-switch"> 
+						<span class="onoffswitch-inner" data-swchon-text="YES" data-swchoff-text="NO"></span> 
+						<span class="onoffswitch-switch"></span> </label> 
+					</span>
+				</div>';
+		
+		$data['widget'] = widget('network_wifi' . time(), 'Network - Wifi', $attr, $data['widget'], false, false, false);
+		
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
+		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('network/wlan/js', $data, TRUE), 'comment' => ''));
+		
+		//$this -> layout -> set_compress(false);
+		
+		$this->layout->view('network/wlan/index', $data);
+		
 	}
 
+	public function eth(){
+		
+		$this->load->helper('os_helper');
+		$this -> load -> helper('smart_admin_helper');	
+		$data['info'] = eth_info();
+		$data['widget'] = $this -> load -> view('network/eth/widget', $data, TRUE);
+		$attr['data-widget-icon'] = 'fa fa-sitemap';
+		$data['widget'] = widget('network_eth' . time(), 'Network - Ethernet', $attr, $data['widget'], false, false, false);
+		
+		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('network/eth/js', $data, TRUE), 'comment' => ''));
+		
+		$this->layout->view('network/eth/index', $data);
+		
+	}
+	
+	
 }
-?>
+
+
+

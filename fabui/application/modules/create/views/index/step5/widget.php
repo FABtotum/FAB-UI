@@ -32,6 +32,9 @@
 
 			<div class="col-sm-4 stats-well">
 				
+				<p><i class="fa fa-file-o"></i> File <span class="pull-right file_name"><?php echo $_file_name; ?></span></p>
+				<p><i class="fa fa-folder-open"></i> Object <span class="pull-right object_name"><?php echo $_object_name; ?></span></p>
+				
 				<!-- PROGRESS -->
 				<p>Progress <span class="pull-right progress-status font-md"></span></p>
 				<div class="progress progress-sm progress-striped active">
@@ -146,6 +149,18 @@
 									<button data-action="zdown" type="button" class="form-control btn btn-default controls"><i class="fa fa-angle-double-up"></i>&nbsp;Z</button>
 								</div>
 							</div>
+						</div>
+						<div class="col-sm-8">
+							<div class="chat-footer">
+								<!-- CHAT TEXTAREA -->
+								<div class="textarea-div">
+									<div class="typearea">
+										<textarea placeholder="Write notes..." id="notes" class="custom-scroll" rows="10"><?php echo $note; ?></textarea>
+									</div>
+								</div>
+								<span class="textarea-controls"><button data-action="notes" type="button" class="btn btn-sm btn-primary pull-right controls">Save Notes</button></span>
+				
+							</div>
 						</div>		
 					</div>
 				</div>
@@ -238,6 +253,9 @@
 			</div>
 			
 		</div>
+		
+		
+		
 		
 	</div>
 

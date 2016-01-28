@@ -61,7 +61,6 @@ $(function() {
 		var fileExt  = aData[2];
 		var fileType = aData[3];
 		
-		console.log(fileExt);
 		
 		
 		

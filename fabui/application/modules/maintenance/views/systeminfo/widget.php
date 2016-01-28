@@ -68,15 +68,15 @@
 	<div class="col-sm-6 margin-bottom-10">
 		<div class="well no-padding well-light">
 			<table class="table table-striped">
-				<caption>Network</caption>
+				<caption>Network <span class="pull-right" style="margin-right: 5px;">(eth-wlan)</span></caption>
 				<tbody>
 					<tr>
 						<td>Down</td>
-						<td><span class="pull-right"><?php echo pretty_baud($rates[0])?></span></td>
+						<td><span class="pull-right"><?php echo pretty_baud($eth_rates[0])?> - <?php echo pretty_baud($wlan_rates[0])?></span></td>
 					</tr>
 					<tr>
 						<td>Up</td>
-						<td><span class="pull-right"><?php echo pretty_baud($rates[1])?></span></td>
+						<td><span class="pull-right"><?php echo pretty_baud($eth_rates[1])?> - <?php echo pretty_baud($wlan_rates[1])?></span></td>
 					</tr>
 				</tbody>
 			</table>
@@ -106,7 +106,7 @@
 								$class = '';
 						}
 						?>
-						<th class="<?php echo $class; ?>"><?php echo $header; ?></th>
+						<th class="<?php echo $class; ?> th-border-top"><?php echo $header; ?></th>
 						<?php $col_count++; ?>
 						<?php endif; ?>
 					<?php endforeach; ?>

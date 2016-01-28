@@ -5,7 +5,7 @@ require_once '/var/www/lib/config.php';
 $reload = isset($_GET['manually']) ? filter_var($_GET['manually'], FILTER_VALIDATE_BOOLEAN) : false;
 
 if($reload || !file_exists(INSTAGRAM_FEED_JSON) || !file_exists(INSTAGRAM_HASH_JSON)){
-	require_once '/var/www/fabui/script/instagram_feed.php';
+	require_once '/var/www/cron/instagram_feed.php';
 }
 
 

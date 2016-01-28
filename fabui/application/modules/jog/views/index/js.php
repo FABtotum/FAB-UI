@@ -150,7 +150,7 @@
 	 	/** EXTRUDER TEMPERATURE */
 	 	$("#ext-target-temp").noUiSlider({
 	 	 	
-	        range: {'min': 0, 'max' : 230},
+	        range: {'min': 0, 'max' : <?php echo $max_temp; ?>},
 	        start: typeof (Storage) !== "undefined" ? localStorage.getItem("nozzle_temp_target") : 0,
 	        handles: 1,
             connect: 'lower'
@@ -159,7 +159,7 @@
 		
 		$("#act-ext-temp").noUiSlider({
 	 	 	
-	        range: {'min': 0, 'max' : 230},
+	        range: {'min': 0, 'max' : <?php echo $max_temp; ?>},
 	        start: typeof (Storage) !== "undefined" ? localStorage.getItem("nozzle_temp") : 0,
 	        handles: 0,
             connect: 'lower',

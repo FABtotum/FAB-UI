@@ -8,7 +8,6 @@
 require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/serial.php';
 
-
 define('HARDWARE_ID', 2);
 define('SHOW_FEEDER', true);
 define('E_MODE', 3048.1593);

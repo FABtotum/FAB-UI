@@ -1,6 +1,4 @@
 <?php
-if (!defined('BASEPATH'))
-	exit('No direct script access allowed');
 
 if (!function_exists('installed_plugins')) {
 
@@ -214,12 +212,17 @@ function wlan() {
  *
  */
 function networkConfiguration() {
-
-	$CI = &get_instance();
-	$CI -> config -> load('fabtotum', TRUE);
-
-	$interfaces = file_get_contents($CI -> config -> item('fabtotum_network_interfaces', 'fabtotum'));
-
+	
+	
+	if(function_exists('get_instance')){
+		$CI =& get_instance();
+		$CI -> config -> load('fabtotum', TRUE);
+		$interfaces = file_get_contents($CI -> config -> item('fabtotum_network_interfaces', 'fabtotum'));
+	}else{
+		require_once '/var/www/lib/config.php';
+		$interfaces = file_get_contents(INTERFACES_FILE);
+	}
+	
 	$wlan_section = strstr($interfaces, 'allow-hotplug wlan0');
 
 	$temp = explode(PHP_EOL, $wlan_section);
@@ -279,11 +282,18 @@ function networkConfiguration() {
  */
 function setNetworkConfiguration($eth, $wifi) {
 
-	$CI = &get_instance();
-	$CI -> config -> load('fabtotum', TRUE);
+	if(function_exists('get_instance')){
+		$CI =& get_instance();
+		$CI -> config -> load('fabtotum', TRUE);
+		$interfaces_file = $CI -> config -> item('fabtotum_network_interfaces', 'fabtotum');
+	}else{
+		require_once '/var/www/lib/config.php';
+		$interfaces_file = INTERFACES_FILE;
+	}
+	
 
-	$interfaces_file = $CI -> config -> item('fabtotum_network_interfaces', 'fabtotum');
-
+	
+	
 	$new_configuration = 'auto lo' . PHP_EOL;
 	$new_configuration .= 'iface lo inet loopback' . PHP_EOL . PHP_EOL;
 	$new_configuration .= 'allow-hotplug eth0' . PHP_EOL;
@@ -319,7 +329,7 @@ function setNetworkConfiguration($eth, $wifi) {
 
 	file_put_contents($interfaces_file, $new_configuration);
 
-	shell_exec('sudo chmod 644 ' . $interfaces_file);
+	shell_exec('sudo chmod 644 ' . $interfaces_file); 
 
 	//shell_exec('sudo /etc/init.d/networking restart');
 
@@ -329,30 +339,36 @@ function setNetworkConfiguration($eth, $wifi) {
  * Set Ethernet static IP address
  */
 function setEthIP($ip) {
-
+	
 	$ip = '169.254.1.' . $ip;
-	$networkConfiguration = networkConfiguration();
-	setNetworkConfiguration($ip, $networkConfiguration['wifi']);
-
-	$response = shell_exec("sudo service networking reload");
+	setEthernet($ip);
+	
 }
+
+
+function setEthernet($ip){
+	
+	 $response = shell_exec('sh /var/www/fabui/script/bash/set_ethernet.sh "'.$ip.'" ');
+	 return $reponse;
+	 
+}
+
 
 /**
  * Set Wlan
  */
 function setWifi($ssid, $password, $type = "WPA") {
-
-	$networkConfiguration = networkConfiguration();
-	setNetworkConfiguration($networkConfiguration['eth'], array('ssid' => $ssid, 'password' => $password, 'type' => $type));
-
-	$response = shell_exec("sudo service networking reload");
-
+	
+	
+	$response = shell_exec('sh /var/www/fabui/script/bash/set_wifi.sh "'.$ssid.'" "'.$password.'"');
+	
 	if (strpos($response, 'PING') !== false || strpos($response, 'errors') !== false) {
 		return false;
 	} else {
 		return true;
 	}
-
+	
+	
 }
 
 /**
@@ -416,4 +432,131 @@ function pretty_baud($baud) {
 		$ret = "$baud b/s";
 	}
 	return $ret;
+}
+
+
+
+/**
+ * 
+ * 
+ */
+ function wlan_info(){
+ 	
+	exec('sudo ifconfig wlan0',$info);
+	exec('sudo iwconfig wlan0',$info);
+	
+	$strWlan0 = implode(" ",$info);
+	
+	$strWlan0 = preg_replace('/\s\s+/', ' ', $strWlan0);
+	preg_match('/HWaddr ([0-9a-f:]+)/i',$strWlan0,$result);
+	$strHWAddress = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/inet addr:([0-9.]+)/i',$strWlan0,$result);
+	$strIPAddress = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/Mask:([0-9.]+)/i',$strWlan0,$result);
+	$strNetMask = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/RX packets:(\d+)/',$strWlan0,$result);
+	$strRxPackets = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/TX packets:(\d+)/',$strWlan0,$result);
+	$strTxPackets = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/RX Bytes:(\d+ \(\d+.\d+ MiB\))/i',$strWlan0,$result);
+	$strRxBytes = isset($result[1]) ? $result[1] : '';
+	preg_match('/TX Bytes:(\d+ \(\d+.\d+ [K|M|G]iB\))/i',$strWlan0,$result);
+	$strTxBytes = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/ESSID:\"([a-zA-Z0-9\s]+)\"/i',$strWlan0,$result);
+	$strSSID = isset($result[1]) ? str_replace('"','',$result[1]) : '';
+	preg_match('/Access Point: ([0-9a-f:]+)/i',$strWlan0,$result);
+	$strBSSID = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/Bit Rate:([0-9]+.[0-9]+\s[a-z]+\/[a-z]+)/i',$strWlan0,$result);
+	$strBitrate = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/Link Quality=([0-9]+\/[0-9]+)/i',$strWlan0,$result);
+	$strLinkQuality = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/Signal Level=([0-9]+\/[0-9]+)/i',$strWlan0,$result);
+	$strSignalLevel = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/Power Management:([a-zA-Z]+)/i ',$strWlan0,$result);
+	$powerManagement = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/Frequency:([0-9]+.[0-9]+\s[a-z]+)/i ',$strWlan0,$result);
+	$frequency = isset($result[1]) ? $result[1] : '' ;
+	preg_match('/IEEE ([0-9]+.[0-9]+[a-z]+)/i ',$strWlan0,$result);
+	$ieee = isset($result[1]) ? $result[1] : '' ;
+	
+	return array(
+		'mac_address' => $strHWAddress,
+		'ip_address' => $strIPAddress,
+		'subnet_mask' => $strNetMask,
+		'received_packets' => $strRxPackets,
+		'transferred_packets' => $strTxPackets,
+		'received_bytes' => $strRxBytes,
+		'transferred_bytes' => $strTxBytes,
+		'ssid' => $strSSID,
+		'ap_mac_address' => $strBSSID,
+		'bitrate' => $strBitrate,
+		'link_quality' => $strLinkQuality,
+		'signal_level' => $strSignalLevel,
+		'power_management' => $powerManagement,
+		'frequency' => $frequency,
+		'ieee' => $ieee
+	);
+	
+ }
+
+function eth_info(){
+		
+	exec('sudo ifconfig eth0', $info);
+	$info = implode(" ",$info);
+	$info = preg_replace('/\s\s+/', ' ', $info);
+	
+	preg_match('/inet addr:([0-9]+.[0-9]+.[0-9]+.[0-9])/i',$info,$result);
+	$inet_address = $result[1];
+	
+	preg_match('/Bcast:([0-9]+.[0-9]+.[0-9]+.[0-9])/i',$info,$result);
+	$broadcast = $result[1];
+	
+	preg_match('/HWaddr ([0-9a-f:]+)/i',$info,$result);
+	$mac_address = $result[1];
+	
+	preg_match('/RX Bytes:(\d+ \(\d+.\d+ MiB\))/i',$info,$result);
+	$received_bytes = isset($result[1]) ? $result[1] : '';
+	
+	preg_match('/TX Bytes:(\d+ \(\d+.\d+ [K|M|G]iB\))/i',$info,$result);
+	$transferred_bytes = $result[1];
+		
+	return array(
+		'inet_address' => $inet_address,
+		'broadcast' => $broadcast,
+		'mac_address' => $mac_address,
+		'received_bytes' => $received_bytes,
+		'transferred_bytes' => $transferred_bytes
+	);
+}
+
+function disconnectWifi(){
+	
+	$response = shell_exec('sh /var/www/fabui/script/bash/disconnect_wifi.sh "'.$ssid.'" "'.$password.'"');
+	
+}
+
+
+function scan_wlan_networks(){
+	
+	exec('sudo wpa_cli scan',$return);
+	sleep(2);
+	exec('sudo wpa_cli scan_results',$return);
+	
+	for($shift = 0; $shift < 4; $shift++ ) {
+			array_shift($return);
+	}
+	
+	foreach($return as $network) {
+			$arrNetwork = preg_split("/[\t]+/",$network);
+		
+			print_r($arrNetwork);
+			
+			//echo '<input type="button" value="Connect to This network" onClick="AddScanned(\''.$ssid.'\')" />' . $ssid . " on channel " . $channel . " with " . $signal . "(".ConvertToSecurity($security)." Security)<br />";
+
+		}
+	
+	exit();
+		
+	
+	
 }

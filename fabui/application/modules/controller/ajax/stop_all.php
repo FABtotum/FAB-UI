@@ -43,7 +43,9 @@ $end = time();
 //clean up memory
 shell_exec('sudo sh -c "echo 1 >/proc/sys/vm/drop_caches"'); 
 shell_exec('sudo sh -c "echo 2 >/proc/sys/vm/drop_caches"'); 
-shell_exec('sudo sh -c "echo 3 >/proc/sys/vm/drop_caches"'); 
+shell_exec('sudo sh -c "echo 3 >/proc/sys/vm/drop_caches"');
+
+
 
 $_command = 'sudo python '.PYTHON_PATH.'force_reset.py';
 shell_exec($_command);

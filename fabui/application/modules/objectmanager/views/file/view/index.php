@@ -1,85 +1,93 @@
-<div class="row">
-	<div class="col-sm-12 text-align-right">
-		<div class="page-title">
-			<a href="<?php  echo site_url('objectmanager/edit/'.$_object_id)?>" class="btn btn-primary"> <i class="fa fa-arrow-left"></i> Back to object</a>
-		</div>
+<div class="row margin-bottom-10">
+	<div class="col-sm-12">
+		<?php if(in_array(strtolower($_file->file_ext), $preview_files)): ?>
+		<a data-placement="bottom" href="<?php echo site_url('objectmanager/file/preview/'.$_object_id.'/'.$_file->id) ?>" rel="tooltip" data-original-title="A web-based 3D viewer for GCode files." style="margin-left:5px;" class="btn bg-color-purple txt-color-white pull-right"><i class="fa fa-eye"></i> Preview </a>
+		<?php endif; ?>
+		
+		<a data-placement="bottom" href="<?php echo site_url('objectmanager/download/file/'.$_file->id) ?>" rel="tooltip" data-original-title="Save data on your computer. You can use it in the third party software." style="margin-left:5px;" class="btn btn-info txt-color-white pull-right"><i class="fa fa fa-download"></i>  Download </a>
+		
+		<?php if(in_array(strtolower($_file->file_ext),$printables_files)): ?>
+			<?php $type = strtolower($_file->print_type) == 'additive' ? 'print' : 'mill';  ?>
+			<a style="margin-left:5px;" rel="tooltip" data-placement="bottom" data-original-title="<?php echo ucfirst($type); ?> this file" href="<?php echo site_url('make/'.$type.'?obj='.$_object_id.'&file='.$_file->id)?>" class="btn btn-success pull-right"><i class="fa fa-play rotate-90"></i> <?php echo ucfirst($type); ?></a>
+		<?php endif; ?>
+		
 	</div>
 </div>
 <div class="row">
-    <div class="col-md-12">
-        <div class="well no-border">
-            <form action="<?php echo site_url("objectmanager/file/view/".$_object_id."/".$_file->id) ?>" method="post" id="view-form">
-                <div class="row">
-                	<div class="col-sm-6">
-	                	
-	                		 <div class="form-group">
-		                        <div class="col-md-12">
-		                            <h5>Name</h5>
-		                        </div>
-		                    </div>
-		                    <div class="form-group">
-		                        <div class="col-md-12">
-		                            <input type="text" id="name" name="name" class="form-control" value="<?php echo $_file->raw_name; ?>" />
-		                        </div>
-		                    </div>
-		                    
-		                    <div class="form-group">
-		                        <div class="col-md-12">
-		                            <h5>Note</h5>
-		                        </div>
-		                    </div>
-		                    <div class="form-group">
-		                        <div class="col-md-12">
-		                            <textarea id="note" name="note" class="form-control" rows="2"><?php echo $_file->note; ?></textarea>
-		                        </div>
-		                    </div>
-	                	
-                	</div>
-                	
-                	<?php if(!$is_stl && strtolower($_file->file_ext) != '.nc'): ?>
-	                	<div class="col-sm-6">
-	                		<div class="form-group">
-	                			<div class="col-md-12">
-	                				<p><h5>Model size: <span class="text-info"><?php echo $dimesions; ?></span></h5></p>
-	                				<p><h5>Filament used: <span class="text-info"><?php echo $filament; ?></span></h5></p>
-	                				<p><h5>Estimated time print: <span class="text-info"><?php echo $estimated_time; ?></span></h5></p>
-	                				<p><h5>Layers: <span class="text-info"><?php echo $number_of_layers; ?></span></h5></p>
-	                				
-	                			</div>
-	                		
-	                		</div>
-	                		
-	                	</div>
-                	<?php endif; ?>
-                	
-                </div>
-                
-                <div class="row">
-	                <fieldset>
-	                
-	                    <!--<legend><?php echo $_file->file_name; ?></legend>-->
-	                   
-	                    
-	                    <!-- STL FILE CAN'T BE DISPLAYED -->
-	                    <?php if(!$is_stl): ?>
-	                    <div class="form-group">
-	                        <div class="col-md-12">
-	                            <h5 id="file-content-title">Loading content.. <i class="fa fa-spin fa-spinner"></i></h5>
-	                        </div>
-	                    </div>
-	                    <div class="form-group">
-	                        <div class="col-md-12">
-	    						<div class="well" id="editor" style="display: none;"><?php //echo $_file_content ?></div>
-	    					</div>   
-	                    </div>
-	                    <?php endif; ?>
-	                </fieldset>
-                </div>
-                <div class="form-actions">
-						<button class="btn btn-primary" id="submit" ><i class="fa fa-save"></i>&nbsp;Save</button>
+	<div class="col-sm-12">
+		<div class="well well-light">
+			<div class="row">
+				<div class="col-sm-8">
+					<div class="form-horizontal">			
+						<fieldset>
+							<div class="form-group">
+								<label class="col-md-2 control-label">Name</label>
+								<div class="col-md-10">
+									<input type="text" id="name" name="name" class="form-control" value="<?php echo $_file -> raw_name; ?>" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-2 control-label">Note</label>
+								<div class="col-md-10">
+									<textarea style="resize: none !important;" id="note" name="note" class="form-control" rows="2"><?php echo $_file -> note; ?></textarea>
+								</div>
+							</div>		
+						</fieldset>
+					</div>
 				</div>
-                <input type="hidden" name="file_content" id="file_content" />
-            </form>
-        </div>
-    </div>
+				<?php if($_file->print_type == 'additive'): ?>
+				<div class="col-sm-4">
+					<div class="row">
+						<div class="col-sm-12 margin-bottom-10">
+							<span class="text">Model size <span class="pull-right"><strong><?php echo $dimesions; ?></strong></span></span>
+						</div>
+						<div class="col-sm-12 margin-bottom-10">
+							<span class="text">Filament used <span class="pull-right"><strong><?php echo $filament; ?></strong></span></span>
+						</div>
+						<div class="col-sm-12 margin-bottom-10">
+							<span class="text">Estimated time print <span class="pull-right"><strong><?php echo $estimated_time; ?></strong></span></span>
+						</div>
+						<div class="col-sm-12 margin-bottom-10">
+							<span class="text">Layers <span class="pull-right"><strong><?php echo $number_of_layers; ?></strong></span></span>
+						</div>
+					</div>
+				</div>
+				<?php endif; ?>
+			</div>
+			
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="well" id="editor" style="display:none;"></div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="form-horizontal">
+						<div class="form-actions">
+							<div class="row">
+								
+								<div class="col-sm-12">
+									<?php if(!$is_stl): ?>
+										<button class="btn btn-default pull-left" type="button" id="load-content"><i class="fa fa-angle-double-down"></i> Open Gcode </button>
+									<?php endif; ?>
+									
+									
+									<label class="checkbox-inline" style="padding-top:0px;">
+										 <input type="checkbox" class="checkbox" disabled="disabled" id="also-content">
+										 <span>Save gcode also</span>
+									</label>
+									<button class="btn btn-primary" type="button" id="save"><i class="fa fa-save"></i> Save </button>
+								</div>
+								
+								
+								
+							</div>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

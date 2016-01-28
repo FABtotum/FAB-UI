@@ -231,42 +231,33 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 		
 		
 		
-		function install(){
+function install(){
 
-			$(".next").find('a').html('<i class="fa fa-spinner fa-pulse"></i>');
-            $("a").addClass('disabled');
-			
-			$.ajax({
-				type: "POST",
-				url: "install.php",
-				dataType: 'json',
-				data: { first_name : $("#first_name").val(), last_name : $("#last_name").val(), email: $("#email").val(), password : $("#password").val(), net_password : $("#net_password").val(), net: '', ip_address: $("#ip_address").val() }
-			}).done(function( response ) {
-			
-				<?php if(!$imOnCable): ?>
-				
-					document.location.href= 'http://<?php echo $_SERVER['SERVER_ADDR'] ?>';
-				
-				<?php endif; ?>
-				
-
-				<?php if($imOnCable): ?>
-			
-				
-				
-			 	setTimeout(function(){	
-			 		document.location.href= 'http://169.254.1.' + $("#ip_address").val();
-				}, 50000);
-			 	
-			<?php endif; ?>
-				
-				
-					      
-			});
+	$(".next").find('a').html('<i class="fa fa-spinner fa-pulse"></i>');
+	$("a").addClass('disabled');
 	
-			 	
-			 }
+	$.ajax({
+		type: "POST",
+		url: "install.php",
+		dataType: 'json',
+		data: { first_name : $("#first_name").val(), last_name : $("#last_name").val(), email: $("#email").val(), password : $("#password").val(), net_password : $("#net_password").val(), net: '', ip_address: $("#ip_address").val() }
+	}).done(function( response ) {
+		document.location.href= 'http://169.254.1.' + $("#ip_address").val();
+	});
+	
+	
+	if($("#ip_address").val() != ip_last_num){
 		
+		console.log("aggiorno tra 60 secondi");
+		
+		setTimeout(function () {
+			document.location.href= 'http://169.254.1.' + $("#ip_address").val();
+		}, 60000);
+	}
+
+	 	
+}
+
 
 	});
 </script>

@@ -17,9 +17,10 @@
 
 		<!-- FAVICONS -->
 		<link rel="shortcut icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon">
-		<link rel="icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon">
+		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/js/plugin/magnific-popup/magnific-popup.css"> 
 
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fonts.css" />
+		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fabtotum_style.css" />
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fabtotum_style.css" />
 
 		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-2.1.1.min.js"></script>
@@ -36,7 +37,7 @@
 				<span id="logo"> <img src="<?php echo base_url() ?>application/layout/assets/img/logo-0.png" /> </span>
 			</div>
 			<span id="extr-page-header-space">&nbsp; <a href="javascript:void(0);"  class="btn btn-danger power-off"><i class="fa fa-power-off"></i></a></span>
-			<span id="extr-page-header-space"> <span class="hidden-mobile">Need an account?</span> <a href="<?php echo site_url('login/register') ?>" class="btn btn-danger ">Create account</a> </span>
+			<span id="extr-page-header-space"> <span class="hidden-mobile">Need an account?</span> <a href="<?php echo site_url('login/register') ?>" class="btn btn-primary ">Create account</a> </span>
 		</header>
 
 		<div id="main" role="main">
@@ -164,6 +165,7 @@
 			var number_notifications = 0;
 			var setup_wizard = false;
 			var fabui = false;
+			var pressedEmergencyButton = false;
 			// DO NOT REMOVE : GLOBAL FUNCTIONS!
 			$(document).ready(function() {
 				pageSetUp();

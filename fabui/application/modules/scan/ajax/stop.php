@@ -31,7 +31,7 @@ if(isset($_attributes['pprocess_pid'])){
 
 */
 /** FINALIZE  ---------------------------------------------- */
-$_command_finalize = 'sudo php '.FABUI_PATH.'script/finalize.php '.$_task_id. ' scan stopped';
+$_command_finalize = 'sudo php '.SCRIPT_PATH.'finalize.php '.$_task_id. ' scan stopped';
 $_output_command   = shell_exec ( $_command_finalize );
 
 

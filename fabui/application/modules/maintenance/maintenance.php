@@ -190,8 +190,11 @@ class Maintenance extends Module {
 		$data['time_alive'] = seconds_to_time(intval($output));
 		
 		// === NETWORK
-		$output        = shell_exec('sh /var/www/fabui/script/transfer_rate.sh');
-        $data['rates'] = explode(' ', $output);
+		$output        = shell_exec('sh /var/www/fabui/script/bash/transfer_rate.sh eth0');
+        $data['eth_rates'] = explode(' ', $output);
+		
+		$output        = shell_exec('sh /var/www/fabui/script/bash/transfer_rate.sh wlan0');
+        $data['wlan_rates'] = explode(' ', $output);
 		
 		
 		// == STORAGE

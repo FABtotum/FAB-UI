@@ -95,6 +95,9 @@ class Camera {
 		$this -> _command = 'sudo raspistill -n -t 1  ';
 
 		foreach ($this as $key => $val) {
+			
+			
+			
 			if (is_object($this -> $key)) {
 				if (get_class($this -> $key) == 'Parameter') {
 					if ($this -> $key -> getValue() != '') {
@@ -159,7 +162,12 @@ class Camera {
 			}
 
 		}
-
+		
+		
+		//add both flip parameter
+		$parameters['bflip'] = array('code'=>'-vf -hf', 'description'=>'Set horizontal and vertical flip');
+		
+		
 		$this -> write_file($this -> _parameters_file, json_encode($parameters), 'w');
 
 		//reset permission

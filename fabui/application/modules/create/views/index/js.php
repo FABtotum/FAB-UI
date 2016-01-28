@@ -1039,7 +1039,7 @@ function initSliders() {
     });
     
     $("#temp1").noUiSlider({
-	        range: {'min': 0, 'max' : 230},
+	        range: {'min': 0, 'max' : <?php echo $max_temp; ?>},
             /*range: [0, 250],*/
 	        start: <?php echo $ext_target != "" ? $ext_target : '0'; ?>,
 	        handles: 1,
@@ -1049,7 +1049,7 @@ function initSliders() {
     
     $("#act-ext-temp").noUiSlider({
  	 	
-        range: {'min': 0, 'max' : 230},
+        range: {'min': 0, 'max' : <?php echo $max_temp; ?>},
         start: <?php echo intval($ext_temp) ?>,
         handles: 0,
         connect: 'lower',

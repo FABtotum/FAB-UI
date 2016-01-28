@@ -506,9 +506,6 @@ class Objectmanager extends Module {
 
 		if ($action == "view") {
 
-			//ini_set( 'error_reporting', E_ALL );
-			//ini_set( 'display_errors', true );
-
 			/** LOAD HELPER */
 			$this -> load -> helper('ft_file_helper');
 
@@ -552,6 +549,10 @@ class Objectmanager extends Module {
 
 				}
 			}
+			
+			
+			$data['printables_files'] = array('.gc', '.gcode', '.nc');
+			$data['preview_files'] = array('.gc', '.gcode', '.stl');
 
 			$js_in_page = $this -> load -> view('file/view/js', $data, TRUE);
 			$css_in_page = $this -> load -> view('file/view/css', '', TRUE);

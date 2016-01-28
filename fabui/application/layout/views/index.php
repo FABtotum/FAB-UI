@@ -112,9 +112,14 @@
 			
 			
 			<div class="pull-right top-bar-temperatures hidden-xs">
-					
+					<span><i class=" icon-fab-term"></i> </span>
+					<?php if($_show_nozzle_temp): ?>
 					<span>
-						<p><i class=" icon-fab-term"></i> [ Nozzle</a> <span id="top-bar-nozzle-actual">-</span>/<span id="top-bar-nozzle-target">-</span>&deg; ] - [ Bed <span id="top-bar-bed-actual">-</span>/<span id="top-bar-bed-target">-</span>&deg; ]
+						 [ Nozzle</a> <span id="top-bar-nozzle-actual">-</span>/<span id="top-bar-nozzle-target">-</span>&deg; ] - 
+					</span>
+					<?php endif; ?>
+					<span>
+						[ Bed <span id="top-bar-bed-actual">-</span>/<span id="top-bar-bed-target">-</span>&deg; ]
 					</span>
 				
 			</div>

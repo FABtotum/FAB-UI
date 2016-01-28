@@ -139,6 +139,10 @@ class CreateFactory {
 			case 'flow-rate':
 				$_command = 'M221 S'.$this->_value;
 				$_message = 'Extruder factor override command sent ' . $this -> _value . '%';
+				break;
+			case 'notes' :
+				$_command = '';
+				$_message = 'Notes saved';
 				break;	
 		}
 
@@ -158,7 +162,7 @@ class CreateFactory {
 	public function updateDB() {
 
 		if ($this -> _action == 'velocity' || $this -> _action == 'mail' || $this -> _action == 'rpm' 
-				|| $this->_action == 'flow-rate' || $this->_action == 'fan' || $this->_action == 'zup' || $this->_action == 'zdown') {
+				|| $this->_action == 'flow-rate' || $this->_action == 'fan' || $this->_action == 'zup' || $this->_action == 'zdown' || $this->_action == 'notes') {
 					
 			$_attributes = json_decode(file_get_contents($this->_attributes_file), TRUE);
 
@@ -182,6 +186,10 @@ class CreateFactory {
 					break;
 				case 'flow-rate':
 					$_column = 'flow_rate';
+					$_value = $this->_value;
+					break;
+				case 'notes':
+					$_column = 'note';
 					$_value = $this->_value;
 					break;
 			}	

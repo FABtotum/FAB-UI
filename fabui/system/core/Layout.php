@@ -24,11 +24,12 @@ class FT_Layout {
 	protected $_compress = true;
 
 	protected $_setup_wizard = false;
-	
+
 	protected $_show_feeder = true;
+	protected $_show_nozzle_temp = true;
 
 	protected $_ci;
-	
+
 	protected $_printer_busy = 'false';
 
 	/**
@@ -46,8 +47,8 @@ class FT_Layout {
 		$this -> _ci = &get_instance();
 
 		$this -> _ft_ob_level = ob_get_level();
-		
-		$this->setFeeder();
+
+		$this -> set_layout_hardware();
 
 		$this -> _ft_layout_view_paths = array(APPPATH . 'layout/views/' => TRUE);
 		$this -> _ft_module_view_paths = array(APPPATH . $this -> _ci -> _type . 's/' . lcfirst(get_class($this -> _ci)) . '/views/' => TRUE);
@@ -145,28 +146,30 @@ class FT_Layout {
 
 	}
 
-	
-	/**
-	 * 
-	 */
-	public function setFeeder(){
+	public function set_layout_hardware() {
 		
-		$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
-		
-		if(isset($fabtotum_config['settings_type']) && $fabtotum_config['settings_type'] == 'custom' && file_exists(CONFIG_FOLDER.'custom_config.json')){
+		if(!file_exists(CONFIG_FOLDER . 'config.json')){
 			
-			$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER.'custom_config.json'), true);
+			$this -> _ci -> load -> helper('print_helper');
+			create_default_config();
+			
 		}
-		
-		$this->_show_feeder = isset($fabtotum_config['feeder']['show']) ? $fabtotum_config['feeder']['show'] : true;
-		
+
+		$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER . 'config.json'), true);
+
+		if (isset($fabtotum_config['settings_type']) && $fabtotum_config['settings_type'] == 'custom' && file_exists(CONFIG_FOLDER . 'custom_config.json')) {
+			$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER . 'custom_config.json'), true);
+		}
+
+		$this -> _show_feeder = isset($fabtotum_config['feeder']['show']) ? $fabtotum_config['feeder']['show'] : true;
+		$this -> _show_nozzle_temp = isset($fabtotum_config['hardware']['head']['max_temp']) && $fabtotum_config['hardware']['head']['max_temp'] > 0 ? true : false;
+
 		unset($fabtotum_config);
-		
+
 	}
-	
-	
-	public function getFeeder(){
-		return $this->_show_feeder;
+
+	public function getFeeder() {
+		return $this -> _show_feeder;
 	}
 
 	public function view($view, $vars = array(), $return = FALSE) {
@@ -212,13 +215,14 @@ class FT_Layout {
 
 		//load wizard
 		$data['_setup_wizard'] = $this -> get_setup_wizard();
-		
+
 		$data['_printer_busy'] = $this -> get_printer_busy();
+
+		$data['_show_nozzle_temp'] = $this -> _show_nozzle_temp;
 
 		return $this -> _ft_load(array('_ci_view' => 'index', '_ci_vars' => $this -> _ci_object_to_array($data), '_ci_return' => $return));
 	}
-	
-	
+
 	protected function _ft_load($_ci_data, $controller = FALSE) {
 		// Set the default data variables
 
@@ -521,8 +525,7 @@ class FT_Layout {
 	 * @return $html
 	 */
 	protected function _load_menu_items() {
-		
-		
+
 		$html = '';
 
 		foreach ($this->_item_menu as $item) {
@@ -560,18 +563,18 @@ class FT_Layout {
 				foreach ($item['sons'] as $son) {
 
 					if ($son['name'] == 'feeder' || $son['name'] == '4-axis') {
-						
-						if($this->_show_feeder){
-							
+
+						if ($this -> _show_feeder) {
+
 							$active = isset($uri[2]) && $uri[2] == $son['name'] ? 'active' : '';
 							$html .= '<li class="' . $active . '">';
 							$href = site_url($item['name'] . '/' . $son['name']);
 							$html .= '<a data-href="' . $href . '"  href="' . $href . '">';
-	
+
 							if (isset($son['icon'])) {
 								$html .= $son['icon'] . ' ';
 							}
-	
+
 							$html .= $son['label'];
 							$html .= '</a>';
 							$html .= '</li>';
@@ -581,8 +584,14 @@ class FT_Layout {
 
 						$active = isset($uri[2]) && $uri[2] == $son['name'] ? 'active' : '';
 						$html .= '<li class="' . $active . '">';
+
 						$href = site_url($item['name'] . '/' . $son['name']);
-						$html .= '<a data-controller="' . $item['name'] . '/' . $son['name'] .'" data-href="' . $href . '"  href="' . $href . '">';
+
+						if (isset($son['sons'])) {
+							$href = '#';
+						}
+
+						$html .= '<a data-controller="' . $item['name'] . '/' . $son['name'] . '" data-href="' . $href . '"  href="' . $href . '">';
 
 						if (isset($son['icon'])) {
 							$html .= $son['icon'] . ' ';
@@ -590,6 +599,34 @@ class FT_Layout {
 
 						$html .= $son['label'];
 						$html .= '</a>';
+
+						if (isset($son['sons'])) {
+
+							$html .= '<ul>';
+							
+							foreach ($son['sons'] as $subson) {
+
+								$active = isset($uri[3]) && $uri[3] == $subson['name'] ? 'active' : '';
+
+								$html .= '<li class="' . $active . '">';
+
+								$href = site_url($item["name"].'/'.$son['name'] . '/' . $subson['name']);
+
+								$html .= '<a data-controller="' . $son['name'] . '/' . $subson['name'] . '" data-href="' . $href . '"  href="' . $href . '">';
+
+								if (isset($subson['icon'])) {
+									$html .= $subson['icon'] . ' ';
+								}
+
+								$html .= $subson['label'];
+								$html .= '</a>';
+
+								$html .= '</li>';
+
+							}
+							$html .= '</ul>';
+						}
+
 						$html .= '</li>';
 
 					}
@@ -602,11 +639,10 @@ class FT_Layout {
 
 		}
 
-
 		$html .= '<li class="visible-xs">';
-		$html .= '<a href="'.site_url('login/out').'" rel="tooltip" data-placement="right"  title="Power Off" data-user-name="'.$_SESSION['user']['first_name'].'" data-logout-msg="What do you want to do?" data-action="userLogout"  data-action="userLogout"><i class="fa fa-lg fa-fw fa-power-off"></i> Power Off</a>';
+		$html .= '<a href="' . site_url('login/out') . '" rel="tooltip" data-placement="right"  title="Power Off" data-user-name="' . $_SESSION['user']['first_name'] . '" data-logout-msg="What do you want to do?" data-action="userLogout"  data-action="userLogout"><i class="fa fa-lg fa-fw fa-power-off"></i> Power Off</a>';
 		$html .= '</li>';
-		
+
 		return $html;
 
 	}
@@ -711,25 +747,40 @@ class FT_Layout {
 	function get_setup_wizard() {
 		return $this -> _setup_wizard;
 	}
-	
+
 	/**
 	 * set javascritp costant to set if printer is busy or not
 	 */
-	function set_printer_busy($bool){
-		
+	function set_printer_busy($bool) {
+
 		$string = $bool ? 'true' : 'false';
-		
-		$this->_printer_busy = $string;
-		
+
+		$this -> _printer_busy = $string;
+
 	}
-	
+
 	/**
 	 * get if printer is busy
 	 */
-	function get_printer_busy(){
-		return $this->_printer_busy;
+	function get_printer_busy() {
+		return $this -> _printer_busy;
 	}
 
+	/*
+	 function set_show_nozzle_temp() {
+
+	 $fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER . 'config.json'), true);
+
+	 if (isset($fabtotum_config['settings_type']) && $fabtotum_config['settings_type'] == 'custom' && file_exists(CONFIG_FOLDER . 'custom_config.json')) {
+
+	 $fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER . 'custom_config.json'), true);
+	 }
+
+	 $this -> _show_feeder = isset($fabtotum_config['feeder']['show']) ? $fabtotum_config['feeder']['show'] : true;
+
+	 unset($fabtotum_config);
+	 }
+	 */
 	/**
 	 * compress html
 	 */

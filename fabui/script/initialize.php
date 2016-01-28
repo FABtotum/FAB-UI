@@ -18,9 +18,6 @@ $_tasks = $db->query('select * from sys_tasks where status = "running" or status
 
 if($_tasks){
 	
-	
-	
-		
 	foreach($_tasks as $_task){
 		
 		$_data_update['status'] = 'removed';

@@ -11,6 +11,7 @@
 <!-- TEMPERATURES -->
 <div class="row">
 	<!-- EXTRUDER TEMP -->
+	<?php if($max_temp > 0): ?>
 	<div class="col-sm-6">
 		<div class="well">
 			
@@ -22,18 +23,12 @@
 					<p class="font-md">&nbsp;</p>
 				</div>
 			</div>
-			<!--
-			<div class="row margin-top-10">
-				<div class="col-sm-12">
-					<button class="pull-right btn btn-info btn-xs"><i class="fa fa-angle-double-down"></i></button>
-				</div>
-			</div>
-			-->
 		</div>
 	</div>
+	<?php endif; ?>
 
 	<!-- BED TEMP -->
-	<div class="col-sm-6">
+	<div class="col-sm-<?php echo $max_temp == 0 ? '12': '6'; ?>">
 		<div class="well">
 			<h5><a rel="tooltip" data-placement="right" data-original-title="Get Bed temperature" class="btn btn-default refresh-temperature" href="javascript:void(0);"><i class="fab-lg fab-fw icon-fab-term txt-color-red"></i>Bed</a><span id="bed-degrees" class="label label-info pull-right"></span><span id="bed-actual-degrees" class="label label-danger pull-right margin-right-5"></span></h5>
 			<div id="act-bed-temp" class="noUiSlider"></div>

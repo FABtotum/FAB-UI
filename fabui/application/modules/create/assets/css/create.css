@@ -197,4 +197,18 @@
 	color: #57889c !important;
 }
 
+.chat-footer {
+	border-top: 0px !important;
+	background: none !important;
+	padding: 0 !important;
+}
+
+.typearea {
+	padding: 5px 0px 5px 5px;
+}
+
+.typearea textarea {
+	overflow: auto !important;
+}
+
 

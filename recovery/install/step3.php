@@ -12,6 +12,11 @@ $temp = explode('.', $_lan['ip']);
 $ipLastNum = $temp[3];
 
 ?>
+
+<script type="text/javascript">
+	var ip_last_num = <?php echo $ipLastNum; ?>;
+</script>
+
 <div class="tab-pane" id="tab3">
 	<br>
 	<h3>
@@ -50,7 +55,7 @@ $ipLastNum = $temp[3];
                             
 							</a>
 							<small>
-								<?php echo $_lan[ 'ip'] ?>
+								<?php echo $_lan['ip'] ?>
 							</small>
                            
 						</h4>
@@ -126,11 +131,4 @@ $ipLastNum = $temp[3];
 		</table>
 	</div>
     -->
-    
-   	
-
-    
-    
-    
-    
 </div>

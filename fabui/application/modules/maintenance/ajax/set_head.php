@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/serial.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/application/config/fabtotum.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/application/config/production/fabtotum.php';
 
 $head = $_POST['head'];
 
@@ -32,8 +32,10 @@ if ($pid != '') {
 
 /** GET UNITS */
 $_units = json_decode(file_get_contents(FABUI_PATH . 'config/config.json'), TRUE);
+
 $_units['hardware']['head']['type'] = $head;
 $_units['hardware']['head']['description'] = $description;
+$_units['hardware']['head']['max_temp'] = $config['heads_max_temp'][$head];
 
 file_put_contents(FABUI_PATH . 'config/config.json', json_encode($_units));
 
@@ -41,6 +43,7 @@ if (file_exists(FABUI_PATH . 'config/custom_config.json')) {
 	$_custom_units = json_decode(file_get_contents(FABUI_PATH . 'config/custom_config.json'), TRUE);
 	$_custom_units['hardware']['head']['type'] = $head;
 	$_custom_units['hardware']['head']['description'] = $description;
+	$_custom_units['hardware']['head']['max_temp'] = $config['heads_max_temp'][$head];
 	file_put_contents(FABUI_PATH . 'config/custom_config.json', json_encode($_custom_units));
 }
 

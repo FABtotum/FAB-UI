@@ -4,7 +4,7 @@ require_once '/var/www/lib/config.php';
 $reload = isset($_GET['manually']) ? filter_var($_GET['manually'], FILTER_VALIDATE_BOOLEAN) : false;
 
 if($reload || !file_exists(BLOG_FEED_XML)){
-	require_once '/var/www/fabui/script/blog_feed.php';
+	require_once '/var/www/cron/blog_feed.php';
 }
 
 $xml = simplexml_load_file(BLOG_FEED_XML,'SimpleXMLElement', LIBXML_NOCDATA);

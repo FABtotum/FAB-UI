@@ -55,10 +55,14 @@ write_file($settings_file, $json, 'w');
 
 $camera = new Camera($settings);
 $camera->output->setValue(TEMP_PATH.'picture.'.$settings['encoding']);
-$camera->$flip->setValue(' ');
+
+
+if($flip != 'no'){
+	$camera->$flip->setValue(' ');
+}
+
 
 $camera->doImage();
-
 
 $_response_items['command'] = $camera->get_command();
 header('Content-Type: application/json');

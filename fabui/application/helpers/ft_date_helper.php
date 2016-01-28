@@ -79,19 +79,19 @@ function get_time_past($created_date) {
 	if (isset($differences["hour"]) || isset($differences["hours"])) {
 
 		if (isset($differences["hour"]))
-			return $differences["hour"] . " hour";
+			return $differences["hour"] . " hr";
 
 		if (isset($differences["hours"]))
-			return $differences["hours"] . " hours";
+			return $differences["hours"] . " hrs";
 	}
 
 	if (isset($differences["minute"]) || isset($differences["minutes"])) {
 
 		if (isset($differences["minute"]))
-			return $differences["minute"] . " minute";
+			return $differences["minute"] . " min";
 
 		if (isset($differences["minutes"]))
-			return $differences["minutes"] . " minutes";
+			return $differences["minutes"] . " min";
 	}
 
 	if (isset($differences["second"]) || isset($differences["seconds"])) {
@@ -177,4 +177,19 @@ function seconds_to_time($seconds) {
 	$dtF = new DateTime("@0");
 	$dtT = new DateTime("@$seconds");
 	return $dtF -> diff($dtT) -> format('%ad %hh %im');
+}
+
+function date_to_mysql($date, $time = FALSE, $separator = "/") {
+
+	$date = explode(' ', $date);
+
+	$temp = explode($separator, $date[0]);
+
+	$return = $temp[2] . "-" . $temp[1] . "-" . $temp[0];
+
+	if ($time == TRUE) {
+		$return .= ' ' . $date[1];
+	}
+
+	return $return;
 }

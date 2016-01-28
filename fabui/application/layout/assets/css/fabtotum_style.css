@@ -210,13 +210,14 @@
 	margin-right: 10px !important;
 	border-right: 1px solid  #CCC;
 	padding-right:10px;
+	font-size:18px
 }
 
 .top-bar-temperatures span:first-child{
 
 	display: inline-block;
 	margin: 13px 0 0;
-	font-size:18px
+	
 	
 	
 }    

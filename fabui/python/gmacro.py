@@ -680,6 +680,7 @@ else:
 serial.flush()
 serial.close()
 #write_status(False)
-os.remove(config.get('task', 'lock_file'))
+if os.path.isfile(config.get('task', 'lock_file')):
+    os.remove(config.get('task', 'lock_file'))
 #open(trace_file, 'w').close() #reset trace file
 sys.exit()

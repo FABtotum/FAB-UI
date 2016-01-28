@@ -125,4 +125,7 @@ defined('GIT_LATEST_RELEASE_URL')  ? null : define("GIT_LATEST_RELEASE_URL", 'ht
 defined('GIT_RELEASES_JSON')  ? null : define("GIT_RELEASES_JSON",TEMP_PATH.'git_releases.json');
 defined('GIT_LATEST_RELEASE_JSON')  ? null : define("GIT_LATEST_RELEASE_JSON",TEMP_PATH.'git_latest_release.json');
 
+
+defined('INTERFACES_FILE') ? null : define("INTERFACES_FILE", '/etc/network/interfaces');
+
 ?>

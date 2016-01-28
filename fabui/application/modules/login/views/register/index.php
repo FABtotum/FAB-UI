@@ -18,6 +18,8 @@
 		<!-- FAVICONS -->
 		<link rel="shortcut icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon">
 		<link rel="icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon">
+		
+		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/js/plugin/magnific-popup/magnific-popup.css"> 
 
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fonts.css" />
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fabtotum_style.css" />
@@ -36,7 +38,7 @@
 				<span id="logo"> <img src="<?php echo base_url() ?>application/layout/assets/img/logo-0.png" /> </span>
 			</div>
 			<span id="extr-page-header-space">&nbsp; <a href="javascript:void(0);"  class="btn btn-danger power-off"><i class="fa fa-power-off"></i></a></span>
-			<span id="extr-page-header-space"> <span class="hidden-mobile">Already registered?</span> <a href="<?php echo site_url('login') ?>" class="btn btn-danger">Sign In</a> </span>
+			<span id="extr-page-header-space"> <span class="hidden-mobile">Already registered?</span> <a href="<?php echo site_url('login') ?>" class="btn btn-primary">Sign In</a> </span>
 		</header>
 
 		<div id="main" role="main">

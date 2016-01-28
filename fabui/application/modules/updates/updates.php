@@ -114,11 +114,11 @@ class Updates extends Module {
 
 	public function changelog($type, $version) {
 
-		$this -> config -> load('myfab', TRUE);
+		$this -> config -> load('fabotum', TRUE);
 
-		$_remote_url = $this -> config -> item($type . '_remote_download_url', 'myfab');
+		$_remote_url = $this -> config -> item($type . '_remote_download_url', 'fabotum');
 
-		$_changelog = $this -> config -> item($type . '_changelog', 'myfab');
+		$_changelog = $this -> config -> item($type . '_changelog', 'fabotum');
 
 		$_url = $_remote_url . $version . '/' . $_changelog;
 

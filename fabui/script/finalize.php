@@ -25,6 +25,8 @@ $_status = isset($argv[3]) && $argv[3] != '' ? $argv[3] : 'performed';
  echo $_status.PHP_EOL;
  */
 
+unlock();
+ 
 switch($_type) {
 
 	case 'print' :
@@ -72,7 +74,14 @@ function update_task($tid, $status, $attributes = '') {
 	$_data_update['finish_date'] = 'now()';
 	
 	if($attributes != ''){
-		$_data_update['attributes'] = $attributes;
+		
+		$json_attributes = json_decode($attributes, true);
+		
+		if(isset($json_attributes['monitor']) && $json_attributes['monitor'] != '' && file_exists($json_attributes['monitor'])){
+			$json_attributes['monitor'] = json_decode(file_get_contents($json_attributes['monitor']), true);
+		}
+		
+		$_data_update['attributes'] = json_encode($json_attributes);
 	}
 
 	$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
@@ -522,10 +531,11 @@ function finalize_scan($tid, $type, $status) {
 		/** UPDATE TASK */
 		$attributes['id_obj'] = $id_obj;
 		$attributes['id_file'] = $id_file;
+		$attributes['monitor'] = json_encode(file_get_contents($attributes['monitor']));
 
 		$_data_update['attributes'] = json_encode($attributes);
 		$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
-		$db -> close();
+		
 
 	}
 
@@ -543,8 +553,15 @@ function finalize_scan($tid, $type, $status) {
 		}
 
 	}
+	
+	
+	
+	/** UPDATE TASK */
+	$attributes['monitor'] = json_decode(file_get_contents($attributes['monitor']), true);
 
-	sleep(1);
+	$_data_update['attributes'] = json_encode($attributes);
+	$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
+	$db -> close();
 
 	// EXEC MACRO END_SCAN
 
@@ -559,8 +576,9 @@ function finalize_scan($tid, $type, $status) {
 	chmod($_destination_response, 0777);
 
 	/** EXEC */
-	$_command = 'sudo python ' . PYTHON_PATH . 'gmacro.py end_scan ' . $_destination_trace . ' ' . $_destination_response . '  ';
-	$_output_command = shell_exec($_command);
+	$_command = 'sudo python ' . PYTHON_PATH . 'gmacro.py end_scan ' . $_destination_trace . ' ' . $_destination_response . '  > /dev/null &';
+	shell_exec($_command);
+	
 
 	//UPDATE TASK
 	update_task($tid, $status);

@@ -2,6 +2,37 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.9499 (28/01/2016)
+
+GENERAL
+- Added more codes for errors handled by the firmware (needs firmware 1.0.0094 or higher)
+- Minor bugfixes
+
+MAKE
+- Print
+	- Added field notes on "Controls" tab
+	- Minor bugfixes
+- Added "History Page": a timeline page with all "Make" tasks done
+
+OBJECTMANAGER
+- Improved edit file page
+- Minor bugfixes
+
+MAINTENANCE
+- Head
+	- Selecting the head will change max temperature parameter for the extruder temperature control in Jog and during the print
+- Fixed PHP Error on System Info page (<a target="_blank" href="https://github.com/FABtotum/FAB-UI/issues/28">issue #28</a>
+- Minor bugfixes
+
+SETTINGS
+- All the internal sections were exploded in submenu items. Now for any section there is a dedicated page
+- Improved Network settings page (Now is possible to connect to a hidden WiFi network). With further updates will come more features.
+- Raspicam
+	- Added "Flip Both" option
+- Minor bugfixes
+
+==================================================================
+
 FABUI 0.9498(12/01/2016)
 
 GENERAL

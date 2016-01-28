@@ -172,7 +172,7 @@ function openWait(title, content, spinner) {
 	var src_html = '<div class="white-popup animated bounceIn fast">';
 
 	if (!pressedEmergencyButton) {
-		src_html += '<a href="#" class="btn btn-default pull-right" data-action="emergencyButton"><i class="fa fa-times-circle txt-color-red"></i></a>';
+		src_html += '<a id="waitEmergencyButton" href="#" class="btn btn-default pull-right" data-action="emergencyButton"><i class="fa fa-times-circle txt-color-red"></i></a>';
 	}
 
 	src_html += '<h6 class="text-align-center wait-title">' + title + ' </h6>';
@@ -220,6 +220,12 @@ function waitContent(content) {
 		$(".wait-content").find('pre').html('');
 		$(".wait-content").show();
 		$(".wait-content").find('pre').html(content);
+	}
+}
+
+function waitHideEmergencyButton(){
+	if ($("#waitEmergencyButton").length > 0) {
+		$("#waitEmergencyButton").hide();
 	}
 }
 
@@ -513,7 +519,7 @@ $(function() {
 				case 'temperature':
 					if ( typeof update_temperature_info == 'function') {
 						update_temperature_info(obj.data);
-						$(".btn").removeClass('disabled');
+						/*$(".btn").removeClass('disabled');*/
 					}
 					break;
 				case 'error':
@@ -942,7 +948,7 @@ function decode_emergency_code(code) {
 		return 'Front panel is open, cannot continue';
 		break;
 	case 103:
-		return 'Head not properly locked in place';
+		return 'Head not properly aligned or absent';
 		break;
 	case 104:
 		return 'Extruder Temperature critical, shutting down';
@@ -951,16 +957,16 @@ function decode_emergency_code(code) {
 		return 'Bed Temperature critical, shutting down';
 		break;
 	case 106:
-		return 'X max Endstop hit';
+		return 'X max Endstop hit: Move the carriage to the center or check <span class="txt-color-orangeDark"><strong>Settings > Hardware > Custom Settings > Invert X Endstop Logic</strong></span>';
 		break;
 	case 107:
-		return 'X min Endstop hit';
+		return 'X min Endstop hit: Move the carriage to the center or check <span class="txt-color-orangeDark"><strong>Settings > Hardware > Custom Settings >Invert X Endstop Logic</strong></span>';
 		break;
 	case 108:
-		return 'Y max Endstop hit';
+		return 'Y max Endstop hit: Move the carriage to the center and reset';
 		break;
 	case 109:
-		return 'Y min Endstop hit';
+		return 'Y min Endstop hit: Move the carriage to the center and reset';
 		break;
 	case 110:
 		return 'The FABtotum has been idling for more than 8 minutes. Temperatures and Motors have been turned off.';
@@ -970,6 +976,15 @@ function decode_emergency_code(code) {
 		break;
 	case 121:
 		return 'Both Z Endstops hit at the same time';
+		break;
+	case 122:
+		return 'Ambient temperature is less then 15°C. Cannot continue.';
+		break;
+	case 123:
+		return 'Cannot extrude filament: the nozzle temperature is too low';
+		break;
+	case 124:
+		return 'Cannot extrude so much filament!';
 		break;
 	default:
 		return 'Unknown error Error code: ' + code;
@@ -986,7 +1001,7 @@ function show_connected(bool) {
 		$('.internet').hide();
 		console.log($('.no-internet-detected').length);
 		if($('.no-internet-detected').length <= 0){
-			var html = '<div class="row no-internet-detected"><div class="col-sm-12"><div class="alert alert-warning alert-block animated  bounce"><button class="close" data-dismiss="alert">×</button><h4 class="alert-heading"><i class="fa fa-warning"></i>   No internet connectivity detected. For a better experience please <a style="text-decoration:underline;" href="/fabui/settings/network">connect</a> </h4></div></div></div>';
+			var html = '<div class="row no-internet-detected"><div class="col-sm-12"><div class="alert alert-warning alert-block animated  bounce"><button class="close" data-dismiss="alert">×</button><h4 class="alert-heading"><i class="fa fa-warning"></i>   No internet connectivity detected. For a better experience please <a style="text-decoration:underline;" href="/fabui/settings/network/wlan">connect</a> </h4></div></div></div>';
 			$("#content").prepend(html);		
 		}
 

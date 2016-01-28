@@ -138,6 +138,8 @@ $_task_data['user']       = $_SESSION['user']['id'];
 $_task_data['controller'] = 'make';
 $_task_data['type']       = $_print_type ==  'additive' ? 'print' : 'mill';;
 $_task_data['status']     = 'running';
+$_task_data['id_object']  = $_object_id;
+$_task_data['id_file']    = $_file_id;
 $_task_data['attributes'] = '';
 $_task_data['start_date'] = 'now()';
 

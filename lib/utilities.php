@@ -435,11 +435,15 @@ function clean_temp(){
 	$files_to_take[] = 'fab_ui_safety.json';
 	$files_to_take[] = 'instagram_feed.json';
 	$files_to_take[] = 'instagram_hash.json';
+	$files_to_take[] = 'blog.xml';
 	$files_to_take[] = 'twitter.json';
 	$files_to_take[] = 'faq.json';
 	$files_to_take[] = 'macro_response';
 	$files_to_take[] = 'macro_trace'; 
-	$files_to_take[] = 'macro_status.json'; 
+	$files_to_take[] = 'macro_status.json';
+	$files_to_take[] = 'git_latest_release.json';
+	$files_to_take[] = 'git_releases.json';
+	
 	
 	foreach($files as $file){
 		
@@ -629,11 +633,16 @@ function setNetworkConfiguration($eth, $wifi){
  */
 function setEthIP($ip){
 	
-	$ip = '169.254.1.'.$ip;	 	
-	$networkConfiguration = networkConfiguration();
-	setNetworkConfiguration($ip, $networkConfiguration['wifi']);
+	$ip = '169.254.1.' . $ip;
+	setEthernet($ip);
+}
+
+
+function setEthernet($ip){
 	
-	$response = shell_exec("sudo service networking reload");
+	 $response = shell_exec('sh /var/www/fabui/script/bash/set_ethernet.sh "'.$ip.'" ');
+	 return $reponse;
+	 
 }
 
 

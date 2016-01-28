@@ -79,8 +79,6 @@ if($do_update){
     write_monitor();
     
     
-   
-    
     /** INSTALLAZIONE FILES */
     
     $_monitor_items['status'] = 'installing';
@@ -88,6 +86,22 @@ if($do_update){
     $_monitor_items['install']['completed'] = 0;
     write_monitor();
     sleep(2);
+	
+	
+	
+	/** CHECK IF EXIST FOLDER SQL */
+	if(file_exists($_folder.'temp/sql')){
+		foreach(glob($_folder.'temp/sql/*') as $file_sql) 
+		{
+				/** EXEC SQL FILES */
+				if(file_exists($file_sql)){
+					$_exec_sql = 'sudo mysql -u '.DB_USERNAME.' -p'.DB_PASSWORD.' -h '.DB_HOSTNAME.'  < '.$file_sql;
+					shell_exec($_exec_sql);		
+	
+				} 
+		}
+	} 
+	
 	
 	
 	/** CHECK IF EXIST SCRIPT FILE TO EXEC */
@@ -129,22 +143,6 @@ if($do_update){
 		
 	}
 	
-	
-	/** CHECK IF EXIST FOLDER SQL */
-	if(file_exists($_folder.'temp/sql')){
-		
-		
-		foreach(glob($_folder.'temp/sql/*') as $file_sql) 
-		{
-				/** EXEC SQL FILES */
-				if(file_exists($file_sql)){
-					$_exec_sql = 'sudo mysql -u '.DB_USERNAME.' -p'.DB_PASSWORD.' -h '.DB_HOSTNAME.'  < '.$file_sql;
-					shell_exec($_exec_sql);		
-	
-				} 
-		}
-		
-	} 
 	 
 	
 	$_monitor_items['install']['percent'] = 100;

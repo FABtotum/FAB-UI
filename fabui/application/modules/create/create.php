@@ -47,6 +47,8 @@ class Create extends Module {
 			$_task = $this -> tasks -> get_running('make', 'print');
 		}
 
+		
+		
 		$_running = $_task ? true : false;
 
 		if ($_running) {
@@ -85,6 +87,17 @@ class Create extends Module {
 			}
 
 		}
+		
+		
+		$this -> config -> load('fabtotum', TRUE);
+		$units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
+		
+		if(isset($units['settings_type']) && $units['settings_type'] == 'custom'){
+			$units = json_decode(file_get_contents($this -> config -> item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
+		}
+        
+        $data['max_temp'] = isset($units['hardware']['head']['max_temp']) ? $units['hardware']['head']['max_temp'] : 230;
+		
 
 		$data['label'] = $type == 'subtractive' ? 'Mill' : 'Print';
 
@@ -135,7 +148,9 @@ class Create extends Module {
 		$data_widget_step5['fan'] = $_running && isset($_attributes['fan']) ? $_attributes['fan'] : 0;
 		$data_widget_step5['z_override'] = $_running ? $_monitor_encoded -> print -> stats -> z_override : 0;
 		$data_widget_step5['mail'] = $_running && isset($_attributes['mail']) && $_attributes['mail'] == true ? 'checked' : '';
-
+		$data_widget_step5['note'] = $_running && isset($_attributes['note']) ? $_attributes['note'] : '';
+		$data_widget_step5['_object_name'] = $_running ?  $_object -> obj_name : '';
+		$data_widget_step5['_file_name'] = $_running ? $_file -> raw_name : '';
 		//$data_widget_step5['ext_temp']          = $_running ? $ext_temp : 0;
 		//$data_widget_step5['bed_temp']          = $_running ? $bed_temp : 0;
 
@@ -201,6 +216,7 @@ class Create extends Module {
 
 		$data_js['attributes_file'] = $_running ? $_task['attributes'] : '';
 		$data_js['z_override'] = $_running ? $_monitor_encoded -> print -> stats -> z_override : 0;
+		$data_js['max_temp'] = $data['max_temp'];
 
 		$_time = $_running ? (time() - intval($_monitor_encoded -> print -> started)) : 0;
 
@@ -361,21 +377,131 @@ class Create extends Module {
 			echo file_get_contents($file_trace);
 		}
 	}
-
-	public function test() {
-
-		$js_in_page = $this -> load -> view('test/js', '', TRUE);
-		$css_in_page = $this -> load -> view('test/css', '', TRUE);
-
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.all.min.js', 'comment' => 'javascript for the noUISlider'));
-		$this -> layout -> add_css_file(array('src' => 'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.min.css', 'comment' => 'javascript for the noUISlider'));
-		$this -> layout -> add_css_file(array('src' => 'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.pips.min.css', 'comment' => 'javascript for the noUISlider'));
-
-		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => 'create module'));
-		$this -> layout -> add_css_in_page(array('data' => $css_in_page, 'comment' => 'create module'));
-
-		$this -> layout -> view('test/index', '');
-
+	
+	
+	public function history(){
+		
+		/** INIT DB & MODELS */
+		$this -> load -> database();
+		$this -> load -> model('tasks');
+		
+		$this->load->helper('ft_date_helper');
+		$this -> load -> helper('smart_admin_helper');
+		$this->load->helper('form');
+		
+		$params  = $this->input->get();
+		
+		$data['start_date'] = $params['start_date'] == '' ? date('d/m/Y',strtotime('first day of this month')) : $params['start_date'];
+		$data['end_date']   = $params['end_date']  == '' ? date('d/m/Y',strtotime('last day of this month')) : $params['end_date'];
+		$data['type']       = $params['type'];
+		$data['status']     = $params['status'];
+		
+		
+		$filters = array(
+			'start_date' => $data['start_date'],
+			'finish_date'=> $data['end_date'],
+			'type'=> $data['type'],
+			'status' => $data['status']
+		);
+		
+		$data['tasks'] = $this->tasks->get_make_tasks($filters);
+		
+		
+		$data['icons'] = array(
+			'print' => 'icon-fab-print',
+			'mill'  => 'icon-fab-mill',
+			'scan'  => 'icon-fab-scan'
+		);
+		
+		$data['status_label'] = array(
+			'performed' => '<span class="label label-success">COMPLETED</span>',
+			'stopped' => '<span class="label label-danger">ABORTED</span>',
+		);
+		
+		$data['stats_label'] = array(
+			'total_time' => '<i class="fa fa-clock-o"></i> Total time',
+			'performed' => '<i class="fa fa-check"></i> Completed',
+			'stopped' => '<i class="fa fa-times"></i> Aborted'
+		);
+		
+		$data['type_options'] = array(
+			'' => 'All',
+			'print' => 'Print',
+			'mill' => 'Mill',
+			'scan' => 'Scan'
+		);
+		
+		$data['status_options'] = array(
+			'' => 'All',
+			'performed' => 'Completed',
+			'stopped' => 'Aborted'
+		);
+		
+		
+		
+		$data['stats'] = array();
+		
+		if($data['type'] == ''){
+			
+			foreach($data['type_options'] as $type => $label){
+				if($type != '') $data['stats'][$type]['total_time'] = $this->tasks->get_total_time('make', $type, $data['status'], $data['start_date'], $data['end_date']);
+				
+				if($data['status'] == ''){
+					foreach($data['status_options'] as $status => $label){
+						if($status != '') $data['stats'][$type][$status] = $this->tasks->get_total_tasks('make', $type, $status, $data['start_date'], $data['end_date']);
+					}
+				}else{
+					$data['stats'][$type][$data['status']] = $this->tasks->get_total_tasks('make', $type, $data['status'], $data['start_date'], $data['end_date']);
+				}
+				
+			}
+			
+		}else{
+			$data['stats'][$data['type']]['total_time'] = $this->tasks->get_total_time('make', $data['type'],$data['status'],$data['start_date'], $data['end_date']);
+			
+			if($data['status'] == ''){
+					foreach($data['status_options'] as $status => $label){
+						if($status != '') $data['stats'][$data['type']][$status] = $this->tasks->get_total_tasks('make', $data['type'], $status, $data['start_date'], $data['end_date']);
+					}
+				}else{
+					$data['stats'][$data['type']][$data['status']] = $this->tasks->get_total_tasks('make', $data['type'], $data['status'], $data['start_date'], $data['end_date']);
+				}
+		}
+		
+		
+		
+		
+		/** LAYOUT */
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js',     'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js',     'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js',  'comment' => ''));
+		
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-datepicker/moment.min.js',  'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-datepicker/daterangepicker.min.js',  'comment' => ''));
+		$this -> layout -> add_css_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-datepicker/daterangepicker.css',  'comment' => ''));
+		
+		
+		$this -> layout -> add_css_in_page(array('data' => $this -> load -> view('history/css', '', TRUE), 'comment' => 'create module'));
+		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('history/js', $data, TRUE), 'comment' => 'create module'));
+		
+		
+		$table = $this -> load -> view('history/table', $data, TRUE);
+		$stats = $this->load->view('history/stats', $data, TRUE);
+		
+		$attr['data-widget-icon'] = 'fa fa-history';
+		$data['widget_table'] = widget('history' . time(), 'History', $attr, $table, false, true, false);
+		
+		$attr['data-widget-icon'] = 'fa fa-bar-chart';
+		$data['widget_stats'] = widget('stats' . time(), 'Stats', $attr, $stats, false, false, false);
+		
+		
+		
+		
+		
+		$this -> layout -> view('history/index', $data);
 	}
+
+
 
 }

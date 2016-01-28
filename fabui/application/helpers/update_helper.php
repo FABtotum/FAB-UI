@@ -6,9 +6,9 @@ function myfab_get_remote_version() {
 	$CI = &get_instance();
 
 	//load configuration file
-	$CI -> config -> load('myfab', TRUE);
+	$CI -> config -> load('fabtotum', TRUE);
 
-	$_remote_url = $CI -> config -> item('fabui_remote_version_url', 'myfab');
+	$_remote_url = $CI -> config -> item('fabui_remote_version_url', 'fabtotum');
 
 	$ch = curl_init($_remote_url);
 
@@ -40,9 +40,9 @@ function marlin_get_remote_version() {
 	$CI = &get_instance();
 
 	//load configuration file
-	$CI -> config -> load('myfab', TRUE);
+	$CI -> config -> load('fabtotum', TRUE);
 
-	$_remote_url = $CI -> config -> item('fw_remote_version_url', 'myfab');
+	$_remote_url = $CI -> config -> item('fw_remote_version_url', 'fabtotum');
 
 	$ch = curl_init($_remote_url);
 
@@ -129,12 +129,12 @@ function fabui_changelog($version) {
 	$CI = &get_instance();
 
 	//load configuration file
-	$CI -> config -> load('myfab', TRUE);
+	$CI -> config -> load('fabtotum', TRUE);
 
 	if (is_internet_avaiable()) {
 
-		$_remote_url = $CI -> config -> item('fabui_remote_download_url', 'myfab');
-		$_fabui_changelog = $CI -> config -> item('fabui_changelog', 'myfab');
+		$_remote_url = $CI -> config -> item('fabui_remote_download_url', 'fabtotum');
+		$_fabui_changelog = $CI -> config -> item('fabui_changelog', 'fabtotum');
 
 		$ch = curl_init($_remote_url . $version . '/' . $_fabui_changelog);
 
@@ -156,12 +156,12 @@ function fw_changelog($version) {
 
 	$CI = &get_instance();
 
-	$CI -> config -> load('myfab', TRUE);
+	$CI -> config -> load('fabtotum', TRUE);
 
 	if (is_internet_avaiable()) {
 
-		$_remote_url = $CI -> config -> item('fw_remote_download_url', 'myfab');
-		$_fw_changelog = $CI -> config -> item('fw_changelog', 'myfab');
+		$_remote_url = $CI -> config -> item('fw_remote_download_url', 'fabtotum');
+		$_fw_changelog = $CI -> config -> item('fw_changelog', 'fabtotum');
 
 		$ch = curl_init($_remote_url . $version . '/' . $_fw_changelog);
 

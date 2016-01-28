@@ -10,13 +10,15 @@ shell_exec($_command);
 
 sleep(5);
 /** SHUTDOWN */
-$_command = 'sudo php '.SCRIPT_PATH.'shutdown.php';
-shell_exec($_command);
+//7$_command = 'sudo php '.SCRIPT_PATH.'shutdown.php';
+//shell_exec($_command);
+
+require_once SCRIPT_PATH.'shutdown.php';
 
 //close session
 session_destroy();
 
-shell_exec('sudo poweroff');
+shell_exec('sudo shutdown -h -P now ');
 $_response_items['status'] = true;
 
 

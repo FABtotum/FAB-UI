@@ -32,7 +32,7 @@ class Support extends Module {
 		
 		// if faq file doesn't exists, create it
 		if(!file_exists($this->config->item('fabtotum_faq', 'fabtotum'))){
-			shell_exec('sudo php '.SCRIPTPATH.'faq.php');
+			shell_exec('sudo php '.CRONPATH.'faq.php');
 		}
 		
 		// if now faq file doens't exists it means there's no internet connettivity 
