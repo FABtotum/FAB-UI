@@ -9,7 +9,7 @@ GENERAL
 - Minor bugfixes
 
 MAKE
-- Print
+- Print/Mill
 	- Added field notes on "Controls" tab
 	- Minor bugfixes
 - Added "History Page": a timeline page with all "Make" tasks done
@@ -21,7 +21,7 @@ OBJECTMANAGER
 MAINTENANCE
 - Head
 	- Selecting the head will change max temperature parameter for the extruder temperature control in Jog and during the print
-- Fixed PHP Error on System Info page (<a target="_blank" href="https://github.com/FABtotum/FAB-UI/issues/28">issue #28</a>
+- Fixed PHP Error on System Info page (<a target="_blank" href="https://github.com/FABtotum/FAB-UI/issues/28">issue #28</a>)
 - Minor bugfixes
 
 SETTINGS
