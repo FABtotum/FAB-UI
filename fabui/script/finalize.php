@@ -531,7 +531,7 @@ function finalize_scan($tid, $type, $status) {
 		/** UPDATE TASK */
 		$attributes['id_obj'] = $id_obj;
 		$attributes['id_file'] = $id_file;
-		$attributes['monitor'] = json_encode(file_get_contents($attributes['monitor']));
+		$attributes['monitor'] = json_encode(file_get_contents(TEMP_PATH.'task_monitor.json'));
 
 		$_data_update['attributes'] = json_encode($attributes);
 		$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
@@ -555,9 +555,8 @@ function finalize_scan($tid, $type, $status) {
 	}
 	
 	
-	
 	/** UPDATE TASK */
-	$attributes['monitor'] = json_decode(file_get_contents($attributes['monitor']), true);
+	$attributes['monitor'] = json_decode(file_get_contents(TEMP_PATH.'task_monitor.json'), true);
 
 	$_data_update['attributes'] = json_encode($attributes);
 	$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);

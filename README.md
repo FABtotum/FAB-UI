@@ -2,6 +2,18 @@ FAB-UI
 =====
 the FABtotum User Interface Repo
 
+FABUI 0.94995 (HotFix) (29/01/2016)
+
+MAKE
+- Scan
+	- Fixed bug on finalizing task
+
+MAINTENANCE
+- Probe calibration
+	- Fixed "disabled" buttons
+
+==================================================================
+
 FABUI 0.9499 (28/01/2016)
 
 GENERAL

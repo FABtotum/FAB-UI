@@ -197,7 +197,8 @@ INSERT INTO `sys_codes` (`id`, `type`, `code`, `label`, `description`) VALUES
 (152, 'M', 791, 'M791', 'read Head capability: axis (number of axis)'),
 (153, 'M', 792, 'M792', 'read Head capability: servo (number of axis)'),
 (154, 'M', 732, 'M732 S<FLAG>', 'Code for enable/disable the operations kill on door opening permanently (M732 S0->disable(unsafe),M732 S1->enable(safe)'),
-(155, 'M', 714, 'M714 S<FLAG>', 'Select the homing X switch (max or min) to allow machine operation even with X min swicth fail (M714 S0->select X min switch, M714 S1->select X max switch)');
+(155, 'M', 714, 'M714 S<FLAG>', 'Select the homing X switch (max or min) to allow machine operation even with X min swicth fail (M714 S0->select X min switch, M714 S1->select X max switch)'),
+(156, 'M', 793, 'M793', 'Set/read installed head soft ID');
 
 -- --------------------------------------------------------
 

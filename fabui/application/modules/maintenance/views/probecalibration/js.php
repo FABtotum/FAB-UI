@@ -197,8 +197,8 @@
 		message['name'] = "serial";
 		message['data'] = jsonData;
 		
-		/*$(".btn").addClass('disabled');*/
-		$(".z-action").addClass('disabled');
+		/*$(".btn").addClass('disabled');
+		$(".z-action").addClass('disabled');*/
 		SOCKET.send('message', JSON.stringify(message));
 		
 	}

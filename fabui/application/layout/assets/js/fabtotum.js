@@ -1215,8 +1215,8 @@ function jog_make_call_ws(func, value) {
 	message['name'] = "serial";
 	message['data'] = jsonData;
 
-	if (func != 'get_temperature')
-		$(".btn").addClass('disabled');
+	/*if (func != 'get_temperature')
+		$(".btn").addClass('disabled'); */
 	SOCKET.send('message', JSON.stringify(message));
 
 }
