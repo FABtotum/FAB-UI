@@ -22,7 +22,7 @@
 				<p>Unpacking the package... </p>
 				<p>Installing the plugin...</p>
 				<p>Plugin installed successfully...</p>
-				<a href="<?php echo site_url("plugin") ?>">Return to Plugins page</a>
+				<a href="<?php echo site_url("plugin/index") ?>">Return to Plugins page</a>
 				
 			<?php else: ?>
 			<form class="form-inline" enctype="multipart/form-data" method="post" action="<?php echo site_url("plugin/upload") ?>">

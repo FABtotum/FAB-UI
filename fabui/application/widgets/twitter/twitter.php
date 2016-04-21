@@ -1,12 +1,11 @@
 <?php
 /*
-Widget Name: Shortcut
-Widget URI: http://www.thingiverse.com/thing:35248
+Widget Name: Twitter
+Widget URI: http://www.fabtotum.com
 Version: 1.0
-Description: gCodeViewer is a visual GCode visualizer, viewer and analyzer in your own browser! It works on any OS in almost any modern browser (chrome, ff, safari 6, opera, ie10 should work too). All you need to do - is drag your *.gcode file to the designated zone.
+Description: Get latest FABtotum's tweet
 Author: FABteam
-Author URI: http://www.thingiverse.com/hudbrog/designs
-Widget Slug: shortcut
+Widget Slug: Twitter
 */
 class Twitter_widget extends Widget {
     

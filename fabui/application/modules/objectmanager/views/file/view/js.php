@@ -8,7 +8,8 @@
         
              
         $("#save").on('click', function() {
-               
+            
+            $(".ace_editor").css('opacity', '0.1');   
             $('#save').addClass("disabled");
             $('#save').html('<i class="fa fa-spin fa-spinner"></i> Saving');
             
@@ -42,6 +43,7 @@
                 
                 $('#save').removeClass("disabled");
                 $('#save').html('<i class="fa fa-save"></i> Save');
+                $(".ace_editor").css('opacity', '1'); 
               
             });
             

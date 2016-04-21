@@ -160,6 +160,12 @@
 													name="theme_skin" value="smart-style-5">
 													<span> Glass </span> </label>
 											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" class="radiobox style-0" <?php echo $_SESSION['user']['theme-skin']=='smart-style-6' ? 'checked="checked"' : '' ?>
+													name="theme_skin" value="smart-style-6">
+													<span> MaterialDesign </span> </label>
+											</div>
 										</div>
 									</div>
 								</fieldset>

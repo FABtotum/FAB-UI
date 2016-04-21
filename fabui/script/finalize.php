@@ -1,36 +1,27 @@
 <?php
+/**
+ * 
+ * Finalize fabtotum's main tasks
+ * 
+ * 
+ */
+ 
 require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/database.php';
 require_once '/var/www/lib/utilities.php';
-//require_once '/var/www/lib/log4php/Logger.php';
-
-// INCLUDE MAIL CLASS (CI)
-require_once FABUI_PATH . 'system/libraries/Email.php';
-
-/* INIT LOG **/
-//Logger::configure(FABUI_PATH.'config/log_fabui_config.xml');
-//$log = Logger::getLogger('finalize');
-//$log->info('=====================================================');
 
 /** GET ARGS FROM COMMAND LINE */
 $_task_id = $argv[1];
-$_type = $argv[2];
-$_status = isset($argv[3]) && $argv[3] != '' ? $argv[3] : 'performed';
-//$_g_pusher_type = isset($argv[4]) && $argv[4] != '' ? $argv[4] : 'fast';
+$_type    = $argv[2];
+$_status  = isset($argv[3]) && $argv[3] != '' ? $argv[3] : 'performed';
 
-/*
- echo "FINALIZE".PHP_EOL;
- echo $_task_id.PHP_EOL;
- echo $_type.PHP_EOL;
- echo $_status.PHP_EOL;
- */
-
-unlock();
- 
 switch($_type) {
 
 	case 'print' :
 		finalize_print($_task_id, $_status);
+		break;
+	case 'mill' :
+		finalize_mill($_task_id, $_status);
 		break;
 	case 'slice' :
 		finalize_slice($_task_id, $_status);
@@ -44,6 +35,9 @@ switch($_type) {
 	case 'update_fw' :
 		finalize_update_fw($_task_id, $_status);
 		break;
+	case 'update_software' :
+		finalize_update_sw($_task_id, $_status);
+		break;
 	case 'scan_r' :
 	case 'scan_p' :
 	case 'scan_s' :
@@ -55,7 +49,6 @@ switch($_type) {
 		finalize_general($_task_id, $_type, $_status);
 }
 
-//$log->info('=====================================================');
 
 /** UPDATE TASK ON DB
  *
@@ -64,31 +57,28 @@ switch($_type) {
  *
  ***/
 function update_task($tid, $status, $attributes = '') {
-	//global $log;
-
+	
 	//LOAD DB
 	$db = new Database();
 
 	$_data_update = array();
 	$_data_update['status'] = $status;
 	$_data_update['finish_date'] = 'now()';
-	
-	if($attributes != ''){
-		
+
+	if ($attributes != '') {
+
 		$json_attributes = json_decode($attributes, true);
-		
-		if(isset($json_attributes['monitor']) && $json_attributes['monitor'] != '' && file_exists($json_attributes['monitor'])){
+
+		if (isset($json_attributes['monitor']) && $json_attributes['monitor'] != '' && file_exists($json_attributes['monitor'])) {
 			$json_attributes['monitor'] = json_decode(file_get_contents($json_attributes['monitor']), true);
 		}
-		
+
 		$_data_update['attributes'] = json_encode($json_attributes);
 	}
 
 	$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
 	$db -> close();
-
 	shell_exec('sudo php ' . SCRIPT_PATH . '/notifications.php &');
-	//$log->info('Task #'.$tid.' updated. New status: '.$status);
 
 }
 
@@ -101,7 +91,6 @@ function update_task($tid, $status, $attributes = '') {
  *
  **/
 function finalize_print($tid, $status) {
-	//global $log;
 
 	//LOAD DB
 	$db = new Database();
@@ -109,7 +98,79 @@ function finalize_print($tid, $status) {
 	$task = $db -> query('select * from sys_tasks where id=' . $tid);
 	$task = $task[0];
 
+	//GET TASK ATTRIBUTES
+	$attributes = json_decode(file_get_contents($task['attributes']), TRUE);
+
+	$print_type = $attributes['print_type'];
+
 	$reset = false;
+
+	//CHECK IF TASK WAS ALREARDY FINALIZED
+	if ($task['status'] == 'stopped' || $task['status'] == 'performed') {
+		return;
+	}
+
+	if ($status == 'stopped') {
+	}
+
+	//IF % PROGRESS IS < 0.5 FOR SECURITY REASON I RESET THE BOARD CONTROLLER
+	$monitor = json_decode(file_get_contents($attributes['monitor']), TRUE);
+	$percent = $monitor['print']['stats']['percent'];
+
+	if ($percent < 0.2) {
+
+		$_command = 'sudo python ' . PYTHON_PATH . 'force_reset.py ';
+		shell_exec($_command);
+		$reset = true;
+		
+	}
+
+	shell_exec('sudo kill -9 ' . $attributes['pid']);
+
+	//UPDATE TASK
+	update_task($tid, $status, file_get_contents($task['attributes']));
+
+	$_macro_end_print_response = TEMP_PATH . 'macro_response';
+	$_macro_end_print_trace = TEMP_PATH . 'macro_trace';
+
+	$end_macro = 'end_print_additive';
+
+	write_file($_macro_end_print_trace, '', 'w');
+	chmod($_macro_end_print_trace, 0777);
+
+	write_file($_macro_end_print_response, '', 'w');
+	chmod($_macro_end_print_response, 0777);
+
+	//EXEC END MACRO
+	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
+
+	sleep(2);
+
+	// SEND MAIL
+	if (isset($attributes['mail']) && $attributes['mail'] == true && $status == 'performed') {
+
+		$user = $db -> query('select * from sys_user where id=' . $task['user']);
+		$user = $user[0];
+		send_mail($attributes, $user);
+
+	}
+
+	$db -> close();
+
+	if ($reset) {
+		sleep(2);
+		include '/var/www/fabui/script/boot.php';
+	}
+
+}
+
+function finalize_mill($tid, $status) {
+
+	//LOAD DB
+	$db = new Database();
+	//GET TASK
+	$task = $db -> query('select * from sys_tasks where id=' . $tid);
+	$task = $task[0];
 
 	//CHECK IF TASK WAS ALREARDY FINALIZED
 	if ($task['status'] == 'stopped' || $task['status'] == 'performed') {
@@ -119,24 +180,21 @@ function finalize_print($tid, $status) {
 	//GET TASK ATTRIBUTES
 	$attributes = json_decode(file_get_contents($task['attributes']), TRUE);
 
-	$print_type = $attributes['print_type'];
+	if ($status == 'stopped') {
+		shell_exec('sudo kill ' . $attributes['pid']);
 
-	if ($status == 'stopped' && $print_type == 'additive') {
+		/** FORCE RESET CONTROLLER */
+		$_command = 'sudo python ' . PYTHON_PATH . 'force_reset.py';
+		shell_exec($_command);
 
-		//IF % PROGRESS IS < 0.5 FOR SECURITY REASON I RESET THE BOARD CONTROLLER
-		$monitor = json_decode(file_get_contents($attributes['monitor']), TRUE);
-		$percent = $monitor['print']['stats']['percent'];
+		sleep(2);
+		include '/var/www/fabui/script/boot.php';
 
-		if ($percent < 0.2) {
-
-			/** FORCE RESET CONTROLLER */
-			$_command = 'sudo python ' . PYTHON_PATH . 'force_reset.py';
-			shell_exec($_command);
-			$reset = true;
-			//$log->info('Task #'.$tid.' reset controller');
-		}
-
+		sleep(3);
+		fopen(LOCK_FILE, "w");
 	}
+
+	shell_exec('sudo kill ' . $attributes['pid']);
 
 	//UPDATE TASK
 	update_task($tid, $status, file_get_contents($task['attributes']));
@@ -144,7 +202,7 @@ function finalize_print($tid, $status) {
 	$_macro_end_print_response = TEMP_PATH . 'macro_response';
 	$_macro_end_print_trace = TEMP_PATH . 'macro_trace';
 
-	$end_macro = $print_type == 'subtractive' ? 'end_print_subtractive' : 'end_print_additive';
+	$end_macro = 'end_print_additive';
 
 	write_file($_macro_end_print_trace, '', 'w');
 	chmod($_macro_end_print_trace, 0777);
@@ -153,33 +211,9 @@ function finalize_print($tid, $status) {
 	chmod($_macro_end_print_response, 0777);
 
 	//EXEC END MACRO
-	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' > /dev/null &');
-
-	sleep(2);
-
-	shell_exec('sudo kill ' . $attributes['pid']);
-
-	// SEND MAIL
-	if (isset($attributes['mail']) && $attributes['mail'] == true && $status == 'performed') {
-
-		$user = $db -> query('select * from sys_user where id=' . $task['user']);
-		$user = $user[0];
-
-		send_mail($attributes, $user);
-
-	}
+	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
 
 	$db -> close();
-	
-	//REMOVE ALL TEMPORARY FILES
-	shell_exec('sudo rm -rf ' . $attributes['folder']);
-	unlock();
-
-	if ($reset) {
-		sleep(2);
-		include '/var/www/fabui/script/boot.php';
-	}
-	//$log->info('Task #'.$tid.' end finalizing');
 
 }
 
@@ -336,11 +370,11 @@ function finalize_update_fw($tid, $status) {
 	//UPDATE TASK
 	update_task($tid, $status);
 	//START UP THE BOARD
-	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log > /dev/null &');
+	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log 1 > /dev/null &');
 	sleep(10);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
-	unlock();
+	//unlock();
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -448,10 +482,10 @@ function finalize_general($tid, $type, $status) {
 
 	//UPDATE TASK
 	update_task($tid, $status);
-	sleep(10);
+	sleep(5);
 	unlock();
 	//REMOVE ALL TEMPORARY FILES
-	shell_exec('sudo rm -rf '.$attributes['folder']);
+	shell_exec('sudo rm -rf ' . $attributes['folder']);
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -467,11 +501,6 @@ function finalize_general($tid, $type, $status) {
  **/
 
 function finalize_scan($tid, $type, $status) {
-	//global $log;
-
-	//$log->info('Task #'.$tid.' '.$type.' '.$status);
-	//$log->info('Task #'.$tid.' start finalizing');
-
 	//LOAD DB
 	$db = new Database();
 	//GET TASK
@@ -482,10 +511,19 @@ function finalize_scan($tid, $type, $status) {
 	//GET TASK ATTRIBUTES
 	$attributes = json_decode($task['attributes'], TRUE);
 
-	if ($type == 'scan_r' || $type == 'scan_p' || $type == "scan_s") {
+	if ($status == 'stopped') {
+		
+		$sp[] = 'fabui/python/r_scan.py';
+		$sp[] = 'fabui/python/s_scan.py';
+		$sp[] = 'fabui/python/p_scan.py';
+		$sp[] = 'fabui/python/pg_scan.py';
+		$sp[] = 'fabui/python/triangulation.py';
+		
+		kill_process_by_name($sp);
+
+	} elseif ($type == 'scan_r' || $type == 'scan_p' || $type == "scan_s") {
 
 		sleep(5);
-
 		$id_obj = $attributes['id_obj'];
 
 		if ($attributes['new'] == 'true') {
@@ -531,42 +569,24 @@ function finalize_scan($tid, $type, $status) {
 		/** UPDATE TASK */
 		$attributes['id_obj'] = $id_obj;
 		$attributes['id_file'] = $id_file;
-		$attributes['monitor'] = json_encode(file_get_contents(TEMP_PATH.'task_monitor.json'));
+		$attributes['monitor'] = json_encode(file_get_contents(TEMP_PATH . 'task_monitor.json'));
 
 		$_data_update['attributes'] = json_encode($attributes);
 		$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
-		
 
 	}
 
-	if ($status == 'stopped') {
-
-		/** KILLING PROCESSES */
-		$_command_kill = 'sudo kill ' . $attributes['scan_pid'];
-		shell_exec($_command_kill);
-
-		if (isset($attributes['pprocess_pid'])) {
-
-			$_command_kill = 'sudo kill ' . $attributes['pprocess_pid'];
-			shell_exec($_command_kill);
-
-		}
-
-	}
-	
-	
 	/** UPDATE TASK */
-	$attributes['monitor'] = json_decode(file_get_contents(TEMP_PATH.'task_monitor.json'), true);
+	$attributes['monitor'] = json_decode(file_get_contents(TEMP_PATH . 'task_monitor.json'), true);
 
 	$_data_update['attributes'] = json_encode($attributes);
 	$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
 	$db -> close();
 
 	// EXEC MACRO END_SCAN
-
 	$_time = time();
-	$_destination_trace = $attributes['folder'] . 'end_scan.trace';
-	$_destination_response = $attributes['folder'] . 'end_scan.log';
+	$_destination_trace = TEMP_PATH . 'macro_trace';
+	$_destination_response = TEMP_PATH . 'macro_response';
 
 	write_file($_destination_trace, '', 'w');
 	chmod($_destination_trace, 0777);
@@ -575,17 +595,39 @@ function finalize_scan($tid, $type, $status) {
 	chmod($_destination_response, 0777);
 
 	/** EXEC */
-	$_command = 'sudo python ' . PYTHON_PATH . 'gmacro.py end_scan ' . $_destination_trace . ' ' . $_destination_response . '  > /dev/null &';
+	$_command = 'sudo python ' . PYTHON_PATH . 'gmacro.py end_scan ' . $_destination_trace . ' ' . $_destination_response . ' 1';
 	shell_exec($_command);
-	
 
 	//UPDATE TASK
 	update_task($tid, $status);
-	sleep(5);
+	//sleep(5);
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
-	unlock();
+	//unlock();
 	//$log->info('Task #'.$tid.' end finalizing');
+
+}
+
+function finalize_update_sw($tid, $status) {
+
+	//LOAD DB
+	$db = new Database();
+	//GET TASK
+	$task = $db -> query('select * from sys_tasks where id=' . $tid);
+	$task = $task[0];
+
+	//GET TASK ATTRIBUTES
+	$attributes = json_decode($task['attributes'], TRUE);
+	$update_info = json_decode(file_get_contents($attributes['monitor']), TRUE);
+	//update software version
+	$db -> update('sys_configuration', array('column' => 'sys_configuration.key', 'value' => 'fabui_version', 'sign' => '='), array('value' => $update_info['version']));
+	$db -> close();
+	//UPDATE TASK
+	update_task($tid, $status);
+	sleep(5);
+	unlock();
+	//REMOVE ALL TEMPORARY FILES
+	shell_exec('sudo rm -rf ' . $attributes['folder']);
 
 }
 
@@ -602,17 +644,16 @@ function send_mail($attributes, $user) {
 	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 	// Additional headers
 	$headers .= 'To: ' . ucfirst($user['first_name']) . ' ' . ucfirst($user['last_name']) . ' <' . $user['email'] . ">\r\n";
-	$headers .= 'From: Your Fabtotum Personal Fabricator <noreplay@fabtotum.com>' . "\r\n";
+	$headers .= 'From: Your Fabtotum Personal Fabricator <noreply@fabtotum.com>' . "\r\n";
 	// Mail it
+	$to = $user['email'];
 	mail($to, $subject, $message, $headers);
 
 }
 
-
-function unlock(){
-	if(file_exists(LOCK_FILE)){
-		shell_exec('sudo rm '.LOCK_FILE);
+function unlock() {
+	if (file_exists(LOCK_FILE)) {
+		shell_exec('sudo rm ' . LOCK_FILE);
 	}
 }
-
 ?>

@@ -44,7 +44,7 @@ $config['heads_list']= array(
 
 
 $config['heads_pids']= array(
-	'hybrid'   => 'M301P15 I5 D30',
+	'hybrid'   => 'M301 P15 I5 D30',
 	'print_v2' => 'M301 P20 I3.5 D30',
 	'mill_v2'  => '',
 //	'laser'    => '',
@@ -65,7 +65,16 @@ $config['heads_max_temp'] = array(
 //	'laser'    => '',
 );
 
+$config['heads_fw_id'] = array(
+	'hybrid'   => 1,
+	'print_v2' => 2,
+	'mill_v2'  => 3,
+);
+
 $config['git_releases_json'] = '/var/www/temp/git_releases.json';
-$config['git_latest_release_json'] = '/var/www/temp/git_latest_release.json'; 
+$config['git_latest_release_json'] = '/var/www/temp/git_latest_release.json';
+
+$config['printables_files'] = array('.gc', '.gcode', '.nc');
+$config['preview_files'] = array('.gc', '.gcode', '.stl'); 
 
 ?>

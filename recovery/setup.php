@@ -6,10 +6,12 @@ include '/var/www/lib/serial.php';
 
 define('TIME_TO_SLEEP', 0.5);
 
+$ini_array = parse_ini_file(SERIAL_INI);
+
 //init serial class
 $serial = new Serial();
-$serial->deviceSet(PORT_NAME);
-$serial->confBaudRate(BOUD_RATE);
+$serial->deviceSet($ini_array['port']);
+$serial->confBaudRate($ini_array['baud']);
 $serial->confParity("none");
 $serial->confCharacterLength(8);
 $serial->confStopBits(1);

@@ -64,8 +64,4 @@
 
 	</div>
 </div>
-<div id="loading-modal" class="mfp-hide white-popup-block">
 
-	<p style="text-align:center;">Loading</p>
-
-</div>

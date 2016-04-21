@@ -16,4 +16,9 @@
 	background: none !important;
 	padding: 0 !important;
 }
+
+.table tr td h4 small {
+	display:inline;
+}
+
 </style>

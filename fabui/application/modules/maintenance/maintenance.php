@@ -19,7 +19,7 @@ class Maintenance extends Module {
 
 	public function spool() {
 
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
 
 		$js_in_page = $this -> load -> view('spool/js', '', TRUE);
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
@@ -85,17 +85,26 @@ class Maintenance extends Module {
 		$js_in_page = $this -> load -> view('selftest/js', $data, TRUE);
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
 
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
 
 		$this -> layout -> view('selftest/index', $data);
 	}
 
 	public function bedcalibration() {
+		
+		$this -> load -> helper('smart_admin_helper');
+		
+		$data = array();
+		
+		$widget_config['data-widget-icon'] = 'fa fa-arrows-h';
+		$widget = widget('bed_calibration' . time(), 'Bed Calibration', $widget_config, $this -> load -> view('bedcalibration/widget', $data, TRUE), false, false, false);
+		
+		$data['widget'] = $widget;
 
 		$js_in_page = $this -> load -> view('bedcalibration/js', '', TRUE);
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
 
-		$this -> layout -> view('bedcalibration/index', '');
+		$this -> layout -> view('bedcalibration/index', $data);
 	}
 
 	public function probecalibration() {
@@ -110,7 +119,7 @@ class Maintenance extends Module {
 
 		$this -> config -> load('fabtotum', TRUE);
 		$this -> load -> helper('form');
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/fuelux/wizard/wizard.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/fuelux/wizard/wizard.min.js', 'comment' => ''));
 
 		$heads_options = array_merge(array('head_shape' => '---'), $this -> config -> item('heads_list', 'fabtotum'));
 		$data['show_feeder'] = $this -> layout -> getFeeder();
@@ -181,7 +190,7 @@ class Maintenance extends Module {
 		$data['mem_free']  = explode(' ', $row_mem_free);
 		$data['mem_free']  = $data['mem_free'][count($data['mem_free']) - 2];
 		$data['mem_used_percentage'] = floor((($data['mem_total'] - $data['mem_free']) / $data['mem_total']) * 100);
-
+		
 		// === BOARD TEMPERATURE
 		$output       = shell_exec('cat /sys/class/thermal/thermal_zone0/temp');
 		$data['temp'] = intval($output) / 1000;
@@ -203,13 +212,18 @@ class Maintenance extends Module {
 		$data['table_header'] = explode(' ', $data['table_rows'][0]);
 		$data['table_rows']   = array_splice($data['table_rows'], 1);
 		$data['table_header'] = array_splice($data['table_header'], 0, count($data['table_header']) - 1);
-
+		
+		
+		// == FABTOTUM INFO
+		$data['fabtotum_info'] = json_decode(shell_exec('python '.PYTHONPATH.'sysinfo.py'), true);
+		$data['unit_configs']  = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
+		
 		$widget_content = $this -> load -> view('systeminfo/widget', $data, TRUE);
 		
 		
 		$data['widget'] = widget('systeminfo' . time(), 'System Info', null, $widget_content, true, false, true);
 		
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
 		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('systeminfo/js', $data, TRUE), 'comment' => ''));
 		$this -> layout -> view('systeminfo/index', $data);
 

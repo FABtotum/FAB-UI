@@ -1,13 +1,90 @@
+
+<style>.hardware-save{margin-right:10px;}</style>
 <div class="tab-content padding-10">
-	<!-- safety -->
-	<div class="tab-pane fade active in" id="safety">
+	
+	<!-- hardware -->
+	<div class="tab-pane fade in active" id="hardware">
+	
+		
 		<div class="row">
 			<div class="col-sm-12">
-				<p>Enable / disble warnings</p>
+				<div class="smart-form">
+					
+					<fieldset>
+						<section>
+							<label class="radio"><input type="radio" name="settings_type" value="default"><i></i>Use default settings</label>
+							<label class="radio"><input type="radio" name="settings_type" value="custom"><i></i>Use custom settings</label>
+						</section>
+						<hr class="simple">
+						
+						<div class="row custom-settings">
+							<section class="col col-6">
+								<label class="label">Engage/Disengage Feeder option</label>
+								<label class="select">
+									<select name='show_feeder' id="show_feeder">
+										<option value="yes">Yes</option>
+										<option value="no" <?php echo !$show_feeder ? 'selected="selected"' : ''; ?>>No</option>
+									</select> <i></i> </label>
+							</section>
+							
+							
+							<section class="col col-6">
+								<label class="label">Invert X Endstop Logic</label>
+								<label class="select">
+									<select name='invert_x_endstop_logic' id="invert_x_endstop_logic">
+										<option value="no" >No</option>
+										<option value="yes" <?php echo $invert_x_endstop_logic ?'selected="selected"' : '';  ?>>Yes</option>
+									</select> <i></i> </label>
+								</label>
+							</section>
+							
+						</div>
+						
+						<div class="row custom-settings">
+							<section class="col col-3">
+								<label class="label">Extruder steps per unit E mode</label>
+								<label class="input">
+									<input type="text" id="hw-feeder-extruder-steps-per-unit-e" name="hw-feeder-extruder-steps-per-unit-e" placeholder="" value="<?php echo $hw_feeder_extruder_steps_per_unit_e_mode; ?>">
+								</label>
+							</section>
+							<section class="col col-3">
+								<label class="label">Extruder steps per unit A mode</label>
+								<label class="input">
+									<input type="text" id="hw-feeder-extruder-steps-per-unit-a" name="hw-feeder-extruder-steps-per-unit-a" placeholder="" value="<?php echo $hw_feeder_extruder_steps_per_unit_a_mode; ?>">
+								</label>
+								
+							</section>
+						</div>
+						
+						<div class="row custom-settings">
+							<section class="col col-6">
+								<p >NOTE: If you change values for Extruder steps you have to restart the FABtotum so that can values take effect</p>
+							</section>
+						</div>
+						
+						<section class="custom-settings">
+							<label class="label">Custom overrides</label>
+							<label class="textarea"> <textarea rows="8" name="custom_overrides" id="custom_overrides"><?php echo $custom_overrides; ?></textarea> </label>
+						</section>
+						
+							
+					</fieldset>
+					
+				</div>
+			</div>
+		</div>
+	
+		
+	</div>
+	<!-- safety -->
+	<div class="tab-pane fade in" id="safety">
+		<div class="row">
+			<div class="col-sm-12">
+				<p>Enable / disable warnings</p>
 				<div class="smart-form">
 					<fieldset>
 						<section>
-							<label class="label">Door</label>
+							<label class="label">Door Safety Messages</label>
 							<div class="inline-group">
 								<label class="radio">
 									<input type="radio" name="safety-door" value="1" <?php echo $_safety_door == '1' ? 'checked="checked"' : '' ?> >
@@ -18,6 +95,21 @@
 							</div>
 						</section>
 					</fieldset>
+					
+					<fieldset>
+						<section>
+							<label class="label">Machine Limits Collision warning</label>
+							<div class="inline-group">
+								<label class="radio">
+									<input type="radio" name="collision-warning" value="1" <?php echo $_collision_warning == '1' ? 'checked="checked"' : '' ?> >
+									<i></i>Enable</label>
+								<label class="radio">
+									<input type="radio" name="collision-warning" value="0" <?php echo $_collision_warning == '0' ? 'checked="checked"' : '' ?>>
+									<i></i>Disabled</label>
+							</div>
+						</section>
+					</fieldset>
+					
 				</div>
 			</div>
 		</div>
@@ -30,7 +122,7 @@
 				<div class="smart-form">
 					<fieldset>
 						<section>
-							<label class="label">Switch</label>
+							<label class="label">Default Homing Direction</label>
 							<div class="inline-group">
 								<label class="radio">
 									<input type="radio" name="switch" value="0" <?php echo $_switch == '0' ? 'checked="checked"' : '' ?> >
@@ -43,7 +135,7 @@
 					</fieldset>
 					<fieldset>
 						<section>
-							<label class="label">Z-Probe</label>
+							<label class="label">Use the Z Touch Probe during homing</label>
 							<div class="inline-group">
 								<label class="radio">
 									<input type="radio" name="zprobe" value="0" <?php echo $_zprobe == '0' ? 'checked="checked"' : '' ?> >
@@ -87,7 +179,7 @@
 						</div>
 						<div class="row">
 							<section class="col col-12">
-								<p><strong>Warning: You have to restart the FABtotum so that some customized input actions take effect</strong></p>
+								<p><strong>Note: you must restart the FABtotum to apply these changes</strong></p>
 							</section>
 						</div>
 					</fieldset>
@@ -130,7 +222,7 @@
 						</div>
 						<div class="row">
 							<section class="col col-12">
-								<p><strong>NOTE: If you change values for Extruder steps you have to restart the FABtotum so that can values take effect</strong></p>
+								<p><strong>Note: you must restart the FABtotum to apply these changes</strong></p>
 							</section>
 						</div>
 					</fieldset>
@@ -230,5 +322,10 @@
 </div>
 
 <div class="widget-footer text-right">
-	<button id="save-button" class="btn btn-primary" type="button"><i class="fa fa-save"></i>&nbsp;Save</button>
+	
+	<!--<button value="save" type="button"  class="btn btn-primary hardware-save"><i class="fa fa-save"></i> Save</button> -->
+	<button value="exec" type="button"  class="btn btn-primary hardware-save"><i class="fa fa-save"></i> Save & Exec</button>
+	
+	<button id="save-button" class="btn btn-primary" type="button" style="display:none;"><i class="fa fa-save"></i>&nbsp;Save</button>
 </div>
+

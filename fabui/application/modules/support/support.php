@@ -9,8 +9,7 @@ class Support extends Module {
 		$this->load->helper('print_helper');
 		
 		if(is_printer_busy()){
-            $this->layout->set_printer_busy(true);
-            
+            $this->layout->set_printer_busy(true);   
         }
         
         

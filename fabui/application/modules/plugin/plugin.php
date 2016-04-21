@@ -107,7 +107,7 @@ class Plugin extends Module {
 			redirect('plugin/' . $plugin . '/activate');
 		}
 
-		redirect('plugin');
+		redirect('plugin/index');
 
 	}
 
@@ -131,7 +131,7 @@ class Plugin extends Module {
 			redirect('plugin/' . $plugin . '/deactivate');
 		}
 
-		redirect('plugin');
+		redirect('plugin/index');
 
 	}
 
@@ -168,7 +168,7 @@ class Plugin extends Module {
 		} else {
 			$this -> session -> set_flashdata('message', "Plugin <strong>" . $plugin . "</strong> doesn't exists");
 			$this -> session -> set_flashdata('message_type', 'warning');
-			redirect('plugin');
+			redirect('plugin/index');
 
 		}
 

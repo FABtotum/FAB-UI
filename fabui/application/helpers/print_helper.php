@@ -51,7 +51,7 @@ if ( ! function_exists('create_default_config'))
 		
 		$dafault_config = array(
 			'color'         => array('r'=>255, 'g'=>255, 'b'=>255),
-			'safety'        => array('door'=>0),
+			'safety'        => array('door'=>0, 'collision-warning'=>1),
 			'switch'        => 0,
 			'feeder'        => array('disengage-offset'=> 2, 'show' => true),
 			'milling'       => array('layer-offset' => 12),
@@ -67,6 +67,23 @@ if ( ! function_exists('create_default_config'))
 		
 		write_file(CONFIG_FOLDER . 'config.json', json_encode($dafault_config));
         
+     }
+	 
+}
+
+
+if ( ! function_exists('get_head'))
+{
+	/**
+	 * 
+	 * @return setted head
+	 */
+	function get_head(){
+		
+		$configs = json_decode(file_get_contents(CONFIG_FOLDER . 'config.json'), true);
+		
+		return isset($configs['hardware']['head']['type']) ? $configs['hardware']['head']['type'] : 'hybrid';
+		
     
      }
 	 

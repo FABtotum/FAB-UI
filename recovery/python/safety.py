@@ -16,7 +16,7 @@ GPIO.setup(2, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 emergency=False #default emergency flag
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
 
 safety_log_path="/var/www/temp/fab_ui_safety.json" #/var/www/temp
 

@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$command = 'sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:' . $fw_file . ':i';
 		$response_flash = shell_exec($command);
 		sleep(10);
+		shell_exec('sudo python '.PYTHON_PATH.'baud.py');
 		$start_up = shell_exec('sudo python /var/www/fabui/python/gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log');
 		sleep(10);
 		include '/var/www/fabui/script/boot.php';
@@ -85,6 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		    shell_exec($_command);
 			sleep(10);
 			$response_flash = file_get_contents($log);
+			
+			shell_exec('sudo python '.PYTHON_PATH.'baud.py');
 			shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log > /dev/null &');
 			sleep(10);
 			
@@ -242,9 +245,11 @@ include 'header.php';
 
 function get_fw_version(){
 	
+	$ini_array = parse_ini_file(SERIAL_INI);
+	
 	$serial = new Serial();
-	$serial->deviceSet(PORT_NAME);
-	$serial->confBaudRate(BOUD_RATE);
+	$serial->deviceSet($ini_array['port']);
+	$serial->confBaudRate($ini_array['baud']);
 	$serial->confParity("none");
 	$serial->confCharacterLength(8);
 	$serial->confStopBits(1);

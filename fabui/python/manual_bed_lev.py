@@ -7,11 +7,15 @@ import numpy as np
 import json
 import ConfigParser
 import logging
+import re
 
 
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
+
+serialconfig = ConfigParser.ConfigParser()
+serialconfig.read('/var/www/lib/serial.ini')
 
 #check if LOCK FILE EXISTS
 if os.path.isfile(config.get('task', 'lock_file')):
@@ -57,6 +61,7 @@ cycle=True
 s_warning=s_error=s_skipped=0
 probe_height=50.0
 milling_offset=0.0
+probe_offset_security=15
 
 screw_turns=["" for x in range(4)]
 screw_height=["" for x in range(4)]
@@ -78,8 +83,9 @@ def write_status(status):
     return
 
 def trace(string):
-	logging.info(string)
-	return
+    logging.info(string)
+    print string
+    return
 	
 def printlog():
 	global logfile
@@ -193,12 +199,20 @@ write_status(True)
 trace("Manual Bed Calibration Wizard Initiated")
 
 '''#### SERIAL PORT COMMUNICATION ####'''
-serial_port = config.get('serial', 'port')
-serial_baud = config.get('serial', 'baud')
+serial_port = serialconfig.get('serial', 'port')
+serial_baud = serialconfig.get('serial', 'baud')
 serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 #initialize serial
 #serial = serial.Serial(port, baud, timeout=0.6)
+
+''' get probe length '''
+serial.write("M503\r\n")
+reply = serial.read(4096)
+match = re.search('Z Probe Length:\s-((?:(?![\n\s]).)*)', reply)
+if match != None:
+    probe_height = (float(match.group(1)) + 1) + probe_offset_security
+
 serial.flushInput()
 
 json_f = open("/var/www/fabui/config/config.json")
@@ -234,14 +248,14 @@ if(skip_homing!=1):
 	#M402 #DOUBLE SAFETY!
 	macro("M402","ok",2,"Retracting Probe (safety)",1, verbose=False)	
 
-macro("G0 Z"+str(probe_height+10)+" F5000","ok",5,"Moving to start Z height",10) #mandatory!
+macro("G0 Z"+str(probe_height)+" F5000","ok",5,"Moving to start Z height",10) #mandatory!
 
 for (p,point) in enumerate(probed_points):
 
 	#real carriage position
 	x=point[0]-17
 	y=point[1]-61.5
-	macro("G0 X"+str(x)+" Y"+str(y)+" Z40 F10000","ok",15,"Moving to Pos",3, warning=True,verbose=False)		
+	macro("G0 X"+str(x)+" Y"+str(y)+" Z"+str(probe_height)+" F10000","ok",15,"Moving to Pos",3, warning=True,verbose=False)		
 	msg="Measuring point " +str(p+1)+ " of "+ str(len(probed_points)) + " (" +str(num_probes) + " times)"
 	trace(msg)
 	#Touches 4 times the bed in the same position
@@ -266,8 +280,14 @@ for (p,point) in enumerate(probed_points):
 			pass
 			
 		#print serial_reply
+		#if probes==0:
+		#print serial_reply
 		if probes==0:
-			trace("Not enough contacts. Check bed height.")
+			trace("Aborting Not enough contacts. Please check bed height!")
+			call("sudo python /var/www/fabui/python/force_reset.py", shell=True) #safety reset.
+			time.sleep(5)
+			call("sudo python /var/www/fabui/python/gmacro.py start_up log.log trace.trace", shell=True) #safety reset.
+			time.sleep(1)
 			sys.exit();
 		#get the z position
 		if serial_reply!="":

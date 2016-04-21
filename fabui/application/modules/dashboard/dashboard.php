@@ -37,8 +37,8 @@ class Dashboard extends Module {
 		
 		
 		//
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/fancybox/jquery.fancybox.pack.js', 'comment' => 'javascript for the noUISlider'));
-        $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/fancybox/jquery.fancybox.css', 'comment' => 'javascript for the noUISlider'));
+		//$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/fancybox/jquery.fancybox.pack.js', 'comment' => 'javascript for the noUISlider'));
+        //$this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/fancybox/jquery.fancybox.css', 'comment' => 'javascript for the noUISlider'));
 		
 		$this -> layout -> view('index/index', $data);
 	}

@@ -10,7 +10,7 @@
 				
 				<div class="row custom-settings">
 					<section class="col col-6">
-						<label class="label">Feeder</label>
+						<label class="label">Engage/Disengage Feeder option</label>
 						<label class="select">
 							<select name='show_feeder' id="show_feeder">
 								<option value="yes">Yes</option>

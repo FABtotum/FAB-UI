@@ -63,13 +63,13 @@
 						<section class="col col-6">
 							<label class="label">Start</label>
 							<label class="input">
-								<input class="coordinates" id="x1" type="number" type="number" max="223" min="0" />
+								<input class="coordinates" id="x1" type="number" type="number" max="223" min="1" />
 							</label>
 						</section>
 						<section class="col col-6">
 							<label class="label">End</label>
 							<label class="input">
-								<input class="coordinates" id="x2" type="number" max="223" min="0" />
+								<input class="coordinates" id="x2" type="number" max="223" min="1" />
 							</label>
 						</section>
 						<!--
@@ -81,6 +81,7 @@
 						</section>
 						-->
 						<input class="coordinates" id="a_offset" type="hidden" value="0" />
+						<input id="z_offset" type="hidden" value="" >
 					
 				</fieldset>
             </div>
@@ -175,7 +176,7 @@ $('.coordinates').on('keyup', function(e){
 });
 
 setTimeout(function() {
-	jcrop_api.setSelect([0,101,223,141, 50, 50]);
+	jcrop_api.setSelect([1,101,223,141, 50, 50]);
 }, 100);
 
 

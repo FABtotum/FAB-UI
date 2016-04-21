@@ -37,10 +37,16 @@ $_debug_file         = $_destination_folder.'update_'.$_type.'_'.$id_task.'_'.$_
 //$_uri_monitor        = '/tasks/update_'.$_type.'_'.$id_task.'_'.$_time.'/'.'update_'.$_type.'_'.$id_task.'_'.$_time.'.monitor';
 $_uri_monitor        = '/temp/task_monitor.json';
 
+$_trace_file         = TEMP_PATH.'task_trace';
+
 mkdir($_destination_folder, 0777);            
-/** create print monitor file */
+/** init monitor file */
 write_file($_monitor_file, '', 'w');
 chmod($_monitor_file, 0777);
+
+/** init trace file */
+write_file($_trace_file, '', 'w');
+chmod($_trace_file, 0777);
 
 
 /** SET DOWNLOAD SCRIPT */
@@ -53,10 +59,9 @@ switch($_type){
         break;
 }
 
-$_command          = 'sudo php '.FABUI_PATH.'script/'.$_script.' '.$id_task.' '.$_destination_folder.' '.$_monitor_file.' 2>'.$_debug_file.' > /dev/null & echo $!';
+$_command          = 'sudo php '.FABUI_PATH.'script/'.$_script.' '.$id_task.' '.$_destination_folder.' '.$_monitor_file.' 2>'.$_debug_file.' > '.$_trace_file.' & echo $!';
 $_response_command = shell_exec ( $_command);
-$_pid              = trim(str_replace('\n', '', $_response_command));
-
+$_pid              = intval(trim(str_replace('\n', '', $_response_command))) + 1;
 
 
 /** UPDATE TASKS ATTRIBUTES */

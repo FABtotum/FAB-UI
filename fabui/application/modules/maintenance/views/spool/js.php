@@ -102,7 +102,7 @@
     function pre_unload(){
     	
     	IS_MACRO_ON = true;
-    	openWait("Plese wait");
+    	openWait("<i class='fa fa-circle-o-notch fa-spin'></i> Plese wait");
     	
     	$.ajax({
     		type:"POST",

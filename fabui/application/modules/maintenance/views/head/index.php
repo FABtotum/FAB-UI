@@ -1,3 +1,4 @@
+<style>.jumbotron{padding:20px;} .jumbotron p {font-size: 15px;} </style>
 <div class="row">
 	<div class="col-sm-12 alerts-container">
 <?php if(!isset($units['hardware']['head']['type']) || $units['hardware']['head']['type'] == ''): ?>
@@ -6,7 +7,7 @@
 		</div>
 <?php else: ?>
 		<div class="alert alert-info animated  fadeIn" role="alert">
-			<i class="fa fa-info-circle"></i> Actually your <strong>FABtotum Personal Fabricator</strong> is setted for the <strong><?php echo  $units['hardware']['head']['description']; ?></strong>
+			<i class="fa fa-info-circle"></i> Currently  your <strong>FABtotum Personal Fabricator</strong> is configured to use <strong><?php echo  $units['hardware']['head']['description']; ?></strong>
 		</div>
 <?php endif; ?>
 	</div>

@@ -21,8 +21,8 @@
 	</div>
 	<div class="col-sm-4">
 		<div class="well  well-light">
-			<h2 class="text-center"><a style="cursor:pointer;" target="_blank" href="http://support.fabtotum.com/manual.pdf"><i class="fa fa-book fa-border fa-2x"></i></a></h2>
-			<p class="text-center">Download the latest manuals</p>
+			<h2 class="text-center"><a style="cursor:pointer;" target="_blank" href="http://support.fabtotum.com/manual_eng.pdf"><i class="fa fa-book fa-border fa-2x"></i></a></h2>
+			<p class="text-center">First Setup</p>
 		</div>
 	</div>
 	<div class="col-sm-4">

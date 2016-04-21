@@ -1,30 +1,25 @@
 <?php
 /*
 Widget Name: Cam
-Widget URI: http://www.thingiverse.com/thing:35248
+Widget URI: http://www.fabtotum.com
 Version: 1.0
 Description: Cam screenshots
 Author: FABteam
-Widget Slug: tasks
+Widget Slug: raspicam
 */
 class Cam_widget extends Widget {
     
    	public function __construct()
 	{
-	   
         parent::__construct();
 	}
        
     
     public function content(){
-        
-        
+    	   
         $CI =& get_instance();
 		$CI->load->helper('form');
-		
-        
 		// ================================== init widget ============
-		
         $config['icon']             = 'fa fa-camera';
 		$config['togglebutton']     = 'true';
 		$config['fullscreenbutton'] = 'true';
@@ -37,11 +32,8 @@ class Cam_widget extends Widget {
 		if(!file_exists($settings_file)){
 
 			shell_exec('sudo chmod 777 '.str_replace(basename(__FILE__),  'data', __FILE__));
-						
 			$CI->load->helper('file');
 			write_file($settings_file, json_encode($this->get_default_settings()));
-			
-			
 		}
 		
 		shell_exec('sudo chmod 777 '.$settings_file);
@@ -49,11 +41,8 @@ class Cam_widget extends Widget {
 		
 		$data['settings'] = $settings;
 		
-		
-		
-		
 		if(!isset($data['settings']['flip'])){
-			$data['settings']['flip'] = 'hf';
+			$data['settings']['flip'] = 'bflip';
 		}
 		
 		// ============================== load parameters options list
@@ -79,7 +68,6 @@ class Cam_widget extends Widget {
     }
 
 	function get_default_settings(){
-		
 		return array(
 			'encoding' => 'jpg',
 			'width' => '640',
@@ -96,7 +84,7 @@ class Cam_widget extends Widget {
 			'exposure' => 'auto',
 			'rotation' => '90',
 			'metering' => 'average',
-			 	
+			'flip' => 'bflip'
 		);	
 	}
 }

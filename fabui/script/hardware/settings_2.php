@@ -8,6 +8,8 @@
 require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/serial.php';
 
+$ini_array = parse_ini_file(SERIAL_INI);
+
 define('HARDWARE_ID', 2);
 define('SHOW_FEEDER', true);
 define('E_MODE', 3048.1593);
@@ -16,8 +18,8 @@ define('A_MODE', 177.777778);
 
 //init serial
 $serial = new Serial;
-$serial->deviceSet(PORT_NAME);
-$serial->confBaudRate(BOUD_RATE);
+$serial->deviceSet($ini_array['port']);
+$serial->confBaudRate($ini_array['baud']);
 $serial->confParity("none");
 $serial->confCharacterLength(8);
 $serial->confStopBits(1);

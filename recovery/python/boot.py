@@ -6,7 +6,7 @@ import ConfigParser
 from subprocess import call
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini') 
+config.read('/var/www/lib/config.ini') 
 
 
 

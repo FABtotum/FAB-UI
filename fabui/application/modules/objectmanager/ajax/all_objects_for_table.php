@@ -68,7 +68,9 @@ foreach($_objects as $obj){
 	
 	$_info_td = $obj['id'].'-'.$obj['obj_name'];
 	
-    $_rows[] = array($_info_td, $_detail_button, $checkbox, $_link_edit, $obj['obj_description'], mysql_to_human($obj['date_insert']), $_files);          
+	
+	
+    $_rows[] = array($_info_td, $_detail_button, $checkbox, $_link_edit, $obj['obj_description'], date('d/m/Y', strtotime($obj['date_insert'])), $_files);          
 	
 
 

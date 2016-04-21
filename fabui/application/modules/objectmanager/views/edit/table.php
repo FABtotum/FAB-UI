@@ -18,10 +18,11 @@
         	<th class="center" width="20px"></th>
         	<th class="center table-checkbox" width="20px"><label class="checkbox-inline"><input type="checkbox" class="checkbox style-0 select-all"><span></span></label></th>
             <th width="100px">Name</th>
-            <th class="hidden-xs">Type</th>
-            <th class="hidden-xs">Note</th>
-            <th class="hidden-xs">Date</th>
-            <th class="hidden-xs" style="width: 100px;">Size</th>
+            <th class="hidden-xs hidden-mobile">Type</th>
+            <th class="hidden-xs hidden-mobile">Note</th>
+            <th class="hidden-xs hidden-mobile">Date</th>
+            <th class="hidden-xs hidden-mobile hidden" style="width: 100px;">Size</th>
+            <th class="text-center" width="20px"></th>
           
         </tr>
     </thead>
@@ -40,10 +41,17 @@
 		        </label>
         	</td>
             <td><?php echo $_file -> raw_name; ?></td>
-            <td class="hidden-xs"><?php echo str_replace('.', '', $_file -> file_ext); ?> <?php echo $_file -> print_type != '' ? '(' . $_file -> print_type . ')' : ''; ?></td>
-            <td class="hidden-xs"><?php echo $_file -> note; ?></td>
-            <td class="hidden-xs"><?php echo mysql_to_human($_file ->insert_date); ?></td>
-            <td class="hidden-xs"><?php echo roundsize($_file -> file_size); ?></td>
+            <td class="hidden-xs hidden-mobile"><?php echo str_replace('.', '', $_file -> file_ext); ?> <?php echo $_file -> print_type != '' ? '(' . $_file -> print_type . ')' : ''; ?></td>
+            <td class="hidden-xs hidden-mobile"><?php echo $_file -> note; ?></td>
+            <td class="hidden-xs hidden-mobile"><?php echo date('d/m/Y', strtotime($_file ->insert_date)); ?></td> 
+            <td class="hidden-xs hidden-mobile hidden"><?php echo roundsize($_file -> file_size); ?></td>
+            <td class="text-center" width="20px">
+            	<?php if(in_array($_file->file_ext, $_printable_files)): ?>
+            	<?php $make_label = $_file->print_type == 'additive' ? 'Print' : 'Mill' ?>
+            	<?php $make_url =  $_file->print_type == 'additive' ? 'print' : 'mill'; ?>
+            	<a rel="tooltip" data-placement="left" data-original-title="<?php echo $make_label ?> this file" class="btn btn-success btn-xs" href="<?php echo site_url('make/'.$make_url).'?obj='.$_id_object.'&file='.$_file->id ?>"><i class="fa fa-play fa-rotate-90"></i> <span class="hidden-xs hidden-mobile"><?php echo $make_label; ?></span></a>
+            	<?php endif; ?>
+            </td>
             
         </tr>
         <?php endforeach; ?>

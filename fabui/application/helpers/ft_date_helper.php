@@ -1,7 +1,7 @@
 <?php
-
+/*
 if (!function_exists('mysql_to_human')) {
-	function mysql_to_human($date, $format = 'YYYY/mm/dd') {
+	function mysql_to_human($date, $format = 'YYYY/mm/dd', $time = true) {
 
 		if ($date == '')
 			return '';
@@ -16,7 +16,7 @@ if (!function_exists('mysql_to_human')) {
 
 		$date = $temp_date[2] . '/' . $temp_date[1] . '/' . $temp_date[0];
 
-		if (isset($temp[1]) && $temp[1] != '') {
+		if (isset($temp[1]) && $temp[1] != '' && $time == true) {
 			$date .= ' ' . $temp[1];
 		}
 
@@ -25,6 +25,7 @@ if (!function_exists('mysql_to_human')) {
 	}
 
 }
+*/
 
 if (!function_exists('elapsed_time')) {
 
@@ -164,13 +165,21 @@ function dateDiff($time1, $time2, $precision = 6) {
 			}
 			// Add value and interval to times array
 			//$times[] = $value . " " . $interval;
-			$times[$interval] = $value;
+			$times[$interval] = sprintf("%02d", $value);
 			$count++;
 		}
 	}
 
 	// Return string with times
 	return $times;
+}
+
+function durationTime($time1, $time2) {
+
+	$dateDiff = dateDiff($time1, $time2);
+
+	//print_r($dateDiff);
+
 }
 
 function seconds_to_time($seconds) {
@@ -192,4 +201,34 @@ function date_to_mysql($date, $time = FALSE, $separator = "/") {
 	}
 
 	return $return;
+}
+
+/**
+ *
+ */
+function sumTimes($times) {
+	
+	$seconds = 0;
+	foreach ($times as $time) {
+		list($hour, $minute, $second) = explode(':', $time);
+		$seconds += $hour * 3600;
+		$seconds += $minute * 60;
+		$seconds += $second;
+	}
+	$hours = floor($seconds / 3600);
+	$seconds -= $hours * 3600;
+	$minutes = floor($seconds / 60);
+	$seconds -= $minutes * 60;
+	// return "{$hours}:{$minutes}:{$seconds}";
+	return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+}
+
+function time_to_seconds($time) {
+
+	$time = preg_replace("/^([\d]{1,2})\:([\d]{2})$/", "00:$1:$2", $time);
+
+	sscanf($time, "%d:%d:%d", $hours, $minutes, $seconds);
+
+	return $hours * 3600 + $minutes * 60 + $seconds;
+
 }

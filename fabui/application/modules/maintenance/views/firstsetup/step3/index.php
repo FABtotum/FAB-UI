@@ -43,12 +43,7 @@
 					</div>
 					<div class="col-sm-6 text-center">
 						
-						<h4 class="text-center">Screw or unscrew following the indication given for each point.
-						<br>
-						Green points are optimally leveled.
-						<br>
-						Always follow the order without skipping any point (even green ones) and repeat until all the points are green.Arrows show the direction (CW or CCW) as seen from above.</h4>
-						<div class="todo margin-top-10"></div>
+						<div class="bed-calibration-result-response"></div>
 						<hr>
 						
 							<a href="javascript:void(0);" class="btn btn-sm btn-primary btn-prev "><i class="fa fa-arrow-left"></i> Prev</a>

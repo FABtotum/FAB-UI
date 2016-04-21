@@ -3,7 +3,7 @@ import json
 import ConfigParser
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
 
 ''' LOAD CUSTOM FABTOTUM SETTINGS '''
 json_config_settings = open(config.get('printer', 'settings_file'))

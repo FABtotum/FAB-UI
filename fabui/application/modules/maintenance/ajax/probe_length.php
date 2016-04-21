@@ -4,12 +4,13 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/serial.php';
 
+$ini_array = parse_ini_file(SERIAL_INI);
 
 $serial = new Serial();
 $probe_lenght = 0;
     
-$serial->deviceSet(PORT_NAME);
-$serial->confBaudRate(BOUD_RATE);
+$serial->deviceSet($ini_array['port']);
+$serial->confBaudRate($ini_array['baud']);
 $serial->confParity("none");
 $serial->confCharacterLength(8);
 $serial->confStopBits(1);

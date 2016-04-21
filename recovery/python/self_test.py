@@ -13,7 +13,7 @@ import logging
 
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini') 
+config.read('/var/www/lib/config.ini') 
 
 #read config units from config
 json_f = open(config.get('printer', 'settings_file'))

@@ -2,13 +2,17 @@
 <html lang="en-us">
 	<head>
 		<meta charset="utf-8">
-		<!-- META TAG -->
-		<?php echo $_layout_meta_tag ?>
+		<meta name="description" content="FABtotum Web User Interface">
+		<meta name="author" content="FABtotum Development Team">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="HandheldFriendly" content="true">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<!-- END META TAG -->
 		<title><?php echo $_layout_title ?></title>
 		<!-- FAVICONS -->
 		<link rel="shortcut icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon">
-		<link rel="icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon">
+		<link rel="icon"          href="/assets/img/favicon/favicon.ico" type="image/x-icon">
 		<!-- END FAVICONS -->
 		<!-- CSS FILES -->
 		<?php echo $_css_files ?>
@@ -27,7 +31,7 @@
 				<span id="logo">
 					<img src="/assets/img/<?php echo $_skin == 'smart-style-0' ? 'logo-0.png' : 'logo-3.png' ?>">
 				</span>
-				<span id="activity" class="activity-dropdown">
+				<span id="fabtotum-activity" class="activity-dropdown">
 					<i class="fa fa-user"></i>
 					<b class="badge">0</b>
 				</span>
@@ -35,11 +39,11 @@
 				<div class="ajax-dropdown">
 					<div class="btn-group btn-group-justified" data-toggle="buttons">
 						<label class="btn btn-default update-list  notification">
-							<input type="radio" name="activity" id="<?php echo site_url('controller/updates') ?>">
+							<input type="radio" name="fabtotum-activity" id="<?php echo site_url('updates/notification') ?>">
 							<span>Updates (0)</span>
 						</label>
 						<label class="btn btn-default task-list notification">
-							<input type="radio"  name="activity" id="<?php echo module_url('controller').'ajax/tasks.php' ?>">
+							<input type="radio"  name="fabtotum-activity" id="<?php echo module_url('controller').'ajax/tasks.php' ?>">
 							<span>Tasks (0)</span>
 						</label>
 					</div>
@@ -64,7 +68,7 @@
 				</div>
 				<!-- end collapse menu button -->
 				
-				<!-- PROFILE BUTTON -->
+				<!-- PROFILE BUTTON 
 				<div class="btn-header transparent pull-right hidden-xs">
 					<span>
 						<?php echo anchor( 'profile', ' <i class="fa fa-user"></i> ', 'rel="tooltip" data-placement="left" title="Profile" style="cursor: pointer !important"'); ?>
@@ -78,27 +82,50 @@
 				<!-- LOGOUT BUTTON -->
 				<div id="log-out" class="btn-header transparent pull-right hidden-xs">
 					<span>
-						<?php echo anchor( 'login/out', '<i class="fa fa-power-off"></i>', ' rel="tooltip" data-placement="left"  title="Power Off/Log Out" data-user-name="'.$_SESSION['user']['first_name'].'" data-logout-msg="What do you want to do?" data-action="userLogout" style="cursor: pointer !important"'); ?>
+						<?php echo anchor( 'login/out', '<i class="fa fa-power-off"></i>', ' rel="tooltip" data-placement="left"  title="Power Off/Log Out" data-user-name="'.$_SESSION['user']['first_name'].'" data-logout-msg="What do you want to do?" data-action="fabUserLogout" style="cursor: pointer !important"'); ?>
 					</span>
 				</div>
 				<!-- END LOGOUT BUTTON -->
+				
+				
+				<!-- #Voice Command: Start Speech
+						<div id="speech-btn" class="btn-header transparent pull-right hidden-sm hidden-xs">
+							<div> 
+								<a href="javascript:void(0)" title="Voice Command" data-action="voiceCommand"><i class="fa fa-microphone"></i></a> 
+								<div class="popover bottom"><div class="arrow"></div>
+									<div class="popover-content">
+										<h4 class="vc-title">Voice command activated <br><small>Please speak clearly into the mic</small></h4>
+										<h4 class="vc-title-error text-center">
+											<i class="fa fa-microphone-slash"></i> Voice command failed
+											<br><small class="txt-color-red">Must <strong>"Allow"</strong> Microphone</small>
+											<br><small class="txt-color-red">Must have <strong>Internet Connection</strong></small>
+										</h4>
+										<a href="javascript:void(0);" class="btn btn-success" onclick="commands.help()">See Commands</a> 
+										<a href="javascript:void(0);" class="btn bg-color-purple txt-color-white" onclick="$('#speech-btn .popover').fadeOut(50);">Close Popup</a> 
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- end voice command -->
+
+				
+				
 			</div>
 			
 			<div class="pull-right emergency-container">
 				
-				<!-- EMERGENCY BUTTON -->
+				<!-- RESET CONTROLLER BUTTON -->
 				<div class="btn-header transparent">
 					<span>
 						<?php echo anchor( '#', '<i class="fa fa-bolt"></i>', 'rel="tooltip" data-placement="left" data-html="true" data-original-title="Reset Controller.<br>This will reset control board"  style="cursor: pointer !important" data-action="resetController" data-reset-msg="This button will reset control board, continue?"'); ?>
 					</span>
 				</div>
-				<!-- END EMERGENCY BUTTON-->
+				<!-- END RESET CONTROLLER BUTTON-->
 				
 			</div>
 			
 			
 			<div class="pull-right emergency-container">
-				
 				<!-- EMERGENCY BUTTON -->
 				<div class="btn-header transparent">
 					<span>
@@ -106,25 +133,68 @@
 					</span>
 				</div>
 				<!-- END EMERGENCY BUTTON-->
-				
 			</div>
-	
 			
-			
-			<div class="pull-right top-bar-temperatures hidden-xs">
-					<span><i class=" icon-fab-term"></i> </span>
+			<!-- JOG SHORTCUT BUTTONS -->
+			<div class="pull-right pad-container hidden-xs" style="position: relative;">
+				<div class="btn-header transparent">
+					<span id="jog-shortcut">
+						<a href="javascript:void(0)" style="cursor: pointer !important;" title="Jog" rel="tooltip" data-placement="left" data-html="true" data-original-title="Jog"><i class="fa fa-gamepad"></i></a>
+					</span>
+					
+					<div class="top-ajax-jog-dropdown">
+						<div class="">
+							<div class="btn-group-vertical">
+								<a  href="javascript:void(0)" data-attribue-direction="up-left"  data-attribute-keyboard="103" class="btn btn-default btn-circle btn-xl jog directions "> <i class="fa fa-arrow-left fa-1x fa-rotate-45"> </i> </a>
+								<a href="javascript:void(0)" data-attribue-direction="left"      data-attribute-keyboard="100" class="btn btn-default btn-circle btn-xl jog directions "> <i class="fa fa-arrow-left "> </i> </a>
+								<a href="javascript:void(0)" data-attribue-direction="down-left" data-attribute-keyboard="97" class="btn btn-default btn-circle btn-xl jog directions "> <i class="fa fa-arrow-down fa-rotate-45 "> </i> </a>
+							</div>
+							<div class="btn-group-vertical">
+								<a href="javascript:void(0)" data-attribue-direction="up"   data-attribute-keyboard="104" class="btn btn-default btn-circle btn-xl jog directions btn-xl "> <i class="fa fa-arrow-up fa-1x"> </i> </a>
+								<a href="javascript:void(0)" data-attribue-direction="home" data-attribute-keyboard="101" class="btn btn-default btn-circle btn-xl jog zero_all "> <i class="fa fa-bullseye"> </i> </a>
+								<a href="javascript:void(0)" data-attribue-direction="down" data-attribute-keyboard="98"  class="btn btn-default btn-circle btn-xl jog directions"> <i class="fa fa-arrow-down "> </i> </a>
+							</div>
+							<div class="btn-group-vertical">
+								<a href="javascript:void(0)" data-attribue-direction="up-right"   data-attribute-keyboard="105" class="btn btn-default btn-circle btn-xl jog directions"> <i class="fa fa-arrow-up fa-1x fa-rotate-45"> </i> </a>
+								<a href="javascript:void(0)" data-attribue-direction="right"      data-attribute-keyboard="102" class="btn btn-default btn-circle btn-xl jog directions"> <i class="fa fa-arrow-right"> </i> </a>
+								<a href="javascript:void(0)" data-attribue-direction="down-right" data-attribute-keyboard="99"  class="btn btn-default btn-circle btn-xl jog directions"> <i class="fa fa-arrow-right fa-rotate-45"> </i> </a>
+							</div>
+							<div class="btn-group-vertical" style="margin-left: 10px;">
+								<a rel="tooltip" data-placement="right" data-original-title="Move Z Up" href="javascript:void(0)"  class="btn btn-default jog axisz" data-attribute-step="1" data-attribute-function="zdown"> <i class="fa fa-angle-double-up"> </i>&nbsp;Z </a>
+								<hr/>
+								<a rel="tooltip" data-placement="right" data-original-title="Move Z Down" href="javascript:void(0)" class="btn btn-default jog axisz" data-attribute-step="1" data-attribute-function="zup"> <i class="fa fa-angle-double-down"> </i>&nbsp; Z </a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END JOG SHORTCUT BUTTONS -->
+			<!-- TEMPERATURES CONTROL BUTTONS -->
+			<div class="pull-right top-bar-temperatures hidden-xs" style="position: relative;">
+				<span id="top-temperatures" style="float:right;">
+						<a href="javascript:void(0);" title="Temperatures controls" rel="tooltip" data-placement="left" data-html="true" data-original-title="Temperatures<br> controls" >
+							<span><i class=" icon-fab-term"></i> </span>
+							<?php if($_show_nozzle_temp): ?>
+								<span>N: <span id="top-bar-nozzle-actual">-</span>/<span id="top-bar-nozzle-target">-</span>&deg; - </span>
+							<?php endif; ?>
+							<span>
+								B: <span id="top-bar-bed-actual">-</span>/<span id="top-bar-bed-target">-</span>&deg;
+							</span>
+						</a>
+				</span>
+				<div class="top-ajax-temperatures-dropdown <?php echo !$_show_nozzle_temp ? 'no-nozzle-temp' : ''; ?>">
 					<?php if($_show_nozzle_temp): ?>
-					<span>
-						 [ Nozzle</a> <span id="top-bar-nozzle-actual">-</span>/<span id="top-bar-nozzle-target">-</span>&deg; ] - 
-					</span>
+					<h4><i class=" icon-fab-term"></i> Nozzle</h4>
+					<div id="top-act-ext-temp"  class="noUiSlider top-act-ext-temp"></div>
+					<div id="top-ext-target-temp" class="noUiSlider top-ext-target-temp top-extruder-range"></div>
+					<hr class="simple margin-top-60">
 					<?php endif; ?>
-					<span>
-						[ Bed <span id="top-bar-bed-actual">-</span>/<span id="top-bar-bed-target">-</span>&deg; ]
-					</span>
-				
+					<h4 class="margin-top-10"><i class=" icon-fab-term"></i> Bed</h4>
+					<div id="top-act-bed-temp" class="noUiSlider top-act-bed-temp"></div>
+					<div id="top-bed-target-temp" class="noUiSlider top-bed-target-temp top-bed-range"></div>
+				</div>
 			</div>
-			
-						
+			<!-- END TEMPERATURES CONTROL BUTTONS -->	
 		</header>
 		<!-- END HEADER -->
 		<!-- LEFT PANEL -->
@@ -150,13 +220,13 @@
 			<!-- RIBBON -->
 			<div id="ribbon">
 				<!-- USB -->
-				<span class="ribbon-button-alignment usb-ribbon" style="display:none">
+				<span class="ribbon-button-alignment usb-ribbon" >
 					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="USB disk inserted" data-html="true"><i class="fa fa-usb "></i></span>
 				</span>
 				<!-- END USB -->
 				
 				<!-- INTERNET -->
-				<span class="ribbon-button-alignment internet" style="display:none">
+				<span class="ribbon-button-alignment internet" >
 					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="Connected to internet" data-html="true"><i class="fa fa-globe "></i></span>
 				</span>
 				<!-- END INTERNET -->
@@ -174,7 +244,8 @@
 				</span>
 				
 				<!-- BREADCRUMBS -->
-				<?php echo $_breadcrumbs ?>
+				<?php //echo $_breadcrumbs ?>
+				<ol class="breadcrumb"></ol>
 				<!-- END BREADCRUMBS -->
 				<!-- CUSTOM RIBBON -->
 				<?php echo $_custom_ribbon; ?>
@@ -197,6 +268,7 @@
 						<i class="fa fa-stack-overflow"></i>&nbsp;<span class="hidden-mobile">Request a feature</span>
 					</button>
 					<span class="txt-color-white ">FAB UI <em class="font-xs txt-color-orangeDark">beta</em> v.<?php echo $_SESSION['fabui_version'] ?></span>
+					
 				</div>
 			</div>
 		</div>
@@ -240,8 +312,8 @@
 		      			<div class="row">
 		      				<div class="col-md-12">
 		      					<h6>Please first make sure FABUI is up-to-date.</h6>
-		      					<h5>Our support forum is now live. Visit <a target="_blank" href="http://support.fabtotum.com/tickets/">http://support.fabtotum.com/tickets/</a></h5>
-		      					<p>Note: use this form only to report software's bugs</p>
+		      					<h5>Our support forum is now live. Visit <a target="_blank" href="http://fabtotum.com/support">http://fabtotum.com/support</a></h5>
+		      					<p><strong></strojg>Note: use this form only to report software's bugs</strong></p>
 		      					<div class="form-group">
 		      						<input id="bug-title" class="form-control" type="text" placeholder="Subject">
 		      					</div>
@@ -258,12 +330,15 @@
 				</div>
 			</div>
 		</div>
-		<!-- END BUG REPORT MODAL -->
+		<!-- END BUG REPORT MODAL --> 
 		<!-- FORM LOCK SCREEN -->
 		<form id="lock-screen-form" action="<?php echo site_url('login/lock')?>" method="POST"></form>
 		<!-- END FORM LOCK SCREEN -->
 		<!-- POWER OFF IMG -->
-		<div id="power-off-img" style="display:none;"><img class="img-responsive" src="/assets/img/power-off.png"></div>
+		
+		<a class="fancybox-shutdown hidden" title="Now you can switch off the power" href="/assets/img/power-off.png"><img class="img-responsive" src="/assets/img/power-off.png"></a>
+		
+		<!--<div id="power-off-img" style="display:none;"><img class="img-responsive" src="/assets/img/power-off.png"></div>-->
 		<!-- END POWER OFF IMG -->
 		<!-- JAVASCRIPT VARS -->
 		<script type="text/javascript">
@@ -272,10 +347,10 @@
 			var number_tasks = 0;
 			var number_notifications = 0;
 			var max_idle_time = <?php echo isset($_SESSION['user']['lock-screen']) ? $_SESSION['user']['lock-screen'] : 0 ?>;
-			var setup_wizard = <?php echo $_setup_wizard == true && (isset($_SESSION['ask_wizard']) && $_SESSION['ask_wizard'] == true) ? 'true' : 'false' ?>;
 			var MODULE = '<?php echo $this->router->fetch_class(); ?>';
 			var pressedEmergencyButton = false;
 			var PRINTER_BUSY = <?php echo $_printer_busy; ?>;
+			var MAX_NOZZLE_TEMP = <?php echo $_max_temp; ?>;
 		</script>
 		<!-- END JAVASCRIPT VARS -->
 		<!-- JAVASCRIPT INCLUSIONS -->

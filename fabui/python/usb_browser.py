@@ -5,7 +5,7 @@ import ConfigParser
 
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
 
 media_folder =  config.get('system', 'usb_folder')
 filter = False

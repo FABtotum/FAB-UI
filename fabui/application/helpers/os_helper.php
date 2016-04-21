@@ -339,10 +339,7 @@ function setNetworkConfiguration($eth, $wifi) {
  * Set Ethernet static IP address
  */
 function setEthIP($ip) {
-	
-	$ip = '169.254.1.' . $ip;
 	setEthernet($ip);
-	
 }
 
 
@@ -359,16 +356,9 @@ function setEthernet($ip){
  */
 function setWifi($ssid, $password, $type = "WPA") {
 	
-	
-	$response = shell_exec('sh /var/www/fabui/script/bash/set_wifi.sh "'.$ssid.'" "'.$password.'"');
-	
-	if (strpos($response, 'PING') !== false || strpos($response, 'errors') !== false) {
-		return false;
-	} else {
-		return true;
-	}
-	
-	
+	shell_exec('bash /var/www/fabui/script/bash/set_wifi.sh "'.$ssid.'" "'.$password.'"');
+	$info = wlan_info();
+	return $info['ssid'] == $ssid;	
 }
 
 /**
@@ -462,7 +452,7 @@ function pretty_baud($baud) {
 	$strRxBytes = isset($result[1]) ? $result[1] : '';
 	preg_match('/TX Bytes:(\d+ \(\d+.\d+ [K|M|G]iB\))/i',$strWlan0,$result);
 	$strTxBytes = isset($result[1]) ? $result[1] : '' ;
-	preg_match('/ESSID:\"([a-zA-Z0-9\s]+)\"/i',$strWlan0,$result);
+	preg_match('/ESSID:\"((?:(?![\n\s]).)*)\"/i',$strWlan0,$result);
 	$strSSID = isset($result[1]) ? str_replace('"','',$result[1]) : '';
 	preg_match('/Access Point: ([0-9a-f:]+)/i',$strWlan0,$result);
 	$strBSSID = isset($result[1]) ? $result[1] : '' ;
@@ -505,20 +495,20 @@ function eth_info(){
 	$info = implode(" ",$info);
 	$info = preg_replace('/\s\s+/', ' ', $info);
 	
-	preg_match('/inet addr:([0-9]+.[0-9]+.[0-9]+.[0-9])/i',$info,$result);
-	$inet_address = $result[1];
+	preg_match('/inet addr:([0-9]+.[0-9]+.[0-9]+.[0-9]+)/i',$info,$result);
+	$inet_address = isset($result[1]) ? $result[1] : '';
 	
-	preg_match('/Bcast:([0-9]+.[0-9]+.[0-9]+.[0-9])/i',$info,$result);
-	$broadcast = $result[1];
+	preg_match('/Bcast:([0-9]+.[0-9]+.[0-9]+.[0-9]+)/i',$info,$result);
+	$broadcast = isset($result[1]) ? $result[1] : '';
 	
 	preg_match('/HWaddr ([0-9a-f:]+)/i',$info,$result);
-	$mac_address = $result[1];
+	$mac_address = isset($result[1]) ? $result[1] : '';
 	
 	preg_match('/RX Bytes:(\d+ \(\d+.\d+ MiB\))/i',$info,$result);
 	$received_bytes = isset($result[1]) ? $result[1] : '';
 	
 	preg_match('/TX Bytes:(\d+ \(\d+.\d+ [K|M|G]iB\))/i',$info,$result);
-	$transferred_bytes = $result[1];
+	$transferred_bytes = isset($result[1]) ? $result[1] : '';
 		
 	return array(
 		'inet_address' => $inet_address,
@@ -531,10 +521,15 @@ function eth_info(){
 
 function disconnectWifi(){
 	
-	$response = shell_exec('sh /var/www/fabui/script/bash/disconnect_wifi.sh "'.$ssid.'" "'.$password.'"');
-	
+	shell_exec('bash /var/www/fabui/script/bash/disconnect_wifi.sh');
+	$info = wlan_info();
+	return $info['ssid'] == '';
 }
 
+
+function set_hostname($hostname, $description){
+	return shell_exec('sudo bash /var/www/fabui/script/bash/set_hostname.sh "'.$hostname.'" "'.$description.'"');
+}
 
 function scan_wlan_networks(){
 	
@@ -556,7 +551,13 @@ function scan_wlan_networks(){
 		}
 	
 	exit();
-		
-	
-	
+}
+/*  */
+function avahi_service_name(){
+	if(file_exists('/etc/avahi/services/fabtotum.service')){
+		$xml_service = simplexml_load_file('/etc/avahi/services/fabtotum.service','SimpleXMLElement', LIBXML_NOCDATA);
+		return trim(str_replace('(%h)', '', $xml_service->name));
+	}else{
+		return 'Fabtotum Personal Fabricator';
+	}
 }

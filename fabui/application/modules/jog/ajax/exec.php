@@ -15,8 +15,11 @@ $macro = isset($_POST['macro']) ? $_POST['macro'] : 'false';
 $macro = $macro == 'false' ? false : true;
 
 if (!$macro) {
+	
 	if (!file_exists(LOCK_FILE)) {
+		
 		$jogFactory = new JogFactory($feedrate, $step, $zstep);
+
 		if (method_exists($jogFactory, $function)) {
 			echo $jogFactory -> $function($value);
 		}

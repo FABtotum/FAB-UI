@@ -56,7 +56,7 @@ class Scan extends Module {
 
             $_task_attributes = json_decode($_task['attributes'], true);
 			
-
+			
 			/** Load scan monitor file */
             
             if(isset($_task_attributes['monitor'])){
@@ -67,7 +67,8 @@ class Scan extends Module {
                 //if(file_exists (json_decode($_task['attributes'])->folder.json_decode($_task['attributes'])->scan_monitor)){
                    // $_scan_monitor     =  json_decode(file_get_contents(json_decode($_task['attributes'])->folder.json_decode($_task['attributes'])->scan_monitor));
                     
-                    
+                   
+                   	
                     $_scan_monitor = json_decode(file_get_contents($_task_attributes['monitor']), true);
 					
 					
@@ -142,16 +143,16 @@ class Scan extends Module {
 		/**
 		 * IMPOSTAZIONI LAYOUT
 		*/
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/fuelux/wizard/wizard.min.js', 'comment' => 'javascript for the wizard'));
+		$this->layout->add_js_file(array('src'=>'/assets/js/plugin/fuelux/wizard/wizard.min.js', 'comment' => 'javascript for the wizard'));
         
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/masked-input/jquery.maskedinput.min.js', 'comment' => 'masked input'));
+		$this->layout->add_js_file(array('src'=>'/assets/js/plugin/masked-input/jquery.maskedinput.min.js', 'comment' => 'masked input'));
 		
-		$this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.all.min.js', 'comment' => 'javascript for the noUISlider'));
-        $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.min.css', 'comment' => 'javascript for the noUISlider'));
+		$this->layout->add_js_file(array('src'=>'/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.all.min.js', 'comment' => 'javascript for the noUISlider'));
+        $this->layout->add_css_file(array('src'=>'/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.min.css', 'comment' => 'javascript for the noUISlider'));
         
         /** JCROP */
-        $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/jcrop/jquery.Jcrop.min.js', 'comment' => 'javascript for JCROP'));
-        $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/jcrop/jquery.color.min.js', 'comment' => 'javascript for JCROP'));
+        $this->layout->add_js_file(array('src'=>'/assets/js/plugin/jcrop/jquery.Jcrop.min.js', 'comment' => 'javascript for JCROP'));
+        $this->layout->add_js_file(array('src'=>'/assets/js/plugin/jcrop/jquery.color.min.js', 'comment' => 'javascript for JCROP'));
         //$this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/jcrop/jquery.Jcrop.css', 'comment' => 'css for JCROP'));
 
 
@@ -195,6 +196,7 @@ class Scan extends Module {
         $js_data['_monitor_attributes'] = $_task ? json_decode(file_get_contents($js_data['_task_attributes']['monitor'])) : '';
         $js_data['_scan_stats']         = $_task && isset($js_data['_task_attributes']['scan_stats_file'])? json_decode(file_get_contents($js_data['_task_attributes']['scan_stats_file']), true): '';
         $js_data['_pprocess_stats']     = $_task && isset($js_data['_task_attributes']['pprocess_stats_file'])? json_decode(file_get_contents($js_data['_task_attributes']['pprocess_stats_file']), true): '';
+		
 		
 		
 		
@@ -643,7 +645,7 @@ class Scan extends Module {
         
         
         /** LAUNCH SCAN COMMAND */
-        $_command_scan = 'sudo python /var/www/fabui/python/s_scan.py -s'.$quality_values->slices.' -i'.$quality_values->iso.' -d'.$task_files['destination_folder'].' -l'.$task_files['scan_monitor_file'].' -b'.$param['x1'].' -e'.$param['x2'].' -w'.$quality_values->resolution->width.' -h'.$quality_values->resolution->height.' 2>'.$task_files['destination_folder'].$task_files['scan_debug_file'].'  > /dev/null & echo $!';
+        $_command_scan = 'sudo python /var/www/fabui/python/s_scan.py -s'.$quality_values->slices.' -i'.$quality_values->iso.' -d'.$task_files['destination_folder'].' -l'.$task_files['scan_monitor_file'].' -b'.$param['x1'].' -e'.$param['x2'].' -w'.$quality_values->resolution->width.' -h'.$quality_values->resolution->height.' -z'.$param['z_offset'].' 2>'.$task_files['destination_folder'].$task_files['scan_debug_file'].'  > /dev/null & echo $!';
         
         
         $_output_scan  = shell_exec ( $_command_scan );
@@ -744,8 +746,7 @@ class Scan extends Module {
 		$param['end_degree']     = isset($param['end_degree']) ? $param['end_degree'] : 0;
 		$param['z_hop']          = isset($param['z_hop']) ? $param['z_hop'] : 0;
 		$param['probe_skip']     = isset($param['probe_skip']) ? $param['probe_skip'] : 0;
-       
-     	   
+          
         $mode = 8;
         
         /** LOAD DATABASE */

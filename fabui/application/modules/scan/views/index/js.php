@@ -21,7 +21,7 @@ scan_quality_info[<?php echo $quality->id ?>] = <?php echo json_encode($configur
 /* SCAN TASK INFO */
 var task_id                 =  <?php echo  $_task  ? $_task['id'] : 0 ?>;
 var scan_pid                =  <?php echo  $_task  ? $_task_attributes['scan_pid'] : 0 ?>;
-var scan_monitor_file       = '<?php echo  $_task  ? $_task_attributes['scan_monitor'] : '' ?>';
+var scan_monitor_file       = '<?php echo  $_task  ? $_task_attributes['monitor'] : '' ?>';
 var scan_monitor_folder     = '<?php echo  $_task  ? $_task_attributes['folder'] : '' ?>';
 var scan_uri                = '<?php echo  $_task && isset($_task_attributes['scan_uri']) ? $_task_attributes['scan_uri'] : '' ?>';
 var pprocess_pid            =  <?php echo  $_task && isset($_task_attributes['pprocess_pid'])? $_task_attributes['pprocess_pid'] : 0 ?>;
@@ -272,21 +272,24 @@ $(document).ready(function() {
             
             $("#step2").html(html);
             
-        });
-        
-        
-        /** LOAD INSTRUCTIONS */
-        $.ajax({
-          url: "<?php echo module_url('scan') ?>ajax/" + instruction_page,
-          cache: false
-        }).done(function( html ) {
             
-             $("#step3").html(html);
+             /** LOAD INSTRUCTIONS */
+	        $.ajax({
+	          url: "<?php echo module_url('scan') ?>ajax/" + instruction_page,
+	          cache: false
+	        }).done(function( html ) {
+	            
+	             $("#step3").html(html);
+	             
+	             /** WHEN A SCAN MODE IS SELECTED IS POSSIBLE TO CONTINUE */
+				$("#btn-next").removeClass('disabled');
+				$("#btn-next").trigger('click');
+	        });
+            
+            
         });
-
-		/** WHEN A SCAN MODE IS SELECTED IS POSSIBLE TO CONTINUE */
-		$("#btn-next").removeClass('disabled');
-		$("#btn-next").trigger('click');
+        
+		
 		
 	});
     
@@ -387,6 +390,7 @@ function ticker(){
 
 function setCoords(c, reDraw)
 {
+		
 	
 	reDraw = reDraw || false;
 	
@@ -440,6 +444,8 @@ function setCoords(c, reDraw)
     $('#y1').val(y1_label);
     $('#x2').val(x2_label);
     $('#y2').val(y2_label);
+    
+    $("#z_offset").val((Y_MAX-y2));
     
     if(reDraw){
     	jcrop_api.setSelect([x1 ,y1, x2,y2]);
@@ -550,6 +556,12 @@ function check_wizard(){
  */
 function start(){
     
+    disable_button('.jog');
+ 	if(document.getElementById("top-ext-target-temp") != null){
+		document.getElementById("top-ext-target-temp").setAttribute('disabled', true);
+	}
+	document.getElementById("top-bed-target-temp").setAttribute('disabled', true);
+    
     IS_MACRO_ON = true;
     a_offset =  $("#a_offset").val();
     
@@ -562,10 +574,12 @@ function start(){
     y1 = $("#y1").val();
     y2 = $("#y2").val();
     
+    z_offset = $("#z_offset").val();
+    
     z_hop = $("#z_hop").val();
     probe_skip = $("#probe_skip").val();
     
-    var data = { mode: scan_mode, new_object: new_object, obj_id : obj_id, obj_name : $("#name-object").val(),  quality: scan_quality, x1: x1, x2: x2, y1:y1, y2:y2, axis_increment: axis_increment, start_degree: start_degree, end_degree: end_degree, density:density, a_offset:a_offset, probe_quality : probe_quality,z_hop:z_hop, probe_skip:probe_skip, pg_iso:$( "#pg-iso" ).val(), pg_size:$("#pg-size").val(), pg_slices: $("#pg-slices").val(), pc_host_address : $("#pc-host-address").val(), pc_host_port: $("#pc-host-port").val()};
+    var data = { mode: scan_mode, new_object: new_object, obj_id : obj_id, obj_name : $("#name-object").val(),  quality: scan_quality, x1: x1, x2: x2, y1:y1, y2:y2, axis_increment: axis_increment, start_degree: start_degree, end_degree: end_degree, density:density, a_offset:a_offset, probe_quality : probe_quality,z_hop:z_hop, probe_skip:probe_skip, pg_iso:$( "#pg-iso" ).val(), pg_size:$("#pg-size").val(), pg_slices: $("#pg-slices").val(), pc_host_address : $("#pc-host-address").val(), pc_host_port: $("#pc-host-port").val(), z_offset:z_offset};
     
     
 	$.ajax({
@@ -575,7 +589,7 @@ function start(){
 		  dataType: 'json',
 		  asynch: true,
 		  beforeSend: function() {
-			    openWait('Starting scan..');
+			    openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Starting scan');
 	      }
 	}).done(function( response ) {
 		
@@ -686,7 +700,7 @@ function get_info(){
         obj_id      = response.id_obj;
         id_asc_file = response.id_file;
         
-        $(".download-scan").attr('href', '<?php echo site_url('objectmanager/download') ?>' + '/' + id_asc_file);
+        $(".download-scan").attr('href', '<?php echo site_url('objectmanager/download') ?>' + '/file/' + id_asc_file);
         
         $('#btn-next').trigger('click');
         IS_MACRO_ON = false;
@@ -819,7 +833,12 @@ function _update_task(){
 
 function _resume(){
 	 	
-	 	
+	 	disable_button('.jog');
+	 	if(document.getElementById("top-ext-target-temp") != null){
+			document.getElementById("top-ext-target-temp").setAttribute('disabled', true);
+		}
+		document.getElementById("top-bed-target-temp").setAttribute('disabled', true);
+		
 	 	
 	 	if(scan_mode == 8){
 	 		$('#pprocess-progress-container').hide();
@@ -828,6 +847,8 @@ function _resume(){
 	 		$(".pprocess").hide();
 	 		
 	 	}
+	 	
+	 	$(".steps >li").removeClass("complete");
 	 	
 		monitor_count = 1;
 		if(current_step <= 4){
@@ -838,8 +859,6 @@ function _resume(){
 			mesh_interval_monitor   = setInterval(_mesh_detail, mesh_monitor_timeout);
 			mesh_interval_pid_check = setInterval(_mesh_pid_check, mesh_monitor_timeout);	
 		}
-		_resume_images(1, scan_image, scan_uri);
-		_init_gallery('.image-link-laser');
 		
 		$('.wizard').wizard('selectedItem', { step: current_step });
 		
@@ -875,55 +894,6 @@ function _resume(){
 
 
 
-/**
- *  INIT GALLERY
- */
-function _init_gallery(element){
-
-	$(element).magnificPopup({
-		type:'image', 
-		gallery: {
-	    	enabled: true 
-	  	},
-	  	retina: {
-	  	    ratio: 2
-	  	},
-	  	removalDelay: 300,
-	  	mainClass: 'mfp-fade',
-	  	image: {
-            markup: '<div class="mfp-figure">'+
-	  	            '<div class="mfp-close"></div>'+
-	  	            '<div class="mfp-img"></div>'+
-	  	            '<div class="mfp-bottom-bar">'+
-	  	              '<div class="mfp-title"></div>'+
-	  	              '<div class="mfp-counter"></div>'+
-	  	            '</div>'+
-	  	          '</div>',
-
-            cursor: null, 
-	  	    titleSrc: 'title', 
-	  	    verticalFit: true,
-	  	    tError: '<a href="%url%">The image</a> could not be loaded.'
-	  	}
-	});
-	
-};
-
-
-/**
- * 
- */
-function _resume_images(start, end, uri){
-
-	for(var i = start; i <= end; i++){
-
-		var src = uri + 'images/'+ i +'_l.png';
-		var new_image = $('<div class="scan-preview"><a class="image-link-laser" href="'+ src + '"><img src="' + src +'" data-img="'+src+'"  class="superbox-img"></a></div>');
-		$('.laser').append(new_image);
-		
-	}
-	
-};
 
 
 /**
@@ -1046,7 +1016,7 @@ function _do_object(){
 			  data: {task_id: task_id},
 			  dataType: 'json',
 			  beforeSend: function(  ) {
-				    openWait('Saving file and object creating...');
+				    openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Saving file and object creating');
 		      }
 		}).done(function( response ) {
 
@@ -1095,7 +1065,7 @@ function ask_stop() {
 	   
 		if (ButtonPressed === "Yes") {
 		  
-			stop_scan('Stopping scan');
+			stop_scan('<i class="fa fa-circle-o-notch fa-spin"></i> Aborting scan');
 		}
 		if (ButtonPressed === "No") {
 
@@ -1117,15 +1087,13 @@ function stop_scan(message){
     
     $.ajax({
 		  type: "POST",
-		  /*url: "<?php echo site_url('scan/stop') ?>",*/
           url: "<?php echo module_url('scan').'ajax/stop.php' ?>", 
 		  data: {task_id: task_id},
 	      dataType: 'json'
 		}).done(function( data ) {
-		  
           if(data.status == 'ok'){
-                setTimeout(function(){document.location.href = '<?php echo site_url('make/scan') ?>';}, 1000); 
-          }			
+                setTimeout(function(){document.location.href = '<?php echo site_url('make/scan') ?>';}, 5000); 
+          };			
     });
     
 }
@@ -1394,7 +1362,7 @@ function finalize_scan(){
 			$('.estimated-time').html('-');
 			$('.estimated-time-left').html('-');
 	        
-	        openWait('Finalizing scan');
+	        openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Finalizing scan');
 	        
 	        setTimeout(function(){
 	            get_info();
@@ -1450,8 +1418,5 @@ function check_connection(obj){
 
 
 function debugCoords(c){
-	
-	console.log(c);
-	
 }
 </script>

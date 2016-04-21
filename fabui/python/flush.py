@@ -3,7 +3,7 @@ import serial
 import ConfigParser
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/serial.ini')
 
 serial_port = config.get('serial', 'port')
 serial_baud = config.get('serial', 'baud')

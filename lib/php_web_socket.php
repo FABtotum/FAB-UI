@@ -154,7 +154,10 @@ class PHPWebSocket {
 							$clientIP = ip2long($clientIP);
 
 							if ($result !== false && $this -> wsClientCount < self::WS_MAX_CLIENTS && (!isset($this -> wsClientIPCount[$clientIP]) || $this -> wsClientIPCount[$clientIP] < self::WS_MAX_CLIENTS_PER_IP)) {
-								$this -> wsAddClient($client, $clientIP);
+								
+									$this -> wsAddClient($client, $clientIP);
+									
+								
 							} else {
 								socket_close($client);
 							}
@@ -233,8 +236,21 @@ class PHPWebSocket {
 		}
 	}
 
+
+	function existsClient($clientIP){
+		
+		foreach ($this -> wsClients as $id => $client) {
+			if($clientIP == $client[6]){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	// client existence functions
 	function wsAddClient($socket, $clientIP) {
+	
 		// increase amount of clients connected
 		$this -> wsClientCount++;
 

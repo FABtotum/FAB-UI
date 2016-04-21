@@ -1,6 +1,6 @@
 <?php
 set_time_limit(0);
-// include the web sockets server script (the server is started at the far bottom of this file)
+
 require_once '/var/www/lib/php_web_socket.php';
 require_once '/var/www/lib/web_socket_server_factory.php';
 
@@ -32,18 +32,8 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 	// > 1 cause monitor.py is always connected
 	if ($Server -> wsGetClientsNumber() > 0) {
 
-		//Send the message to everyone but the person who said it
 		foreach ($Server->wsClients as $id => $client) {
-			//if ($id != $clientID) {
-
-			//$clientIp = long2ip($client[6]);
-
-			//echo $clientIp.PHP_EOL;
 			$Server -> wsSend($id, $message);
-			
-			
-			//}
-
 		}
 	}
 
@@ -51,12 +41,11 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 // when a client connects
 function wsOnOpen($clientID) {
-	//echo $clientID . " connected" . PHP_EOL;
+	
 }
 
 // when a client closes or lost connection
 function wsOnClose($clientID, $status) {
-	//echo $clientID . " disconnected" . PHP_EOL;
 }
 
 // start the server

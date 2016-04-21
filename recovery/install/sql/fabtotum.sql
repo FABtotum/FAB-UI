@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `sys_codes` (
   `label` varchar(255) NOT NULL,
   `description` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=156 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=157 ;
 
 --
 -- Svuota la tabella prima dell'inserimento `sys_codes`
@@ -198,7 +198,8 @@ INSERT INTO `sys_codes` (`id`, `type`, `code`, `label`, `description`) VALUES
 (153, 'M', 792, 'M792', 'read Head capability: servo (number of axis)'),
 (154, 'M', 732, 'M732 S<FLAG>', 'Code for enable/disable the operations kill on door opening permanently (M732 S0->disable(unsafe),M732 S1->enable(safe)'),
 (155, 'M', 714, 'M714 S<FLAG>', 'Select the homing X switch (max or min) to allow machine operation even with X min swicth fail (M714 S0->select X min switch, M714 S1->select X max switch)'),
-(156, 'M', 793, 'M793', 'Set/read installed head soft ID');
+(156, 'M', 793, 'M793', 'Set/read installed head soft ID'),
+(157, 'M', 735, 'M735 S<FLAG>', 'enable /disable silent mode. M735 S0->disable, M735 S1->enable');
 
 -- --------------------------------------------------------
 
@@ -242,7 +243,7 @@ INSERT INTO `sys_configuration` (`id`, `key`, `value`) VALUES
 (18, 'language', 'english'),
 (19, 'languages', '{"english":{"code":"us","description":"English","name":"english"},"italian":{"code":"it","description":"Italiano","name":"italian"},"german":{"code":"de","description":"Deutsch","name":"german"}}'),
 (20, 'fw_version', ''),
-(21, 'fabui_version', '0.9499'),
+(21, 'fabui_version', '0.95'),
 (22, 'wifi', '{"ssid":"","password":"","ip":""}');
 
 -- --------------------------------------------------------

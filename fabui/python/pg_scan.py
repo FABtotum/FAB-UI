@@ -9,7 +9,10 @@ import logging
 import json
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
+
+serialconfig = ConfigParser.ConfigParser()
+serialconfig.read('/var/www/lib/serial.ini')
 
 #check if LOCK FILE EXISTS
 if os.path.isfile(config.get('task', 'lock_file')):
@@ -182,7 +185,10 @@ else:
 print 'Estimated Scan time =', str(estimated) + " " + str(unit) 
 
 print "\n ---------- Initializing ---------- \n"
-serial = serial.Serial('/dev/ttyAMA0', 115200)
+'''#### SERIAL PORT COMMUNICATION ####'''
+serial_port = serialconfig.get('serial', 'port')
+serial_baud = serialconfig.get('serial', 'baud')
+serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 # STARTING PARAMS //DO NOT CHANGE
 deg = abs((end-begin)/slices)  #degrees to move each slice
@@ -281,7 +287,7 @@ percent=100
 printlog(percent,i)
 
 #write_status(False)
-os.remove(config.get('task', 'lock_file'))
+#os.remove(config.get('task', 'lock_file'))
 call (['sudo php /var/www/fabui/script/finalize.php ' + str(task_id) + ' scan_pg'], shell=True)
 
 sys.exit()  

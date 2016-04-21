@@ -10,15 +10,16 @@ if($reload || !file_exists(TWITTER_FEED_JSON)){
 
 
 $twitter = json_decode(file_get_contents(TWITTER_FEED_JSON), true);
-//print_r($twitter);
+
 ?>
 <div class="row">
 	<div class="col-sm-12">
 		<ul class="twitter-posts">
 		<?php foreach($twitter as $feed): ?>
 			
-			<?php if($feed['in_reply_to_user_id'] ==  ''):?>
+			
 			<?php
+			
 		
 				$tweet = $feed;
 				
@@ -31,6 +32,8 @@ $twitter = json_decode(file_get_contents(TWITTER_FEED_JSON), true);
 				}
 				
 				$text = $tweet['text'];
+				
+				
 				
 				$hashtags = $tweet['entities']['hashtags'];
 				$user_mentions = $tweet['entities']['user_mentions'];
@@ -62,7 +65,7 @@ $twitter = json_decode(file_get_contents(TWITTER_FEED_JSON), true);
 			?>
 			
 			<li>
-				<?php if($retweeted): ?><div class="twitter-post-retwetted"><p><i class="fa fa-retweet txt-color-green"></i> Retwetted by Fabtotum</p></div><?php endif; ?>
+				<?php if($retweeted): ?><div class="twitter-post-retwetted"><p><i class="fa fa-retweet txt-color-green"></i> Retweeted by Fabtotum</p></div><?php endif; ?>
 				<img class="rounded-x" src="<?php echo $tweet['user']['profile_image_url']; ?>">
 				<div class="twitter-posts-in">
 					<strong><?php echo $tweet['user']['name'];?></strong>
@@ -90,7 +93,7 @@ $twitter = json_decode(file_get_contents(TWITTER_FEED_JSON), true);
 					</ul>
 				</div>
 			</li>
-		<?php endif; ?>
+		
 		<?php endforeach; ?>
 		</ul>
 	</div>

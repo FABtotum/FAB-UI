@@ -8,7 +8,10 @@ import logging
 import json
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
+
+serialconfig = ConfigParser.ConfigParser()
+serialconfig.read('/var/www/lib/serial.ini')
 
 #check if LOCK FILE EXISTS
 if os.path.isfile(config.get('task', 'lock_file')):
@@ -128,8 +131,8 @@ print 'Estimated Scan time =', str(estimated) + " " + str(unit) + "  [Pessimisti
 print "\n ---------- Initializing ---------- \n"
 
 '''#### SERIAL PORT COMMUNICATION ####'''
-serial_port = config.get('serial', 'port')
-serial_baud = config.get('serial', 'baud')
+serial_port = serialconfig.get('serial', 'port')
+serial_baud = serialconfig.get('serial', 'baud')
 serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 if(begin!=0):
@@ -199,5 +202,5 @@ completed_time=float(time.time())
 percent=100
 printlog(percent,i)
 #write_status(False)
-os.remove(config.get('task', 'lock_file'))
+#os.remove(config.get('task', 'lock_file'))
 sys.exit()  

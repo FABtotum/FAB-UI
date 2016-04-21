@@ -11,9 +11,13 @@
 	var choice = '';
 	var probe_length = 0;
 	
+	var num_probes = 1;
+	var skip_homing = 0;
+	
 
 	$(function () {
 		
+		$(".jog").addClass("disabled");
 		
 		interval_ticker   = setInterval(ticker, 500);
 		
@@ -199,10 +203,12 @@
 		$.ajax({
 			type: "POST",
 			url : "<?php echo module_url('maintenance').'ajax/bed_calibration.php' ?>",
-			data : {time: now},
+			data : {time: now, num_probes : num_probes, skip_homing: skip_homing},
 			dataType: "html"
 		}).done(function( data ) {
 			
+			num_probes++;
+			skip_homing = 1;
 			
 			closeWait();
 			ticker_url = '';
@@ -218,7 +224,7 @@
 			}
 			
 			
-			$(".todo").html(data);
+			$(".bed-calibration-result-response").html(data);
 			
 			var reds = 0;
 			var oranges = 0;

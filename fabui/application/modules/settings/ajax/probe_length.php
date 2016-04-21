@@ -4,12 +4,14 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/ajax/lib/utilities.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/fabui/application/libraries/Serial.php';
 
+$ini_array = parse_ini_file(SERIAL_INI);
+
 
 $serial = new Serial();
 $probe_lenght = 0;
     
-$serial->deviceSet(PORT_NAME);
-$serial->confBaudRate(BOUD_RATE);
+$serial->deviceSet($ini_array['port']);
+$serial->confBaudRate($ini_array['baud']);
 $serial->confParity("none");
 $serial->confCharacterLength(8);
 $serial->confStopBits(1);

@@ -19,6 +19,8 @@ $("input[name='theme_skin']").click(function() {
 });
 
 
+
+
 $('.standby-red').noUiSlider({
     /*range: [0, 255],*/    
 	start: <?php echo $_standby_color['r'] != '' ? $_standby_color['r'] : 0 ?>,
@@ -128,7 +130,9 @@ function save(){
 		  dataType : 'json',
 		  type: 'post',
           data: {red : parseInt($("#red").val()), green: parseInt($("#green").val()), blue: parseInt($("#blue").val()), 
-          		safety_door: $('[name="safety-door"]:checked').val(), switch:$('[name="switch"]:checked').val(), 
+          		safety_door: $('[name="safety-door"]:checked').val(), 
+          		switch: $('[name="switch"]:checked').val(),
+          		collision_warning : $('[name="collision-warning"]:checked').val(), 
           		feeder_disengage_feeder: $("#feeder-disengage-offset").val(),
           		milling_sacrificial_layer_offset: $("#milling-sacrificial-layer-offset").val(), 
           		feeder_extruder_steps_per_unit_e_mode: $("#feeder-extruder-steps-per-unit-e").val(), 
@@ -216,5 +220,82 @@ function randomString(len, an){
     }
     return str;
 }
+
+
+$("#general-tab li > a").on('click', function() {
+	
+	$(".widget-footer .btn").hide();
+	
+	if($(this).attr('href') == '#hardware'){
+		$(".hardware-save").show();
+	}else{
+		$("#save-button").show();
+	}
+	
+});
+
+
+$('input:radio[name="settings_type"]').filter('[value="<?php echo $settings_type; ?>"]').attr('checked', true);
+
+if('<?php echo $settings_type; ?>' == 'custom'){
+	$(".custom-settings").show();
+}else{
+	$(".custom-settings").hide();
+}
+
+$(':radio[name="settings_type"]').change(function() {
+	var type = $(this).filter(':checked').val();
+	if(type == 'custom'){
+		$(".custom-settings").show();
+	}else{
+		$(".custom-settings").hide();
+	}
+});
+
+
+$(".hardware-save").on('click', save_hardware_settings);
+
+function save_hardware_settings(){
+    	
+	IS_MACRO_ON = true;
+	var button = $(".save");
+	$(".save").addClass('disabled');
+	
+	var action                           = $(this).val();
+	var settings_type                    = $(':radio[name="settings_type"]').filter(':checked').val();
+	var feeder_extruder_steps_per_unit_e = $("#hw-feeder-extruder-steps-per-unit-e").val();
+	var feeder_extruder_steps_per_unit_a = $("#hw-feeder-extruder-steps-per-unit-a").val();
+	var invert_x_endstop_logic           = $("#invert_x_endstop_logic").val();
+	var show_feeder                      = $("#show_feeder").val();
+	var custom_overrides                 = $("#custom_overrides").val();  	
+
+	var data = {type: settings_type, feeder_extruder_steps_per_unit_a: feeder_extruder_steps_per_unit_a, feeder_extruder_steps_per_unit_e: feeder_extruder_steps_per_unit_e, show_feeder : show_feeder, custom_overrides:custom_overrides, invert_x_endstop_logic:invert_x_endstop_logic, action:action};
+	  
+	  
+	openWait("Please wait");
+	  	
+	$.ajax({
+		type: 'POST',
+		url : '<?php echo module_url('settings').'ajax/advanced.php' ?>',
+		data: data,
+		dataType: 'json'
+	}).done(function (response) {
+		
+		$(".save").removeClass('disabled');
+		
+		
+		$.smallBox({
+			title : "Success",
+			content : "<i class='fa fa-check'></i> " + response.message,
+			color : "#659265",
+			iconSmall : "fa fa-thumbs-up bounce animated",
+            timeout : 4000
+        });
+
+        IS_MACRO_ON = false;
+        closeWait();
+	});
+}
+
 
 </script>

@@ -7,9 +7,13 @@ import ConfigParser
 import logging
 import serial
 import numpy
+import re
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
+
+serialconfig = ConfigParser.ConfigParser()
+serialconfig.read('/var/www/lib/serial.ini')
 
 if os.path.isfile(config.get('task', 'lock_file')):
     print "printer busy"
@@ -19,6 +23,8 @@ x1=y1=x2=y2=skip=0
 s_error=0
 s_warning=0
 s_skipped=0
+probe_length=45
+probe_offset_security=15
 
 usage = 'test_bed_area.py -x1<VALUE> -y1<VALUE> -x2<VALUE> -y2<VALUE> '
 
@@ -54,8 +60,8 @@ logfile=config.get('macro', 'response_file')
 logging.basicConfig(filename=log_trace,level=logging.INFO,format='%(message)s')
 
 '''#### SERIAL PORT COMMUNICATION ####'''
-serial_port = config.get('serial', 'port')
-serial_baud = config.get('serial', 'baud')
+serial_port = serialconfig.get('serial', 'port')
+serial_baud = serialconfig.get('serial', 'baud')
 serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 serial_reply = ''
@@ -85,7 +91,7 @@ def probe(x,y):
     
     new_point = [x,y,z,1]
     
-    trace("Probed "+str(x)+ "," +str(y))
+    #trace("Probed "+str(x)+ "," +str(y))
     return True
 
 def macro(code,expected_reply,timeout,error_msg,delay_after,warning=False,verbose=True):
@@ -128,48 +134,42 @@ def macro(code,expected_reply,timeout,error_msg,delay_after,warning=False,verbos
     return serial_reply
 
 
-print 'Start to check area on this points:'
-print 'X1 --> ', x1
-print 'X2 --> ', x2
-print 'Y1 --> ', y1
-print 'Y2 --> ', y2
+#print 'Start to check area on this points:'
+#print 'X1 --> ', x1
+#print 'X2 --> ', x2
+#print 'Y1 --> ', y1
+#print 'Y2 --> ', y2
+''' get probe length '''
+serial.write("M503\r\n")
+reply = serial.read(4096)
+match = re.search('Z Probe Length:\s-((?:(?![\n\s]).)*)', reply)
+if match != None:
+    probe_length = (float(match.group(1)) + 1) + probe_offset_security
 
 
 macro("M402","ok",2,"Retracting Probe (safety)",0.1, warning=True, verbose=False)
 
 if(skip == 0):
-    macro("G90","ok",2,"Setting absolute positioning mode",1, )
+    macro("G90","ok",2,"Setting absolute positioning mode",1, verbose=False)
     macro("G27","ok",100,"Zeroing Z axis",1)
     macro("G28 X0 Y0","ok",15,"Zeroing Z axis",1, warning=True, verbose=False)
-    macro("G0 Z135 F1000","ok",5,"Moving to pre-scan position",3, warning=True, verbose=False)
-    macro("M18","ok",1,"Motor Off",1, warning=True, verbose=False) #should be moved to firmware
-    macro("G0 Z40 F5000","ok",5,"Moving to start Z height",10) #mandatory!
+    macro("G0 Z135 F1000","ok",10,"Moving to pre-scan position",1, warning=True, verbose=False)
+    macro("G0 Z"+str(probe_length)+" F5000","ok",5,"Moving to start Z height",10, verbose=False) #mandatory!
 
 
 points = [[x1, y1], [x1, y2], [x2, y2], [x2, y1]]
-
+counter = 1
 for (x,y) in points:
+    macro("G90","ok",2,"Setting absolute positioning mode",1, verbose=False)
     macro("M402","ok",1,"Retracting Probe (safety)",0.1, warning=True, verbose=False)
-    macro('G0 X' + str(x) + ' Y' +str(y) + ' F15000',"ok",1,"Going to (" + str(x) + ","+str(y)+")",0.1, warning=True)
+    macro('G0 X' + str(x) + ' Y' +str(y) + ' F15000',"ok",1,"Going to (" + str(x) + ","+str(y)+")",0.1, warning=True, verbose=False)
     macro("M401","ok",1,"",0.1, warning=True, verbose=False)
-    time.sleep(0.5)
+    trace("Probing point " + str(counter))
     probe(x, y)
-    macro("M402","ok",1,"Retracting Probe (safety)",0.1, warning=True, verbose=False)
-    time.sleep(1)
-    serial.write('G0 Z40 F5000\r\n')
-    time.sleep(0.5)
-        
+    macro("G0 Z"+str(probe_length)+" F5000","ok",5,"Raising",1, warning=True, verbose=False)
+    counter=counter+1
 
-macro("M402","ok",1,"Retracting Probe (safety)",0.1, warning=True, verbose=False)
+macro("M402","ok",1,"Retracting Probe (safety)",0.1, warning=True, verbose=False)       
 
 os.remove(config.get('task', 'lock_file'))
-
-
-
-
-
-
-
-
-
-
+sys.exit()

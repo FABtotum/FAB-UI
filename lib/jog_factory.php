@@ -1,5 +1,7 @@
 <?php
-
+ini_set( 'error_reporting', E_ALL );
+			ini_set( 'display_errors', true );
+            error_reporting(E_ALL);
 /**
  * @author FABTeam Dev Team - Krios Mane
  * 
@@ -81,8 +83,10 @@ class JogFactory {
 	 */
 	public function exec() {
 		
-		$this -> _serial -> deviceSet(PORT_NAME);
-		$this -> _serial -> confBaudRate(BOUD_RATE);
+		$ini_array = parse_ini_file(SERIAL_INI);
+		
+		$this -> _serial -> deviceSet($ini_array['port']);
+		$this -> _serial -> confBaudRate($ini_array['baud']);
 		$this -> _serial -> confParity("none");
 		$this -> _serial -> confCharacterLength(8);
 		$this -> _serial -> confStopBits(1);
@@ -119,6 +123,8 @@ class JogFactory {
 		$command = sprintf($dir[$value], $this -> _step, $this -> _feedrate);
 		$this -> _command = 'G91' . PHP_EOL . $command.PHP_EOL.'G90';
 		$this -> exec();
+		
+		
 
 		return $this -> returnResponse();
 

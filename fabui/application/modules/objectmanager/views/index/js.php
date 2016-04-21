@@ -1,12 +1,31 @@
 <script type="text/javascript">
 
+	var responsiveHelper_dt_basic = undefined;
     var oTable;
+    var breakpointDefinition = {
+			tablet : 1024,
+			phone : 480
+	};
     
 	$(document).ready(function() {
         
        oTable = $('#objects_table').dataTable({
             "aaSorting": [],
+            "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'l>r>"+
+				"t"+
+				"<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
             "autoWidth": false,
+            "preDrawCallback" : function() {
+				if (!responsiveHelper_dt_basic) {
+					responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#objects_table'), breakpointDefinition);
+				}
+			},
+			"rowCallback" : function(nRow) {
+				responsiveHelper_dt_basic.createExpandIcon(nRow);
+			},
+			"drawCallback" : function(oSettings) {
+				responsiveHelper_dt_basic.respond();
+			},
             "bProcessing": true,
             "sAjaxSource": '<?php echo module_url('objectmanager').'ajax/all_objects_for_table.php' ?>',
             "fnDrawCallback" : fnCallBack,
@@ -46,6 +65,9 @@
 	function fnFormatDetails(oTable, nTr) {
 		
 		var aData = oTable.fnGetData(nTr);
+		
+		
+		
 		var objectInfo = aData[0].split('-');
 		var objectId   = objectInfo[0];
 		var objectName = objectInfo[1];
@@ -62,6 +84,7 @@
 		
 		
 		return '<div>' + edit_button +  download_button + addfiles_button + delete_button + '</div>';
+		
 		
 	}
 

@@ -9,13 +9,19 @@ import serial
 import RPi.GPIO as GPIO
 import logging
 import os, sys
-from subprocess import call
-
+from subprocess import call,Popen,PIPE
+import signal
 
 monitorPID = os.getpid()
 
+
+#print "Starting new monitor NOW!"
+            
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
+
+serialconfig = ConfigParser.ConfigParser()
+serialconfig.read('/var/www/lib/serial.ini')
 
 '''### ###'''
 php_script_path = config.get('system', 'php_script_path')
@@ -33,6 +39,9 @@ macro_response_file=config.get('macro', 'response_file')
 task_trace_file=config.get('task', 'trace_file')
 task_monitor_file=config.get('task', 'monitor_file')
 task_notifications_file=config.get('task', 'notifications_file')
+
+'''### LOCK FILE ####'''
+lock_file=config.get('task', 'lock_file')
 
 '''### USB DEV FILE ###'''
 dev_usb_file = config.get('system', 'dev_usb_file')
@@ -61,7 +70,7 @@ except Exception as inst:
 
 
 '''#### SETTING GPIO ####'''
-GPIO.cleanup()
+#GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(2, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
@@ -92,90 +101,107 @@ def write_emergency(str):
     safety.close()
     return
 
+def is_int(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
+    
+lasterr=0
+last_status=2
 
-def safety_callback(channel):    
+def safety_callback(channel):
+
+    #reset error msg
+    message = {'type': "", 'code': ""}
+    write_emergency(json.dumps(message))
+                
     
     global SOCKET_CONNECTED
+    global lasterr
+    global last_status
     
     code=0
     type=""
-    
-    if(GPIO.input(2) == GPIO.LOW):
-        
+
+    GPIO_STATUS=GPIO.input(2)
+    #print "----------------------------"
+    #print "GPIO status: ", GPIO_STATUS
+    if(GPIO_STATUS == 0):
+        open(config.get('task', 'lock_file'), 'w').close()
         
         '''#### SERIAL PORT COMMUNICATION ####'''
-        serail_port = config.get('serial', 'port')
-        serail_baud = config.get('serial', 'baud')
-        ser = serial.Serial(serail_port, serail_baud, timeout=0.6)
+        serial_port = serialconfig.get('serial', 'port')
+        serial_baud = serialconfig.get('serial', 'baud')
+        ser = serial.Serial(serial_port, serial_baud, timeout=0.6)
         
         ser.flushInput()
         ser.write("M730\r\n")
         reply=ser.readline()
-        #ser.close();
-                   
+        ser.flushInput()
+        #print "Reply: ", reply   
         type="emergency"
         
         try:
-            code=float(reply.split("ERROR : ")[1].rstrip())
-        except:
-            code=100
-        
-        if(int(code) == 110):
-            type="alert"
-            ser.flushInput()
-            ser.write("M999\r\n")
             
+            if('Error:Printer' in reply):
+                code = 102
+            else:
+                code=float(reply.split("ERROR : ")[1].rstrip())
+                    
+            #code management
+            if (is_int(code) and code!=0):
+                
+                if(code == 110):
+                    type="alert"
+                    ser.flushInput()
+                    ser.write("M999\r\n")
+                        
+
+                if(code == 120 or code==121):
+                    
+                    if 'bothy' in units and units['bothy']:
+                        if (units['bothy']=="Shutdown" and type=="emergency" and int(code)==120):
+                            #print "call shutdown 1"
+                            call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
+                            
+                            
+                    if 'bothz' in units and units['bothz']:
+                        if (units['bothz']=="Shutdown" and type=="emergency" and int(code)==121):
+                            #print "call shutdown 2"
+                            call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
+                                
+                    GPIO.cleanup() #we can disable GPIO as we are rebooting the system.
+                    
+                else:                                 
+                    message = {'type': str(type), 'code': str(code)}
+                    write_emergency(json.dumps(message))
+                    print json.dumps(message)
+                    
+                    try:
+                        if(SOCKET_CONNECTED==False):
+                            killAndRaise()
+                        ws.send(json.dumps(message))
+                            
+                    except Exception, e:
+                        logging.info(str(e))
+                        killAndRaise()
+                        
+        except:
+            print "Not recognized: " , code
+            print "reply: ", reply
+            print sys.exc_info()
+            
+                        
         #close serial
         ser.close();
-            
-       
-            
-    
-    if(GPIO.input(2) == GPIO.HIGH):
-        type=""
-        code=0
-    
-    
-    if(int(code) == 120 or int(code)==121):
+        if os.path.isfile(config.get('task', 'lock_file')):
+            os.remove(config.get('task', 'lock_file'))
+        GPIO_STATUS=GPIO.HIGH                
         
-        if 'bothy' in units and units['bothy']:
-            if (units['bothy']=="Shutdown" and type=="emergency" and int(code)==120):
-                #print "call shutdown 1"
-                call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
-                
-                
-        if 'bothz' in units and units['bothz']:
-            if (units['bothz']=="Shutdown" and type=="emergency" and int(code)==121):
-                #print "call shutdown 2"
-                call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
-                    
-        GPIO.cleanup()
-        
-    else:                                 
-    
-        message = {'type': str(type), 'code': str(code)}
-        write_emergency(json.dumps(message))
-        
-        print json.dumps(message)
-        
-        try:
-            if(SOCKET_CONNECTED==False):
-                killAndRaise()
-            ws.send(json.dumps(message))
-                
-        except Exception, e:
-            logging.info(str(e))
-            killAndRaise()
-            
-    
-#except Exception, e:
-#    logging.info(str(e))
-#    killAndRaise()
-    
- 
+#event manager
 GPIO.add_event_detect(2, GPIO.BOTH, callback=safety_callback, bouncetime=300)
-
-
 
 '''#### MONITOR HANDLER CLASS ####'''
 class MonitorHandler(PatternMatchingEventHandler):
@@ -190,6 +216,7 @@ class MonitorHandler(PatternMatchingEventHandler):
         global macro_status_file
         global ws
         global monitorPID
+        global lock_file
         
         if event.is_directory:
             return
@@ -253,7 +280,6 @@ class UsbEventHandler (FileSystemEventHandler):
         
     def on_created(self, event):
         global ws
-        
         if(event.src_path == self.usb_file):
             #mount usb disk usb_folder
             #os.system('sudo mount ' + dev_usb_file + ' ' + usb_folder)
@@ -273,6 +299,32 @@ class UsbEventHandler (FileSystemEventHandler):
             message={'type': 'system', 'data':data}
             if SOCKET_CONNECTED:
                 ws.send(json.dumps(message))
+                
+
+class LockFileHandler (FileSystemEventHandler):
+    def __init__(self, observer, filename):
+        self.observer = observer
+        self.lock_file = filename
+    
+    def on_created(self, event):
+        global ws
+        
+        if(event.src_path == self.lock_file):
+            data={'type': 'lock', 'status': True, 'alert':True}
+            message={'type': 'system', 'data':data}
+            if SOCKET_CONNECTED:
+                ws.send(json.dumps(message))
+            
+    def on_deleted(self, event):
+        global ws
+        
+        if(event.src_path == self.lock_file):
+            data={'type': 'lock', 'status': False, 'alert':True}
+            message={'type': 'system', 'data':data}
+            
+            if SOCKET_CONNECTED:
+                ws.send(json.dumps(message))
+    
         
 
 '''### FABUI FILE MONITOR ###'''        
@@ -287,9 +339,16 @@ usb_event_handler = UsbEventHandler(usb_observer, dev_usb_file)
 usb_observer.schedule(usb_event_handler, dev_path, recursive=False)
 usb_observer.start()
 
+'''### USB MONITOR ###'''
+lock_observer = Observer()
+lock_event_handler = LockFileHandler(lock_observer, lock_file)
+lock_observer.schedule(lock_event_handler, '/var/www/temp/', recursive=False)
+lock_observer.start()
+
 try:
     observer.join()
     usb_observer.join()
+    lock_observer.join()
 except KeyboardInterrupt:
     observer.stop()
     GPIO.cleanup()

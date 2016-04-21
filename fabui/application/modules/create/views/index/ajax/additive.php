@@ -71,7 +71,7 @@
                     <div class="col-sm-6 text-center">
                     
                         <h1>
-            				<span class="badge bg-color-blue txt-color-white">3</span>
+            				<span class="badge bg-color-blue txt-color-white"><?php echo $show_feeder ? 3 : 1 ?></span>
             			</h1>
                         
             			<h2>
@@ -98,7 +98,7 @@
                     <div class="col-sm-6 text-center">
                     
                         <h1>
-            				<span class="badge bg-color-blue txt-color-white">4</span>
+            				<span class="badge bg-color-blue txt-color-white"><?php echo $show_feeder ? 4 : 2 ?></span>
             			</h1>
                         
             			<h2>
@@ -178,7 +178,7 @@
 								</label>
 							</div>
 						 </div>
-						 <p>Quickly home all axis. Works well with a well calibrated working plane.</p>
+						 <p>Quickly home all axis. Works well with a well calibrated working plane. (SUGGESTED)</p>
 					</div>
 				</div>
 				
@@ -201,7 +201,7 @@
 								</label>
 							</div>
 						 </div>
-						 <p>Probes the working plane to auto-correct movements to account for not leveled bed (SUGGESTED)</p>
+						 <p>Probes the working plane to auto-correct movements to account for not leveled bed. </p>
 					</div>
 					
 				</div>
@@ -275,9 +275,17 @@
     </div>
     
 <script type="text/javascript">
-
 	
-
+	
+	var re = /fabui\/make\/print\?obj=(\d+)\&file=(\d+)/;
+	
+	if ((m = re.exec(window.location.href)) !== null) {
+		disable_button("#btn-next");
+	}
+	  
+	
+	
+	
 	$("#velocity-slider-container").removeClass('col-md-6 col-lg-6').addClass('col-md-4 col-lg-4');
 	$("#ext-slider-container").show();
 	$("#bed-slider-container").show();
@@ -313,15 +321,13 @@
             var action = $(this).attr('data-action');
             
             if(action == "exec"){
-            	clearInterval(interval_autostart);
+            	stopCountDown();
                 print_object();
                 return false; 
             }
             
             
             if(action == "check"){
-                
-                
                 pre_print();
                 return false; 
             }
@@ -333,8 +339,6 @@
             	return false;
             }
             
-            
-            
             $( ".interstitial" ).each(function( index ) {
                 
                 if($(this).is(":visible") ){
@@ -343,13 +347,7 @@
             });
             
             next_row = actual_row + 1;
-            
-            
 
-            
-             
-            
-            
             if ($("#row_" + next_row).length > 0){
                 
                 $("#row_" + actual_row).slideUp('slow', function(){
@@ -376,7 +374,7 @@
                             $("#modal_link").html('Start');
                             $("#modal_link").attr('data-action', 'exec');
                             $("#skip").show();
-                            interval_autostart   = setInterval(autostart, 1000);
+                            startCountDown();
                             break;
                         
                     }
@@ -388,25 +386,25 @@
             
         });
         
-        function autostart() {
-        	
-        	
-        	
-        	autostart_timer = autostart_timer - 1;
-        	$(".autostart-timer").html(autostart_timer);
-        	
-        	if(autostart_timer == 0){
-        		$("#modal_link").trigger('click');
-        	}
-        	
-        }
+        
         
         function pre_print(){
             
+            jog_call("bed_temp", 40);
+            jog_call("ext_temp", 150);
             
+            if ( typeof (Storage) !== "undefined") {
+            	localStorage.setItem("bed_temp_target", 40);
+            	localStorage.setItem("nozzle_temp_target", 150)
+
+				$("#top-bar-bed-target").html(40);
+				$("#top-bar-nozzle-target").html(150);
+            }
+                        
             IS_MACRO_ON = true;
             
-            openWait('Checking printer');
+            openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Preparing print');
+            
             $("#res-icon").removeClass('fa-warning fa-check txt-color-green txt-color-red fa-spinner fa-spin');
             $("#res-icon").addClass('fa-spinner fa-spin');
             $('#modal_link').addClass('disabled');
@@ -432,6 +430,8 @@
                     $('.check_result').html('');
                     $('#modal_link').trigger('click');
                     
+                    disable_button('#btn-next');
+                    
                 }else{
                     $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-warning').addClass('txt-color-red');
                     /*$('.check_result').html(response.trace);*/
@@ -446,6 +446,8 @@
 						icon : "fa fa-warning",
 		                timeout: 15000
 		            });
+		            
+		             disable_button('#btn-next');
                         
                 }
                 IS_MACRO_ON = false;
@@ -461,7 +463,7 @@
         function engage_feeder(){
         	
         	IS_MACRO_ON = true;
-        	openWait('Engaging feeder');
+        	openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Engaging feeder');
             $("#res-icon").removeClass('fa-warning fa-check txt-color-green txt-color-red fa-spinner fa-spin');
             $("#res-icon").addClass('fa-spinner fa-spin');
             $('#modal_link').addClass('disabled');

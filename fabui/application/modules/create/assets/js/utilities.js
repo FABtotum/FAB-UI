@@ -1,7 +1,7 @@
 /**
  * CREATE MODULE UTILITIES FUNCTIONS
  */
-var object;
+
 var file_selected;
 var stop_monitor = false;
 var interval_monitors;
@@ -23,20 +23,10 @@ var current_estimated_time;
 //in seconds
 var estimated_time_left;
 //in seconds
-/**/
- //var array_estimated_time = new Array();
- //var array_progress_steps = new Array();
- /**/
-var stopped = 0;
-/**/
- var do_trace = false;
- /**/
-var precision = 3;
-/**/
- var scene;
- var gc_code_object;
 
- /**/
+var stopped = 0;
+var precision = 3;
+
 var model;
 
 var not_printable = [".stl", ".asc"];
@@ -94,10 +84,14 @@ function detail_files(object) {
 		html += '</table>';
 
 		$('#files-container').html(html);
+		
+		//enable prev button
+		
 
 		$('.obj-file').on('click', function() {
 			select_file($(this).val());
 		});
+		
 
 		$('.file-row').click(function() {
 
@@ -106,7 +100,9 @@ function detail_files(object) {
 			$(".files-table tbody tr").removeClass('success');
 			$(this).addClass('success');
 
+
 			select_file($(this).find(':first-child').find('input').val());
+			startFromRecent = false;
 
 			/** LAOD INTERSTITIAL */
 
@@ -128,45 +124,9 @@ function detail_files(object) {
 				$(".model-info").remove();
 
 				if (file_selected.attributes != '' && file_selected.attributes != 'Processing') {
-
-					if (file_selected.print_type != 'subtractive') {
-
-						var attributes = JSON.parse(file_selected.attributes);
-
-						var model_info_html = '<div class="well well-sm model-info margin-top-10 info">';
-
-						var x = number_format(attributes.dimensions.x, 2, '.', '');
-						var y = number_format(attributes.dimensions.y, 2, '.', '');
-						var z = number_format(attributes.dimensions.z, 2, '.', '');
-
-						model_info_html += '<dl class="dl-horizontal">';
-
-						model_info_html += '<dt>Model Size:</dt>';
-						model_info_html += '<dd>' + x + ' x ' + y + ' x ' + z + ' mm</dd>';
-
-						model_info_html += '<dt>Filament used:</dt>';
-						model_info_html += '<dd>' + number_format(attributes.filament, 2, '.', '') + ' mm</dd>';
-
-						model_info_html += '<dt>Estimated time print:</dt>';
-						model_info_html += '<dd>' + attributes.estimated_time + '</dd>';
-
-						model_info_html += '<dt>Layers:</dt>';
-						model_info_html += '<dd>' + attributes.number_of_layers + '</dd>';
-
-						model_info_html += '</dl>';
-
-						model_info_html += '</div>';
-					}
-				} else {
-
-					var message = file_selected.attributes != 'Processing' ? 'No information avaiable for this file' : 'Processing informations..';
-					var model_info_html = '<div class="alert alert-warning fade in model-info margin-top-10 info">';
-					model_info_html += '<strong><i class="fa fa-warning"></i> ' + message + ' </strong>';
-					model_info_html += '</div>';
-
+					
+					$('#files-container').append(model_info(file_selected));
 				}
-
-				$('#files-container').append(model_info_html);
 
 			} catch(e) {
 
@@ -213,11 +173,11 @@ function select_file(fileID) {
 	$.each(object.files.data, function(index, file) {
 		if (file.id == fileID) {
 			file_selected = file;
-
+			
 			$('.file_name').html(file_selected.raw_name);
 
 			/** ABLE NEXT BUTTON */
-			$('#btn-next').removeClass('disabled');
+			enable_button('#btn-next');
 		}
 	});
 
@@ -230,14 +190,64 @@ function select_file(fileID) {
 function detail_file(file) {
 
 	$('#file_name').html(file.file_name);
+	$('.file_name').html(file.raw_name);
 	$('#orig_name').html(file.orig_name);
 	$('#full_path').html(file.full_path);
 	$('#file_ext').html(file.file_ext);
 	$('#file_size').html(file.file_size);
 	$('#insert_date').html(file.insert_date);
 
-	$('.file_name').html(' > ' + file_selected.raw_name);
+	$('.file_name').html(file_selected.raw_name);
 }
+
+
+function model_info(file){
+	
+	if(file.attributes == '' || file.attributes == 'Processing'){
+		return;
+	}
+	
+	if (file.print_type != 'subtractive') {
+
+		var attributes = JSON.parse(file.attributes);
+
+		var model_info_html = '<div class="well well-sm model-info margin-top-10 info">';
+
+		var x = number_format(attributes.dimensions.x, 2, '.', '');
+		var y = number_format(attributes.dimensions.y, 2, '.', '');
+		var z = number_format(attributes.dimensions.z, 2, '.', '');
+
+		model_info_html += '<dl class="dl-horizontal">';
+
+		model_info_html += '<dt>Model Size:</dt>';
+		model_info_html += '<dd>' + x + ' x ' + y + ' x ' + z + ' mm</dd>';
+
+		model_info_html += '<dt>Filament used:</dt>';
+		model_info_html += '<dd>' + number_format(attributes.filament, 2, '.', '') + ' mm</dd>';
+
+		model_info_html += '<dt>Estimated time print:</dt>';
+		model_info_html += '<dd>' + attributes.estimated_time + '</dd>';
+
+		model_info_html += '<dt>Layers:</dt>';
+		model_info_html += '<dd>' + attributes.number_of_layers + '</dd>';
+
+		model_info_html += '</dl>';
+
+		model_info_html += '</div>';
+		
+	} else {
+	
+		var message = file.attributes != 'Processing' ? 'No information avaiable for this file' : 'Processing informations..';
+		var model_info_html = '<div class="alert alert-warning fade in model-info margin-top-10 info">';
+		model_info_html += '<strong><i class="fa fa-warning"></i> ' + message + ' </strong>';
+		model_info_html += '</div>';
+	
+	}
+	
+	return model_info_html;
+	
+}
+
 
 /**
  *
@@ -329,6 +339,7 @@ function _do_action(action, value) {
 		jsonData['value'] = value;
 		jsonData['progress'] = progress;
 		jsonData['attributes_file'] = attributes_file;
+		jsonData['type'] = print_type;
 
 		var message = {};
 
@@ -348,7 +359,8 @@ function _do_action(action, value) {
 				action : action,
 				value : value,
 				progress : progress,
-				attributes_file : attributes_file
+				attributes_file : attributes_file,
+				type : print_type
 			},
 			type : 'post',
 			dataType : 'json',
@@ -371,10 +383,9 @@ function _do_action(action, value) {
 
 /** ask stop */
 function ask_stop() {
-
+	var make_label = print_type == 'additive' ?  'print' : 'mill';
 	$.SmartMessageBox({
-		title : "Attention!",
-		content : "Stop print ?",
+		title : "<i class='fa fa-warning'></i> Do you really want to stop the " + make_label,
 		buttons : '[No][Yes]'
 	}, function(ButtonPressed) {
 
@@ -385,8 +396,8 @@ function ask_stop() {
 }
 
 function stop_print() {
-
-	openWait('Stopping print, please wait..');
+	var make_label = print_type == 'additive' ?  'print' : 'mill';
+	openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Aborting ' + make_label, '', false);
 	_do_action('stop', true);
 	_stop_monitor();
 	_stop_timer();
@@ -488,12 +499,20 @@ var print_monitor = function() {
  *
  */
 function print_object() {
-
+	
+	if(document.getElementById("top-ext-target-temp") != null){
+		document.getElementById("top-ext-target-temp").setAttribute('disabled', true);
+	}
+	document.getElementById("top-bed-target-temp").setAttribute('disabled', true);
+	
+	disable_button('.jog');
+	
 	IS_MACRO_ON = true;
 	$(".final-step-response").html("");
-	openWait('Starting');
-	waitHideEmergencyButton();
-
+	
+	var make_label = print_type == 'additive' ?  'print' : 'mill';
+	
+	openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Starting '+ make_label, '', false);
 	var timestamp = new Date().getTime();
 	//ticker_url = '/temp/print_check_' + timestamp + '.trace';
 	ticker_url = '/temp/macro_trace';
@@ -578,49 +597,15 @@ function print_object() {
 			$(".final-step-response").append('<h5>try again</h5>');
 			closeWait();
 			ticker_url = '';
+			$(".jog").removeClass('disabled');
+			document.getElementById("top-ext-target-temp").removeAttribute('disabled');
+			document.getElementById("top-bed-target-temp").removeAttribute('disabled');
 
 		}
 
 		IS_MACRO_ON = false;
 
 	});
-
-}
-
-function check_wizard() {
-
-	var item = $('.wizard').wizard('selectedItem');
-
-	$('#btn-next').show();
-
-	if (item.step > 1) {
-		$('#btn-prev').removeClass('disabled');
-	}
-
-	if (item.step == 1) {
-		$('#btn-prev').addClass('disabled');
-	}
-
-	if (item.step == 2 && file_selected == '') {
-		$('#btn-next').addClass('disabled');
-	}
-
-	if (item.step == 3) {
-		$('#btn-next').hide();
-
-		if ( typeof countdown_ticker == 'function') {
-			clearInterval(countdown_ticker);
-		}
-
-	}
-
-	if (item.step >= 4) {
-
-		$("#wizard-buttons").hide();
-
-	} else {
-
-	}
 
 }
 
@@ -699,4 +684,3 @@ function _stop_timer() {
 function _stop_trace() {
 	clearInterval(interval_trace);
 }
-

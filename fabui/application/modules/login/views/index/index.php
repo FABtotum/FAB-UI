@@ -70,7 +70,7 @@
 					<div class="col-sm-8">
 						<div class="well no-padding">
 							<form action="<?php echo site_url('login/do_login') ?>" id="login-form" class="smart-form client-form" method="POST">
-								<header><i class="fa fa-play rotate-90"></i> Sign in</header>
+								<header><i class="fa fa-play fa-rotate-90 fa-border"></i> Sign in</header>
 								<fieldset>
 									<section>
 										<label class="label">E-mail</label>

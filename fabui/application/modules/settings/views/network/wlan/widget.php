@@ -1,7 +1,7 @@
 <?php if($info['ip_address']!='' && $info['ssid'] != ''): ?>
-	
-<div class="row">
-	<div class="col-sm-12 col-lg-12 col-sx-12">
+<style>.net-details{display:none;}</style>	
+<div class="row padding-10">
+	<div class="col-sm-12 col-lg-12 col-sx-12 net-details">
 		<table class="table ">
 			<tbody>
 				<tr>
@@ -19,25 +19,55 @@
 			</tbody>
 		</table>
 	</div>
-</div>	
-<?php else: ?>
-<div class="row">
-	<div class="col-sm-12">
-		<h4><span class="fa-stack fa-lg">
-			  <i class="fa fa-wifi fa-stack-1x"></i>
-			  <i class="fa fa-ban fa-stack-2x text-danger"></i>
-			</span> No wifi set. Please connect to a valid wifi network</h4>
-	</div>
 </div>
+
 <?php endif; ?>
 
+<div class="row">
+	
+	<div class="col-sm-12 table-container">
+		<table class="table table-striped table-forum">
+		
+		<tbody>
+			<?php foreach($networks as $net): ?>
+				<?php if($net['essid'] != ''): ?>
+				<?php $action =  $net['address'] == $info['ap_mac_address'] ? 'disconnect' : 'connect'; $protected = $net['encryption key'] == 'on' ? true : false; ?>
+					<tr>
+						<td class="text-center" style="width: 40px;"><i class=" icon-communication-035 fa-2x text-muted"></i></td>
+						<td style="width: 200px">
+							<h4><a href="javascript:void(0);"> <?php echo $net['essid']; ?> <?php if($action == 'disconnect'): ?> <i class="fa fa-check pull-right"></i> <?php endif; ?></a>
+								<small><?php echo $protected ? 'Protected ('.$net['type'].')' : 'Open'; ?> <i class="fa fa-<?php echo $protected ? 'lock' :'unlock'  ?>"></i></small>
+							</h4>
+						</td>
+						<td class="hidden-xs">
+							<div class="progress progress-striped active">
+								<div class="progress-bar  bg-color-blue" data-transitiongoal="<?php echo $net['signal_level'] ?>"></div>
+							</div>
+						</td>
+						<td style="width: 100px" class="text-right">
+							<button data-type="<?php echo $net['type']; ?>" data-protected="<?php echo $net['encryption key'];?>" data-ssid="<?php echo $net['essid']; ?>" data-action="<?php echo $action; ?>" class="btn btn-info btn-block <?php echo $action; ?>"><?php echo ucfirst($action); ?></button>
+						</td>
+					</tr>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+	</div>
+</div>
+
+<div class="widget-footer">
+	<button class="btn btn-primary wifi-buttons" id="scan"><i class="fa fa-search"></i> <span class="hidden-xs">Scan</span></button>
+	<button class="btn btn-success wifi-buttons" id="hidden" style="margin-left:5px;"><i class="fa fa-user-secret"></i> <span class="hidden-xs">Connect to hidden WiFi</span></button>
+</div>
+<!--
 <div class="row margin-top-10">
 	<div class="col-sm-12">
-		<button class="btn btn-primary wifi-buttons" id="scan"><i class="fa fa-search"></i> Scan for networks</button>
-		<button class="btn btn-success wifi-buttons" id="hidden" style="margin-left:5px;"><i class="fa fa-user-secret"></i> Connect to hidden WiFi</button>
+		<button class="btn btn-primary wifi-buttons" id="scan"><i class="fa fa-search"></i> <span class="hidden-xs">Scan for networks</span></button>
+		<button class="btn btn-success wifi-buttons" id="hidden" style="margin-left:5px;"><i class="fa fa-user-secret"></i> <span class="hidden-xs">Connect to hidden WiFi</span></button>
 		<div class="nets-table margin-top-10"></div> 
 	</div>
 </div>
+-->
 <form action="<?php echo site_url('settings/network/wlan'); ?>" method="POST" id="connect-form">
 	<input type="hidden" id="essid" name="essid" value="" />
 	<input type="hidden" id="password" name="password" value="" />

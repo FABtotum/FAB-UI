@@ -72,7 +72,7 @@
 			<label class="label">Description</label>
 			<label class="textarea"> 				<textarea rows="5" class="custom-scroll" id="description" name="description"></textarea> </label>
 			<div class="note">
-				<strong>Note:</strong> If you set this object as public everyone can use it
+				<strong>Note:</strong> If you set this object as public it will be shared among all users on this FABtotum Personal Fabricator
 			</div>
 		</section>
 		<input type="hidden" id="files" name="files">

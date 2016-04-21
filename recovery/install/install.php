@@ -62,9 +62,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	$db -> update('sys_configuration', array('column' => 'sys_configuration.key', 'value' => 'wifi', 'sign' => '='), $_data_update);
 
 	//=========== SERIAL CLASS - GET FW VERSION
+	
+	$ini_array = parse_ini_file(SERIAL_INI);
+	
 	$serial = new Serial;
-	$serial -> deviceSet(PORT_NAME);
-	$serial -> confBaudRate(BOUD_RATE);
+	$serial -> deviceSet($ini_array['port']);
+	$serial -> confBaudRate($ini_array['baud']);
 	$serial -> confParity("none");
 	$serial -> confCharacterLength(8);
 	$serial -> confStopBits(1);

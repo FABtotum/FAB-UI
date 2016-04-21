@@ -3,13 +3,15 @@
 		<div class="well">
 			<div class="row margin-bottom-10">
 				<div class="col-sm-6">
-					
-					<p>Make sure you removed the filament, milling bits and any other accessory on the head. Se also <a href="<?php echo site_url('maintenance/spool') ?>">spool maintenance</a></p>	
-									
+					<div class="row">
+						<div class="col-sm-12">
+							<p class="font-md">Make sure you removed the filament, milling bits and any other accessory on the head.<br>Se also <a href="<?php echo site_url('maintenance/spool') ?>">spool maintenance</a></p>
+						</div>
+					</div>	
 					<div class="smart-form">
 						<fieldset style="background: none !important;">
 							<section>
-								<label class="label">Please select which head you want to install </label><label class="select"> <?php echo form_dropdown('heads', $heads_list, $head, 'class="input-lg" id="heads"'); ?> <i></i> </label>
+								<label class="label font-md">Please select which head you want to install </label><label class="select"> <?php echo form_dropdown('heads', $heads_list, $head, 'class="input-lg" id="heads"'); ?> <i></i> </label>
 							</section>
 						</fieldset>
 					</div>
@@ -20,9 +22,11 @@
 								<fieldset style="background: none !important;">
 									<div id="description-container">
 										<?php if($head != 'head_shape'): ?>
-											<p class="margin-bottom-10"><?php echo $heads_descriptions[$head]['desc'] ?></p>
+											<div class="jumbotron">
+											<p class="margin-bottom-10 "><?php echo $heads_descriptions[$head]['desc'] ?></p>
 											<?php if($heads_descriptions[$head]['more'] != ''): ?>
 											<a style="padding: 6px 12px;" target="_blank" href="<?php echo $heads_descriptions[$head]['more']; ?>" class="btn btn-default ">More details</a>
+											</div>
 											<?php endif; ?>
 										<?php endif; ?>
 									</div>

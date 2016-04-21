@@ -13,6 +13,8 @@ defined('TEMP_PATH')     ? null : define("TEMP_PATH",     WWW_PATH.'temp/');
 defined('UPLOAD_PATH')   ? null : define("UPLOAD_PATH",   WWW_PATH.'upload/');
 defined('LIB_PATH')      ? null : define("LIB_PATH",      WWW_PATH.'lib/');
 defined('LOCK_FILE')     ? null : define("LOCK_FILE",     WWW_PATH.'temp/LOCK');
+defined('INI_FILE')      ? null : define("INI_FILE",      LIB_PATH.'config.ini');
+defined('SERIAL_INI')    ? null : define("SERIAL_INI",    LIB_PATH.'serial.ini');
 
 //===================================================================================================================================================
 /** SERIAL PORT CONSTANTS */
@@ -46,6 +48,7 @@ defined("MYFAB_DOWNLOAD_EXTRACT_FOLDER") ? null : define("MYFAB_DOWNLOAD_EXTRACT
 
 //===================================================================================================================================================
 defined("MARLIN_DOWNLOAD_URL")            ? null : define("MARLIN_DOWNLOAD_URL", 'http://update.fabtotum.com/MARLIN/download/');
+defined("MARLIN_DOWNLOAD_FILE_ZIP")       ? null : define("MARLIN_DOWNLOAD_FILE_ZIP", 'firmware.zip');
 defined("MARLIN_DOWNLOAD_FILE")           ? null : define("MARLIN_DOWNLOAD_FILE", 'Marlin.cpp.hex');
 defined("MARLIN_DOWNLOAD_MONITOR_FILE")   ? null : define("MARLIN_DOWNLOAD_MONITOR_FILE",   '/var/www/recovery/update/temp/marlin_progress.json');
 defined("MARLIN_DOWNLOAD_TARGET_FILE")    ? null : define("MARLIN_DOWNLOAD_TARGET_FILE",    '/var/www/recovery/update/temp/');
@@ -91,8 +94,8 @@ define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
 
-if(isset($_SERVER['HTTP_HOST'])){
-	defined("SITE_URL") ? null : define("SITE_URL", 'http://'.$_SERVER['HTTP_HOST'].'/fabui/');
+if(isset($_SERVER['SERVER_NAME'])){
+	defined("SITE_URL") ? null : define("SITE_URL", 'http://'.$_SERVER['SERVER_NAME'].'/fabui/');
 }
 
 
@@ -116,14 +119,6 @@ defined('WIZARD_FILE') ? null : define("WIZARD_FILE", WWW_PATH.'WIZARD');
 
 defined('USB_SYSTEM_FILE') ? null : define("USB_SYSTEM_FILE", '/dev/sda1');
 defined('USB_FOLDER') ? null : define("USB_FOLDER", '/media');
-
-
-// ============ GIT ========================================================
-defined('GIT_RELEASES_URL')  ? null : define("GIT_RELEASES_URL", 'https://api.github.com/repos/FABtotum/dev-fabui/releases');
-defined('GIT_LATEST_RELEASE_URL')  ? null : define("GIT_LATEST_RELEASE_URL", 'https://api.github.com/repos/FABtotum/dev-fabui/releases/latest');
-
-defined('GIT_RELEASES_JSON')  ? null : define("GIT_RELEASES_JSON",TEMP_PATH.'git_releases.json');
-defined('GIT_LATEST_RELEASE_JSON')  ? null : define("GIT_LATEST_RELEASE_JSON",TEMP_PATH.'git_latest_release.json');
 
 
 defined('INTERFACES_FILE') ? null : define("INTERFACES_FILE", '/etc/network/interfaces');

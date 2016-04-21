@@ -286,4 +286,198 @@
 	}
 	
 	
+	/*
+ * FIXED HEADER
+ */
+$('input[type="checkbox"]#smart-fixed-header')
+    .click(function () {
+        if ($(this)
+            .is(':checked')) {
+            //checked
+            $.root_.addClass("fixed-header");
+        } else {
+            //unchecked
+            $('input[type="checkbox"]#smart-fixed-ribbon')
+                .prop('checked', false);
+            $('input[type="checkbox"]#smart-fixed-navigation')
+                .prop('checked', false);
+
+            $.root_.removeClass("fixed-header");
+            $.root_.removeClass("fixed-navigation");
+            $.root_.removeClass("fixed-ribbon");
+
+        }
+    });
+
+/*
+ * FIXED NAV
+ */
+$('input[type="checkbox"]#smart-fixed-navigation')
+    .click(function () {
+        if ($(this)
+            .is(':checked')) {
+            //checked
+            $('input[type="checkbox"]#smart-fixed-header')
+                .prop('checked', true);
+
+            $.root_.addClass("fixed-header");
+            $.root_.addClass("fixed-navigation");
+
+            $('input[type="checkbox"]#smart-fixed-container')
+                .prop('checked', false);
+            $.root_.removeClass("container");
+
+        } else {
+            //unchecked
+            $('input[type="checkbox"]#smart-fixed-ribbon')
+                .prop('checked', false);
+            $.root_.removeClass("fixed-navigation");
+            $.root_.removeClass("fixed-ribbon");
+        }
+    });
+
+/*
+ * FIXED RIBBON
+ */
+$('input[type="checkbox"]#smart-fixed-ribbon')
+    .click(function () {
+        if ($(this)
+            .is(':checked')) {
+
+            //checked
+            $('input[type="checkbox"]#smart-fixed-header')
+                .prop('checked', true);
+            $('input[type="checkbox"]#smart-fixed-navigation')
+                .prop('checked', true);
+            $('input[type="checkbox"]#smart-fixed-ribbon')
+                .prop('checked', true);
+
+            //apply
+            $.root_.addClass("fixed-header");
+            $.root_.addClass("fixed-navigation");
+            $.root_.addClass("fixed-ribbon");
+
+            $('input[type="checkbox"]#smart-fixed-container')
+                .prop('checked', false);
+            $.root_.removeClass("container");
+
+        } else {
+            //unchecked
+            $.root_.removeClass("fixed-ribbon");
+        }
+    });
+
+/*
+ * FIXED FOOTER
+ */
+$('input[type="checkbox"]#smart-fixed-footer')
+    .click(function () {
+        if ($(this)
+            .is(':checked')) {
+
+            //checked
+            $.root_.addClass("fixed-page-footer");
+
+        } else {
+            //unchecked
+            $.root_.removeClass("fixed-page-footer");
+        }
+    });
+
+
+/*
+ * RTL SUPPORT
+ */
+$('input[type="checkbox"]#smart-rtl')
+    .click(function () {
+        if ($(this)
+            .is(':checked')) {
+
+            //checked
+            $.root_.addClass("smart-rtl");
+
+        } else {
+            //unchecked
+            $.root_.removeClass("smart-rtl");
+        }
+    });
+
+/*
+ * MENU ON TOP
+ */
+
+$('#smart-top-menu')
+    .on('change', function (e) {
+        if ($(this)
+            .prop('checked')) {
+            $.root_.addClass("menu-on-top");
+        } else {
+            $.root_.removeClass("menu-on-top");
+        }
+    });
+
+/*
+ * COLORBLIND FRIENDLY
+ */
+
+$('input[type="checkbox"]#colorblind-friendly')
+    .click(function () {
+        if ($(this)
+            .is(':checked')) {
+
+            //checked
+            $.root_.addClass("colorblind-friendly");
+
+        } else {
+            //unchecked
+            $.root_.removeClass("colorblind-friendly");
+        }
+    });
+
+
+
+/*
+ * INSIDE CONTAINER
+ */
+$('input[type="checkbox"]#smart-fixed-container')
+    .click(function () {
+        if ($(this)
+            .is(':checked')) {
+            //checked
+            $.root_.addClass("container");
+
+            $('input[type="checkbox"]#smart-fixed-ribbon')
+                .prop('checked', false);
+            $.root_.removeClass("fixed-ribbon");
+
+            $('input[type="checkbox"]#smart-fixed-navigation')
+                .prop('checked', false);
+            $.root_.removeClass("fixed-navigation");
+
+            if (smartbgimage) {
+                $("#smart-bgimages")
+                    .append(smartbgimage)
+                    .fadeIn(1000);
+                $("#smart-bgimages img")
+                    .bind("click", function () {
+                        var $this = $(this);
+                        var $html = $('html')
+                        bgurl = ($this.data("htmlbg-url"));
+                        $html.css("background-image", "url(" + bgurl + ")");
+                    })
+                smartbgimage = null;
+            } else {
+                $("#smart-bgimages")
+                    .fadeIn(1000);
+            }
+
+        } else {
+            //unchecked
+            $.root_.removeClass("container");
+            $("#smart-bgimages")
+                .fadeOut();
+        }
+    });
+	
+	
 </script>

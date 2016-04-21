@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * 
  * SETTING VERSION 0
@@ -9,10 +8,8 @@
  */
 
 define('E_MODE', 3048.1593);
-define('A_MODE', 177.777778); 
- 
+define('A_MODE', 177.777778);
 require_once '/var/www/lib/config.php';
-
 //load config
 $configs = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);
 

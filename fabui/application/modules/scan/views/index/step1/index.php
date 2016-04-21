@@ -81,7 +81,7 @@
 				<h6><?php echo $configuration->info->name ?></h6>
 				<div class="row">
 					<div class="text-align-center mode-image">
-						<img class="img-responsive" style="display: inline; max-width: 50%;" src="<?php echo base_url() .'/application/modules/scan/assets/img/'.strtolower($configuration->info->name).'.png' ?>">
+						<img class="img-responsive" style="display: inline; max-width: 50%;" src="<?php echo base_url() .'/application/modules/scan/assets/img/'.strtolower($mode->name).'.png' ?>">
 					</div>
                     <div class="mode-description" style="display:none;">
 					   <p><?php echo $configuration->info->description ?></p>

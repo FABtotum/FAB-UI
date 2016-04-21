@@ -1,18 +1,4 @@
-<div class="row margin-bottom-10">
-	<div class="col-sm-12">
-		<?php if(in_array(strtolower($_file->file_ext), $preview_files)): ?>
-		<a data-placement="bottom" href="<?php echo site_url('objectmanager/file/preview/'.$_object_id.'/'.$_file->id) ?>" rel="tooltip" data-original-title="A web-based 3D viewer for GCode files." style="margin-left:5px;" class="btn bg-color-purple txt-color-white pull-right"><i class="fa fa-eye"></i> Preview </a>
-		<?php endif; ?>
-		
-		<a data-placement="bottom" href="<?php echo site_url('objectmanager/download/file/'.$_file->id) ?>" rel="tooltip" data-original-title="Save data on your computer. You can use it in the third party software." style="margin-left:5px;" class="btn btn-info txt-color-white pull-right"><i class="fa fa fa-download"></i>  Download </a>
-		
-		<?php if(in_array(strtolower($_file->file_ext),$printables_files)): ?>
-			<?php $type = strtolower($_file->print_type) == 'additive' ? 'print' : 'mill';  ?>
-			<a style="margin-left:5px;" rel="tooltip" data-placement="bottom" data-original-title="<?php echo ucfirst($type); ?> this file" href="<?php echo site_url('make/'.$type.'?obj='.$_object_id.'&file='.$_file->id)?>" class="btn btn-success pull-right"><i class="fa fa-play rotate-90"></i> <?php echo ucfirst($type); ?></a>
-		<?php endif; ?>
-		
-	</div>
-</div>
+<?php echo file_header_toolbar($object, $_file, 'edit') ?>
 <div class="row">
 	<div class="col-sm-12">
 		<div class="well well-light">
@@ -69,13 +55,13 @@
 								
 								<div class="col-sm-12">
 									<?php if(!$is_stl): ?>
-										<button class="btn btn-default pull-left" type="button" id="load-content"><i class="fa fa-angle-double-down"></i> Open Gcode </button>
+										<button class="btn btn-default pull-left" type="button" id="load-content"><i class="fa fa-angle-double-down"></i> view content </button>
 									<?php endif; ?>
 									
 									
 									<label class="checkbox-inline" style="padding-top:0px;">
 										 <input type="checkbox" class="checkbox" disabled="disabled" id="also-content">
-										 <span>Save gcode also</span>
+										 <span>Save also content </span>
 									</label>
 									<button class="btn btn-primary" type="button" id="save"><i class="fa fa-save"></i> Save </button>
 								</div>

@@ -1,13 +1,11 @@
 <?php
-
 /*
-Widget Name: Shortcut
-Widget URI: http://www.thingiverse.com/thing:35248
+Widget Name: Blog
+Widget URI: http://www.fabtotum.com
 Version: 1.0
-Description: gCodeViewer is a visual GCode visualizer, viewer and analyzer in your own browser! It works on any OS in almost any modern browser (chrome, ff, safari 6, opera, ie10 should work too). All you need to do - is drag your *.gcode file to the designated zone.
+Description: Fabtotum Development's Blog Feed
 Author: FABteam
-Author URI: http://www.thingiverse.com/hudbrog/designs
-Widget Slug: shortcut
+Widget Slug: blog
 */
 class Blog_widget extends Widget {
     
@@ -23,19 +21,12 @@ class Blog_widget extends Widget {
 	 
 	 	$config['icon'] = 'fa fa-comments';
 	 	$config['load'] = widget_url('blog').'ajax/feed.php';
-		$config['fullscreenbutton'] = 'true';
-		
-		
-		
-		
+		$config['fullscreenbutton'] = 'true';	
 	 	$this->initialize($config);
-	 	
-	 
+	 	 
         $_html   = $this->view('index', '', TRUE);
         $_widget = $this->get('blog', 'Development Blog', $_html, false, false);
-        //$_js     = $this->view('js', '', TRUE);
-        
-        //$CI->layout->add_js_in_page(array('data'=> $_js, 'comment' => 'SHORTCUT WIDGET IN PAGE JS'));
+
         
         return $_widget;
   

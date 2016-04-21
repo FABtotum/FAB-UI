@@ -19,7 +19,7 @@ function myfab_get_remote_version() {
 	$info = curl_getinfo($ch);
 	curl_close($ch);
 
-	return $_version;
+	return  $info['http_code'] == 200 ? $_version : false;
 
 }
 
@@ -121,7 +121,7 @@ function myfab_update_list() {
 }
 
 function is_internet_avaiable() {
-	return !$sock = @fsockopen('www.google.com', 80, $num, $error, 5) ? false : true;
+	return !$sock = @fsockopen('www.google.com', 80, $num, $error, 2) ? false : true;
 }
 
 function fabui_changelog($version) {
@@ -180,21 +180,5 @@ function fw_changelog($version) {
 
 }
 
-function getGitReleases() {
-
-	$CI = &get_instance();
-	$CI -> config -> load('fabtotum', TRUE);
-	
-	return json_decode(file_get_contents($CI -> config -> item('git_releases_json', 'fabtotum')), true);
-}
-
-
-function getGitLatestRelease(){
-	
-	$CI = &get_instance();
-	$CI -> config -> load('fabtotum', TRUE);
-	
-	return json_decode(file_get_contents($CI -> config -> item('git_latest_release_json', 'fabtotum')), true);
-}
 
 ?>

@@ -90,7 +90,7 @@
         
         $(".SmallBox").remove();
         $(".result-check-pre-scan").html('');
-        openWait('Checking printer');
+        openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Preparing printer');
         var timestamp = new Date().getTime();
         /*ticker_url    = '/temp/check_pre_scan_' + timestamp + '.trace';*/
         ticker_url    = '/temp/macro_trace';
@@ -149,7 +149,7 @@
         $(".SmallBox").remove();
          console.log(IS_MACRO_ON);
         
-        openWait('Checking printer');
+        openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Preparing printer');
         var timestamp = new Date().getTime();
         ticker_url    = '/temp/check_p_scan_' + timestamp + '.trace';
         

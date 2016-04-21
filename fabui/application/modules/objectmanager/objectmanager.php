@@ -4,19 +4,19 @@ class Objectmanager extends Module {
 
 	public function __construct() {
 		parent::__construct();
-		
-		 $this->load->helper('print_helper');
-        /** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
-        if(is_printer_busy()){
-            //redirect('dashboard');
-            $this->layout->set_printer_busy(true);
-        }
+
+		$this -> load -> helper('print_helper');
+		/** IF PRINTER IS BUSY I CANT CHANGE SETTINGS  */
+		if (is_printer_busy()) {
+			//redirect('dashboard');
+			$this -> layout -> set_printer_busy(true);
+		}
 
 		$this -> lang -> load($_SESSION['language']['name'], $_SESSION['language']['name']);
-		
+
 		if (file_exists('download')) {
- 			shell_exec('sudo rm -r download');
- 		}
+			shell_exec('sudo rm -r download');
+		}
 
 	}
 
@@ -51,19 +51,15 @@ class Objectmanager extends Module {
 		$this -> load -> helper('ft_date_helper');
 
 		//$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js', 'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js', 'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
-
-		//$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
-
-		//$free_space = disk_free_space('/');
-		//$total_space = disk_total_space('/');
-		//$percent_free = intval(($free_space / $total_space) * 100);
-		//$percent_used = 100 - $percent_free;
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/jquery.dataTables.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatable-responsive/datatables.responsive.min.js', 'comment' => ''));
+		
 
 		
+
 		$_table = $this -> load -> view('index/table', '', TRUE);
 
 		$attr['data-widget-icon'] = 'fa fa-cubes';
@@ -73,9 +69,8 @@ class Objectmanager extends Module {
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => 'INDEX FUNCTIONS'));
 
 		$data['_table'] = $_widget_table;
-		$data['_disk_total_space'] = disk_total_space('/');
-		$data['_disk_free_space'] = disk_free_space('/');
-
+		
+		$this -> layout -> set_compress(false);
 		$this -> layout -> view('index/index', $data);
 
 	}
@@ -102,8 +97,6 @@ class Objectmanager extends Module {
 			$files = explode(',', $this -> input -> post('files'));
 
 			$usb_files = explode(',', $this -> input -> post('usb_files'));
-			
-			
 
 			$usb_files_id = array();
 
@@ -116,8 +109,6 @@ class Objectmanager extends Module {
 				}
 
 			}
-			
-			
 
 			$this -> objects -> insert_files($_obj_id, $files);
 			$this -> objects -> insert_files($_obj_id, $usb_files_id);
@@ -133,31 +124,32 @@ class Objectmanager extends Module {
 		/** LOAD FROM USB DISK FIRST TREE */
 
 		$data['folder_tree'] = array();
-		
-		
+
 		$this -> load -> helper('smart_admin_helper');
-		
+
 		/** LOAD FORM CONTENT */
 		$_form = $this -> load -> view('add/form', '', TRUE);
 		$_dropzone = $this -> load -> view('add/dropzone', '', TRUE);
-		
+
 		$form_attr['data-widget-icon'] = '';
 		$_form_widget = widget('form' . time(), 'Details ', $form_attr, $_form, false, true, true);
-		
+
 		$dropzone_attr['data-widget-icon'] = '';
 		$_dropzone_widget = widget('form' . time(), 'Upload ', $dropzone_attr, $_dropzone, false, true, true);
-		
+
 		$data['form'] = $_form_widget;
 		$data['dropzone'] = $_dropzone_widget;
-		
 
 		$js_data['accepted_files'] = $this -> config -> item('upload_accepted_files');
 		$j_data['_upload_max_filesize'] = ini_get("upload_max_filesize");
 
 		$data['_upload_max_filesize'] = ini_get('upload_max_filesize');
 
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/jquery-validate/jquery.validate.min.js', 'comment' => 'VALIDATE FORM'));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/jquery-validate/jquery.validate.min.js', 'comment' => 'VALIDATE FORM'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
+		
+		$this -> layout -> add_css_file(array('src' => '/assets/js/plugin/magnific-popup/magnific-popup.css', 'comment' => 'DROPZONE JAVASCRIPT'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
 
 		$js_in_page = $this -> load -> view('add/js', $js_data, TRUE);
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => 'INIT DROPZONE'));
@@ -192,16 +184,12 @@ class Objectmanager extends Module {
 		/** LOAD FILES ID */
 		$_files_id = $this -> objects -> get_files($id_object);
 		$_files = array();
-		
-		
 
 		foreach ($_files_id as $id) {
 
 			$_files[] = $this -> files -> get_file_by_id($id);
 
 		}
-		
-		
 
 		$printable_files[] = '.gc';
 		$printable_files[] = '.gcode';
@@ -221,16 +209,17 @@ class Objectmanager extends Module {
 
 		/** CREATE WIDGET */
 		$attr['data-widget-icon'] = 'fa fa-th-list';
-		$_widget_table = widget('objects' . time(), 'Files', $attr, $_table, false, true, true, $_table_widget_toolbar);
+		$_widget_table = widget('objects' . time(), 'Files', $attr, $_table, false, true, false, $_table_widget_toolbar);
 
 		$form_attr['data-widget-icon'] = '';
-		$_form_widget = widget('form' . time(), 'Details ', $form_attr, $_form, false, true, true);
+		$_form_widget = widget('form' . time(), 'Object details ', $form_attr, $_form, false, true, false);
 
 		/** LAYOUT */
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/jquery.dataTables.min.js',     'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.colVis.min.js',     'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/datatables/dataTables.bootstrap.min.js',  'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/jquery.dataTables.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatable-responsive/datatables.responsive.min.js', 'comment' => ''));
 
 		$data['_object'] = $_object;
 		$data['_widget'] = $_widget_table;
@@ -389,9 +378,11 @@ class Objectmanager extends Module {
 		$_obj_files = $this -> objects -> get_files($id);
 
 		$_files = array();
-
-		$_object -> date_insert = mysql_to_human($_object -> date_insert);
-		$_object -> date_updated = mysql_to_human($_object -> date_updated);
+		
+		;
+		
+		$_object -> date_insert  = date('d/m/Y', strtotime($_object -> date_insert));
+		$_object -> date_updated = date('d/m/Y', strtotime($_object -> date_updated));
 
 		foreach ($_obj_files as $_file) {
 
@@ -430,7 +421,9 @@ class Objectmanager extends Module {
 			$icon_file = $obj -> num_files > 1 ? 'fa-files-o' : ' fa-file-o';
 			$_files = $obj -> num_files . ' <i class="fa ' . $icon_file . '"></i>';
 
-			$rows[] = array($obj -> obj_name, $obj -> obj_description, mysql_to_human($obj -> date_insert), $_files, $_edit_button . ' ' . $_delete_button);
+			$rows[] = array($obj -> obj_name, $obj -> obj_description, date('d/m/Y', strtotime($obj -> date_insert)), $_files, $_edit_button . ' ' . $_delete_button);
+			
+			
 		}
 
 		echo json_encode(array('aaData' => $rows));
@@ -438,9 +431,15 @@ class Objectmanager extends Module {
 	}
 
 	public function file($action, $object_id = 0, $file_id = 0) {
-
+		
+		$this -> load -> model('objects');
+		
 		$data['_object_id'] = $object_id;
 		$data['_file_id'] = $file_id;
+		
+		$data['object'] = $this->objects->get_obj_by_id($object_id);
+		
+		$this -> load -> helper('object_helper');
 
 		if ($action == 'add') {
 
@@ -448,7 +447,7 @@ class Objectmanager extends Module {
 
 				//carico X class database
 				$this -> load -> database();
-				$this -> load -> model('objects');
+				
 
 				$files = explode(',', $this -> input -> post('files'));
 				$usb_files = explode(',', $this -> input -> post('usb_files'));
@@ -479,8 +478,11 @@ class Objectmanager extends Module {
 			$js_data['_object_id'] = $object_id;
 			$js_data['_time'] = $data['_time'] = time();
 
-			$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
-
+			$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
+			
+			$this -> layout -> add_css_file(array('src' => '/assets/js/plugin/magnific-popup/magnific-popup.css', 'comment' => 'DROPZONE JAVASCRIPT'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
+			
 			$js_in_page = $this -> load -> view('file/add/js', $js_data, TRUE);
 			$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => 'INIT DROPZONE'));
 
@@ -549,8 +551,7 @@ class Objectmanager extends Module {
 
 				}
 			}
-			
-			
+
 			$data['printables_files'] = array('.gc', '.gcode', '.nc');
 			$data['preview_files'] = array('.gc', '.gcode', '.stl');
 
@@ -560,7 +561,7 @@ class Objectmanager extends Module {
 			/** LAYOUT SETUP */
 			$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
 			$this -> layout -> add_css_in_page(array('data' => $css_in_page, 'comment' => ''));
-			$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
+			$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
 
 			$this -> layout -> set_compress(false);
 
@@ -578,11 +579,11 @@ class Objectmanager extends Module {
 
 				$this -> load -> helper('smart_admin_helper');
 
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/thingiview/Three.js', 'comment' => ''));
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/thingiview/plane.js', 'comment' => ''));
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/thingiview/thingiview.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/thingiview/Three.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/thingiview/plane.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/thingiview/thingiview.js', 'comment' => ''));
 
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/colorpicker/bootstrap-colorpicker.min.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/colorpicker/bootstrap-colorpicker.min.js', 'comment' => ''));
 
 				$attr['data-widget-fullscreenbutton'] = 'false';
 				$attr['data-widget-icon'] = 'fa fa-cube';
@@ -604,13 +605,13 @@ class Objectmanager extends Module {
 				$this -> load -> helper('ft_file_helper');
 				$this -> load -> helper('smart_admin_helper');
 
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/gcodeviewer/modernizr.custom.93389.js', 'comment' => ''));
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/gcodeviewer/sugar-1.2.4.min.js', 'comment' => ''));
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/gcodeviewer/Three.js', 'comment' => ''));
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/gcodeviewer/three.TrackballControls.js', 'comment' => ''));
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/gcodeviewer/gcode-parser.js', 'comment' => ''));
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/gcodeviewer/gcode-model.js', 'comment' => ''));
-				$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/gcodeviewer/renderer.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/gcodeviewer/modernizr.custom.93389.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/gcodeviewer/sugar-1.2.4.min.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/gcodeviewer/Three.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/gcodeviewer/three.TrackballControls.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/gcodeviewer/gcode-parser.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/gcodeviewer/gcode-model.js', 'comment' => ''));
+				$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/gcodeviewer/renderer.js', 'comment' => ''));
 
 				$attributes = json_decode($file -> attributes, TRUE);
 
@@ -662,6 +663,11 @@ class Objectmanager extends Module {
 
 		}
 
+		if ($action == 'stats') {
+			$this->stats($object_id, $file_id);
+			return;
+		}
+
 		$this -> layout -> view('file/' . $action . '/index', $data);
 
 	}
@@ -671,20 +677,19 @@ class Objectmanager extends Module {
 		$this -> load -> database();
 		$this -> load -> model('files');
 		$this -> load -> model('objects');
-		
+
 		$download_folder = 'download';
 		//shell_exec('sudo rm -r download');
 		//mkdir(FCPATH.'/'.$download_folder, 0777);
-		shell_exec('sudo mkdir '.FCPATH.'/'.$download_folder);
-		shell_exec('sudo chmod 0777 ' . FCPATH.'/download');
-		
-		
+		shell_exec('sudo mkdir ' . FCPATH . '/' . $download_folder);
+		shell_exec('sudo chmod 0777 ' . FCPATH . '/download');
+
 		/** LOAD HELPER */
 		$this -> load -> helper('download');
 
 		if ($type == 'file') {
 			$files = explode('-', $list);
-			
+
 			if (count($files) > 0) {
 
 				if (count($files) == 1) {
@@ -693,16 +698,16 @@ class Objectmanager extends Module {
 					$data = file_get_contents($_file -> full_path);
 					force_download($_file -> file_name, $data);
 				} else {
-					
+
 					foreach ($files as $file_id) {
 
 						$file = $this -> files -> get_file_by_id($file_id);
 						shell_exec('cp ' . $file -> full_path . ' ' . $download_folder);
-						shell_exec('sudo cp "' . $file -> full_path . '" ' . FCPATH.'/'.$download_folder);
+						shell_exec('sudo cp "' . $file -> full_path . '" ' . FCPATH . '/' . $download_folder);
 					}
-					
-					shell_exec('sudo chmod -R 0777 ' . FCPATH.$download_folder);
-					
+
+					shell_exec('sudo chmod -R 0777 ' . FCPATH . $download_folder);
+
 					//zip file
 					$this -> load -> library('zip');
 					$this -> zip -> read_dir($download_folder . '/');
@@ -716,39 +721,37 @@ class Objectmanager extends Module {
 			if (count($objects) > 0) {
 
 				//crate download temp folder
-				shell_exec('sudo chmod -R 0777 ' . FCPATH.'/'.$download_folder);
+				shell_exec('sudo chmod -R 0777 ' . FCPATH . '/' . $download_folder);
 
 				foreach ($objects as $obj_id) {
 
 					$obj = $this -> objects -> get_obj_by_id($obj_id);
-					
-					$obj_folder = $download_folder . '/' . str_replace(' ', '_', $obj -> obj_name);
-					
+
+					$obj_folder = $download_folder . '/' . str_replace('&', 'and',str_replace(' ', '_', $obj -> obj_name));
+
 					$obj_folder = str_replace('(', '_', $obj_folder);
 					$obj_folder = str_replace(')', '_', $obj_folder);
 
 					//create objec folder
-					
+
 					mkdir($obj_folder, 0777);
-					shell_exec('sudo chmod -R 0777 ' . FCPATH.$obj_folder);
-					
+					shell_exec('sudo chmod -R 0777 ' . FCPATH . $obj_folder);
+
 					$files = $this -> objects -> get_files($obj_id);
 
 					foreach ($files as $file_id) {
 						$file = $this -> files -> get_file_by_id($file_id);
-						shell_exec('sudo cp "' . $file -> full_path . '" ' . FCPATH.$obj_folder.'/');
+						shell_exec('sudo cp "' . $file -> full_path . '" ' . FCPATH . $obj_folder . '/');
 					}
 				}
-				
+
 				//zip file
-				shell_exec('sudo chmod -R 0777 ' . FCPATH.$download_folder);
-				
-				
-				
+				shell_exec('sudo chmod -R 0777 ' . FCPATH . $download_folder);
+
 				$this -> load -> library('zip');
-				$this -> zip -> read_dir($download_folder.'/');
+				$this -> zip -> read_dir($download_folder . '/');
 				$this -> zip -> download('fabtotum_objects.zip');
-				
+
 			}
 		}
 
@@ -887,8 +890,8 @@ class Objectmanager extends Module {
 		//	$data['alert_size'] = true;
 		//}
 
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
-		$this -> layout -> add_js_file(array('src' => 'application/layout/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/dropzone/dropzone.min.js', 'comment' => 'DROPZONE JAVASCRIPT'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/ace/src-min/ace.js', 'comment' => 'ACE EDITOR JAVASCRIPT'));
 
 		$this -> layout -> set_compress(false);
 
@@ -984,7 +987,7 @@ class Objectmanager extends Module {
 
 		/** MOVE TO TEMP FOLDER */
 		$_command = 'sudo cp "' . $file . '"  "/var/www/temp/' . $file_name . '" ';
-		
+
 		//echo $_command.PHP_EOL;
 
 		shell_exec($_command);
@@ -1002,9 +1005,9 @@ class Objectmanager extends Module {
 		/** MOVE TO FINALLY FOLDER */
 		$_command = 'sudo cp "' . $file . '" "' . $folder_destination . $file_name . '" ';
 		shell_exec($_command);
-		
+
 		//echo $_command.PHP_EOL;
-		
+
 		/** ADD PERMISSIONS */
 		$_command = 'sudo chmod 746 "' . $folder_destination . $file_name . '" ';
 		shell_exec($_command);
@@ -1142,6 +1145,262 @@ class Objectmanager extends Module {
 
 		$this -> load -> view('prepare/gcode/manual', $data);
 
+	}
+
+	public function stats($object, $file) {
+		
+		//$this -> load -> model('tasks');
+		$this -> load -> model('files');
+		$this -> load -> model('objects');
+		$this -> load -> helper('smart_admin_helper');
+		$this -> load -> helper('object_helper');
+		
+		
+		$params  = $this->input->get();
+		
+		$data['start_date'] = !isset($params['start_date']) ? date('d/m/Y',strtotime('today - 30 days')) : $params['start_date'];
+		$data['end_date']   = !isset($params['end_date'])  ? date('d/m/Y',strtotime('today')) : $params['end_date'];
+		
+		//get data from db
+		$data['file']   = $this->files->get_file_by_id($file);
+		$data['object'] = $this->objects->get_obj_by_id($object);
+
+		$status = array();
+		
+		$stats = $this->get_statistics($file, $data['start_date'], $data['end_date']);
+		
+		$data['statistics'] = $stats['statistics'];
+		$data['durations'] = $stats['durations'];
+		
+		$data['totals'] = array();
+		
+		foreach($data['statistics'] as  $val){
+			
+			foreach($val as $key => $c){			
+				if($key != 'period'){
+
+					if(!isset($data['totals'][$key])) $data['totals'][$key] = 0;
+					$data['totals'][$key] += $c;
+				}
+			}
+		}
+
+		$data['options'] = array(
+			'performed' => array('label' => 'Completed', 'color' => '#7e9d3a'),
+			'stopped'   => array('label' => 'Aborted',   'color' => '#FF9F01'),
+			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329')
+		);
+		
+		
+		$data['labels'] = array();
+		$data['line_colors'] = array();
+		$data['donut_data'] = array();
+		$data['status_keys'] = array();
+		$data['total_durations'] = array();
+		
+		
+		foreach($data['options'] as $status => $attributes){
+			
+			array_push($data['labels'], $data['options'][$status]['label']);
+			array_push($data['line_colors'], $data['options'][$status]['color']);
+			array_push($data['status_keys'], $status);
+			
+			//if(count($data['statistics'])>0){
+
+				$temp_tot = isset($data['totals'][$status]) ? $data['totals'][$status] : 0;
+				@$value = number_format(($temp_tot / array_sum($data['totals']))*100, 1, '.', ' ');
+				
+				$temp = array('value' => $value, 'label'=>$data['options'][$status]['label']);
+				array_push($data['donut_data'],  $temp);
+			
+			//}
+			
+			if(count($data['durations']) > 0 && isset($data['durations'][$status])){
+				$data['total_durations'][] = sumTimes($data['durations'][$status]);
+			}
+			
+		}
+		
+		
+		$data['total_durations'] = sumTimes($data['total_durations']);
+		//widget
+		$data['widget'] = $this -> load -> view('file/stats/widget', $data, TRUE);
+		$attr['data-widget-icon'] = 'fa fa-area-chart';
+		$data['widget'] = widget('stats' . time(), 'Stats - '.$data['file']->raw_name, $attr, $data['widget'], false, false, false);
+		
+		// == layout
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/morris/raphael.min.js', 'comment' => 'charts'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/morris/morris.min.js', 'comment' => 'charts'));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/bootstrap-datepicker/moment.min.js',  'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/bootstrap-datepicker/daterangepicker.min.js',  'comment' => ''));
+		$this -> layout -> add_css_file(array('src' => '/assets/js/plugin/bootstrap-datepicker/daterangepicker.css',  'comment' => ''));
+		
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/jquery.dataTables.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.colVis.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.tableTools.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatables/dataTables.bootstrap.min.js', 'comment' => ''));
+		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/datatable-responsive/datatables.responsive.min.js', 'comment' => ''));
+		
+		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('file/stats/js', $data, TRUE), 'comment' => 'EDIT FUNCTIONS'));
+		$this -> layout -> add_css_in_page(array('data' => $this -> load -> view('file/stats/css', $data, TRUE), 'comment' => 'CSS'));
+		$this -> layout -> set_compress(false);
+		
+		
+		
+		$this -> layout -> view('file/stats/index', $data);
+	}
+
+
+	function get_statistics($file, $start_date, $end_date){
+		
+		$this -> load -> model('tasks');
+		$stats = $this->tasks->get_file_stats($file, $start_date, $end_date);
+		
+		//print_r($stats); 
+		
+		$temp_stats = array();
+		$durations_stats = array();
+		//construct stats
+		foreach($stats as $stat){
+			
+			if(!isset($temp_stats[$stat['date']])) $temp_stats[$stat['date']] = array();
+			if(!isset($temp_stats[$stat['date']][$stat['status']])) $temp_stats[$stat['date']][$stat['status']] = 0;
+			
+			$temp_stats[$stat['date']][$stat['status']] += $stat['total']; 
+			
+			if(!isset($durations_stats[$stat['status']])) $durations_stats[$stat['status']] = array();
+			$durations_stats[$stat['status']][] = $stat['total_time'];
+		}
+
+		
+		
+		$statistics = array();
+		
+		foreach($temp_stats as $day => $content){
+			
+			$temp = array('period'=>$day);
+			
+			foreach($content as $status => $total){
+				
+				$temp[$status] = $total;
+				
+			}	
+			array_push($statistics, $temp);
+			
+		}
+		
+		return  array ('statistics' =>$statistics, 'durations' => $durations_stats);		
+		
+	}
+	
+	
+	function get_json_stats_data($file, $start_date, $end_date){
+		
+		$start_date = date('d/m/Y', ($start_date/1000));
+		$end_date   = date('d/m/Y', ($end_date/1000));
+		
+		$options = array(
+			'performed' => array('label' => 'Completed', 'color' => '#7e9d3a'),
+			'stopped'   => array('label' => 'Aborted',   'color' => '#FF9F01'),
+			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329')
+		);
+		
+		$stats =  $this->get_statistics($file, $start_date, $end_date);
+		$statistics = $stats['statistics'];
+		$durations = $stats['durations'];
+		
+		
+		if(count($statistics)<=0){
+			echo json_encode(array('line'=>array(), 'donut'=>array(), 'tasks'=>array(), 'total_tasks'=>0, 'total_duration' => 0, 'durations' => array(), 'bars'=>''), JSON_NUMERIC_CHECK );
+			return;
+		}
+		
+		$totals = array();
+		$status_keys = array();
+		foreach($statistics as  $val){
+			
+			foreach($val as $key => $c){			
+				if($key != 'period'){
+					
+					if(!in_array($key, $status_keys)) array_push($status_keys, $key);
+							
+					if(!isset($totals[$key])) $totals[$key] = 0;
+					$totals[$key] += $c;
+				}
+			}
+		}
+		
+		$donut_data = array();
+		$total_duration_temp = array();
+		$total_durations = array();
+	
+		foreach($options as $status => $attributes){
+			
+			$temp_tot = isset($totals[$status]) ? $totals[$status] : 0;
+			@$value = number_format(($temp_tot / array_sum($totals))*100, 1, '.', ' ');
+			$temp = array('value' => $value, 'label'=>$options[$status]['label']);
+			array_push($donut_data,  $temp);
+			
+			//echo $status;
+			if(count($durations) > 0 && isset($durations[$status])){
+				$total_duration_temp[] = sumTimes($durations[$status]);
+				$total_durations[$status] = sumTimes($durations[$status]);
+			}
+			
+		}
+		
+		$total_duration = sumTimes($total_duration_temp);
+		
+		
+		$html_bars = '<div>';
+		foreach($options as $status => $attributes){
+			if(isset($totals[$status])){
+				$html_bars .= '<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><span class="text">'.$attributes['label'].'<span class="pull-right">'.$totals[$status].'/ '.array_sum($totals).'</span></span></div>';
+				$html_bars .= '<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><span class="text"><span class="pull-right">'.$total_durations[$status].'/ '.$total_duration.' </span></span></div>';
+				$html_bars .= '<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="progress"><div class="progress-bar" style="width:'.(($totals[$status]/array_sum($totals))*100).'%; background-color:'.$attributes['color'].' !important;"></div></div></div>';
+			}
+		}
+		$html_bars .= '</div>';
+		
+		
+		echo json_encode(array('line'=>$statistics, 'donut'=>$donut_data, 'tasks' => $totals, 'total_tasks' => array_sum($totals), 'total_duration' => $total_duration, 'durations'=>$total_durations, 'bars'=>$html_bars), JSON_NUMERIC_CHECK );
+	}
+
+
+	function get_file_tasks($id_file, $filters){
+		
+		$this -> load -> model('tasks');
+		return $this->tasks->get_file_tasks($id_file, $filters);
+	}
+
+	function get_file_tasks_for_table($file){
+		
+		$params = $this->input->get();
+		
+		$this -> load -> helper('ft_date_helper');
+		
+		$tasks = $this->get_file_tasks($file, $params);
+		
+		$options = array(
+			'performed' => array('label' => 'Completed', 'color' => '#7e9d3a'),
+			'stopped'   => array('label' => 'Aborted',   'color' => '#FF9F01'),
+			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329')
+		);
+		
+		$aaData = array();
+
+		foreach ($tasks as $task) {
+			
+			$td_0 = date('d/m/Y H:i:s', strtotime($task['finish_date']));
+			$td_1 = $options[$task['status']]['label'];
+			$td_2 = $task['duration'];
+			$td_3 = $task['status'];
+			
+			$aaData[] = array($td_0, $td_1, $td_2, $td_3);
+		}
+		
+		echo json_encode(array('aaData' => $aaData));
+		
 	}
 
 }

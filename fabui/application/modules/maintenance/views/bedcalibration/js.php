@@ -39,7 +39,7 @@
 	
 	function do_calibration(){
 		
-		openWait('Calibration in process');
+		openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Calibration in process');
 		IS_MACRO_ON = true;
 		var now = jQuery.now();
 		ticker_url = '/temp/macro_trace';
@@ -69,7 +69,7 @@
 				
 			}
 			
-			$(".todo").html(data);
+			$(".result-response").html(data);
 			
 			IS_MACRO_ON = false;
 			

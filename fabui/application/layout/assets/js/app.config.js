@@ -1,36 +1,10 @@
-/*         ______________________________________
-  ________|                                      |_______
-  \       |           SmartAdmin WebApp          |      /
-   \      |      Copyright © 2014 MyOrange       |     /
-   /      |______________________________________|     \
-  /__________)                                (_________\
-
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- * =======================================================================
- * SmartAdmin is FULLY owned and LICENSED by MYORANGE INC.
- * This script may NOT be RESOLD or REDISTRUBUTED under any
- * circumstances, and is only to be used with this purchased
- * copy of SmartAdmin Template.
- * =======================================================================
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * =======================================================================
- * original filename: app.config.js
- * filesize: 12kb
- * author: Sunny (@bootstraphunt)
- * email: info@myorange.ca
- * =======================================================================
+/*   
  * 
  * GLOBAL ROOT (DO NOT CHANGE)
  */
 	$.root_ = $('body');	
 /*
- * APP CONFIGURATION (HTML/AJAX/PHP Versions ONLY)
+ * APP CONFIGURATION
  * Description: Enable / disable certain theme features here
  * GLOBAL: Your left nav in your app will no longer fire ajax calls, set 
  * it to false for HTML version
@@ -103,7 +77,7 @@
  * Enable this to activate fastclick plugin
  * dependency: js/plugin/fastclick/fastclick.js 
  */
-	fastClick = false,
+	fastClick = true,
 /*
  * SMARTCHAT PLUGIN ARRAYS & CONFIG
  * Dependency: js/plugin/moment/moment.min.js 
@@ -203,7 +177,7 @@
  *  日本語                         ['ja-JP']
  *  Lingua latīna     ['la']
  */
-	voice_command_lang = 'en-US',
+	voice_command_lang = 'it-IT',
 /*
  * 	Use localstorage to remember on/off (best used with HTML Version
  * 	when going from one page to the next)
@@ -216,7 +190,7 @@
  	if (voice_command) {
 	 		
 		var commands = {
-					
+			'print' : function() { document.location.href='/fabui/make/print' },		
 			'show dashboard' : function() { $('nav a[href="dashboard.php"]').trigger("click"); },
 			'show inbox' : function() { $('nav a[href="inbox.php"]').trigger("click"); },
 			'show graphs' : function() { $('nav a[href="flot.php"]').trigger("click"); },

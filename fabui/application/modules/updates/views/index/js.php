@@ -1,295 +1,138 @@
 <script type="text/javascript">
-            
-            
-            var interval_monitor;
-            var interval_refresh;
-            var json_uri = '<?php echo $running == true ? $json_uri : "" ?>';
-            
-            var finished = false;
-            
-            var first_extracting = true;
-            var first_installing = true;
-            
-            var timer_refresh = 0;
-            var type = '<?php echo  $running == true ? $update_type : '' ?>';
-            
-            var id_task='<?php echo $running == true ? $id_task : '' ?>';    
-        
-			$(document).ready(function() {
-
-				
-				$("#progressbar").progressbar({value: 0});
-                $('.download').on('click', ask_download);
-                $('.delete').on('click', ask_delete);
-				
-				
-			});
-            
-            
-            <?php if($running == true): ?>
-            
-                <?php if($update_type == 'fabui'):  ?>
-                    resume_myfab();
-                <?php endif; ?> 
-            
-            
-            <?php endif; ?>
-            
-            
-            
-            function ask_download (){
-
-				type    = $(this).attr('download-item');
-				version = $(this).attr('download-version');
-                
-                var button = $(this);
-                
-				$.SmartMessageBox({
-					title : "Updates Center",
-					content : "Do you want to download and install the new update?",
-					buttons : '[No][Yes]'
-				}, function(ButtonPressed) {
-					if (ButtonPressed === "Yes") {
-					   
-                       $('.download').addClass('disabled');
-                       button.next().show();
-                       start_update();
-                       button.parent().parent().addClass('warning');
-					}
-					if (ButtonPressed === "No") {
-						
-					}
-		
-				});
 	
-			}
-            
-             
-            function ask_delete (){
-
-				
-                
-				$.SmartMessageBox({
-					title : "Updates Center",
-					content : "Do you want to cancel the updating process?",
-					buttons : '[No][Yes]'
-				}, function(ButtonPressed) {
-					if (ButtonPressed === "Yes") {
-
-                       openWait('Cancellation in progress');
-                       cancel_update();
-                       
-					}
-					if (ButtonPressed === "No") {
-						
-					}
-		
-				});
+	var interval_monitor;
 	
+	$(document).ready(function() {
+		
+		$("#update").on('click', confirm_update);
+		$("#cancel").on('click', confirm_cancel);
+		<?php if($task != false): ?>
+		resume();
+		<?php endif; ?>
+		
+		
+	});
+	
+	function do_update(){
+		IS_TASK_ON = true;
+		$(".error").addClass('fa-spin');
+		disable_button('#update');
+		$("#update").html('Now updating');
+		freeze_menu('updates');
+		openWait("Starting");
+		
+		$.ajax({
+			  url: "<?php echo site_url('updates/doit') ?>",
+			  type: "POST",
+              dataType: 'json',
+		}).done(function( data ) {
+			interval_monitor  = setInterval(retrieve_monitor, 1000);
+			$('.title').html('<strong>Updating FABtotum Software</strong>');
+			$("#update").addClass('animated fadeOut').remove();
+			$(".off-message").removeClass('hidden').addClass('animated fadeIn');
+			$(".mini").show();
+			$("#cancel").show();
+			closeWait();
+		});
+		
+	}
+	
+	function do_cancel(){
+		openWait("Canceling");
+		$.ajax({
+			  url: "<?php echo site_url('updates/cancel') ?>",
+			  type: "POST",
+              dataType: 'json',
+		}).done(function( data ) {
+			document.location.href = document.location.href;
+			
+		});
+	}
+	
+	function confirm_update(){
+		$.SmartMessageBox({
+				title : "<i class='fa fa-refresh'></i> Do you want to download and install the new update?",
+				buttons : '[No][Yes]'
+		}, function(ButtonPressed) {
+			if(ButtonPressed === "Yes") {
+				do_update();		
 			}
-            
-            
-            function cancel_update(){
-                
-				
-                 $.ajax({
-					  url: "<?php echo module_url('updates') ?>ajax/cancel.php",
-					  type: "POST",
-                      dataType: 'json', 
-                      data: {id_task: id_task}
-				}).done(function( data ) {
-						  
-                        document.location.href = '<?php echo site_url("updates"); ?>';
-				});
-                
-            }
-            
-            
-            
-            function start_update(){
-            	
-                IS_TASK_ON = true;
-                
-                $.ajax({
-					  url: "<?php echo module_url('updates') ?>ajax/update.php",
-					  type: "POST",
-                      dataType: 'json', 
-                      data: {type: type}
-				}).done(function( data ) {
-						  
-                        json_uri = data.json_uri;
-                        id_task = data.id_task;
-                        $('.progress-container').show();
-					    interval_monitor  = setInterval(monitor, 1000);
-					    $('#download-container').slideDown('slow', function() {});
-				});
-
-                
-            }
-            
-            
-            function monitor(){
-            	if(!SOCKET_CONNECTED){	
-	                if(finished == false){
-	                    json_call();
-	                }else{
-	                    finalize_download();
-	                }
-                }
-            }
-            
-            
-            function json_call(){
-                
-               	$.ajax({
-					  url: json_uri,
-					  dataType: 'json', 
-					  cache: false
-				}).done(function( response ) {
-					manage_update(response);
-				});
-                
-            }
-            
-            
-            
-            function _downloading(data){
-            	if(typeof(data) != "undefined"){
-            		$("#status").html("<i class='fa fa-download'></i> Downloading...");
-                	$('.progress-container').slideDown('slow', function() {});   
-                	var percent = data.percent;
-					percent = number_format(precise_round(percent, 2), 2, ',', '.');					  
-					$("#progress-download").attr('style', 'width:' + precise_round(data.percent, 2)+'%');
-					$("#percentuale").html(percent + "%");
-                	$("#size").html(bytesToSize(data.downloaded) + " of " + bytesToSize(data.download_size));
-					$("#velocita").html('(' + bytesToSize(data.velocita) + '/s)');
-            	}
-            }
-            
-            
-            function _extracting(data){
-                
-                if(first_extracting){
-                    $("#status").html("Download complete");
-                    $("#progress-download").attr('style', 'width:100%');
-    				$("#percentuale").html("<i class='fa fa-check'></i>");
-    				$("#size").html("");
-    				$("#velocita").html('');
-                    first_extracting = false;
-                }else{
-                    $("#status").html("Extracting files..");
-                    $("#progress-download").attr('style', 'width:' + precise_round(data.percent, 2)+'%');
-                    $("#percentuale").html(data.percent + "%"); 
-                }
-
-            }
-            
-            
-            function _installing(data){
-                
-                
-                if(first_installing){
-                    $("#status").html("Extraction complete");
-                    $("#progress-download").attr('style', 'width:100%');
-                    $("#percentuale").html("<i class='fa fa-check'></i>");
-                    $("#velocita").html('');
-                    first_installing = false;
-                }else{
-                	
-                	var text_status = type == 'marlin' ? 'Flashing firmware. Please don\'t turn off the printer until the operation is completed' : 'Installing new files';
-                    $("#status").html(text_status);
-                    $("#progress-download").attr('style', 'width:' + precise_round(data.percent, 2)+'%');
-                    $("#percentuale").html(data.percent + "%");
-                }
-                
-            }
-            
-            
-            function finalize_download(){
-            	    
-                clearInterval(interval_monitor);
-                $("#status").html("Installation complete");
-                $("#progress-download").attr('style', 'width:100%');
-                $("#percentuale").html("<i class='fa fa-check'></i>");
-                
-                interval_refresh  = setInterval(refresh, 1000);
-                
-            }
-            
-            function reload_page(){
-                clearInterval(interval_refresh);
-                document.location.href = '<?php echo site_url("updates"); ?>';
-            }
-            
-            function refresh(){
-                
-                if(timer_refresh == 3){
-                    reload_page();
-                }else{
-                    timer_refresh++;
-                }
-                
-            }
-            
-            function resume_myfab(){
-            	IS_TASK_ON = true;
-                $('.download').addClass('disabled');
-                json_call();
-                $('.progress-container').slideDown('slow', function() {}); 
-                interval_monitor  = setInterval(monitor, 1000);
-            }
-
-
-			function manage_task_monitor(obj){
-				
-				if(obj.content != ""){
-					var monitor = jQuery.parseJSON(obj.content);
-					manage_update(monitor);
-				
-				}
+			if (ButtonPressed === "No") {}		
+		});
+	}
+	
+	function confirm_cancel(){
+		$.SmartMessageBox({
+				title : "<i class='fa fa-refresh'></i> Do you really want to cancel the update?",
+				buttons : '[No][Yes]'
+		}, function(ButtonPressed) {
+			if(ButtonPressed === "Yes") {
+				do_cancel();		
+			}
+			if (ButtonPressed === "No") {}		
+		});
+	}
+	
+	function manage_task_monitor(obj){
+		if(obj.content != ''){
+			monitor(jQuery.parseJSON(obj.content));
+		}
+	}
+	
+	function monitor(data){
+		
+		
+		var download_percent = parseFloat((data.download.downloaded / data.download.size) * 100);
+		$(".download-progress").attr('style', 'width:' + download_percent+'%');
+		
+		if(data.download.complete == false){
+			$(".percent").html(precise_round(download_percent, 0) + '%');
+		}else{
+			$(".percent").html('<i class="fa fa-check"></i>');
+			$(".download-info").html('Download complete');
+			$(".progress").hide();
+			
+			if(data.installation.complete == true){
+				$(".waiting-installation").remove();
+				$(".mini").append('<p class="text-left waiting-installation"><span class="installation-info">Installation complete</span> <span class="pull-right"><i class="fa fa-check"></i></span></p>');
+			}else{
+				if($(".installation-info").length < 1) $(".mini").append('<p class="text-left waiting-installation"><span class="installation-info">Installing update</span> <span class="pull-right"><i class="fa fa-cog fa-spin"></i></span></p>');
 			}
 			
-			function manage_update(obj){
-				
-				
-                finished   = parseInt(obj.completed) == 0 ? false : true;
-                var status = obj.status;
-                
-                if(finished){
-                	finalize_download();
-                }
-                
-                /** IF FABUI MODE */
-                if(type == 'fabui'){
-                    
-                    switch(status){
-                        case 'downloading':
-                            _downloading(obj.download);
-                            break;
-                        case 'extracting':
-                            _extracting(obj.extract);
-                            break;
-                        case 'installing':
-                            _installing(obj.install);
-                            break;
-                    }
-                    
-                }
-                
-                if(type == 'marlin'){
-                    
-                    switch(status){
-                        case 'downloading':
-                            _downloading(obj.download);
-                            break;
-                        case 'installing':
-                            _installing(obj.install);
-                            break;
-                    }
-                }
-				
-			}
-
-
+		}
+		
+		if(data.status == 'completed'){
+			clearInterval(interval_monitor);
+			console.log("Update terminato");
+			openWait('<i class="fa fa-check"></i> Update complete', '', false);
+			setTimeout(function(){
+				document.location.href=document.location.href;
+			}, 3000);
 			
-		</script>
+		}
+			
+	}
+	
+	function get_monitor(){
+		$.get("/temp/task_monitor.json", function(data, status){
+			monitor(data);
+        });
+	}
+	
+	function retrieve_monitor(){
+		if(!SOCKET_CONNECTED) get_monitor();
+	}
+	
+	function resume(){
+		closeWait();
+		get_monitor();
+		interval_monitor  = setInterval(retrieve_monitor, 1000);
+		$("#update").addClass('animated fadeOut').remove();
+		$('.title').html('<strong>Updating FABtotum Software</strong>');
+		$(".off-message").removeClass('hidden').addClass('animated fadeIn');
+		$(".mini").show();
+		$("#cancel").show();
+		$(".error").addClass('fa-spin');
+	}
+	
+</script>

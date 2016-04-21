@@ -12,7 +12,7 @@
         <div class="col-sm-6">
             <div class="well">
                 <h3 class="text-center text-primary">Assisted calibration</h3>
-                <h5 class="text-center">Calculating the probe length can be usefull to correct the nozzle height during prints</h5>
+                <h5 class="text-center">The Assisted Probe Lenght calibration helps you correct the nozzle height during prints. Each time you swap heads you should re-calibrate.</h5>
                 <h2 class="text-center"><a data-action='normal' href="javascript:void(0);" class="btn btn-default btn-primary btn-circle  choice-button"><i class="fa fa-chevron-down"></i></a></h2>
             </div>
         </div>

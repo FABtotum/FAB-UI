@@ -22,8 +22,8 @@ $_object = $db->query("select * from sys_objects where id=".$_object_id);
 
 $_object = $_object[0];
 
-$_object['date_insert']  =  mysql_to_human($_object['date_insert']);
-$_object['date_updated'] =  mysql_to_human($_object['date_updated']);
+$_object['date_insert']  =  date('d/m/Y', strtotime($_object['date_insert']));
+$_object['date_updated'] =  date('d/m/Y', strtotime($_object['date_updated'])); 
 $_object['id']           =  $_object["id"];
 
 /** LOAD OBJECT'S FILES FROM DB */

@@ -15,23 +15,16 @@ class WidgetsFactory {
     }
     
     public function load($class){
-        
-        
+               
         $_file_class = APPPATH.$this->_path.$class.'/'.$class.'.php';  
-        
-      
-      
+		
         if(!file_exists($_file_class)){
-        
             show_error(' Unable to load the requested file: '.$_file_class);
         }
-      
-      
+    
        //load widget file class
        include_once ($_file_class);
-       
-       
-       
+
        /**
         *  NAME CLASS MUST BE Name_widget es: Foo_widget
         * */
@@ -41,24 +34,8 @@ class WidgetsFactory {
 		{
             show_error("Class ".$class_name." doesn't exist");
 		}
-       
-       //echo $class_name;
-       
-      //$temp = new $class_name;
       
         return new $class_name;
-      
-      
-        
     }
-     
-     
-     
-     
-    
 }
-
-
-
-
 ?>

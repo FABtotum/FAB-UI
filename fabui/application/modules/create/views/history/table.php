@@ -1,100 +1,94 @@
 <div class="widget-body-toolbar">
-	<div class="row">
-		<div class="col-sm-12">
-			<div class="smart-form">
-				<fieldset>
-					<div class="row">
-						<section class="col col-3">
-							<label class="label">Period</label>
-							<label class="input">
-								<input type="text" name="date-range-picker" value="<?php echo $start_date.' - '.$end_date ?>">
-							</label>
-						</section>
-						<section class="col col-3">
-							<label class="label">Make</label>
-							<label class="select"><?php echo form_dropdown('type', $type_options, $type, 'id="type"'); ?> <i></i></label>
-						</section>
-						
-						<section class="col col-3">
-							<label class="label">Status</label>
-							<label class="select"><?php echo form_dropdown('status', $status_options, $status, 'id="status"'); ?> <i></i></label>
-						</section>
-						
-						<section class="col col-3">
-							<label class="label">&nbsp;</label>
-							<a style="padding: 6px 12px" class="btn btn-primary btn-block" id="search"><i class="fa fa-search"></i></a>
-						</section>
-					</div>
-				</fieldset>
-			</div>
-		</div>
+	
+	
+	<div class="btn-group">
+		<button class="btn btn-default" data-toggle="dropdown" id="date-picker">
+			<i class="fa fa-calendar"></i> <span><?php echo  date('F j, Y', strtotime('today - 30 days')) .' - '.date('F j, Y', strtotime('today')) ?></span> <span class="caret"></span>
+		</button>
+	</div>
+	<div class="btn-group">
+		<button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> <span id="ajax-type">Make</span> <span class="caret"></span></button>
+		<ul class="dropdown-menu">
+			<li>
+				<a data-type="type"  data-value="print" href="javascript:void(0);"><i class="icon-fab-print"></i> Print</a>
+			</li>
+			<li>
+				<a  data-type="type" data-value="mill" href="javascript:void(0);"><i class="icon-fab-mill"></i> Mill</a>
+			</li>
+			<li>
+				<a  data-type="type" data-value="scan" href="javascript:void(0);"><i class="icon-fab-scan"></i> Scan</a>
+			</li>
+			<li class="divider"></li>
+			<li>
+				<a  data-type="type" data-value="" href="javascript:void(0);"> Make</a>
+			</li>
+		</ul>
+	</div>
+	<div class="btn-group">
+	
+		<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			<span id="ajax-status">Status</span> <span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+			<li>
+				<a  data-type="status" data-value="performed" href="javascript:void(0);">Completed</a>
+			</li>
+			<li>
+				<a  data-type="status" data-value="stopped" href="javascript:void(0);">Aborted</a>
+			</li>
+			<li>
+				<a  data-type="status" data-value="deleted" href="javascript:void(0);">Stopped</a>
+			</li>
+			<li class="divider"></li>
+			<li>
+				<a  data-type="status" data-value="" href="javascript:void(0);"> Status</a>
+			</li>
+		</ul>
+	</div>
+		
+</div>
+
+<ul id="myTab1" class="nav nav-tabs tabs-pull-right">
+	<li class="active">
+		<a href="#s1" data-toggle="tab"><i class="fa fa-list"></i> Tasks</a>
+	</li>
+	<li>
+		<a id="stats-click" href="#s2" data-toggle="tab"><i class="fa fa-area-chart"></i> Stats</a>
+	</li>
+</ul>
+
+<div id="myTabContent1" class="tab-content">
+	<div class="tab-pane fade in active" id="s1">
+		<table class="table table-bordered table-striped" id="history">
+			<thead>
+				<tr>
+					<th></th>
+					<th><i class="fa fa-calendar"></i> <span class="hidden-xs">When</span></th>
+					<th><i class="fa fa-play fa-rotate-90 txt-color-blue"></i> <span class="hidden-xs">Make</span></th>
+					<th>Status</th>
+					<th>Description</th>
+					<th><i class="fa fa-clock-o"></i> <span class="hidden-xs">Duration</span></th>
+					<th class="hidden"></th>
+					<th class="hidden"></th>
+					<th class="hidden"></th>
+					<th class="hidden"></th>
+					<th class="hidden"></th>
+					<th class="hidden"></th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+	
+	<div class="tab-pane fade in padding-10" id="s2">
 	</div>
 </div>
-<table class="table table-bordered table-striped" id="history">
-	<thead>
-		<tr>
-			<th></th>
-			<th><i class="fa fa-calendar"></i> <span class="hidden-xs">When</span></th>
-			<th><i class="fa fa-play rotate-90 txt-color-blue"></i> <span class="hidden-xs">Make</span></th>
-			<th>Status</th>
-			<th>Description</th>
-			<th><i class="fa fa-clock-o"></i> <span class="hidden-xs">Duration Time</span></th>
-			<th class="hidden"></th>
-			<th class="hidden"></th>
-			<th class="hidden"></th>
-			<th class="hidden"></th>
-			<th class="hidden"></th>
-			<th class="hidden"></th>
-		</tr>
-	</thead>
-	<tbody>
-		<?php foreach($tasks as $task): ?>
-			
-			<?php
-				
-				
-				$task['task_attributes'] = str_replace(PHP_EOL, '<br>',  $task['task_attributes']) ;
-			 	$attributes = json_decode($task['task_attributes'], true);
-				
-				$when = strtotime($task['finish_date']) > strtotime("-1 day") ? get_time_past($task['finish_date']).' ago' : date('d M, Y', strtotime($task['finish_date']));
-				 				
-				$duration_time = dateDiff(strtotime($task['finish_date']), strtotime($task['start_date']));
-				$duration_time_string = '';
-				foreach($duration_time as $key => $val){
-					$duration_time_string .= $val.' '.$key.' ';
-				}
-				
-				
-				$info = '<h4>';
-				
-				if($task['file_name'] != '') $info .= '<a href="'.site_url('objectmanager/edit/'.$task['id_object']).'"><i class="fa fa fa-file-o"></i> '.$task['raw_name'].'</a>';
-				if($task['object_name'] != '') $info .= '<small><i class="fa fa fa-folder-open-o"></i> '.$task['object_name'].'</small>';
-				if(isset($attributes['mode_name']) && $attributes['mode_name'] != '') $info .= '<a href="#">'.ucfirst($attributes['mode_name']).'</a><small> </small>';						
-				
-				$info .= '</h4>';
-					
-			?>
-			
-			<tr>
-				<td class="center" width="20px"><a href="#" > <i class="fa fa-chevron-right fa-lg" data-toggle="row-detail" title="Show Details"></i> </a></td>
-				<td width="100"><?php echo $when; ?></td>
-				<td width="80"><strong><i class="<?php echo $icons[$task['type']] ?>"></i> <span class="hidden-xs"><?php echo ucfirst($task['type']); ?></strong></span></td>
-				<td width="100"><?php echo $status_label[$task['status']]; ?></td>
-				<td><?php echo $info; ?></td>
-				<td><strong><?php echo $duration_time_string; ?></strong></td>
-				<!-- start date -->
-				<td class="hidden"><?php echo date('d M, Y', strtotime($task['start_date'])); ?> at <?php echo date('G:i', strtotime($task['start_date'])) ?></td>
-				<!-- finish date -->
-				<td class="hidden"><?php echo date('d M, Y', strtotime($task['finish_date'])); ?> at <?php echo date('G:i', strtotime($task['finish_date'])) ?></td>
-				<!-- note -->
-				<td class="hidden"><?php echo (isset($attributes['note'])) ? $attributes['note'] : ''; ?></td>
-				
-				<td class="hidden"><?php echo $task['type']; ?></td>
-				
-				<td class="hidden"><?php echo $task['id_file']; ?></td>
-				<td class="hidden"><?php echo $task['id_object']; ?></td>
-			</tr>
-		<?php endforeach; ?>
-	</tbody>
-</table>
+
+
+<div class="row">
+	<div class="col-sm-12">
+		
+	</div>
+</div>
+
 				

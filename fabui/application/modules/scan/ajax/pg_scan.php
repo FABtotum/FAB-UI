@@ -139,7 +139,7 @@ $("#start-r-scan").on('click', start);
 $(document).ready(function(){
 	
 	
-	$('#pc-host-address').mask('0ZZ.0ZZ.0ZZ.0ZZ', {
+	/*$('#pc-host-address').mask('0ZZ.0ZZ.0ZZ.0ZZ', {
     translation: {
       'Z': {
         pattern: /[0-9]/, optional: true
@@ -151,7 +151,7 @@ $(document).ready(function(){
   
   $('#pc-host-address').mask('099.099.099.099');
   $("#pc-host-port").mask("00000");
-	
+	*/
 	
 });
 
@@ -163,7 +163,7 @@ function check_pre_scan(){
     IS_MACRO_ON = true;
     $(".SmallBox").remove();
     $(".result-check-pre-scan").html('');
-    openWait('Checking printer');
+    openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Preparing printer');
     var timestamp = new Date().getTime();
     /*ticker_url    = '/temp/check_pre_scan_' + timestamp + '.trace';*/
     ticker_url    = '/temp/macro_trace';
@@ -216,7 +216,7 @@ function check_r_scan(){
     IS_MACRO_ON = true;
     $(".SmallBox").remove();
     
-    openWait('Checking printer');
+    openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Preparing printer');
     var timestamp = new Date().getTime();
     /*ticker_url    = '/temp/check_r_scan_' + timestamp + '.trace';*/
     

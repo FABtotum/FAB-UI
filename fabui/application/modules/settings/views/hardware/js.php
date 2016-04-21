@@ -71,9 +71,6 @@
             IS_MACRO_ON = false;
             closeWait();
     	});
-             
-
-        
     }
     
     

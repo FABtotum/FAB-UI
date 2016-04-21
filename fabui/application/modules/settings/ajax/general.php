@@ -5,6 +5,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/serial.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
+$ini_array = parse_ini_file(SERIAL_INI);
+
 
 /** GET DATA FROM POST */
 $_red         							= $_POST['red'];
@@ -26,9 +28,14 @@ $_upload_api_key                        = $_POST['upload_api_key'];
 $_zprobe                             	= $_POST['zprobe'];
 $_zmax									= $_POST['zmax'];
 
+$_collision_warning                     = $_POST['collision_warning'];
+
+
 $_colors['r'] = $_red;
 $_colors['g'] = $_green;
 $_colors['b'] = $_blue;
+
+
 
 $_feeder['disengage-offset'] = $_feeder_disengage;
 
@@ -47,6 +54,7 @@ $_custom_units = json_decode(file_get_contents(FABUI_PATH.'config/custom_config.
 /** SET NEW COLOR */
 $_units['color']                                = $_custom_units['color'] = $_colors;
 $_units['safety']['door']                       = $_custom_units['safety']['door'] = $_safety_door;
+$_units['safety']['collision-warning']          = $_custom_units['safety']['collision-warning'] = $_collision_warning;
 $_units['switch']                               = $_custom_units['switch']  = $_switch;
 $_units['feeder'] ['disengage-offset']          = $_custom_units['feeder']['disengage-offset'] = $_feeder_disengage;
 $_units['milling']['layer-offset']              = $_custom_units['milling']['layer-offset'] = $_milling_sacrificial_layer_offset;
@@ -66,14 +74,19 @@ file_put_contents(FABUI_PATH.'config/custom_config.json', json_encode($_custom_u
 /** LOAD SERIAL CLASS */
 $serial = new Serial();
 
-$serial->deviceSet(PORT_NAME);
-$serial->confBaudRate(BOUD_RATE);
+$serial->deviceSet($ini_array['port']);
+$serial->confBaudRate($ini_array['baud']);
 $serial->confParity("none");
 $serial->confCharacterLength(8);
 $serial->confStopBits(1);
 $serial->deviceOpen();
 // safety door 
 $_command = 'M732 S'.$_safety_door;
+$serial->sendMessage($_command."\r\n");
+$response = $serial->readPort();
+
+//collision warning
+$_command = 'M734 S'.$_collision_warning;
 $serial->sendMessage($_command."\r\n");
 $response = $serial->readPort();
 

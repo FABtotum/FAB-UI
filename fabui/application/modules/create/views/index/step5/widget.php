@@ -7,7 +7,7 @@
 	</li>
 	
 	<li class="pull-right">
-		<a href="javascript:void(0);" data-action="stop" id="stop-button" class="stop txt-color-red"> <i class="fa fa-fw fa-lg fa-times-circle"></i> Cancel Print</a>
+		<a href="javascript:void(0);" data-action="stop" id="stop-button" class="stop txt-color-red"> <i class="fa fa-fw fa-lg fa-times-circle"></i> Cancel <?php echo $label ?></a>
 	</li>
 	<li class="pull-right">
 		<span style="position:relative; top:3px;" rel="tooltip" title="Send a notification mail at the end of the print" data-placement="left">Mail</span>
@@ -32,19 +32,20 @@
 
 			<div class="col-sm-4 stats-well">
 				
-				<p><i class="fa fa-file-o"></i> File <span class="pull-right file_name"><?php echo $_file_name; ?></span></p>
-				<p><i class="fa fa-folder-open"></i> Object <span class="pull-right object_name"><?php echo $_object_name; ?></span></p>
+				<p><i class="fa fa-file-o"></i> File <i><span class="pull-right file_name font-md"><?php echo $_file_name; ?></span></i></p>
+				<p><i class="fa fa-folder-open"></i> Object <i><span class="pull-right object_name "><?php echo $_object_name; ?></span></i></p>
 				
+				<hr class="simple">
 				<!-- PROGRESS -->
-				<p>Progress <span class="pull-right progress-status font-md"></span></p>
+				<p>Progress  <span class="pull-right"><span class="hidden layers" style="margin-left:10px;"> (layer: <span class="layer-actual font-md"><?php echo $layer_actual; ?></span> / <span class="layer-total"><?php echo $layer_total; ?></span> )</span></span> <span class="pull-right progress-status font-md"></span></p>
 				<div class="progress progress-sm progress-striped active">
 					<div id="lines-progress" class="progress-bar bg-color-blue"></div>
 					
 				</div>
 				
-				<!-- LAYERS
-				<p class="additive-print">Layer <span class="pull-right"><span class="layer-actual font-md"><?php echo $layer_actual; ?></span> / <span class="layer-total"><?php echo $layer_total; ?></span> <span class="layer-percent"></span> </span></p>
-				<div class="progress progress-xs progress-striped active additive-print">
+				<!-- LAYERS 
+				<p class="additive-print hidden layers">Layer <span class="pull-right"><span class="layer-actual font-md"><?php echo $layer_actual; ?></span> / <span class="layer-total"><?php echo $layer_total; ?></span> <span class="layer-percent"></span> </span></p>
+				<div class="progress progress-xs progress-striped active additive-print hidden layers">
 					<div class="progress-bar  bg-color-blue progress-layer"></div>
 				</div>
 				 -->
@@ -94,9 +95,9 @@
 		</div>
 		
 		<!-- TEMP GRAPHS -->
-		<div class="row padding-10">
+		<div class="row padding-10 hidden-mobile">
 			<div class="col-sm-12">
-				<pre class="console" id="ace-editor" style="height: 250px;"></pre>
+				<pre class="console " id="ace-editor" style="height: 250px;"></pre>
 			</div>
 			
 		</div>

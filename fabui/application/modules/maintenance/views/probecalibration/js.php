@@ -6,6 +6,9 @@
 	
 	$(function () {
 		
+		
+		$(".jog").addClass("disabled");
+		
 		$("#probe-calibration-prepare").on('click', prepare);
 		$("#probe-calibration-calibrate").on('click',  calibrate);
 		$(".calibrate-again").on('click', do_again);
@@ -123,26 +126,23 @@
 		
 		$(".re-choice").slideUp('slow');
 		
-		var message = mode == 'prepare' ? 'Preparing calibration<br>Heating extruder and bed<br>This operation will take a while' : 'Calibrating<br>please wait';
+		var content = mode == 'preapre' ? 'Heating extruder and bed<br>This operation will take a while': '';
 		
-		openWait(message);
+		
+		openWait('Calibration', content);
 		$.ajax({
               type: "POST",
               url: "<?php echo module_url("maintenance").'ajax/probe_setup.php' ?>",
               data: { mode: mode},
               dataType: 'json',
-              async: true
         }).done(function( response ) {
         	              
-            
-            
-            
             $("#row-normal-" + index).slideUp('slow', function(){
 				$("#row-normal-" + (index+1)).slideDown('slow');
 				
 				closeWait();
 				if(mode == 'prepare'){
-					jog_make_call('mdi', 'G91');
+					jog_call('mdi', 'G91');
 				}
 				
 				if(mode == 'calibrate'){
@@ -171,37 +171,14 @@
 		var value = $("#z-value").val();
 		var gcode = 'G0 Z' + sign + value;
 		
-		if(SOCKET_CONNECTED){
-			jog_make_call_ws('mdi', gcode);
-		}else{
-			jog_make_call('mdi', gcode);
-		}
+		
+		jog_call('mdi', gcode);
+		
 		
 		
 		
 	}
 	
-	
-	function jog_make_call_ws(func, value){
-		
-		var jsonData = {};
-		
-		jsonData['func']     = func;
-		jsonData['value']    = value;
-		jsonData['step']     = '';
-		jsonData['z_step']   = '';
-		jsonData['feedrate'] = '';
-		
-		var message = {};
-		
-		message['name'] = "serial";
-		message['data'] = jsonData;
-		
-		/*$(".btn").addClass('disabled');
-		$(".z-action").addClass('disabled');*/
-		SOCKET.send('message', JSON.stringify(message));
-		
-	}
 	
 	
 	function jog_make_call(func, value){  
@@ -237,7 +214,7 @@
 		
 		if(probe_length <= 0){
 		
-			openWait('please wait');
+			openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Please wait');
 			
 			IS_MACRO_ON = true;
 			
@@ -278,7 +255,7 @@
 	function override_probe_length(){
 		
 		$(".re-choice").slideUp('slow');
-		openWait('please wait');
+		openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Please wait');
 		IS_MACRO_ON = true;
 		
 		$.ajax({
@@ -310,11 +287,11 @@
 		
 	}
 	
-	
+	/*
 	function write_to_console(text, type){
 		$(".z-action").removeClass('disabled');
 	}
-	
+	*/
 	
 	
 </script>

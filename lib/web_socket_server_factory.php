@@ -47,6 +47,7 @@ class WebSocketServerFactory {
 	public function serial($data = '') {
 
 		if (!file_exists(LOCK_FILE)) {
+			
 			$JogFactory = new JogFactory($data['feedrate'], $data['step'], $data['z_step'], $data['extruderFeedrate']);
 
 			$function = $data['func'];
@@ -116,7 +117,9 @@ class WebSocketServerFactory {
 
 		$this -> _type = 'security';
 		$this -> _data = $response;
-
+		
+		
+		write_file('/var/www/temp/fab_ui_safety.json', '', 'w+');
 		return $this -> returnResponse();
 	}
 

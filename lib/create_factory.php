@@ -1,13 +1,11 @@
 <?php
 require_once '/var/www/lib/config.php';
-//require_once '/var/www/lib/serial.php';
 require_once '/var/www/lib/utilities.php';
 require_once '/var/www/lib/database.php';
 
 class CreateFactory {
 
 	private $_function;
-
 	private $_action;
 	private $_value;
 	private $_data_file;
@@ -21,7 +19,10 @@ class CreateFactory {
 	private $_command;
 	private $_message;
 	
+	
 	private $_attributes_file;
+	
+	private $_type;
 	
 	public function __construct($param) {
 
@@ -53,6 +54,7 @@ class CreateFactory {
 			$_response_items['file'] = $this -> _data_file;
 			$_response_items['return'] = true;
 			$_response_items['message'] = $this -> _message;
+			$_response_items['type'] = $this -> _type;
 
 		}
 
@@ -211,10 +213,20 @@ class CreateFactory {
 
 	public function stop() {
 		
+		/*
 		if ($this -> _action == 'stop' && ($this -> _progress >= 0 && $this -> _progress <= 0.1)) {
 			//shell_exec('sudo kill '.$_pid);
 			shell_exec('sudo php ' . SCRIPT_PATH . 'finalize.php ' . $this -> _id_task . ' print stopped');
 		}
+		*/
+		
+		if($this -> _action == 'stop' && $this->_type != 'additive'){
+			
+			$task_type = 'mill';
+			
+			shell_exec('sudo php ' . SCRIPT_PATH . 'finalize.php ' . $this -> _id_task . ' '.$task_type.' stopped');
+		}
+		
 	}
 
 	public function update() {

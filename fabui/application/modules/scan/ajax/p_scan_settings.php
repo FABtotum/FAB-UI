@@ -12,7 +12,7 @@
                     	
                     	<div class="col-sm-6 text-center">
                     	
-                        	<img id="plane" src="/fabui/application/modules/scan/assets/img/working_plane.png" />
+                        	<img width="223" height="235" id="plane" src="/fabui/application/modules/scan/assets/img/working_plane.png" />
                         
                         </div>
                         
@@ -59,7 +59,7 @@
 	    								</section>
 	    								<section class="col col-6">
 	    									<label class="input">
-	    										<a style="padding: 6px 12px" class="btn btn-default btn-block btn-info test-area" >Test Area</a>
+	    										<a style="padding: 6px 12px" class="btn btn-default btn-block btn-info test-area" >Test selected area</a>
 	    									</label>
 	    								</section>
 	    							</div>
@@ -124,86 +124,96 @@ $db->close();
 
 <script type="text/javascript">
 
-
-$("#z_hop").spinner({
-	step :0.5,
-	numberFormat : "n",
-	min: 1,
-	max: 10
-});
-
-$("#probe_skip").spinner({
-	step :0.01,
-	numberFormat : "n",
-	min: 0,
-	max: 0.05
-});
-
-
-
 var probe_quality_info = new Array();
-
 <?php foreach($_probe_qualities as $quality): ?>
 probe_quality_info[<?php echo $quality['id'] ?>] = <?php echo $quality['values']; ?>;
 <?php  endforeach; ?>
 
 /** PLANE COORDINATES */
-
 X_MIN = 32;
 Y_MAX = 168;
-  
+var jcrop_api;
 var c = {"x":X_MIN,"y":Y_MIN,"x2":X_MAX,"y2":Y_MAX,"w":100,"h":100};
-var maxsize = {'w':212, 'h':232};
-var jcrop_api;     
-/**  JCROP */  
-$('#plane').Jcrop({
-    bgFade: true,
-    onSelect: setCoords,
-    onChange: debugCoords   
-},function(){
-    jcrop_api = this;
+
+$(document).ready(function() {
+	
+	
+	
+	$("#z_hop").spinner({
+		step :0.5,
+		numberFormat : "n",
+		min: 1,
+		max: 10
+	});
+	
+	$("#probe_skip").spinner({
+		step :0.01,
+		numberFormat : "n",
+		min: 0,
+		max: 0.05
+	});
+	
+	
+	
+	
+	
+	
+	/*  SCAN QUALITY SLIDER */
+	$("#probe-quality").noUiSlider({
+	    range: {'min': 20, 'max' : 120},
+	    /*range: [20,120],*/
+	    start: 20,
+	    step: 20,
+	    handles: 1,
+	    connect: 'lower',
+	    behaviour: 'tap-drag' 
+	 });
+	 
+	 
+	 /* SCAN QUALITY SLIDER EVENTS */
+	$("#probe-quality").on({
+		 slide: manageProbeSlide,
+		 set: manageProbeSlide,
+		 change: manageProbeSlide
+	});
+	
+	
+	$("#probe-quality").val( 40, {
+		set: true,
+		animate: true
+	});
+	
+
+	     
+	/**  JCROP */  
+	$('#plane').Jcrop({
+	    bgFade: true,
+	    onSelect: setCoords,
+	    onChange: debugCoords   
+	},function(){
+	    jcrop_api = this;
+	    
+		setTimeout(function() {
+			jcrop_api.setSelect([c.x ,c.y, c.x2,c.y2]);
+		}, 500);
+	});
+	
+	POINT = c;
+	
+	$(".coordinates").on('change', changeCoordinates);
+	$(".test-area").on('click', test_area);
+	$(".go-origin").on('click', go_to_origin);
+	
+	
 });
 
 
-POINT = c;
 
 
-
-/*  SCAN QUALITY SLIDER */
-$("#probe-quality").noUiSlider({
-    range: {'min': 20, 'max' : 120},
-    /*range: [20,120],*/
-    start: 20,
-    step: 20,
-    handles: 1,
-    connect: 'lower',
-    behaviour: 'tap-drag' 
- });
- 
- 
-/* SCAN QUALITY SLIDER EVENTS */
-$("#probe-quality").on({
-	 slide: manageProbeSlide,
-	 set: manageProbeSlide,
-	 change: manageProbeSlide
-});
-
-
-$("#probe-quality").val( 40, {
-	set: true,
-	animate: true
-});
-
-
-setTimeout(function() {
-	jcrop_api.setSelect([c.x ,c.y, c.x2,c.y2]);
-}, 100);
 
 function manageProbeSlide(){
     
-    
     var slide_val = parseInt($(this).val());
-    
     
 	switch (slide_val) {
 		case 20:
@@ -235,9 +245,7 @@ function manageProbeSlide(){
 }
 
 
-$(".coordinates").on('change', changeCoordinates);
-$(".test-area").on('click', test_area);
-$(".go-origin").on('click', go_to_origin);
+
 
 
 
@@ -264,7 +272,6 @@ function changeCoordinates(){
 	}
 	
 	setCoords(actual_point, true);
-	//jcrop_api.animateTo([actual_point.x, actual_point.y, actual_point.x2, actual_point.y2]);
 	
 }
 
@@ -274,7 +281,7 @@ function test_area(){
 	IS_MACRO_ON = true;
 	var data = {x1: $("#x1").val(), y1: $("#y1").val(), x2: $("#x2").val(), y2:$("#y2").val(), skip: check_skip_homing};
 	
-	openWait("Check area");
+	openWait("<i class='fa fa-circle-o-notch fa-spin'></i> Check area");
 	
 	$.ajax({
     		  type: "POST",

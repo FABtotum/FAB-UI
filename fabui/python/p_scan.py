@@ -11,7 +11,10 @@ import json
 import ConfigParser
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
+
+serialconfig = ConfigParser.ConfigParser()
+serialconfig.read('/var/www/lib/serial.ini')
 
 #check if LOCK FILE EXISTS
 if os.path.isfile(config.get('task', 'lock_file')):
@@ -231,8 +234,8 @@ printlog(0,0) #create log vuoto
 trace("\n ---------- Initializing ---------- \n")
 
 '''#### SERIAL PORT COMMUNICATION ####'''
-serial_port = config.get('serial', 'port')
-serial_baud = config.get('serial', 'baud')
+serial_port = serialconfig.get('serial', 'port')
+serial_baud = serialconfig.get('serial', 'baud')
 serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 
 #initialize serial
@@ -347,11 +350,11 @@ while (i <= slices) :
 				
 			if safe_z>highest_z:
 				highest_z=safe_z #save for later
-				
-			#print "SAFE Z:" + str(safe_z)
-			serial.write('G0 Z'+str(safe_z)+' F1500\r\n') #move to safe Z ADAPTIVE
-			
-			serial.flushInput()						#clean buffer
+            
+            
+			safe_z=safe_z+2
+			serial.write('G0 Z'+str(safe_z)+' F1500\r\n')
+			serial.flushInput()#clean buffer
 			time.sleep(0.5)
 			
 			#update counters
@@ -438,7 +441,6 @@ percent=100
 printlog(percent,i)
 
 #finalize database-side operations
-os.remove(config.get('task', 'lock_file'))
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" scan_p"], shell=True)
 
 #goodbye!

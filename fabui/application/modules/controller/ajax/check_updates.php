@@ -20,7 +20,6 @@ if (!isset($_SESSION['updates']['time'])) {
 //IF IS PASSED MORE THAN TIME TO CHECK SO CHECK AGAIN IF THERE ARE UPDATES AVAIABLES
 
 if (($now - $_SESSION['updates']['time']) > $time_to_check) {
-
 	if (is_internet_avaiable()) {
 
 		$updates = array();

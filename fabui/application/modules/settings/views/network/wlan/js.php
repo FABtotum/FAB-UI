@@ -6,13 +6,12 @@
 	var essid = '';
 	var password = '';
 	
-	var imOnWifi = <?php echo $info['ip_address'] == $_SERVER['HTTP_HOST'] ? 'true' : 'false'; ?>;
+	var imOnWifi = <?php echo $info['ip_address'] == $_SERVER['SERVER_ADDR'] ? 'true' : 'false'; ?>;
 	
 	$(document).ready(function() {
 
 		
 		$('.progress-bar').progressbar({});
-
 		$("#scan").on('click', scan);
 		
 		$("#confirm-password").on('click', confirm_password);
@@ -24,15 +23,20 @@
 		$("#hidden").on('click', hidden_wifi_modal);
 		
 		$("#hidden-connect").on('click', hidden_connect);
+		
+		$('.connect').on('click', start_connection);
+		$('.disconnect').on('click', start_connection);
+		$('.progress-bar').progressbar({display_text : 'fill'});
+		
+		$('.show-details').on('click', details);
 	
 	});
 	
 	
 	function scan(){
-		
-		
-		
+
 		$(".btn").addClass('disabled');
+		$(".table-container").css('opacity', '0.1');
 		
 		$.ajax({
         	url : '<?php echo module_url('settings').'ajax/wifi_scan.php' ?>',
@@ -42,12 +46,11 @@
 		}).done(function(reponse) {
 			
 		 	$(".btn").removeClass('disabled');
-		 	
-		 	$(".nets-table").html(reponse);
-		 	
+		 	$(".table-container").html(reponse);
 		 	$('.progress-bar').progressbar({display_text : 'fill'});
-		 	
 		 	$('.connect').on('click', start_connection);
+		 	$('.disconnect').on('click', start_connection);
+		 	$(".table-container").css('opacity', '1');
 		 	
 		 	
         });
@@ -149,7 +152,7 @@
 		
 		var connection_label = action == 'connect' ? 'Connecting' : 'Disconnecting';
 		
-		openWait('Connecting <i class="fa fa-spinner fa-pulse"></i>');
+		openWait('<i class="fa fa-circle-o-notch fa-spin"></i> ' + connection_label);
 		
 		var timeout = !imOnWifi ? 180000 :  60000;
 		
@@ -161,9 +164,10 @@
           	data: {essid: $("#essid").val(), password:$("#password").val(), type:$("#type").val(), action:action}
 		}).done(function(data) {
 			
+			console.log(data);
 			$("#response").val(data.response);
-			$("#connect-form").submit();
-			
+			$("#action").val(action);
+			$("#connect-form").submit(); 
         }).fail(function(jqXHR, textStatus) {
         	
         	if(textStatus == 'timeout' && imOnWifi){
@@ -189,34 +193,46 @@
 		 	
         });
 		 
-		 
 	}
 	
 	
 	function asck_disconnect(essid) {
 		
-		$("#essid").val(essid);
-		
+		$("#essid").val(essid);	
 		$.SmartMessageBox({
 				title : '<i class="fa fa-wifi"></i> ' + essid,
-				content : "Are you sure you want to disconnect from thi WiFi network ? ",
+				content : "Are you sure you want to disconnect from the WiFi network ? ",
 				buttons : '[Cancel][Yes]'
 			}, function(ButtonPressed) {
 				if (ButtonPressed === "Yes") {
-	
 					connect('disconnect');
 				}
 				if (ButtonPressed === "No") {
-					
 				}
-	
 			});
-
-		
-		
 	}
 	
 	
-	
+	function details(){
+		/*$(".net-details").show().addClass('animated fadeIn');*/
+		
+		var button = $(this);
+		
+		if(button.attr('data-action') == 'down'){
+			$(".net-details").slideDown('fast', function(){
+				button.attr('data-action', 'up');
+				button.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+			});
+		}else{
+			$(".net-details").slideUp('fast', function(){
+				button.attr('data-action', 'down');
+				button.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+			});
+		}
+		
+		
+		
+		
+	}
 	
 </script>

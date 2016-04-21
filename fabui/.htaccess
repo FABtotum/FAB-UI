@@ -4,7 +4,6 @@ RewriteRule ^(.*)$ /fabui/index.php/$1 [L]
 
 AddDefaultCharset UTF-8
 
-
 # Caching -- mod_headers
 <IfModule mod_headers.c>
     # 1 Anno = 29030400s = Never Expires

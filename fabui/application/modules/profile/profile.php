@@ -30,6 +30,7 @@ class Profile extends Module {
 		
 		/** LOCK SCREEN OPTIONS */
 		$lock_screen_options['0']     = 'None';
+		//$lock_screen_options['10']    = '10 seconds';
 		$lock_screen_options['300']   = 'after 5 mins'; 
 		$lock_screen_options['600']   = 'after 10 mins';
 		$lock_screen_options['1200']  = 'after 20 mins';
@@ -41,7 +42,7 @@ class Profile extends Module {
 		$data['lock_screen'] = isset($_SESSION['user']['lock-screen']) ? $_SESSION['user']['lock-screen'] : '0';
 		
 		
-		
+		$this -> layout -> set_compress(false);
 		/** */
 		$this->layout->view('index/index', $data); 
 	}

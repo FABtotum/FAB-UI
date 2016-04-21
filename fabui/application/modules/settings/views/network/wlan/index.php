@@ -8,7 +8,7 @@
 	</div>
 <?php endif; ?>
 
-<?php if($info['ip_address'] == $_SERVER['HTTP_HOST']): ?>
+<?php if($info['ip_address'] == $_SERVER['SERVER_ADDR']): ?>
 
 <div class="row">
 	<div class="col-sm-12">

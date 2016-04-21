@@ -1,10 +1,15 @@
 <script type="text/javascript">
 
+var responsiveHelper_dt_basic = undefined;
 var oTable;
 var objectId = <?php echo $_id_object; ?>;
 var printableFiles = ['.gc', '.gcode', '.nc'];
 var previewFiles = ['.stl', '.gc', '.gcode'];
 var printUrl = '<?php echo site_url('make') ?>';
+var breakpointDefinition = {
+			tablet : 1024,
+			phone : 480
+};
 
 $(function() {
 	
@@ -19,17 +24,12 @@ $(function() {
 			var aCell = $(this).find("a i[data-toggle='row-detail']");
 			
 			
-			oTable.$('tr').each( function () {
-				if( oTable.fnIsOpen( this ) ) {
-					
-				   	$(this).find("a i[data-toggle='row-detail']").removeClass("fa-chevron-down").addClass("fa-chevron-right");
-			    	$(this).removeClass("info");
-			    	oTable.fnClose(this);
-			    }
-			});
 			
 			if (oTable.fnIsOpen(nTr)) {
 				/* This row is already open - close it */
+				
+				console.log("già aperto");
+				
 				aCell.removeClass("fa-chevron-down").addClass("fa-chevron-right");
 				this.title = "Show Details";
 				nTr.removeClass("info");
@@ -50,7 +50,24 @@ $(function() {
 	});
 	
 
-	oTable = $("#files_table").dataTable({"aaSorting": []});
+	oTable = $("#files_table").dataTable({
+		"aaSorting": [],
+		"sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'l>r>"+
+				"t"+
+				"<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
+		"autoWidth": false,
+		"preDrawCallback" : function() {
+				if (!responsiveHelper_dt_basic) {
+					responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#files_table'), breakpointDefinition);
+				}
+		},
+		"rowCallback" : function(nRow) {
+				responsiveHelper_dt_basic.createExpandIcon(nRow);
+		},
+			"drawCallback" : function(oSettings) {
+				responsiveHelper_dt_basic.respond();
+		}
+	});
 
 	function fnFormatDetails(oTable, nTr) {
 		var aData = oTable.fnGetData(nTr);
@@ -67,35 +84,38 @@ $(function() {
 		var editUrl = '<?php echo site_url('objectmanager/file/view/') ?>/' + objectId + '/' + fileId;
 		var downloadUrl = '<?php echo site_url('objectmanager/download/file/') ?>/' + fileId ;
 		var previewUrl = '<?php echo site_url('objectmanager/file/preview/') ?>/' + objectId + '/' + fileId ;
+		var statsUrl = '<?php echo site_url('objectmanager/file/stats/') ?>/' + objectId + '/' + fileId;
 		
-		var edit_button = '<a rel="tooltip" data-placement="bottom" data-original-title="Edit the file" href="' + editUrl + '" class="btn btn-primary details-button"><i class="fa fa-pencil"></i> Edit</a>';
+		var edit_button = '<a rel="tooltip" data-placement="bottom" data-original-title="Edit the file" href="' + editUrl + '" class="btn btn-primary btn-xs details-button"><i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span></a>';
 		var print_button = '';
 		var preview_button = '';
-				
+		var stats_button = '';		
 		
 		
-		var delete_button = '<a rel="tooltip" data-placement="bottom" data-original-title="Delete the file" href=\'javascript:ask_delete(' + fileId +', "' + fileName + '");\' data-file-id="' + fileId + '" class="btn btn-danger details-button pull-right delete-file"><i class="fa fa-trash"></i> Delete</a>';
-		var download_button = '<a rel="tooltip" data-placement="bottom"  data-original-title="Save data on your computer. You can use it in the third party software." href="' + downloadUrl + '" class="btn btn-info details-button"><i class="fa fa-download"></i> Download</a>';
+		var delete_button = '<a rel="tooltip" data-placement="bottom" data-original-title="Delete the file" href=\'javascript:ask_delete(' + fileId +', "' + fileName + '");\' data-file-id="' + fileId + '" class="btn btn-danger details-button btn-xs pull-right delete-file"><i class="fa fa-trash"></i> <span class="hidden-xs">Delete</span></a>';
+		var download_button = '<a rel="tooltip" data-placement="bottom"  data-original-title="Save data on your computer. You can use it in the third party software." href="' + downloadUrl + '" class="btn btn-info btn-xs details-button"><i class="fa fa-download"></i> <span class="hidden-xs">Download</span></a>';
+		
 		
 		
 		if(printableFiles.indexOf(fileExt.toLowerCase()) > -1){
-			
-			
 			
 			printUrl = fileType == 'additive' ? '<?php echo site_url('make/print') ?>' : '<?php echo site_url('make/mill') ?>';
 			printUrl += '?obj='+objectId+'&file='+fileId;
 				
 			var printLabel = fileType == 'additive' ? 'Print' : 'Mill';			
-			print_button = '<a rel="tooltip" data-placement="bottom" data-original-title="' + printLabel  + ' this file" href="' + printUrl + '" class="btn btn-success details-button"><i class="fa fa-play rotate-90"></i> '+ printLabel +'</a>';
+			print_button = '<a rel="tooltip" data-placement="bottom" data-original-title="' + printLabel  + ' this file" href="' + printUrl + '" class="btn btn-success btn-xs details-button"><i class="fa fa-play fa-rotate-90"></i> <span class="hidden-xs">'+ printLabel +'</span></a>';
+			
+			stats_button = '<a class="btn btn-warning btn-xs" href="' +statsUrl+ '"><i class="fa fa-area-chart"></i> <span class="hidden-xs">Stats</span></a>';
+				
 		}
 		
 		if(previewFiles.indexOf(fileExt.toLowerCase()) > -1){
 			
 			var endTitle = fileExt.toLowerCase() == '.stl' ? 'for STL files' : 'for GCode files.';
-			preview_button = '<a rel="tooltip" data-placement="bottom" data-original-title="A web-based 3D viewer ' + endTitle+'" href="'+ previewUrl +'" class="btn bg-color-purple txt-color-white details-button"><i class="fa fa-eye"></i> Preview</a>';
+			preview_button = '<a rel="tooltip" data-placement="bottom" data-original-title="A web-based 3D viewer ' + endTitle+'" href="'+ previewUrl +'" class="btn btn-xs bg-color-purple txt-color-white details-button"><i class="fa fa-eye"></i> <span class="hidden-xs">Preview</span></a>';
 		}
 		
-		return ' '+ edit_button +  print_button + delete_button + download_button + preview_button + '';
+		return ' '+ edit_button + delete_button + download_button + preview_button + stats_button + '';
 	}
 
 	$('#save-object').on('click', save_object);

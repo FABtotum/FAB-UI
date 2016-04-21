@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/serial.php';
 
-
+$ini_array = parse_ini_file(SERIAL_INI);
 
 /** READ POST DATA */
 $red   = $_POST['red'];
@@ -28,8 +28,8 @@ $serial = new Serial();
 $command_value = 'M701 S'.$red.PHP_EOL.'M702 S'.$green.PHP_EOL.'M703 S'.$blue.PHP_EOL;
 
 
-$serial->deviceSet(PORT_NAME);
-$serial->confBaudRate(BOUD_RATE);
+$serial->deviceSet($ini_array['port']);
+$serial->confBaudRate($ini_array['baud']);
 $serial->confParity("none");
 $serial->confCharacterLength(8);
 $serial->confStopBits(1);

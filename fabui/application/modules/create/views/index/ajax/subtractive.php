@@ -1,34 +1,22 @@
 <div id="row_1" class="row interstitial">
-
     <div class="col-sm-12">
-    
         <div class="well text-center">
-        
             <h1>Subtractive file</h1>
             <h2>Press the button to continue</h2>
-        
+            <h2><i class="icon-fab-mill fa-border fa-4x"></i></h2>
         </div>
-    
     </div>
-
 </div>
 
 
 <div id="row_2" class="row interstitial" style="display: none;">
-
     <div class="col-sm-12">
-    
         <div class="well text-center">
-        
             <h1>Checking printer</h1>
             <h2 id="res-icon" class="fa fa-spinner"></h2>
-                
             <p class="check_result"></p>
-        
         </div>
-    
     </div>
-
 </div>
 
 
@@ -45,7 +33,7 @@
 							<div class="col-sm-5">
 								
 								<h1></h1>
-								<h2 class="text-center">Jog the endmill to the desired origin point (X=0, Y=0, Z=0) and then press "Start"</h2>
+								<h2 class="text-center">Jog the endmill to the desired origin point (X=0, Y=0, Z=0), press <i class="fa fa-bullseye"></i> and then press "Start"</h2>
 								
 							</div>
 						</div>
@@ -55,38 +43,34 @@
 			        <div class="text-center">
 			            <div class="row">
 							<div class="col-sm-12">
-								<div class="smart-form" style="background: none; margin-top: -30px">
-									<fieldset style="background: none;">
+								<div class="smart-form">
+									<fieldset style="background: none !important;">
 										<div class="row">
 											<section class="col col-4">
-												<label class="label text-center">XY Step (mm)</label>
-												<label class="input-sx">
-													<input class="text-center" type="text" id="step" value="10">
+												<label class="label-mill text-center">XY Step (mm)</label>
+												<label class="input">
+													<input  type="text" id="step" value="10">
 												</label>
 											</section>
 											<section class="col col-4">
-												<label class="label text-center">Feedrate</label>
-												<label class="input-sx">
-													<input class="text-center" type="text" id="feedrate" value="1000">
+												<label class="label-mill text-center">Feedrate</label>
+												<label class="input">
+													<input  type="text" id="feedrate" value="1000">
 												</label>
 											</section>
 											<section class="col col-4">
-												<label class="label text-center">Z Step (mm)</label>
-												<label class="input-sx"> 
-													<input class="text-center" type="text" id="z-step" value="5">
+												<label class="label-mill text-center">Z Step (mm)</label>
+												<label class="input"> 
+													<input type="text" id="z-step" value="5">
 												</label>
 											</section>
-											
 										</div>
-			
 									</fieldset>
 								</div>
 							</div>
 						</div>
-			            
 			            <div class="row">
 							<div class="col-sm-8">
-						
 								<div class="btn-group-vertical">
 									<a href="javascript:void(0)" data-attribue-direction="up-left" data-attribute-keyboard="103" class="btn btn-default btn-lg directions btn-circle btn-xl rotondo">
 										<i class="fa fa-arrow-left fa-1x fa-rotate-45">
@@ -149,7 +133,7 @@
 							<div class="col-sm-4">
 								<span>Mode:</span><span class="mode"> 4th Axis</span>
 								<div class="knobs-demo  text-center margin-top-10" id="mode-a">
-									<input class="knob" data-width="150" data-cursor="true" data-step="0.5" data-min="1" data-max="360" data-thickness=".3" data-fgColor="#A0CFEC" data-displayInput="true">
+									<input class="knob" data-width="150" value="0" data-cursor="true" data-step="0.5" data-min="1" data-max="360" data-thickness=".3" data-fgColor="#A0CFEC" data-displayInput="true">
 								</div>
 							</div>
 							
@@ -174,6 +158,12 @@
 <script type="text/javascript">
 
 	
+	var re = /fabui\/make\/mill\?obj=(\d+)\&file=(\d+)/;
+	
+	if ((m = re.exec(window.location.href)) !== null) {
+		disable_button("#btn-next");
+	}
+	
 	
 	var setZero = false;
 
@@ -187,6 +177,8 @@
     $( ".axisz" ).on( "click", axisz );
     
 	$(".directions").on("click", directions);
+	
+	$(".jog").addClass('disabled');
 	
 	
 	$("#z-step").spinner({
@@ -231,8 +223,6 @@
 	 	 
 	 	 
 	 function rotation(value){
-
-		console.log(value);
 		
 		if(SOCKET_CONNECTED){
 			make_call_ws("rotation", value);
@@ -364,21 +354,6 @@
         
     }
     
-    function axisz(){
-    
-        var func = $(this).attr("data-attribute-function");
-        var step = $(this).attr("data-attribute-step");
-        make_call(func, step);
-        
-     	   
-    
-    }
-    
-    
-    function directions(){
-    	var value = $(this).attr("data-attribue-direction");
-    	make_call("directions", value);	
-    }
     
     function zero_all(){
     	
@@ -422,9 +397,6 @@
 		jsonData['step']     = $("#step").val();
 		jsonData['z_step']   = $("#z-step").val();
 		jsonData['feedrate'] = $("#feedrate").val();
-		
-		
-		
 		
 		var message = {};
 		

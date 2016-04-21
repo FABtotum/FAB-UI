@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-sm-6 margin-bottom-10">
-		<h1 class="txt-color-blueDark">FABtotum Personal Fabricator</h1>
+		<h1 class="txt-color-blueDark"><i class="fa fa-play fa-rotate-90 fa-border"></i> FABtotum Personal Fabricator</h1>
 	</div>
 	<div class="col-sm-6 margin-bottom-10">
 		<div class="well no-padding well-light">
@@ -9,15 +9,19 @@
 				<tbody>
 					<tr>
 						<td>Firmware</td>
-						<td><span class="pull-right">v.<?php echo firmware_version(); ?></span></td>
+						<td><span class="pull-right">v. <?php echo $fabtotum_info['fw']; ?></span></td>
 					</tr>
 					<tr>
 						<td>FabUI</td>
-						<td><span class="pull-right">v.<?php echo $_SESSION['fabui_version'] ?></span></td>
+						<td><span class="pull-right">v. <?php echo $_SESSION['fabui_version'] ?></span></td>
 					</tr>
 					<tr>
 						<td>Hardware</td>
-						<td><span class="pull-right">v.<?php echo hardware_id(); ?></span></td>
+						<td><span class="pull-right">v. <?php echo $fabtotum_info['hw']; ?></span></td>
+					</tr>
+					<tr>
+						<td>Installed Head</td>
+						<td><span class="pull-right"><?php echo $unit_configs['hardware']['head']['description']; ?></span></td>
 					</tr>
 				</tbody>
 			</table>
@@ -124,7 +128,7 @@
 									switch($col_count) {
 										case 4 :
 											$class = 'text-center';
-											$content = '<div class="progress"><div class="progress-bar bg-color-blueLight" aria-valuetransitiongoal="' . intval($item) . '"></div></div>';
+											$content = '<div class="progress"><div class="progress-bar bg-color-blue" data-transitiongoal="' . intval($item) . '" style=""></div></div>';
 											break;
 										case 5 :
 											$class = 'text-right';

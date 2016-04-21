@@ -33,13 +33,9 @@ class Jog extends Module {
 
 		$this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => 'JOG CSS'));
 		$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'JOG JS'));
-
-        $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.all.min.js', 'comment' => 'javascript for the noUISlider'));
-        $this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.min.css', 'comment' => 'javascript for the noUISlider'));
-		$this->layout->add_css_file(array('src'=>'application/layout/assets/js/plugin/noUiSlider.7.0.10/jquery.nouislider.pips.min.css', 'comment' => 'javascript for the noUISlider'));
-         
-        
-        $this->layout->add_js_file(array('src'=>'application/layout/assets/js/plugin/knob/jquery.knob.min.js', 'comment'=>'KNOB'));
+		
+		
+        $this->layout->add_js_file(array('src'=>'/assets/js/plugin/knob/jquery.knob.min.js', 'comment'=>'KNOB'));
 		
 		$this->layout->set_compress(false);
 	

@@ -11,46 +11,17 @@ class Controller extends Module {
 
 	}
 
-	public function updates() {
-
-		$this -> load -> helper('update_helper');
-
-		$fabui_local = myfab_get_local_version();
-		$fabui_remote = myfab_get_remote_version();
-
-		$fw_local = marlin_get_local_version();
-		$fw_remote = marlin_get_remote_version();
-
-		
-		$data['fabui_update'] = $fabui_local < $fabui_remote;
-		$data['fw_update']    = $fw_local < $fw_remote;
-		
-		$data['fabui_remote'] = $fabui_remote;
-		$data['fw_remote'] = marlin_get_remote_version();
-
-		
-		
-		
-		echo $this -> load -> view('update', $data, TRUE);
-
-	}
-
 	public function tasks() {
-
 		echo $this -> load -> view('tasks', '', TRUE);
-
 	}
 
 	public function notifications() {
-
 		echo $this -> load -> view('notifications', '', TRUE);
-
 	}
 
 	public function language() {
 
 		if ($this -> input -> post()) {
-
 			$language = $this -> input -> post('lang');
 			$back_url = $this -> input -> post('back_url');
 
@@ -62,9 +33,7 @@ class Controller extends Module {
 			$this -> configuration -> save_confi_value('language', $language);
 
 			$_SESSION['language'] = $languages[$language];
-
 			redirect($back_url);
-
 		}
 
 	}
@@ -160,17 +129,12 @@ class Controller extends Module {
 		}
 
 	}
-
+	/* */
 	public function wizard() {
-
 		$set = $this -> input -> post('set');
-
 		$set = $set == 0 ? false : true;
-
 		$_SESSION['ask_wizard'] = $set;
-
 		echo true;
-
 	}
 
 	/**
@@ -198,8 +162,21 @@ class Controller extends Module {
 		sleep(3);
 
 		echo 1;
-
 	}
-
+	
+	/* return if wizard popup  */
+	public function first_setup(){
+		$this->load->helper('wizard_helper');
+		$exist_file_wizard = need_setup_wizard();
+		$response = $exist_file_wizard && $_SESSION['ask_wizard'] == true ? true : false;
+		$this->output->set_content_type('application/json')->set_output(json_encode(array('response' =>$response)));	
+	}
+	
+	/* return if internet is available */
+	public function internet($output = 'json'){
+		$this->load->helper('update_helper');
+		$available = is_internet_avaiable();
+		$this->output->set_content_type('application/json')->set_output(json_encode(array('available' =>$available)));
+	}
 }
 ?>

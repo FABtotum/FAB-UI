@@ -7,7 +7,10 @@ import logging
 import json
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
+
+serialconfig = ConfigParser.ConfigParser()
+serialconfig.read('/var/www/lib/serial.ini')
 
 #check if LOCK FILE EXISTS
 if os.path.isfile(config.get('task', 'lock_file')):
@@ -68,7 +71,8 @@ for opt, arg in opts:
     elif opt in ("-e", "--end"):
         end = int(arg)
     elif opt in ("-z", "--z-offset"):
-        z_offset = 200-float(arg) #can be float
+        #z_offset = 200-float(arg) #can be float
+        z_offset = float(arg)
     elif opt in ("-a", "--a-offset"):
         a_offset = arg #can be float
     elif opt in ("-d", "--dest"):
@@ -106,8 +110,6 @@ print 'Postproces.  : ', post
 print 'Z-offset (y) : ', z_offset
 print 'A-Offset.    : ', a_offset
 
-
-
 #ESTIMATED SCAN TIME ESTIMATION
 estimated=(slices*1.99)/60
 if(estimated<1):
@@ -123,8 +125,8 @@ print 'Estimated Scan time =', str(estimated) + " " + str(unit) + "  [Pessimisti
 print "\n ---------- Initializing ---------- \n"
 
 '''#### SERIAL PORT COMMUNICATION ####'''
-serial_port = config.get('serial', 'port')
-serial_baud = config.get('serial', 'baud')
+serial_port = serialconfig.get('serial', 'port')
+serial_baud = serialconfig.get('serial', 'baud')
 
 serial = serial.Serial(serial_port, serial_baud, timeout=0.5)
 serial.flushInput()
@@ -208,5 +210,5 @@ completed=1
 completed_time=float(time.time())
 percent=100
 printlog(percent,i)
-os.remove(config.get('task', 'lock_file'))
+#os.remove(config.get('task', 'lock_file'))
 sys.exit()  

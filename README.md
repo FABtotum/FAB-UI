@@ -1,6 +1,76 @@
-FAB-UI
-=====
-the FABtotum User Interface Repo
+# FABTOTUM USER INTERFACE
+## the FABtotum User Interface Repo
+### Version: 0.95 - 2016-04-21
+#### General
+* Added basic jog controls on top buttons bar
+* Added temperatures controls on top buttons bar
+* Improved in terms of efficiency and responsiveness the features related to “emergency button” and “reset controller” button
+* 250000 bps is supported and set as default transmission rate
+
+#### Make
+* Print
+   * Added installed head control (required printing head installed)
+   * Added “Recent prints” tab (list view with the last 10 files printed)
+   * Added preheating of the nozzle and bed during the initial phase of preparation of the print (to reduce waiting times significantly)
+   * Added intelligent heating: during the last phase of preparation of the print the temperatures of the nozzle and the bed are setted with the real values of the gcode’s file to print  (greatly reducing waiting times)
+   * Added on “Live feeds” number of total layers and actual layer (available only for gcodes created with Cura)
+   * Improved in terms of efficiency and performance all the scripts related the print process
+   * Minor bugfixes
+* Mill
+   * Added installed head control (required milling head installed)
+   * Added “Recent milling” tab (list view with the last 10 files milled)
+   * Improved in terms of efficiency and performance all the scripts related the milling process
+   * Minor bugfixes
+* Scan
+   * Improved process workflow and finalization
+   * Minor bugfixes
+* History
+   * Added stats tab
+   * Improved user experience
+   * Minor bugfixes
+
+#### Jog
+* Improved page initialization and user experience
+* Fixed filter search on “Help” modal window
+* Minor bugfixes
+
+#### Objectmanager
+* Added stats page for single file: a page with basic stats on a file (es. how many time was printed in a certain period, total of      printing hours, etc)
+* Improved user experience
+* Minor bugfixes
+
+#### Maintenance
+* Head
+  * When a Hybrid Head or a Printing Head is installed a popup is shown advising to repeat the “Probe Calibration” operation
+* Improved user experience
+* Minor bugfixes
+
+#### Settings
+* “General” and “Hardware” pages have been merged into a single page with name “Hardware”
+* Hardware
+  * Safety - added “Machine Limits Collision Warning” option: if selected warnings about collisions will be presented to the user as   an error message.
+  * Minor bugfixes
+* Network
+   * Added Domain Name System Service Discovery to make the FABtotum easily discoverable on local networks without using ip addresses but just setting it a name (es: http://myfabtotum.local/) this require a network discovery package such as Bonjour.
+   * Ethernet
+      * Added possibility to set ip address in the range 169.254.X.X (169.254.0.0 - 169.254.254.254)
+      * Minor bugfixes
+   * Wi-Fi
+      * Fixed annoying bug with wifi networks having slashes in their names (this bug didn’t display the Wi-Fi ip address showing the message “No wifi set. Please connect to a valid wifi network” even the connection was established )
+      * Added “Disconnect” button
+      * Improved user experience
+      * Minor bugfixes
+* Raspicam
+   * Flip: set default value to “Flip Both” to be more representative to the camera point of view.
+
+#### Updates
+* The module has been completely revised to make more easier future updates. Software updates and firmware have been merged into one single update: now users will not have to worry about to do a software update and then a firmware update, the new module will update what is necessary to update.
+
+#### Plugins
+* All the menu items of  installed plugins have been moved under the “Plugins” menu item
+
+==================================================================
+
 
 FABUI 0.94995 (HotFix) (29/01/2016)
 

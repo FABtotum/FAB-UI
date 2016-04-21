@@ -30,7 +30,7 @@ cnx.close()
 
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/fabui/python/config.ini')
+config.read('/var/www/lib/config.ini')
 
 
 host=config.get('socket', 'host')
