@@ -4,7 +4,7 @@ require_once '/var/www/lib/database.php';
 require_once '/var/www/lib/utilities.php';
 require_once '/var/www/lib/jog_factory.php';
 
-/** GET ARGS FROM COMMAND LINE */
+/** GET ARGS FROM COMMAND LINE - UPDATE*/
 play_beep();
 $version      = $argv[1];
 $task_id      = $argv[2];

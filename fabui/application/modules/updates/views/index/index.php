@@ -22,8 +22,6 @@
 					<p class="lead semi-bold">
 						<small class="off-message hidden">Please don't turn off the printer until the operation is completed</small>
 					</p>
-					
-					
 					<button data-toggle="modal" data-backdrop="static" data-target="#modal" class="btn btn-xs bg-color-blue txt-color-white " style="">&nbsp;See what's new!</button>
 					
 				<?php endif; ?>

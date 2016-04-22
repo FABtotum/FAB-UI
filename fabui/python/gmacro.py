@@ -366,7 +366,7 @@ elif preset=="auto_bed_leveling":
     trace("Auto Bed leveling Initialized",log_trace)
     macro("G91","ok",2,"Setting relative position",1,verbose=False)
     #macro("G0 X17 Y61.5","ok",1,"Offset",1)
-    macro("G0 Z25","ok",2,"Moving away from the plane",1,verbose=False)
+    macro("G0 Z25 F1000","ok",2,"Moving away from the plane",1,verbose=False)
     macro("G90","ok",2,"Setting abs position",1,verbose=False)
     macro("G28","ok",90,"Homing all axis",1)
     macro("G29","ok",140,"Auto bed leveling procedure",1)

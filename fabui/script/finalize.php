@@ -628,6 +628,8 @@ function finalize_update_sw($tid, $status) {
 	unlock();
 	//REMOVE ALL TEMPORARY FILES
 	shell_exec('sudo rm -rf ' . $attributes['folder']);
+	shell_exec('sudo rm -rf /var/www/temp/update.pid');
+	shell_exec('sudo rm -rf /var/www/temp/task.pid');
 
 }
 

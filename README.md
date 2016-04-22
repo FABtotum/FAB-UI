@@ -1,5 +1,18 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version: 0.952 - 2016-04-22 (hotfix)
+#### General
+* Fixed head not heating
+* Fixed auto bed leveling initialization procedure before printing
+
+==================================================================
+
+### Version: 0.951 - 2016-04-22 (hotfix)
+#### General
+* Fixed firmware installation during update process
+
+==================================================================
+
 ### Version: 0.95 - 2016-04-21
 #### General
 * Added basic jog controls on top buttons bar

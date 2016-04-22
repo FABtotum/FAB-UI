@@ -1,10 +1,9 @@
 <?php
-
+//
 $make_sons[] = array('name' => 'print', 'label'=>'Print', 'menu' => TRUE, 'icon' => '<i class="icon-fab-print fa-lg fa-fw"></i>');
 $make_sons[] = array('name' => 'mill',  'label'=>'Mill',  'menu' => TRUE, 'icon' => '<i class="icon-fab-mill fa-lg fa-fw"></i>');
 $make_sons[] = array('name' => 'scan',  'label'=>'Scan',  'menu' => TRUE, 'icon' => '<i class="icon-fab-scan fa-lg fa-fw"></i>');
 $make_sons[] = array('name' => 'history', 'label'=>'History', 'menu' => TRUE, 'icon' => '<i class="fa fa-lg fa-fw fa-history"></i>');
-
 
 // maintenance sub-items menu
 $_maintenance_sons[] = array('name' => 'head',              'label'=> 'Head',              'icon' => '<i class="fa fa-lg fa-fw  fa-toggle-down"></i>');
