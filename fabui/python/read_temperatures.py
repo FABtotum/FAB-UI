@@ -28,8 +28,8 @@ for line in lines:
     match = re.search('M(\d+)\sS([+|-]*[0-9]*.[0-9]*)', line)
     if match != None:
         if int(match.group(1)) in extruder_gcodes:
-            extrudert_target = match.group(2)
+            extrudert_target = match.group(2).strip()
         elif int(match.group(1)) in bed_gcodes:
-            bed_target = match.group(2)
+            bed_target = match.group(2).strip()
 
 print json.dumps({'extruder':extrudert_target, 'bed': bed_target})

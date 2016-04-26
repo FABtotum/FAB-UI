@@ -1,5 +1,12 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version: 0.953 - 2016-04-22 (hotfix)
+
+#### Make
+* Fixed bad interpretation of gcode files generated with Simplify3D
+
+==================================================================
+
 ### Version: 0.952 - 2016-04-22 (hotfix)
 #### General
 * Fixed head not heating

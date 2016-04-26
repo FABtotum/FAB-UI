@@ -75,7 +75,7 @@ if($_print_type ==  'additive'){
 	file_put_contents($_macro_response, '');
 	
 	/** GET TEMPERATURES FROM GCODE FILE */
-	$temperatures = json_decode(shell_exec('sudo python '.PYTHON_PATH.'read_temperatures.py -f "'.$_file['full_path'].'"'), TRUE);
+	$temperatures = json_decode(shell_exec('sudo python '.PYTHON_PATH.'read_temperatures.py -f "'.$_file['full_path'].'" -n 500'), TRUE);
 	
 	
 	$_command_start_print_macro  = 'sudo python '.PYTHON_PATH.'gmacro.py start_print '.$_macro_trace.' '.$_macro_response.' --ext_temp '.intval($temperatures['extruder']).' --bed_temp '.intval($temperatures['bed']);

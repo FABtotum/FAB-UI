@@ -317,10 +317,10 @@ def sender():
                         print_started=True
                 
                 if command[0:4]=="M109":
-                    ext_temp_target=float(command.split("S")[1].strip())
+                    ext_temp_target=float(command.split("S")[1].split(" ")[0].strip())
                     trace("Wait for nozzle temperature to reach "+ str(ext_temp_target)+"&deg;C")
                 elif command[0:4]=="M104":
-                    ext_temp_target=float(command.split("S")[1].strip())
+                    ext_temp_target=float(command.split("S")[1].split(" ")[0].strip())
                     trace("Nozzle temperature set to "+ str(ext_temp_target)+"&deg;C")
                     doWriteMonitor=True
                 elif command[0:4]=="M140":
