@@ -75,8 +75,8 @@
 				</div>
 				
 				<hr class="simple">
-				<p>Elapsed Time <span class="pull-right"> <span class="elapsed-time"></span> </span> </p>
-				<p>Time left <span class="pull-right"> <span class="estimated-time-left"></span> </span> </p>
+				<p>Elapsed time <span class="pull-right"> <span class="elapsed-time"></span> </span> </p>
+				<p>Estimated time left <span class="pull-right"> <span class="estimated-time-left"></span> </span> </p>
 				
 				
 			</div>

@@ -6,8 +6,8 @@ $make_sons[] = array('name' => 'scan',  'label'=>'Scan',  'menu' => TRUE, 'icon'
 $make_sons[] = array('name' => 'history', 'label'=>'History', 'menu' => TRUE, 'icon' => '<i class="fa fa-lg fa-fw fa-history"></i>');
 
 // maintenance sub-items menu
-$_maintenance_sons[] = array('name' => 'head',              'label'=> 'Head',              'icon' => '<i class="fa fa-lg fa-fw  fa-toggle-down"></i>');
-$_maintenance_sons[] = array('name' => 'spool',             'label'=> 'Spool',             'icon' => '<i class="fa fa-lg fa-fw  fa-circle-o-notch"></i>');
+$_maintenance_sons[] = array('name' => 'head',              'label'=> 'Head installation',              'icon' => '<i class="fa fa-lg fa-fw  fa-toggle-down"></i>');
+$_maintenance_sons[] = array('name' => 'spool',             'label'=> 'Spool management',             'icon' => '<i class="fa fa-lg fa-fw  fa-circle-o-notch"></i>');
 $_maintenance_sons[] = array('name' => 'feeder',            'label'=> 'Feeder',            'icon' => '<i class="fa fa-lg fa-fw  fa-cog"></i>');
 $_maintenance_sons[] = array('name' => '4-axis',            'label'=> '4th Axis',          'icon' => '<i class="fa fa-lg fa-fw  fa-arrows-h"></i>');
 $_maintenance_sons[] = array('name' => 'bed-calibration',   'label'=> 'Bed Calibration',   'icon' => '<i class="fa fa-lg fa-fw  fa-arrows-h"></i>');

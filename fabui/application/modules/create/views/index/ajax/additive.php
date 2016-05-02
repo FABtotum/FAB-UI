@@ -390,6 +390,8 @@
         
         function pre_print(){
             
+            IS_MACRO_ON = true;
+            /*
             jog_call("bed_temp", 40);
             jog_call("ext_temp", 150);
             
@@ -400,20 +402,21 @@
 				$("#top-bar-bed-target").html(40);
 				$("#top-bar-nozzle-target").html(150);
             }
-                        
-            IS_MACRO_ON = true;
+            */
+                    
             
-            openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Preparing print');
             
-            $("#res-icon").removeClass('fa-warning fa-check txt-color-green txt-color-red fa-spinner fa-spin');
-            $("#res-icon").addClass('fa-spinner fa-spin');
-            $('#modal_link').addClass('disabled');
+           openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Preparing print');
             
-            var timestamp = new Date().getTime();
+           $("#res-icon").removeClass('fa-warning fa-check txt-color-green txt-color-red fa-spinner fa-spin');
+           $("#res-icon").addClass('fa-spinner fa-spin');
+           $('#modal_link').addClass('disabled');
             
-            ticker_url = '/temp/macro_trace';
+           var timestamp = new Date().getTime();
+            
+           ticker_url = '/temp/macro_trace';
                        
-            $.ajax({
+           $.ajax({
         		  url: ajax_endpoint + 'ajax/pre_print.php',
         		  dataType : 'json',
                   type: "POST", 

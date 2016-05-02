@@ -14,11 +14,14 @@ $_green       							= $_POST['green'];
 $_blue        							= $_POST['blue'];
 $_safety_door 							= $_POST['safety_door'];
 $_switch                                = $_POST['switch'];
-$_feeder_disengage                      = $_POST['feeder_disengage_feeder'];
+$_feeder_disengage                      = isset($_POST['feeder_disengage_feeder']) ? $_POST['feeder_disengage_feeder'] : '';
 $_milling_sacrificial_layer_offset      = $_POST['milling_sacrificial_layer_offset'];
 
 $_feeder_extruder_steps_per_unit_a_mode = $_POST['feeder_extruder_steps_per_unit_a_mode'];
 $_feeder_extruder_steps_per_unit_e_mode = $_POST['feeder_extruder_steps_per_unit_e_mode'];
+
+$_print_preheating_extruder             = $_POST['print_preheating_extruder'];
+$_print_preheating_bed                  = $_POST['print_preheating_bed'];
 
 $_units['milling']['layer-offset']      = $_milling_sacrificial_layer_offset;
 $_both_y_endstops                       = $_POST['both_y_endstops'];
@@ -67,6 +70,8 @@ $_units['api']['keys'][$_SESSION['user']['id']] = $_custom_units['api']['keys'][
 $_units['zprobe']['disable']                    = $_custom_units['zprobe']['disable'] = $_zprobe;
 $_units['zprobe']['zmax']                    	= $_custom_units['zprobe']['zmax'] = $_zmax;
 
+$_units['print']['pre-heating']['extruder'] =  $_print_preheating_extruder;
+$_units['print']['pre-heating']['bed']      =  $_print_preheating_bed;
 
 file_put_contents(FABUI_PATH.'config/config.json', json_encode($_units));
 file_put_contents(FABUI_PATH.'config/custom_config.json', json_encode($_custom_units));

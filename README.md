@@ -1,7 +1,22 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
-### Version: 0.953 - 2016-04-22 (hotfix)
+### Version: 0.954 - 2016-05-02 (hotifx)
 
+* Firmware
+	* Fixed a bug with timing when using M3,M4,M5
+	* Subtractive gcodes will not require a G4 before M5 or after M3 and M4 like before..
+	M3,M4 and M5 will in fact start spinning after 1.5 seconds the last movement operation is completed.
+	This allows to use some standard Gcode Posts processors instead of manually editing the code with pauses
+* Maintenance
+	* Head renamed in "Head installation"
+	* Spool rename in "Spool management"
+* Settings
+	* Hardware
+		* Added tab "Print" for the parametric management of pre-heating temperatures
+		
+==================================================================
+
+### Version: 0.953 - 2016-04-22 (hotfix)
 #### Make
 * Fixed bad interpretation of gcode files generated with Simplify3D
 
@@ -24,21 +39,21 @@
 #### General
 * Added basic jog controls on top buttons bar
 * Added temperatures controls on top buttons bar
-* Improved in terms of efficiency and responsiveness the features related to “emergency button” and “reset controller” button
+* Improved in terms of efficiency and responsiveness the features related to â€œemergency buttonâ€ and â€œreset controllerâ€ button
 * 250000 bps is supported and set as default transmission rate
 
 #### Make
 * Print
    * Added installed head control (required printing head installed)
-   * Added “Recent prints” tab (list view with the last 10 files printed)
+   * Added â€œRecent printsâ€ tab (list view with the last 10 files printed)
    * Added preheating of the nozzle and bed during the initial phase of preparation of the print (to reduce waiting times significantly)
-   * Added intelligent heating: during the last phase of preparation of the print the temperatures of the nozzle and the bed are setted with the real values of the gcode’s file to print  (greatly reducing waiting times)
-   * Added on “Live feeds” number of total layers and actual layer (available only for gcodes created with Cura)
+   * Added intelligent heating: during the last phase of preparation of the print the temperatures of the nozzle and the bed are setted with the real values of the gcodeâ€™s file to print  (greatly reducing waiting times)
+   * Added on â€œLive feedsâ€ number of total layers and actual layer (available only for gcodes created with Cura)
    * Improved in terms of efficiency and performance all the scripts related the print process
    * Minor bugfixes
 * Mill
    * Added installed head control (required milling head installed)
-   * Added “Recent milling” tab (list view with the last 10 files milled)
+   * Added â€œRecent millingâ€ tab (list view with the last 10 files milled)
    * Improved in terms of efficiency and performance all the scripts related the milling process
    * Minor bugfixes
 * Scan
@@ -51,7 +66,7 @@
 
 #### Jog
 * Improved page initialization and user experience
-* Fixed filter search on “Help” modal window
+* Fixed filter search on â€œHelpâ€ modal window
 * Minor bugfixes
 
 #### Objectmanager
@@ -61,14 +76,14 @@
 
 #### Maintenance
 * Head
-  * When a Hybrid Head or a Printing Head is installed a popup is shown advising to repeat the “Probe Calibration” operation
+  * When a Hybrid Head or a Printing Head is installed a popup is shown advising to repeat the â€œProbe Calibrationâ€ operation
 * Improved user experience
 * Minor bugfixes
 
 #### Settings
-* “General” and “Hardware” pages have been merged into a single page with name “Hardware”
+* â€œGeneralâ€ and â€œHardwareâ€ pages have been merged into a single page with name â€œHardwareâ€
 * Hardware
-  * Safety - added “Machine Limits Collision Warning” option: if selected warnings about collisions will be presented to the user as   an error message.
+  * Safety - added â€œMachine Limits Collision Warningâ€ option: if selected warnings about collisions will be presented to the user as   an error message.
   * Minor bugfixes
 * Network
    * Added Domain Name System Service Discovery to make the FABtotum easily discoverable on local networks without using ip addresses but just setting it a name (es: http://myfabtotum.local/) this require a network discovery package such as Bonjour.
@@ -76,18 +91,18 @@
       * Added possibility to set ip address in the range 169.254.X.X (169.254.0.0 - 169.254.254.254)
       * Minor bugfixes
    * Wi-Fi
-      * Fixed annoying bug with wifi networks having slashes in their names (this bug didn’t display the Wi-Fi ip address showing the message “No wifi set. Please connect to a valid wifi network” even the connection was established )
-      * Added “Disconnect” button
+      * Fixed annoying bug with wifi networks having slashes in their names (this bug didnâ€™t display the Wi-Fi ip address showing the message â€œNo wifi set. Please connect to a valid wifi networkâ€ even the connection was established )
+      * Added â€œDisconnectâ€ button
       * Improved user experience
       * Minor bugfixes
 * Raspicam
-   * Flip: set default value to “Flip Both” to be more representative to the camera point of view.
+   * Flip: set default value to â€œFlip Bothâ€ to be more representative to the camera point of view.
 
 #### Updates
 * The module has been completely revised to make more easier future updates. Software updates and firmware have been merged into one single update: now users will not have to worry about to do a software update and then a firmware update, the new module will update what is necessary to update.
 
 #### Plugins
-* All the menu items of  installed plugins have been moved under the “Plugins” menu item
+* All the menu items of  installed plugins have been moved under the â€œPluginsâ€ menu item
 
 ==================================================================
 

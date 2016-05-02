@@ -2,7 +2,6 @@
 /**
  *  BOOT SCRIPT FILE - INITIALIZE MACHINE CUSTOM PARAMETERS
  * 
- * 
  */
 require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/serial.php';
@@ -116,5 +115,7 @@ if(file_exists(dirname(__FILE__).'/hardware/settings_'.$hw_id.'.php')){
 	file_put_contents(FABUI_PATH.'config/config.json', json_encode($json_config));
 }
 //==================================================================
+$serial->sendMessage('M999'.PHP_EOL.'M728'.PHP_EOL);
+$serial -> deviceClose();
 shell_exec('sudo rm '.LOCK_FILE);
 ?>

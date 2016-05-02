@@ -55,7 +55,9 @@ class Settings extends Module {
 		$data['_zprobe'] = isset($config_units['zprobe']['disable']) ? $config_units['zprobe']['disable'] : '0';
 		$data['_zmax'] = isset($config_units['zprobe']['zmax']) ? $config_units['zprobe']['zmax'] : '206';
 		$data['_milling_sacrificial_layer_offset'] = isset($config_units['milling']['layer-offset']) ? $config_units['milling']['layer-offset'] : 12.0;
-		
+		$data['_print_preheating_extruder'] = isset($config_units['print']['pre-heating']['extruder']) ? $config_units['print']['pre-heating']['extruder'] : 150;
+		$data['_print_preheating_bed'] = isset($config_units['print']['pre-heating']['bed']) ? $config_units['print']['pre-heating']['bed'] : 50;
+		$data['max_temp'] = $this -> layout -> get_max_temp();
 		
 		/***
 		 * HARDWARE

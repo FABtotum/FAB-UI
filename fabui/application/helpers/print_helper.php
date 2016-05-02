@@ -54,6 +54,7 @@ if ( ! function_exists('create_default_config'))
 			'safety'        => array('door'=>0, 'collision-warning'=>1),
 			'switch'        => 0,
 			'feeder'        => array('disengage-offset'=> 2, 'show' => true),
+			'print'         => array('pre-heating' => array('extruder' => 150, 'bed' => 50)),
 			'milling'       => array('layer-offset' => 12),
 			'e'             => 3048.1593,
 			'a'             => 177.777778,

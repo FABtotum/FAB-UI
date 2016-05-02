@@ -125,6 +125,11 @@ function save(){
 	$('#save-button').addClass('disabled');
 	$('#save-button').html('<i class="fa fa-save"></i>&nbsp;Saving...');
 	
+	if(parseInt($("#print-preheating-extruder").val()) > <?php echo $max_temp; ?>)	$("#print-preheating-extruder").val(<?php echo $max_temp; ?>);
+	if(parseInt($("#print-preheating-bed").val()) > 100) $("#print-preheating-bed").val(100);
+	if($("#print-preheating-extruder").val() == '') $("#print-preheating-extruder").val(0);
+	if($("#print-preheating-bed").val() == '') $("#print-preheating-bed").val(0);
+	
 	$.ajax({
         url : '<?php echo module_url('settings').'ajax/general.php' ?>',
 		  dataType : 'json',
@@ -137,6 +142,8 @@ function save(){
           		milling_sacrificial_layer_offset: $("#milling-sacrificial-layer-offset").val(), 
           		feeder_extruder_steps_per_unit_e_mode: $("#feeder-extruder-steps-per-unit-e").val(), 
           		feeder_extruder_steps_per_unit_a_mode: $("#feeder-extruder-steps-per-unit-a").val(),
+          		print_preheating_extruder : $("#print-preheating-extruder").val(),
+          		print_preheating_bed : $("#print-preheating-bed").val(),
           		both_y_endstops: $("#both-y-endstops").val(),
           		both_z_endstops: $("#both-z-endstops").val(),
           		upload_api_key: $("#upload-api-key").val(),
@@ -188,6 +195,24 @@ $("#milling-sacrificial-layer-offset").spinner({
  	numberFormat : "N1",
  	min: 0,
  	max: 25,
+ 	create: function () { $(this).number(true,1) },
+   	stop: function () { $(this).number(true,1) }
+ });
+ 
+ $("#print-preheating-extruder").spinner({
+ 	step: 1,
+ 	numberFormat : "N",
+ 	min: 0,
+ 	max: <?php echo $max_temp; ?>,
+ 	create: function () { $(this).number(true,1) },
+   	stop: function () { $(this).number(true,1) }
+ });
+ 
+ $("#print-preheating-bed").spinner({
+ 	step: 1,
+ 	numberFormat : "N",
+ 	min: 0,
+ 	max: 100,
  	create: function () { $(this).number(true,1) },
    	stop: function () { $(this).number(true,1) }
  });

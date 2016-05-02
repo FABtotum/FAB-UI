@@ -310,7 +310,11 @@ class Create extends Module {
 		$this -> load -> view('index/ajax/' . $type, $data);
 	}
 	
-
+	
+	function pre_heat(){
+		
+	}
+	
 	public function history() {
 
 		$this -> load -> model('tasks');

@@ -162,6 +162,8 @@ function finalize_print($tid, $status) {
 		include '/var/www/fabui/script/boot.php';
 	}
 
+	shell_exec('sudo rm -rf ' . $attributes['folder']); 
+
 }
 
 function finalize_mill($tid, $status) {
@@ -214,6 +216,7 @@ function finalize_mill($tid, $status) {
 	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
 
 	$db -> close();
+	shell_exec('sudo rm -rf ' . $attributes['folder']); 
 
 }
 

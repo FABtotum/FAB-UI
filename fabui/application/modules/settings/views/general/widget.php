@@ -231,6 +231,34 @@
 		</div>
 	</div>
 	<!-- end feeder -->
+	<!-- print -->
+	<div class="tab-pane fade" id="print">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="smart-form">
+					<fieldset>
+						<div class="row">
+							<section class="col col-6">
+								<label class="label">Pre-heating extruder temperature</label>
+								<label class="input">
+									<input type="number" min="0" max="250" id="print-preheating-extruder" value="<?php echo $_print_preheating_extruder; ?>">
+								</label>
+							</section>
+						</div>
+						<div class="row">
+							<section class="col col-6">
+								<label class="label">Pre-heating bed temperature</label>
+								<label class="input">
+									<input type="number" min="0" max="100" id="print-preheating-bed" value="<?php echo $_print_preheating_bed; ?>">
+								</label>
+							</section>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end print -->
 	<!-- milling -->
 	<div class="tab-pane fade" id="milling">
 		<div class="row">

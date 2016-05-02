@@ -503,12 +503,13 @@ else:
 trace("Now finalizing...")
 if progress >= 0.2:
     trace("Moving to safe zone")
+    serial.write("M220 S100\r\n")
     serial.write("G91\r\n")
     serial.write("G0 E-5 F1000\r\n")
     serial.write("G0 Z+1 F1000\r\n")
     serial.write("G90\r\n")
     serial.write("G27 Z0\r\n")
-    serial.write("G0 X210 Y210 F1000\r\n")
+    serial.write("G0 X210 Y210 F1500\r\n")
     time.sleep(10)
 
 call (['sudo php /var/www/fabui/script/finalize.php '+str(task_id)+" print " +str(status)], shell=True)

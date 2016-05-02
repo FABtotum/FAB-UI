@@ -19,6 +19,9 @@
 	</li>
 	-->
 	<li>
+		<a data-toggle="tab" href="#print">Print </a>
+	</li>
+	<li>
 		<a data-toggle="tab" href="#milling">Milling </a>
 	</li>
 	<li>
