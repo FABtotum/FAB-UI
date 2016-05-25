@@ -210,7 +210,7 @@ class JogFactory {
 		//load default configs
 		$_units = json_decode(file_get_contents(CONFIG_UNITS), TRUE);
 		
-		if(isset($units['settings_type']) && $units['settings_type'] == 'custom'){
+		if(isset($_units['settings_type']) && $_units['settings_type'] == 'custom'){
 			$_units = json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE);
 		}
 		
