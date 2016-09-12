@@ -26,7 +26,7 @@ include( "inc/header.php");
 										</li>
 										<li data-target="#step3">
 											<a href="#tab3" data-toggle="tab"> <span
-											class="step">3</span> <span class="title">Network</span>
+											class="step">3</span> <span class="title">Conditions</span>
 											</a>
 										</li>
 										<li data-target="#step4">

@@ -8,7 +8,6 @@
 <script src="/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js"></script>
 <script src="/assets/js/app.config.js"></script>
 <script src="/assets/js/bootstrap/bootstrap.min.js"></script>
-<script src="/assets/js/demo.min.js"></script>
 <script src="/assets/js/app.min.js"></script>
 <script src="/assets/js/fabwebsocket.js"></script>
 <script src="/assets/js/fabtotum.js"></script>

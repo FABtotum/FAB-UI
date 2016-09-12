@@ -25,7 +25,7 @@ class Settings extends Module {
 		
 		if (!file_exists($this -> config -> item('fabtotum_custom_config_units', 'fabtotum'))) {
 			$this -> load -> helper('file');
-			write_file($this -> config -> item('fabtotum_custom_config_units', 'fabtotum'), json_encode($config_units), 'w');
+			write_file($this -> config -> item('fabtotum_custom_config_units', 'fabtotum'), json_encode($config_units), 'w+');
 		}
 		
 		$custom_config_units = json_decode(file_get_contents($this -> config -> item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
@@ -36,7 +36,7 @@ class Settings extends Module {
 
 		if (!file_exists($custom_config_units['custom_overrides'])) {
 			$this -> load -> helper('file');
-			write_file('/var/www/fabui/config/custom_overrides.txt', '', 'w');
+			write_file('/var/www/fabui/config/custom_overrides.txt', '', 'w+');
 		}
 		
 		
@@ -91,7 +91,7 @@ class Settings extends Module {
 		
 		
 		
-		
+		$this -> layout -> set_compress(false);
 		$this -> layout -> view('general/index', $data);
 		
 	}
@@ -241,7 +241,7 @@ class Settings extends Module {
 		$this -> load -> helper('smart_admin_helper');
 		
 		
-		$data['current_hostname'] = shell_exec('sudo hostname');
+		$data['current_hostname'] = shell_exec('cat /etc/hostname');
 		$data['current_name'] = avahi_service_name();
 		
 		$data['widget'] = $this -> load -> view('network/dns/widget', $data, TRUE);

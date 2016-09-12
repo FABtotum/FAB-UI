@@ -16,7 +16,7 @@ def get_layers_count(file, max_lines = 50):
 
 ''' IF IS A VALID CURA COMMENT RETURN THE INFO '''
 def process_comment(comment):
-    if(';LAYER:' in comment):
+    if(';layer:' in comment.lower()):
         comment_splitted = comment.split(':')
         return 'layer',  comment_splitted[1]
     return None
@@ -33,7 +33,7 @@ def get_layers_count(file):
     objects = []
     with open(file) as f:
         for line in f:
-            if('Layer count:' in line):
+            if('layer count:' in line.lower()):
                 line_splitted = line.split(':')
                 objects.append(line_splitted[1].strip())
     f.close()

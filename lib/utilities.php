@@ -153,7 +153,21 @@ function marlin_get_remote_version() {
  *
  */
 function is_internet_avaiable() {
-	return !$sock = @fsockopen('www.google.com', 80, $num, $error, 2) ? false : true;
+	
+	
+	$url='http://www.google.com/';
+	$ch=curl_init();
+	$timeout=2;
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+	
+	$result=curl_exec($ch);
+	$info = curl_getinfo($ch);
+	curl_close($ch);
+	
+	return $info['http_code'] > 0;
+	//return !$sock = @fsockopen('www.google.com', 80, $num, $error, 2) ? false : true;
 }
 
 /**
@@ -506,6 +520,29 @@ function humanTiming ($time)
     }
 
 }
+
+function create_default_config($except = ''){
+		$dafault_config = array(
+			'color'         => array('r'=>255, 'g'=>255, 'b'=>255),
+			'safety'        => array('door'=>0, 'collision-warning'=>1),
+			'switch'        => 0,
+			'feeder'        => array('disengage-offset'=> 2, 'show' => true),
+			'print'         => array('pre-heating' => array('extruder' => 150, 'bed' => 50)),
+			'milling'       => array('layer-offset' => 12),
+			//'e'             => 3048.1593,
+			'a'             => 177.777778,
+			'bothy'         => 'None',
+			'bothz'         => 'None',
+			'api'           => array('keys' => array()),
+			'zprobe'        => array('disbale'=>0, 'zmax'=>206),
+			'settings_type' => 'default',
+			'hardware'      => array('head' => array('type' => 'hybrid', 'description'=>'Hybrid Head', 'max_temp'=>230))
+		);
+		
+		write_file(FABUI_PATH . 'config/config.json', json_encode($dafault_config), 'w+');
+		shell_exec('sudo chmod 777 '.FABUI_PATH . 'config/config.json');
+		shell_exec('sudo chown www-data:www-data '.FABUI_PATH . 'config/config.json');	
+     }
 
 
 ?>

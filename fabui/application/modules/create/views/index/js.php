@@ -132,6 +132,8 @@
 	var startFromRecent = false;
 	var object;
 	var autostart_timer = 20;
+
+	var SOFT_EXTRUDER_MIN = 175;
 	
 		
 	$(document).ready(function() {
@@ -552,8 +554,8 @@ function manage_task_monitor(obj){
 
 
 function monitor(data){
-	
-	
+
+	if(data.print.hasOwnProperty('status')) handleTaskStatus(data.print.status);
 	
 	if (data.print.completed == 'True') {
 		print_finished = true;
@@ -738,8 +740,6 @@ function monitor(data){
 
 
 function finalize_print(){
-	
-	console.log("finalize print");
 	
 	_stop_monitor();
 	_stop_timer();
@@ -1156,7 +1156,7 @@ function initSliders() {
 		pips: {
 			mode: 'positions',
 			values: [0,20,40,60,80,100],
-			density: 10,
+			density: 4,
 			format: wNumb({})
 		}
 	});
@@ -1168,7 +1168,7 @@ function initSliders() {
 		pips: {
 			mode: 'positions',
 			values: [0,50,100],
-			density: 10,
+			density: 4,
 			format: wNumb({})
 		}
 	});
@@ -1180,7 +1180,7 @@ function initSliders() {
 		pips: {
 			mode: 'positions',
 			values: [0,20,40,60,80,100],
-			density: 10,
+			density: 4,
 			format: wNumb({})
 		}
 	});
@@ -1192,9 +1192,9 @@ function initSliders() {
 		connect: "lower",
 		range: {'min': 0, 'max' : <?php echo $max_temp > 0 ? $max_temp : 1; ?>},
 		pips: {
-			mode: 'positions',
-			values: [0,25,50,75,100],
-			density: 5,
+			mode: 'values',
+			values: [0, 175,<?php echo $max_temp ?>],
+			density: 4,
 			format: wNumb({
 				postfix: '&deg;'
 			})
@@ -1219,9 +1219,9 @@ function initSliders() {
 		connect: "lower",
 		range: {'min': 0, 'max' : 100 },
 		pips: {
-			mode: 'positions',
-			values: [0,25,50,75,100],
-			density: 5,
+			mode: 'values',
+			values: [0,50,100],
+			density: 4,
 			format: wNumb({
 				postfix: '&deg;'
 			})
@@ -1247,7 +1247,7 @@ function initSliders() {
 		pips: {
 			mode: 'positions',
 			values: [0,20,40,60,80,100],
-			density: 10,
+			density: 4,
 			format: wNumb({})
 		}
 	});
@@ -1285,12 +1285,19 @@ function initSliders() {
 function manageNozzleSlider(e){
 	
 	extruder_target = parseInt(e[0]);
-   	$("#label-temp1-target").html('' + parseInt(e[0]) + '&deg;C');
-   	$("#top-bar-nozzle-target").html(parseInt(e[0]));
+	if(extruder_target < SOFT_EXTRUDER_MIN) extruder_target = SOFT_EXTRUDER_MIN;
+	
+   	$("#label-temp1-target").html('' + extruder_target + '&deg;C');
+   	$("#top-bar-nozzle-target").html(extruder_target);
    	blockSliderExt = true;
 }
 
 function setNozzleTemp(e){
+
+	if ( parseInt(e[0]) < SOFT_EXTRUDER_MIN ) {
+		nozzle_slider.noUiSlider.set(SOFT_EXTRUDER_MIN);
+		return;
+	}
 	_do_action('temp1', parseInt(e[0]));
 }
 
@@ -1508,7 +1515,6 @@ function startCountDown(){
 }
 
 function countDown(){
-	
 	autostart_timer = autostart_timer - 1;
     $(".autostart-timer").html(autostart_timer);
         	
@@ -1517,4 +1523,30 @@ function countDown(){
     }
 }
 
+/**
+ * 
+ */
+function handleTaskStatus(status)
+{
+	switch(status){
+		case 'error':
+			handleStoppedTask();
+			break;
+	}
+}
+/**
+ * 
+ */
+function handleErrorTask()
+{
+	$.get('/temp/task_debug', function(data){
+		$('#debugModal').modal({
+				keyboard: false,
+				backdrop: 'static'
+		});
+		$("#modalDebugContent").html('<pre>' + data + '</pre>');
+		$("#debugModal").modal("show");
+	});
+	
+}
 </script>

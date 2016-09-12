@@ -1,5 +1,42 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version: 0.96 - 2016-09-12
+
+#### Make
+* Print
+	* Re-engineered and rewritten the entire printing library including the following improvements:
+		* printing performances
+		* printing quality
+		* printing affidability
+		* complete compatibility with multi-core systems ( Raspberry Pi 2, Raspberry Pi 3, ..)
+	* Minor bugfixes
+	* Updated gcode utilities for Cura 2.X
+* Scan
+	* Fixed bug on downloading files when scan process terminate
+	* Minor bugfixes
+
+#### Jog
+* Minor bugfixes
+
+#### Objectmanager
+* Fixed files visibility bug
+
+#### Maintenance
+* Added "Feeder Calibration" utility
+* Added "Probe Angle calibration" utility
+
+#### Settings
+* Hardware
+	* Removed "Extruder steps per unit E mode" field on "Custom settings". The value will be now managed trough "Feeder Calibration" utility
+
+#### Recovery
+* Install
+	* Added terms, conditions and security disclaimer
+* Flash Firmware
+	* Improved flash firmware utility page
+
+==================================================================
+
 ### Version: 0.954 - 2016-05-02 (hotifx)
 
 * Firmware
@@ -9,7 +46,7 @@
 	This allows to use some standard Gcode Posts processors instead of manually editing the code with pauses
 * Maintenance
 	* Head renamed in "Head installation"
-	* Spool rename in "Spool management"
+	* Spool renamed in "Spool management"
 * Settings
 	* Hardware
 		* Added tab "Print" for the parametric management of pre-heating temperatures

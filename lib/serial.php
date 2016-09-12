@@ -102,17 +102,20 @@ class Serial
 	 */
 	function deviceSet ($device)
 	{
+		
 		if ($this->_dState !== SERIAL_DEVICE_OPENED)
 		{
 			if ($this->_os === "linux")
 			{
 				if (preg_match("@^COM(\d+):?$@i", $device, $matches))
 				{
+					
 					$device = "/dev/ttyS" . ($matches[1] - 1);
 				}
 
 				if ($this->_exec("stty -F " . $device) === 0)
 				{
+					
 					$this->_device = $device;
 					$this->_dState = SERIAL_DEVICE_SET;
 					return true;
@@ -137,7 +140,7 @@ class Serial
 					return true;
 				}
 			}
-
+			
 			trigger_error("Specified serial port is not valid", E_USER_WARNING);
 			return false;
 		}

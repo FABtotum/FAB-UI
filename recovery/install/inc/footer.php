@@ -26,6 +26,7 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
     var ask_wifi_password = false;
     var wifi_password;
     var wifi_ssid;
+    var securityScrolled = false;
 
 	$(document).ready(function() {
 
@@ -154,51 +155,22 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 					$validator.focusInvalid();
 					return false;
 				} else {
-				    
+
+
 					$('#bootstrap-wizard-1').find('.form-wizard').children('li').eq(index - 1).addClass('complete');
 					$('#bootstrap-wizard-1').find('.form-wizard').children('li').eq(index - 1).find('.step').html('<i class="fa fa-check"></i>');
                    
-                   	
-                    if(index == 3){
-
-                        if(ask_wifi_password == true){
-                            
-                            $.SmartMessageBox({
-            					title : "<i class='fa fa-wifi'></i> Wifi password",
-            					content : "Please enter wifi password",
-            					buttons : "[Submit]",
-            					input : "password",
-            					placeholder : "password"
-            				}, function(ButtonPress, Value) {
-            					if(Value != ''){
-            						wifi_password = Value;
-            						ask_wifi_password = false;
-            						
-            						$("#net_password").val(wifi_password);
-            						$(".next").trigger('click');
-            						
-            					}
-                                return 0;
-
-            				});
-                            return false;
-                        }
-                     
-                      
+                   	if(index == 2){
+                       	if(!securityScrolled)
+                   			//$(".next").find('a').addClass('disabled');
+               			disable_button($(".next").find('a'));
+                   	}  	
+                   	else if(index == 3){   
                        $(".next").find('a').attr('style', 'cursor: pointer !important;');
                        $(".next").find('a').html('Install');		
-                       
-                        
                     }
-                    
-                    if(index == 4){
-
+                   	else if(index == 4){
                     	install();
-                    /*	
-                       $("#wizard-1").submit();
-                       $(".next").find('a').html('Installing...');
-                       $("a").addClass('disabled');
-                      */ 
                     }
 				}
 			},
@@ -210,23 +182,16 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
                 return false;
             }
 		});
+
+
+		$('#security').on('scroll', function(e) {
+			if($('.last-text').visible()){
+				enable_button($(".next").find('a'));
+	        	securityScrolled = true;
+			}
+	    })
 		
 		
-		
-		
-		function check_connection(){
-			
-			
-			$.ajax({
-		          url: "ajax/wifi.php",
-		          data:{ssid: wifi_ssid, password: wifi_password},
-		          type: "POST"
-		        }).done(function( html ) {
-		           
-		        });
-			
-			
-		}
 		
 		
 		
@@ -234,7 +199,8 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 function install(){
 
 	$(".next").find('a').html('<i class="fa fa-spinner fa-pulse"></i>');
-	$("a").addClass('disabled');
+	disable_button($(".next").find('a'));
+	disable_button($(".previous").find('a'));
 	
 	$.ajax({
 		type: "POST",
@@ -242,24 +208,25 @@ function install(){
 		dataType: 'json',
 		data: { first_name : $("#first_name").val(), last_name : $("#last_name").val(), email: $("#email").val(), password : $("#password").val(), net_password : $("#net_password").val(), net: '', ip_address: $("#ip_address").val() }
 	}).done(function( response ) {
-		document.location.href= 'http://169.254.1.' + $("#ip_address").val();
+		document.location.href = 'http://' +  location.host;
 	});
 	
-	
-	if($("#ip_address").val() != ip_last_num){
-		
-		console.log("aggiorno tra 60 secondi");
-		
-		setTimeout(function () {
-			document.location.href= 'http://169.254.1.' + $("#ip_address").val();
-		}, 60000);
-	}
-
-	 	
 }
 
 
 	});
+
+	function disable_button(element){
+		element.addClass('disabled');
+		element.prop("disabled",true);
+	}
+			
+			
+	function enable_button(element){
+		element.removeClass('disabled');
+		element.prop("disabled",false);
+	}
+	
 </script>
 </body>
 

@@ -48,8 +48,6 @@ class Create extends Module {
 			
 		} else {
 			$data['valid_head'] = in_array(get_head(), $this->_PRINT_VALID_HEADS);
-			
-			//$data['valid_head'] = $this -> layout -> get_max_temp() > 0;
 			$_task = $this -> tasks -> get_running('make', 'print');
 		}
 
@@ -372,8 +370,8 @@ class Create extends Module {
 
 		$filters['start_date'] = !isset($params['start_date']) || $params['start_date'] == '' ? date('d/m/Y', strtotime('today - 30 days')) : $params['start_date'];
 		$filters['end_date']   = !isset($params['end_date'])   || $params['end_date']   == '' ? date('d/m/Y', strtotime('today'))  : $params['end_date'];
-		$filters['type'] = isset($params['type']) ? $params['type'] : '';
-		$filters['status'] = isset($params['status']) ? $params['status'] : '';
+		$filters['type']       = isset($params['type']) ? $params['type'] : '';
+		$filters['status']     = isset($params['status']) ? $params['status'] : '';
 
 		$tasks = $this -> _get_make_tasks($filters);
 

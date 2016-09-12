@@ -51,12 +51,12 @@ if ( ! function_exists('create_default_config'))
 		
 		$dafault_config = array(
 			'color'         => array('r'=>255, 'g'=>255, 'b'=>255),
-			'safety'        => array('door'=>0, 'collision-warning'=>1),
+			'safety'        => array('door'=>1, 'collision-warning'=>1),
 			'switch'        => 0,
 			'feeder'        => array('disengage-offset'=> 2, 'show' => true),
-			'print'         => array('pre-heating' => array('extruder' => 150, 'bed' => 50)),
+			'print'         => array('pre-heating' => array('extruder' => 130, 'bed' => 40)),
 			'milling'       => array('layer-offset' => 12),
-			'e'             => 3048.1593,
+			//'e'             => 3048.1593,
 			'a'             => 177.777778,
 			'bothy'         => 'None',
 			'bothz'         => 'None',
@@ -67,7 +67,6 @@ if ( ! function_exists('create_default_config'))
 		);
 		
 		write_file(CONFIG_FOLDER . 'config.json', json_encode($dafault_config));
-        
      }
 	 
 }

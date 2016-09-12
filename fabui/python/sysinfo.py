@@ -18,7 +18,8 @@ serialconfig = ConfigParser.ConfigParser()
 serialconfig.read('/var/www/lib/serial.ini')
 
 
-open(config.get('task', 'lock_file'), 'w').close()
+open(config.get('task', 'lock_file'), 'w+').close()
+#os.chmod(config.get('task', 'lock_file'), 0777)
 
 '''#### SERIAL PORT COMMUNICATION ####'''
 serial_port = serialconfig.get('serial', 'port')

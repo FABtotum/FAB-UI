@@ -15,6 +15,7 @@ defined('LIB_PATH')      ? null : define("LIB_PATH",      WWW_PATH.'lib/');
 defined('LOCK_FILE')     ? null : define("LOCK_FILE",     WWW_PATH.'temp/LOCK');
 defined('INI_FILE')      ? null : define("INI_FILE",      LIB_PATH.'config.ini');
 defined('SERIAL_INI')    ? null : define("SERIAL_INI",    LIB_PATH.'serial.ini');
+defined('BUILD_PATH')    ? null : define("BUILD_PATH",    WWW_PATH.'build/');
 
 //===================================================================================================================================================
 /** SERIAL PORT CONSTANTS */
@@ -108,7 +109,7 @@ defined('INSTAGRAM_HASH_JSON') ? null : define("INSTAGRAM_HASH_JSON",      TEMP_
 defined('TWITTER_FEED_URL')  ? null : define("TWITTER_FEED_URL",      'http://www.fabtotum.com/twitter_feed.json');
 defined('TWITTER_FEED_JSON') ? null : define("TWITTER_FEED_JSON",      TEMP_PATH.'twitter.json');
 
-defined('BLOG_FEED_URL')  ? null : define("BLOG_FEED_URL",      'http://blog.fabtotum.com/feed/');
+defined('BLOG_FEED_URL')  ? null : define("BLOG_FEED_URL",      'http://www.fabtotum.com/feed/');
 defined('BLOG_FEED_XML')  ? null : define("BLOG_FEED_XML",      TEMP_PATH.'blog.xml');
 
 defined('FAQ_URL')  ? null : define("FAQ_URL", 'http://www.fabtotum.com/faq_new.json');

@@ -4,6 +4,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
+$multi_core = true;
+
 /** SAVE POST PARAMS */
 $_object_id   = $_POST['object_id'];
 $_file_id     = $_POST['file'];
@@ -142,14 +144,13 @@ shell_exec('sudo php '.SCRIPT_PATH.'/notifications.php &');
 /** CREATING TASK FILES */
 $_time               = time();
 $_destination_folder = TASKS_PATH.'print_'.$id_task.'_'.$_time.'/';
-
 $_monitor_file       = TEMP_PATH.'task_monitor.json';
 
 $_data_file          = $_destination_folder.'print_'.$id_task.'_'.$_time.'.data';
-
 $_trace_file         = TEMP_PATH.'task_trace';
 
-$_debug_file         = $_destination_folder.'print_'.$id_task.'_'.$_time.'.debug';
+//$_debug_file         = $_destination_folder.'print_'.$id_task.'_'.$_time.'.debug';
+$_debug_file         = TEMP_PATH.'task_debug';
 $_stats_file         = $_destination_folder.'print_'.$id_task.'_'.$_time.'_stats.json';
 $_attributes_file    = $_destination_folder.'print_'.$id_task.'_'.$_time.'_attributes.json';
 
@@ -167,6 +168,9 @@ chmod($_data_file, 0777);
 /** create print trace file */
 write_file($_trace_file, '', 'w');
 chmod($_trace_file, 0777);
+/** create debug file */
+write_file($_debug_file, '', 'w');
+chmod($_debug_file, 0777);
 /** create print stats file */
 write_file($_stats_file, '', 'w');
 chmod($_stats_file, 0777);
@@ -184,7 +188,9 @@ sleep(3);
 
 /** START PROCESS */
 if($_print_type == 'additive'){
-	$_command = 'sudo python '.PYTHON_PATH.'gpusher_fast.py "'.$_file['full_path'].'"  '.$_data_file.' '.$id_task.' --ext_temp '.intval($temperatures['extruder']).' --bed_temp '.intval($temperatures['bed']).' 2>'.$_debug_file.' > /dev/null & echo $!';
+	
+	$g_pusher = $multi_core ? 'gpusher_fast_multiproc.py' : 'gpusher_fast.py' ;
+	$_command = 'sudo python '.PYTHON_PATH.$g_pusher.' "'.$_file['full_path'].'"  '.$_data_file.' '.$id_task.' --ext_temp '.intval($temperatures['extruder']).' --bed_temp '.intval($temperatures['bed']).' 2>'.$_debug_file.' > /dev/null & echo $!';
 }else{
 	$_command = 'sudo python '.PYTHON_PATH.'g_mill.py "'.$_file['full_path'].'" '.$_data_file.' '.$id_task.' 2>'.$_debug_file.' > /dev/null & echo $!';
 }
@@ -192,11 +198,9 @@ if($_print_type == 'additive'){
 
 
 $_output_command = shell_exec ( $_command );
-$_print_pid      = intval(trim(str_replace('\n', '', $_output_command))) + 1;
-
-
+//$_print_pid      = intval(trim(str_replace('\n', '', $_output_command))) + 1;
 /** UPDATE TASKS ATTRIBUTES */
-$_attributes_items['pid']         =  $_print_pid;
+//$_attributes_items['pid']         =  $_print_pid;
 $_attributes_items['monitor']     =  $_monitor_file;
 $_attributes_items['data']        =  $_data_file;
 $_attributes_items['trace']       =  $_trace_file;
@@ -224,11 +228,16 @@ sleep(2);
 
 $_json_status = file_get_contents($_monitor_file, FILE_USE_INCLUDE_PATH);
 $status = json_encode($_json_status);
+$status_decoded = json_decode($_json_status, true);
 
 while($_json_status == ''){	
     $_json_status = file_get_contents($_monitor_file, FILE_USE_INCLUDE_PATH);
-    $status = json_encode($_json_status);   
+    $status = json_encode($_json_status);
+    $status_decoded = json_decode($_json_status, true);
 }
+
+$_attributes_items['pid'] = $status_decoded['pid'];
+file_put_contents($_attributes_file, json_encode($_attributes_items));
 
 header('Content-Type: application/json');
 echo minify(json_encode(array('response' => true, 'status'=>$status, 'id_task' => $id_task, 'monitor_file'=>$_monitor_file, 'data_file'=>$_data_file, 'trace_file' => $_trace_file, 'command' => $_command, 'uri_monitor'=>$_uri_monitor, 'uri_trace' => $_uri_trace, "stats" => $_stats_file, "folder"=>$_destination_folder, 'attributes_file'=>$_attributes_file)));

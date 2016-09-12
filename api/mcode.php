@@ -51,7 +51,8 @@ if($gcode != ''){
 		$serial->serialflush();
 		$serial->deviceClose();
 		
-		echo $reply;		
+		header('Content-Type: application/json; charset=utf-8');
+		echo $_GET['callback'].'('.json_encode(array('command' => $_GET['code'], 'output' => $reply)).')';
 		
 	}
 

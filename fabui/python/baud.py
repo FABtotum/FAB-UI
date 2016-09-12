@@ -5,6 +5,7 @@ import os
 ''' Set the highest baudrate available '''
 
 def testBaud(port, baud_rate):
+    #print "Test baud: ", baud_rate
     ser = serial.Serial(port, baud_rate, timeout=0.5)
     ser.flushInput()
     ser.write("G0\r\n")

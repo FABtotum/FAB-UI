@@ -1,7 +1,7 @@
 <?php
 ini_set( 'error_reporting', E_ALL );
-			ini_set( 'display_errors', true );
-            error_reporting(E_ALL);
+ini_set( 'display_errors', true );
+error_reporting(E_ALL);
 /**
  * @author FABTeam Dev Team - Krios Mane
  * 
@@ -214,6 +214,11 @@ class JogFactory {
 			$_units = json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE);
 		}
 		
+		if(isset($_units['e']) || $_units['e'] == ''){
+			$eeprom = json_decode(shell_exec('sudo python '.PYTHON_PATH.'read_eeprom.py'), true);
+			$_units['e']  = $eeprom['steps_per_unit']['e'];
+		}
+		
 		$_mode['a'] = 'M92 E'.$_units['a'].PHP_EOL.'G92 E0';
 		$_mode['e'] = 'M92 E'.$_units['e'].PHP_EOL.'G92 E0';
 		
@@ -388,7 +393,6 @@ class JogFactory {
 	public function secure($mode){
 		
 		$command = $mode == true ? 'M730'.PHP_EOL.'M999'.PHP_EOL.'M728'.PHP_EOL : 'M730'.PHP_EOL.'M731'.PHP_EOL.'M999'.PHP_EOL.'M728'.PHP_EOL;
-		
 		$this->_command = $command;
 		$this -> exec();
 		return $this -> returnResponse();

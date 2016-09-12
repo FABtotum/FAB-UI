@@ -5,6 +5,7 @@
 class Updates extends Module {
 	/* */
 	public function index(){
+		
 		//load helper
 		$this->load->helper('smart_admin_helper');
 		$this->load->helper('update_helper');

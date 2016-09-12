@@ -18,7 +18,7 @@ $_feeder_disengage                      = isset($_POST['feeder_disengage_feeder'
 $_milling_sacrificial_layer_offset      = $_POST['milling_sacrificial_layer_offset'];
 
 $_feeder_extruder_steps_per_unit_a_mode = $_POST['feeder_extruder_steps_per_unit_a_mode'];
-$_feeder_extruder_steps_per_unit_e_mode = $_POST['feeder_extruder_steps_per_unit_e_mode'];
+//$_feeder_extruder_steps_per_unit_e_mode = $_POST['feeder_extruder_steps_per_unit_e_mode'];
 
 $_print_preheating_extruder             = $_POST['print_preheating_extruder'];
 $_print_preheating_bed                  = $_POST['print_preheating_bed'];
@@ -61,7 +61,7 @@ $_units['safety']['collision-warning']          = $_custom_units['safety']['coll
 $_units['switch']                               = $_custom_units['switch']  = $_switch;
 $_units['feeder'] ['disengage-offset']          = $_custom_units['feeder']['disengage-offset'] = $_feeder_disengage;
 $_units['milling']['layer-offset']              = $_custom_units['milling']['layer-offset'] = $_milling_sacrificial_layer_offset;
-$_units['e'] 		                            = $_feeder_extruder_steps_per_unit_e_mode;
+//$_units['e'] 		                            = $_feeder_extruder_steps_per_unit_e_mode;
 $_units['a'] 		                            = $_feeder_extruder_steps_per_unit_a_mode;
 $_units['bothy']	                            = $_custom_units['bothy'] = $_both_y_endstops;
 $_units['bothz']	                            = $_custom_units['bothz'] = $_both_z_endstops;

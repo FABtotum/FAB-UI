@@ -205,7 +205,6 @@ class Maintenance extends Module {
 		$output        = shell_exec('sh /var/www/fabui/script/bash/transfer_rate.sh wlan0');
         $data['wlan_rates'] = explode(' ', $output);
 		
-		
 		// == STORAGE
 		$output               = shell_exec('df -H');
 		$data['table_rows']   = preg_split('/$\R?^/m', $output);
@@ -213,9 +212,11 @@ class Maintenance extends Module {
 		$data['table_rows']   = array_splice($data['table_rows'], 1);
 		$data['table_header'] = array_splice($data['table_header'], 0, count($data['table_header']) - 1);
 		
+		//== OS INFO
+		$data['os_info'] = shell_exec('uname -a');
 		
 		// == FABTOTUM INFO
-		$data['fabtotum_info'] = json_decode(shell_exec('python '.PYTHONPATH.'sysinfo.py'), true);
+		$data['fabtotum_info'] = json_decode(shell_exec('sudo python '.PYTHONPATH.'sysinfo.py'), true);
 		$data['unit_configs']  = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
 		
 		$widget_content = $this -> load -> view('systeminfo/widget', $data, TRUE);
@@ -225,10 +226,41 @@ class Maintenance extends Module {
 		
 		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/bootstrap-progressbar/bootstrap-progressbar.min.js', 'comment' => ''));
 		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('systeminfo/js', $data, TRUE), 'comment' => ''));
-		$this -> layout -> view('systeminfo/index', $data);
+		$this -> layout -> view('systeminfo/index', $data);	
+	}
+	
+	public function feederCalibration()
+	{
+		$this->config->load('fabtotum', TRUE);
+		$this->load->helper('form');
+		$this->load->helper('smart_admin_helper');
+		
+		$data['eeprom'] = json_decode(shell_exec('sudo python '.PYTHONPATH.'read_eeprom.py'), true);
+		
+		$widget_config['data-widget-icon'] = 'icon-fab-e';
+		$widget = widget('feederCalibration' . time(), 'Feeder Calibration', $widget_config, $this->load->view('feedercalibration/widget', $data, TRUE), false, false, false);
+		$data['widget'] = $widget;
+		
+		$this->layout->add_js_in_page(array('data' => $this->load->view('feedercalibration/js', $data, TRUE), 'comment' => ''));
+		$this->layout->view('feedercalibration/index', $data);
+	}
+	
+	/**
+	 * set probe angle calibration
+	 */
+	public function probeAngleCalibration()
+	{	
+		$this->load->helper('form');
+		$this->load->helper('smart_admin_helper');
+		
+		$data['eeprom'] = json_decode(shell_exec('sudo python '.PYTHONPATH.'read_eeprom.py'), true);
 
+		$widget_config['data-widget-icon'] = '';
+		$widget = widget('probeAngleCalibration' . time(), 'Probe Angle Calibration', $widget_config, $this->load->view('probeanglecalibration/widget', $data, TRUE), false, false, false);
+		$data['widget'] = $widget;
 		
-		
+		$this->layout->add_js_in_page(array('data' => $this->load->view('probeanglecalibration/js', $data, TRUE), 'comment' => ''));
+		$this->layout->view('probeanglecalibration/index', $data);
 	}
 
 }

@@ -4,14 +4,15 @@ set_time_limit(0);
 require_once '/var/www/lib/php_web_socket.php';
 require_once '/var/www/lib/web_socket_server_factory.php';
 
-$Factory = new WebSocketServerFactory();
+//$Factory = new WebSocketServerFactory();
 
 // when a client sends data to the server
 function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 	global $Server;
-	global $Factory;
-
+	//global $Factory;
+	$Factory = new WebSocketServerFactory();
+	
 	//$ip = long2ip($Server -> wsClients[$clientID][6]);
 
 	// check if message length is 0

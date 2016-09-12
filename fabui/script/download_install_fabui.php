@@ -112,7 +112,7 @@ if($do_update){
 	/** CHECK IF EXIST FOLDER FABUI FOR THE UPDATE */
 	if(file_exists($_folder.'temp/fabui')){
 		
-		$_command_copy = 'cp -rvf '.$_folder.'temp/fabui /var/www/';
+		$_command_copy = 'sudo cp -rvf '.$_folder.'temp/fabui /var/www/';
 		shell_exec($_command_copy);
 		
 	}

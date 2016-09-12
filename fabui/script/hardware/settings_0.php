@@ -16,10 +16,8 @@ $configs = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE)
 //set configs
 $configs['hardware']['id'] = 1;
 $configs['feeder']['show'] = true;
-$configs['e'] = E_MODE;
+//$configs['e'] = E_MODE;
 $configs['a'] = A_MODE;
-
 file_put_contents(FABUI_PATH.'config/config.json', json_encode($configs));
-
 
 ?>

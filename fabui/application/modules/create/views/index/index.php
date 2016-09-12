@@ -86,3 +86,20 @@
 		</div>
 	</div>
 </div>
+<!-- DEBUG MODAL -->
+<div class="modal fade" id="debugModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel"><i class="fa fa-times-circle text-danger "></i> Ooops, something went wrong!</h4>
+			</div>
+				<div class="modal-body custom-scroll terms-body" id="debugModalBody">
+					<p>Details:<p>
+					<div id="modalDebugContent"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>

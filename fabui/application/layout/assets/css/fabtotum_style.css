@@ -163,8 +163,8 @@
 
 .noUi-connect {
 		box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-		font-weight: 700;
-		text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+		/*font-weight: 700;
+		text-shadow: 0 -1px 0 rgba(0,0,0,.25);*/
 		background-image: url(/fabui/application/layout/assets/img/pattern/overlay-pattern.png);
 		background-color: #a65858 !important;
 }
@@ -182,6 +182,9 @@
 	background: #6c6c6c !important;
 }   
 
+.noUi-marker-horizontal.noUi-marker {
+	width: 1px !important;
+}
 
 .top-bar-temperatures {
 	

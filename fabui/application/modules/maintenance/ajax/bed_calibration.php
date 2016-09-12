@@ -74,19 +74,13 @@ if(is_array($_response)){ // if there is a valid response
 		</div>
 	<?php endif; ?>
 	
-<?	
+<?php	
 }else{ //else there is something wrong need to do it again
-?>
 
-	<h4 class="text-center">
+ echo '<h4 class="text-center">
 		Well this is embarassing, during measurements something went wrong. Try again
-	</h4>
-
-<?
-
+	</h4>';
 }
-
-
 
 function elaborate_screw($data){
 	
@@ -103,7 +97,6 @@ function elaborate_screw($data){
 	$degrees      = roundUpToAny(round((floatval(floatval('0.'.$decimals) * 360))));
 	
 	$direction   = $s_data  > 0 ? 'right' : 'left';
-	
 	return array('t_value' =>$t_value, 'turns'=>array('times'=>$turns_number, 'degrees'=>$degrees), 'direction'=>$direction, 'color'=>get_color($s_data));
 	
 }
@@ -133,8 +126,7 @@ function get_results($data){
 	$counter = 1;
 	
 	foreach($data as $screw){
-		
-		
+
 		$trs .= '<tr class="'.get_row_color($screw['color']).'">';
 		
 		$trs .= '<td class="text-center"><span class="badge bg-color-'.$screw['color'].'">'.$counter.'</span></td>';
@@ -144,10 +136,7 @@ function get_results($data){
 		
 		$counter ++;
 	}
-	
-	
 	return $trs;
-	
 }
 
 function get_row_color($value){
@@ -173,137 +162,21 @@ function get_instructions($screw){
 	
 	$rotation_section = 'following this rotation sense <i class="fa fa-rotate-'.$screw['direction'].'"></i>';
 	
-	
 	if($screw['turns']['times'] < 1 ){
 		return 'Turn for '.$screw['turns']['degrees'].' degrees, '.$rotation_section;
 	}
 	
-	
 	if($screw['turns']['times'] > 0){
 		$times_label = $screw['turns']['times'] == 1 ? 'time' : 'times' ;
 		$degrees_section = '';
-		
-		
 		if($screw['turns']['degrees'] > 0){
-			
 			$degrees_section =  ' and '.$screw['turns']['degrees'].' degrees';
-		}
-		
+		}	
 		return 'Turn for '.$screw['turns']['times'].' '.$times_label.$degrees_section.' '.$rotation_section;
 	}
-	
 }
-
 
 function roundUpToAny($n,$x=5) {
     return round(($n+$x/2)/$x)*$x;
 }
-
-/***
- * 
- *  FUNCTIONS
- * 
- 
-function get_row_color($value) {
-
-	$value = abs(floatval($value));
-
-	if ($value > 0.2) {
-		return 'danger';
-	}
-
-	if (($value <= 0.2) && ($value > 0.1)) {
-		return 'warning';
-	}
-
-	if ($value <= 0.1) {
-		return 'success';
-	}
-
-}
-
-function get_color($value) {
-
-	global $greens;
-
-	$value = abs(floatval($value));
-
-	if ($value > 0.2) {
-		return 'bg-color-red';
-	}
-
-	if (($value <= 0.2) && ($value > 0.1)) {
-		return 'bg-color-orange';
-	}
-
-	if ($value <= 0.1) {
-		$greens++;
-		return 'bg-color-green';
-	}
-}
-
-// - senso orario
-// + senso antioario
-
-function get_direction($value) {
-
-
-	$class = '';
-	
-	if ($value > 0) {
-		$class = 'fa-rotate-right';
-	} else {
-		$class = 'fa-rotate-left';
-	}
-	
-	return '- Direction:  <i class="fa '.$class.'"></i>';
-
-}
-
-
-function get_rotation_number($value){
-			
-	$value = abs(floatval($value));
-	
-	if($value < 0.1){
-		return "Well done";
-	}
-	
-	 
-	$temp = explode('.', $value);
-	
-	$turns_number = $temp[0];
-	
-	$degrees = round((floatval(floatval('0.'.$temp[1]) * 360)));
-	
-	
-	if($turns_number >= 1){
-		
-		$label_time = $turns_number > 1 ? 'times' : 'time';
-		
-		$message = "Turn ".$turns_number." ".$label_time;
-		
-		if($degrees > 0){
-			
-			$message .= ' and '.$degrees.' degrees';
-			
-		}
-		 
-				
-	}else{
-		
-		
-		$message = 'Turn for ' . $degrees . ' degrees';
-		
-		if($degrees == 0){
-		
-			$message = '';
-				
-		}
-		
-	}
-	
-	return $message;
-	
-} 
-*/
+?>

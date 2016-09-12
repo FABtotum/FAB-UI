@@ -50,7 +50,7 @@ $configs = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE)
 //set configs
 $configs['hardware']['id'] = HARDWARE_ID;
 $configs['feeder']['show'] = SHOW_FEEDER;
-$configs['e']              = E_MODE;
+//$configs['e']              = E_MODE;
 $configs['a']              = A_MODE;
 
 //write version

@@ -91,6 +91,10 @@ function update_task($tid, $status, $attributes = '') {
  *
  **/
 function finalize_print($tid, $status) {
+	
+	
+	//some kind of a workaround
+	if($status == 'printing') $status = 'stopped';
 
 	//LOAD DB
 	$db = new Database();
@@ -99,6 +103,7 @@ function finalize_print($tid, $status) {
 	$task = $task[0];
 
 	//GET TASK ATTRIBUTES
+	if(!file_exists($task['attributes'])) return;
 	$attributes = json_decode(file_get_contents($task['attributes']), TRUE);
 
 	$print_type = $attributes['print_type'];
@@ -131,7 +136,7 @@ function finalize_print($tid, $status) {
 	update_task($tid, $status, file_get_contents($task['attributes']));
 
 	$_macro_end_print_response = TEMP_PATH . 'macro_response';
-	$_macro_end_print_trace = TEMP_PATH . 'macro_trace';
+	$_macro_end_print_trace    = TEMP_PATH . 'macro_trace';
 
 	$end_macro = 'end_print_additive';
 
@@ -142,17 +147,16 @@ function finalize_print($tid, $status) {
 	chmod($_macro_end_print_response, 0777);
 
 	//EXEC END MACRO
-	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
-
-	sleep(2);
-
+	if(!$reset){
+		shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
+		sleep(2);
+	}
+	
 	// SEND MAIL
 	if (isset($attributes['mail']) && $attributes['mail'] == true && $status == 'performed') {
-
 		$user = $db -> query('select * from sys_user where id=' . $task['user']);
 		$user = $user[0];
 		send_mail($attributes, $user);
-
 	}
 
 	$db -> close();
@@ -162,8 +166,9 @@ function finalize_print($tid, $status) {
 		include '/var/www/fabui/script/boot.php';
 	}
 
-	shell_exec('sudo rm -rf ' . $attributes['folder']); 
-
+	if ($status == 'performed') {
+		shell_exec('sudo rm -rf ' . $attributes['folder']); 
+	}
 }
 
 function finalize_mill($tid, $status) {
@@ -204,7 +209,7 @@ function finalize_mill($tid, $status) {
 	$_macro_end_print_response = TEMP_PATH . 'macro_response';
 	$_macro_end_print_trace = TEMP_PATH . 'macro_trace';
 
-	$end_macro = 'end_print_additive';
+	$end_macro = 'end_print_subtractive';
 
 	write_file($_macro_end_print_trace, '', 'w');
 	chmod($_macro_end_print_trace, 0777);
@@ -216,8 +221,9 @@ function finalize_mill($tid, $status) {
 	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
 
 	$db -> close();
-	shell_exec('sudo rm -rf ' . $attributes['folder']); 
-
+	if ($status == 'performed') {
+		shell_exec('sudo rm -rf ' . $attributes['folder']); 
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -478,7 +484,7 @@ function finalize_general($tid, $type, $status) {
 	//GET TASK
 	$task = $db -> query('select * from sys_tasks where id=' . $tid);
 	$task = $task[0];
-
+	
 	//GET TASK ATTRIBUTES
 	$attributes = json_decode($task['attributes'], TRUE);
 	$db -> close();
@@ -559,6 +565,9 @@ function finalize_scan($tid, $type, $status) {
 		$_data_file['note'] = 'Cloud data file obtained by scanning in ' . ucfirst($attributes['mode_name']) . ' mode on ' . date('l jS \of F Y h:i:s A');
 
 		$id_file = $db -> insert('sys_files', $_data_file);
+		
+		//if asc folder doesn't exists
+		if(!file_exists($_data_file['file_path'])) mkdir($_data_file['file_path'], 0777);
 
 		/** MOVE ASC FILE TO UPLOAD/ASC */
 		rename($attributes['folder'] . $attributes['pprocess_file'], $_data_file['full_path']);

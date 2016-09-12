@@ -153,10 +153,6 @@ function safety() {
 }
 
 function secure(mode) {
-
-	if (SOCKET_CONNECTED) {
-		SOCKET.send('message', '{"name": "secure", "data":{"mode":' + mode + ' } }');
-	} else {
 		IS_MACRO_ON = true;
 		$.ajax({
 			type : "POST",
@@ -165,13 +161,10 @@ function secure(mode) {
 				mode : mode
 			},
 			dataType : 'json'
-		}).done(function(response) {
-			EMERGENCY = false;
-			IS_MACRO_ON = false;
-		});
-
-	}
-
+	}).done(function(response) {
+		EMERGENCY = false;
+		IS_MACRO_ON = false;
+	});
 }
 
 function set_tasks(data) {
@@ -473,15 +466,21 @@ function shutdown() {
 	clearInterval(idleInterval);
 	
 	$.get("/fabui/application/modules/controller/ajax/shutdown.php", function(){
-		setTimeout(function() {
-			waitTitle('Now you can switch off the power');
-			showShutdownImage();
-			closeWait();
-			IS_MACRO_ON = false;
-		}, 15000);
-	});
+		timeoutShutdown();
+	}).fail(function() {
+    	timeoutShutdown();
+  	});;
 }
 
+function timeoutShutdown()
+{
+	setTimeout(function() {
+		waitTitle('Now you can switch off the power');
+		showShutdownImage();
+		closeWait();
+		IS_MACRO_ON = false;
+	}, 15000);
+}
 
 function showShutdownImage(){
 	
@@ -524,6 +523,16 @@ function showShutdownImage(){
 	
 }
 
+
+function timeoutRestart()
+{
+	waitContent("Restarting please wait...");
+	setTimeout(function() {
+		IS_MACRO_ON = false;
+		document.location.href = '/fabui/login/out';
+	}, 85000);
+}
+
 function restart() {
 	
 	IS_MACRO_ON = true;
@@ -534,12 +543,10 @@ function restart() {
 	clearInterval(idleInterval);
 	
 	$.get("/fabui/application/modules/controller/ajax/restart.php", function(){
-		waitContent("Restarting please wait...");
-		setTimeout(function() {
-			IS_MACRO_ON = false;
-			document.location.href = '/fabui/login/out';
-		}, 85000);
-	});
+		timeoutRestart();
+	}).fail(function() {
+    	timeoutRestart();
+  	});
 }
 
 /** CHECK FOR AVAILABLE UPDATES */
@@ -994,7 +1001,9 @@ function jog_make_call_ws(func, value) {
 
 }
 
-function jog_make_call_ajax(func, value){
+function jog_make_call_ajax(func, value, callback){
+	
+	callback = callback || '';
 	
 	var data = {}
 	data['function'] = func;
@@ -1008,7 +1017,11 @@ function jog_make_call_ajax(func, value){
 		url: '/fabui/application/modules/jog/ajax/exec.php',
 		data: data,
 		dataType: 'json'
-	}).done(function( data ) {});		
+	}).done(function( data ) {
+		
+		if(callback != '') callback(data);
+		
+	});		
 }
 
 

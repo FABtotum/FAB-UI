@@ -41,12 +41,14 @@
 						</div>
 						
 						<div class="row custom-settings">
+							<!-- 
 							<section class="col col-3">
 								<label class="label">Extruder steps per unit E mode</label>
 								<label class="input">
 									<input type="text" id="hw-feeder-extruder-steps-per-unit-e" name="hw-feeder-extruder-steps-per-unit-e" placeholder="" value="<?php echo $hw_feeder_extruder_steps_per_unit_e_mode; ?>">
 								</label>
 							</section>
+							 -->
 							<section class="col col-3">
 								<label class="label">Extruder steps per unit A mode</label>
 								<label class="input">
@@ -64,7 +66,7 @@
 						
 						<section class="custom-settings">
 							<label class="label">Custom overrides</label>
-							<label class="textarea"> <textarea rows="8" name="custom_overrides" id="custom_overrides"><?php echo $custom_overrides; ?></textarea> </label>
+							<label class="textarea"> <textarea rows="8" name="custom_overrides" id="custom_overrides" style="text-transform: uppercase;"><?php echo $custom_overrides; ?></textarea> </label>
 						</section>
 						
 							

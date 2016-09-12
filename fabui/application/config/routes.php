@@ -52,12 +52,14 @@ $route['plugin/index']             = "plugin";
 $route['plugin/(:any)']            = "$1";
 
 /** maintenance route */
-$route['maintenance/4-axis']            = "maintenance/fourthaxis";
-$route['maintenance/self-test']         = "maintenance/selftest";
-$route['maintenance/bed-calibration']   = "maintenance/bedcalibration";
-$route['maintenance/probe-calibration'] = "maintenance/probecalibration";
-$route['maintenance/first-setup']       = "maintenance/firstsetup";
-$route['maintenance/system-info']       = "maintenance/systeminfo";
+$route['maintenance/4-axis']             = "maintenance/fourthaxis";
+$route['maintenance/self-test']          = "maintenance/selftest";
+$route['maintenance/bed-calibration']    = "maintenance/bedcalibration";
+$route['maintenance/probe/length-calibration']  = "maintenance/probecalibration";
+$route['maintenance/probe/angle-calibration']  = "maintenance/probeAngleCalibration";
+$route['maintenance/first-setup']        = "maintenance/firstsetup";
+$route['maintenance/system-info']        = "maintenance/systeminfo";
+$route['maintenance/feeder-calibration'] = "maintenance/feederCalibration";
 
 //$route['settings/set-eth']    = "settings/seteth";
 //$route['settings/set-wifi']   = "settings/setwifi";

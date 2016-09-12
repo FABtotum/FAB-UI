@@ -1,19 +1,21 @@
 <?php
-
+//
 $make_sons[] = array('name' => 'print', 'label'=>'Print', 'menu' => TRUE, 'icon' => '<i class="icon-fab-print fa-lg fa-fw"></i>');
 $make_sons[] = array('name' => 'mill',  'label'=>'Mill',  'menu' => TRUE, 'icon' => '<i class="icon-fab-mill fa-lg fa-fw"></i>');
 $make_sons[] = array('name' => 'scan',  'label'=>'Scan',  'menu' => TRUE, 'icon' => '<i class="icon-fab-scan fa-lg fa-fw"></i>');
 $make_sons[] = array('name' => 'history', 'label'=>'History', 'menu' => TRUE, 'icon' => '<i class="fa fa-lg fa-fw fa-history"></i>');
 
+$_probe_sons[] = array('name' => 'length-calibration', 'label'=> 'Lenght Calibration',   'icon' => '<i class="fa fa-lg fa-fw fa-arrows-v"></i>');
+$_probe_sons[] = array('name' => 'angle-calibration',  'label'=> 'Angle Calibration',   'icon' => '');
 
 // maintenance sub-items menu
-$_maintenance_sons[] = array('name' => 'head',              'label'=> 'Head',              'icon' => '<i class="fa fa-lg fa-fw  fa-toggle-down"></i>');
 $_maintenance_sons[] = array('name' => 'head',              'label'=> 'Head installation',              'icon' => '<i class="fa fa-lg fa-fw  fa-toggle-down"></i>');
 $_maintenance_sons[] = array('name' => 'spool',             'label'=> 'Spool management',             'icon' => '<i class="fa fa-lg fa-fw  fa-circle-o-notch"></i>');
 $_maintenance_sons[] = array('name' => 'feeder',            'label'=> 'Feeder',            'icon' => '<i class="fa fa-lg fa-fw  fa-cog"></i>');
 $_maintenance_sons[] = array('name' => '4-axis',            'label'=> '4th Axis',          'icon' => '<i class="fa fa-lg fa-fw  fa-arrows-h"></i>');
 $_maintenance_sons[] = array('name' => 'bed-calibration',   'label'=> 'Bed Calibration',   'icon' => '<i class="fa fa-lg fa-fw  fa-arrows-h"></i>');
-$_maintenance_sons[] = array('name' => 'probe-calibration', 'label'=> 'Probe Calibration', 'icon' => '<i class="fa fa-lg fa-fw fa-crosshairs"></i>');
+$_maintenance_sons[] = array('name' => 'probe', 'label'=> 'Probe', 'icon' => '<i class="fa fa-lg fa-fw fa-level-down"></i>', 'sons'=> $_probe_sons);
+$_maintenance_sons[] = array('name' => 'feeder-calibration','label'=> 'Feeder Calibration','icon' => '<i class="fab-lg fab-fw icon-fab-e"></i>', );
 //$_maintenance_sons[] = array('name' => 'self-test',         'label'=> 'Self Test',         'icon' => '<i class="fa fa-lg fa-fw  fa-dashboard"></i>');
 $_maintenance_sons[] = array('name' => 'first-setup',       'label'=> 'First Setup',       'icon' => '<i class="fa fa-lg fa-fw  fa-magic"></i>');
 $_maintenance_sons[] = array('name' => 'system-info',       'label'=> 'System Info',       'icon' => '<i class="fa fa-lg fa-fw  fa-info-circle"></i>');

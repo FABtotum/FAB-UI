@@ -213,20 +213,10 @@ class CreateFactory {
 
 	public function stop() {
 		
-		/*
-		if ($this -> _action == 'stop' && ($this -> _progress >= 0 && $this -> _progress <= 0.1)) {
-			//shell_exec('sudo kill '.$_pid);
-			shell_exec('sudo php ' . SCRIPT_PATH . 'finalize.php ' . $this -> _id_task . ' print stopped');
-		}
-		*/
-		
-		if($this -> _action == 'stop' && $this->_type != 'additive'){
-			
+		if($this -> _action == 'stop' && $this->_type != 'additive'){	
 			$task_type = 'mill';
-			
 			shell_exec('sudo php ' . SCRIPT_PATH . 'finalize.php ' . $this -> _id_task . ' '.$task_type.' stopped');
 		}
-		
 	}
 
 	public function update() {

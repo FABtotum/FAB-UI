@@ -345,8 +345,8 @@ function setEthIP($ip) {
 
 function setEthernet($ip){
 	
-	 $response = shell_exec('sh /var/www/fabui/script/bash/set_ethernet.sh "'.$ip.'" ');
-	 return $reponse;
+	 $response = shell_exec('sudo sh /var/www/fabui/script/bash/set_ethernet.sh "'.$ip.'" ');
+	 return $response;
 	 
 }
 
@@ -356,7 +356,7 @@ function setEthernet($ip){
  */
 function setWifi($ssid, $password, $type = "WPA") {
 	
-	shell_exec('bash /var/www/fabui/script/bash/set_wifi.sh "'.$ssid.'" "'.$password.'"');
+	shell_exec('sudo bash /var/www/fabui/script/bash/set_wifi.sh "'.$ssid.'" "'.$password.'"');
 	$info = wlan_info();
 	return $info['ssid'] == $ssid;	
 }
@@ -521,7 +521,7 @@ function eth_info(){
 
 function disconnectWifi(){
 	
-	shell_exec('bash /var/www/fabui/script/bash/disconnect_wifi.sh');
+	shell_exec('sudo bash /var/www/fabui/script/bash/disconnect_wifi.sh');
 	$info = wlan_info();
 	return $info['ssid'] == '';
 }

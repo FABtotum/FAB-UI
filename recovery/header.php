@@ -14,7 +14,6 @@
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-production-plugins.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-production.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-skins.min.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/demo.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/font-fabtotum.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/js/plugin/magnific-popup/magnific-popup.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/fonts.css">

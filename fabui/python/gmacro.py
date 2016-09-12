@@ -316,6 +316,12 @@ elif preset=="end_print_additive":
     #macro("G90","ok",100,"Set Absolute movement",0.1,verbose=False)
     #macro("G90","ok",2,"Set Absolute movement",1)
     #macro("G0 X210 Y210 Z200 F10000","ok",100,"Moving to safe zone",0.1,verbose=False) #right top, normally Z=240mm
+    #macro("M220 S100","ok",1,"Reset speed override",0.1)
+    #macro("G91","ok",1,"Set relative coordinates",0.1, verbose=False)
+    #macro("G0 Z+1 E-5 F1000","ok",1,"Away from nozzle",0.1,verbose=False)
+    macro("G90","ok",2,"Set Absolute movement",0.1,verbose=False)
+    macro("G27 Z0","ok",30,"Lowering the plane",0.1,verbose=False)
+    #macro("G0 X210 Y210 F2500","ok",10,"Set Absolute movement",0.1,verbose=False)
     macro("M104 S0","ok",50,"Shutting down Extruder",1)
     macro("M140 S0","ok",50,"Shutting down Heated Bed",1)
     macro("M220 S100","ok",20,"Reset Speed factor override",0.1)

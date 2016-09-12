@@ -1,4 +1,4 @@
-<?php
+<?php 
 error_reporting(E_ALL);
 ini_set('error_reporting', E_ALL);
 
@@ -6,136 +6,43 @@ include '/var/www/lib/config.php';
 include '/var/www/lib/utilities.php';
 include '/var/www/lib/serial.php';
 
-$fw_file = '/var/www/build/Marlin.cpp.hex';
-$exists = file_exists($fw_file);
+//local fw file
+$local_file = BUILD_PATH.'Marlin.cpp.hex';
+$response = '';
 
-
-
-
-
-//set permissions
-shell_exec('sudo chmod 0777 /var/www/build -R');
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if($_SERVER['REQUEST_METHOD'] == 'POST'){ //if is post call	
 	
-	
-	
-
-	if ($_POST['flash'] == 'local') {
-		$command = 'sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:' . $fw_file . ':i';
-		$response_flash = shell_exec($command);
-		sleep(10);
-		shell_exec('sudo python '.PYTHON_PATH.'baud.py');
-		$start_up = shell_exec('sudo python /var/www/fabui/python/gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log');
-		sleep(10);
-		include '/var/www/fabui/script/boot.php';
-		sleep(2);
-
-		if (strpos($response_flash, 'done with autoreset') !== false) {
-			$alert['type'] = 'success';
-			$alert['messsage'] = 'FABlin Firmware flashed correctly';
-		} else {
-			$alert['type'] = 'danger';
-			$alert['messsage'] = 'Oops an error occured, try to flash again';
-		}
+	$flash_type = $_POST['flash'];
+	switch($flash_type){
+		case 'local':
+			$response = flash_local();
+			break;
+		case 'remote':
+			if(is_internet_avaiable()) $response = flash_remote();
+			break;
+		default:
+			break;
 	}
-
-	if ($_POST['flash'] == 'remote') {
-		
-		if (is_internet_avaiable()) {
-			
-			$_folder = '/var/www/build/';
-			
-			
-			$_marlin_remote_version = $_POST['version'];
-			
-			$_file_name = $_folder.MARLIN_DOWNLOAD_FILE;
-			
-			shell_exec('sudo rm -r '.$_file_name);
-			
-			$_url       = MARLIN_DOWNLOAD_URL.$_marlin_remote_version.'/'.MARLIN_DOWNLOAD_FILE;
-			
-			$_target_file = fopen( $_file_name, 'w+') or die("can't open file");
-		    $start = time();
-		    $ch = curl_init();
-		    curl_setopt($ch, CURLOPT_URL, $_url);
-		    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		    //curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, 'progress');
-		    //curl_setopt($ch, CURLOPT_NOPROGRESS, false); // needed to make progress function work
-		    curl_setopt($ch, CURLOPT_HEADER, 0);
-		    
-		    curl_setopt($ch, CURLOPT_BUFFERSIZE,64000);
-		    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		    curl_setopt($ch, CURLOPT_FILE, $_target_file );
-		   
-		    $html  = curl_exec($ch);
-		    curl_close($ch);
-		    
-		    
-			/** LOG FLASH  */
-			$log = TEMP_PATH.'flash_'.time().'.log';
-			write_file($log, '', 'w');
-			chmod($log, 0777);
-			
-			
-			//set permissions
-			shell_exec('sudo chmod 0777 '.$_file_name);
-			
-		   	$_command = 'sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:'.$_file_name.':i > '.$log;
-			
-		    shell_exec($_command);
-			sleep(10);
-			$response_flash = file_get_contents($log);
-			
-			shell_exec('sudo python '.PYTHON_PATH.'baud.py');
-			shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log > /dev/null &');
-			sleep(10);
-			
-			include '/var/www/fabui/script/boot.php';
-			
-			$actual_version = get_fw_version();
-			
-
-			if (strpos($response_flash, 'done with autoreset') !== false && ($_marlin_remote_version == $actual_version)) {
-			
-				
-					
-				$alert['type'] = 'success';
-				$alert['messsage'] = 'FABlin Firmware downloaded and flashed correctly.<br><strong>Version Downloaded:'.$_marlin_remote_version.'</strong><br><strong>Actual Version:'.$actual_version.'</strong>';
-			} else {
-				$alert['type'] = 'danger';
-				$alert['messsage'] = 'Oops an error occured, try to flash again<br>'.$response_flash;
-			}
-
-		} else {
-			$alert['type'] = 'danger';
-			$alert['messsage'] = 'Oops no internet connection, plaese check your network configuration';
-		}
-
+}elseif($_SERVER['REQUEST_METHOD'] == 'GET'){ //if called from other sources
+	if(isset($_GET['avoid']) && $_GET['avoid'] == 1){
+		echo flash_local();
+		exit();
 	}
-
-}elseif($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['avoid']) && $_GET['avoid'] == 1){
-	
-	$command = 'sudo /usr/bin/avrdude -D -q -V -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:' . $fw_file . ':i';
-	$response_flash = shell_exec($command);
-	sleep(10);
-	$start_up = shell_exec('sudo python /var/www/fabui/python/gmacro.py start_up /var/www/temp/flashing.trace /var/www/temp/flashing.log');
-	sleep(10);
-	
-	echo $response_flash;
-	
-	exit();
-	
 }
 
+if($response != '' && strpos($response, 'done with autoreset') !== false){
+	$message = '<div class="alert alert-success fade in"><i class="fa-fw fa fa-check"></i><strong> Flash done.</strong></div>';
+}
 
-
+//load remote fw versions
 $remote_versions = json_decode(file_get_contents('http://update.fabtotum.com/MARLIN/versions.php'), TRUE);
-
+//read system info
+$sysinfo = json_decode(shell_exec('sudo python '.PYTHON_PATH.'sysinfo.py'), true);
 
 include 'header.php';
 ?>
-	</head>
+
+</head>
 	<body>
 		<header id="header">
 			<div id="logo-group">
@@ -150,10 +57,10 @@ include 'header.php';
 				</ol>
 			</div>
 			<div id="content">
-				
+				<?php if(isset($message)) echo $message; ?>
 				<div class="row">
 					<div class="col-sm-12">
-						<pre>Firmware: <?php echo get_fw_version(); ?></pre>
+						<pre>Installed Firmware: <?php echo $sysinfo['fw'];?></pre>
 					</div>
 				</div>
 				
@@ -172,7 +79,7 @@ include 'header.php';
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="well">
-							<p>Firmware file: <?php echo $fw_file; ?></p>
+							<p>Local firmware file: <?php echo $local_file; ?></p>
 							<p>Do you really want to flash firmware from local file ? </p>
 							<form method="POST">
 								<button name="flash" value="local" class="btn btn-primary" type="submit"><i class="fa"></i>Flash Local</button>
@@ -206,61 +113,98 @@ include 'header.php';
 				
 			</div>
 		</div>
+		
+		<!-- MODAL -->
+		<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" id="myModalLabel">Flashing please wait... </h4>
+					</div>
+					<div class="modal-body">
+						<div class="progress">
+							<div class="progress progress-striped active">
+								<div class="progress-bar" role="progressbar" style="width: 100%"></div>
+							</div>
+						</div>
+					</div>
+					</div>
+				</div>
+			</div>
 		<?php
 		include 'footer.php';
  ?>
- <script type="text/javascript">
- 	
- 	$("#flash_remote").on('click', flash_remote);
- 	
- 	$(".btn-primary").on('click', function(){
- 		openWait("Flashing please wait...");
- 	});
- 	
- 	
- 	
- 	function flash_remote(){
- 		
- 		openWait("Flashing please wait...");
- 		$.ajax({
-			 url: "ajax/flash_remote.php",
-			 type: "POST",
-             dataType: 'json',
-		}).done(function( data ) {
-			
-			closeWait();
-				  
-		});
- 	}
- 	
- </script>
+ 	<script type="text/javascript">
+
+	 	$(".btn").on('click', function(){
+	 		$(".btn").addClass("disabled");
+	 		$("#modal").modal({
+		 		keyboard: false,
+		 		backdrop: 'static',
+		 		show: true
+		 	});
+	 		
+	 	});
+		
+ 	</script>
  
 	</body>
 </html>
+<?php
 
-
-<?php 
-
-
-
-function get_fw_version(){
+/**
+ * flash firmware from local file
+ */
+function flash_local()
+{
+	global $local_file;
+	return flash($local_file);
 	
-	$ini_array = parse_ini_file(SERIAL_INI);
-	
-	$serial = new Serial();
-	$serial->deviceSet($ini_array['port']);
-	$serial->confBaudRate($ini_array['baud']);
-	$serial->confParity("none");
-	$serial->confCharacterLength(8);
-	$serial->confStopBits(1);
-	$serial->deviceOpen();
-	$serial->sendMessage("M765\r\n");
-	$reply = $serial->readPort();
-	$serial->deviceClose();
-	
-	return trim(str_replace('V ', '', str_replace(PHP_EOL.'ok','', $reply)));
 }
-
-
-
-?>
+/**
+ * flash firmware from remote downloaded file
+ */
+function flash_remote()
+{
+	$version_to_download = $_POST['version'];
+	$file = BUILD_PATH.MARLIN_DOWNLOAD_FILE;
+	//remove existing file
+	shell_exec('sudo rm -r '.$file);
+	$url = MARLIN_DOWNLOAD_URL.$version_to_download.'/'.MARLIN_DOWNLOAD_FILE;
+	$target_file = fopen( $file, 'w+') or die("can't open file");
+	//download file
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_BUFFERSIZE, 64000);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($ch, CURLOPT_FILE, $target_file );
+	$html  = curl_exec($ch);
+	curl_close($ch);
+	//set permissions to file
+	shell_exec('sudo chmod 0777 '.$file);
+	return flash($file);
+}
+/**
+ * flash
+ */
+function flash($file)
+{	
+	write_file(LOCK_FILE, '');
+	$flash_command = 'sudo /usr/bin/avrdude -D -q -V -v -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:' . $file . ':i';
+	$response_flash = shell_exec($flash_command);
+	unlink(LOCK_FILE);
+	//flash done - just wait 2 seconds
+	sleep(2);
+	shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
+	//recalculate baudrate
+	shell_exec('sudo python '.PYTHON_PATH.'baud.py');
+	//start up printer
+	shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
+	sleep(5);
+	//reboot all settings
+	include FABUI_PATH.'script/boot.php';
+	sleep(5);
+	return $response_flash;
+}

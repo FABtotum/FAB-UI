@@ -1,21 +1,39 @@
 #!/bin/bash
 
+usage() {
+	echo "usage: <WIFI_ESSID> <WIFI_PASSWORD>"
+	exit 1
+}
+
+#essid is mandatory
+#["$1"] || usage 
+
 SSID=${1}
 PASSWORD=${2}
 
-CONFIG="ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\n\nnetwork={\n\tssid=\"$SSID\"\n"
-
-if [ -z "$PASSWORD" ] ; then
-	CONFIG="$CONFIG\tkey_mgmt=NONE\n"
+if [ -z "$SSID" ] ; then
+	cat <<EOF> /etc/wpa_supplicant/wpa_supplicant.conf
+ctrl_interface=DIR=/run/wpa_supplicant GROUP=netdev
+update_config=1
+EOF
 else
-	CONFIG="$CONFIG\tpsk=\"$PASSWORD\"\n"
+	PWDLINE=""
+	if [ -z "$PASSWORD" ] ; then
+		PWDLINE="key_mgmt=NONE"
+	else
+		PWDLINE="psk=\"$PASSWORD\""
+	fi
+
+	cat <<EOF > /etc/wpa_supplicant/wpa_supplicant.conf
+ctrl_interface=DIR=/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+	ssid="$SSID"
+	$PWDLINE
+}
+EOF
 fi
-CONFIG="$CONFIG\tscan_ssid=1\n}"
-
-sudo chmod 666 /etc/wpa_supplicant/wpa_supplicant.conf
-echo -e $CONFIG > /etc/wpa_supplicant/wpa_supplicant.conf
-sudo chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
-
 sudo ifdown wlan0
 sudo ifup wlan0
 

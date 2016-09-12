@@ -15,6 +15,8 @@ from watchdog.events import PatternMatchingEventHandler
 import gcode_utils
 ''' utils function for gcode made with cura '''
 import cura_utils
+''' utils function for gcode made with simplify '''
+import simplify_utils
 
 ''' LOAD INI FILE '''
 config = ConfigParser.ConfigParser()
@@ -30,6 +32,7 @@ if os.path.isfile(config.get('task', 'lock_file')):
 else:
     open(config.get('task', 'lock_file'), 'w').close()
 
+myPid=os.getpid()
 
 ''' SETTING EXPECTED ARGUMENTS  '''
 parser = argparse.ArgumentParser()
@@ -78,6 +81,7 @@ killed=False  #''' PRINT KILLED FLAG '''
 engine=""
 is_cura=False
 is_slic3r=False
+is_simplify=False
 
 ''' INIT LOG '''
 logging.basicConfig(filename=log_trace,level=logging.INFO,format='%(message)s')
@@ -128,12 +132,13 @@ def writeMonitor(percent,sent):
     global print_started
     global monitor_file
     global engine
+    global myPid
     
     _layers={'total':layers, 'actual': str(actual_layer)}
     _stats={"percent": str(percent), "line_number": str(sent), "extruder": str(ext_temp), "bed":str(bed_temp), "extruder_target":str(ext_temp_target), "bed_target": str(bed_temp_target), "z_override": str(z_override), "layers":_layers, "fan": str(fan) }
     _tip={"show":str(tip), "message": str(tipMessage)}
     _print = {"name": gcode_file, "lines": str(lenght),  "print_started": str(print_started), "started": str(started), "paused": str(paused), "completed": str(completed), "completed_time": str(completed_time), "shutdown": str(shutdown), "tip": _tip, "stats": _stats}
-    stats = {"type": "print", "print": _print, "engine": str(engine)}
+    stats = {"type": "print", "print": _print, "engine": str(engine), "pid":str(myPid)}
     
     stats_file=open(monitor_file,'w+')
     stats_file.write(json.dumps(stats))
@@ -154,10 +159,20 @@ def resetTrace():
 def process_comment(comment):
     if is_cura == True:
         process_cura_comment(comment)
+    if is_simplify == True:
+        process_simplify_comment(comment)
         
 def process_cura_comment(comment):
     global actual_layer
     cp = cura_utils.process_comment(comment)
+    if(cp != None):
+        if(cp[0] == 'layer'):
+            actual_layer = int(cp[1])+1     
+    writeMonitor(progress,sent)
+
+def process_simplify_comment(comment):
+    global actual_layer
+    cp = simplify_utils.process_comment(comment)
     if(cp != None):
         if(cp[0] == 'layer'):
             actual_layer = int(cp[1])+1     
@@ -453,6 +468,9 @@ if engine == 'CURA':
     layers=cura_utils.get_layers_count(gcode_file)
 elif engine == 'SLIC3R':
     is_slic3r=True
+elif engine == 'SIMPLIFY':
+    layers=simplify_utils.get_layers_count(gcode_file, 1000)
+    is_simplify=True
 
 event_handler = OverrideCommandsHandler(patterns=[command_file])
 observer = Observer()
@@ -527,5 +545,5 @@ tracker.join()
 sender.join()
 listener.join()
 serial.close()
-sys.exit()    
-    
+sys.exit()
+

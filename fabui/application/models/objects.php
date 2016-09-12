@@ -253,6 +253,8 @@ class Objects extends CI_Model {
 						->join('sys_obj_files', 'sys_obj_files.id_obj = sys_objects.id')
 						->join('sys_files', 'sys_files.id = sys_obj_files.id_file')
 						->where('print_type',$type)
+						->where('user', $_SESSION['user']['id'])
+						->or_where('private', 1)
 						->group_by('sys_objects.id')
 						->order_by('sys_objects.date_insert', 'DESC')
 						->get()

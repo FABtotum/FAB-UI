@@ -1,18 +1,38 @@
-#!/bin/sh
+#!/bin/bash
 
 IP=${1}
 
-if [ -z "$IP" ]; then
-	echo "missing ip parameter"
+if [ -z "$IP" ] ; then
+	echo "Missing ip address"
 	exit
 fi
 
-CONFIG="auto lo\niface lo inet loopback\n\nallow-hotplug eth0\nauto eth0\niface eth0 inet static\naddress $IP\nnetmask 255.255.0.0\n\nallow-hotplug wlan0\nauto wlan0\niface wlan0 inet dhcp\nwpa-conf /etc/wpa_supplicant/wpa_supplicant.conf"
+cat <<EOF> /etc/network/interfaces
 
-#echo $CONFIG
+# interfaces(5) file used by ifup(8) and ifdown(8)
 
-sudo cp /etc/network/interfaces /etc/network/interfaces.sav
-sudo chmod 666 /etc/network/interfaces
-echo $CONFIG > /etc/network/interfaces
-sudo chmod 644 /etc/network/interfaces
+# Please note that this file is written to be used with dhcpcd
+# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+auto lo
+iface lo inet loopback
+allow-hotplug eth0
+auto eth0
+iface eth0 inet static
+address $IP
+netmask 255.255.255.0
+
+allow-hotplug wlan0
+auto wlan0
+iface wlan0 inet dhcp
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+allow-hotplug wlan1
+iface wlan1 inet manual
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+EOF
 sudo /etc/init.d/networking reload

@@ -15,7 +15,7 @@ $query_objects = 'SELECT `sys_objects`.`user`, `sys_objects`.`private`, `sys_obj
 					FROM (`sys_objects`)
 					LEFT JOIN `sys_obj_files` ON `sys_obj_files`.`id_obj` = `sys_objects`.`id`
 					WHERE `user` =  '.$_SESSION['user']['id'].'
-					OR `private` =  0
+					OR `private` =  1
 					GROUP BY `sys_objects`.`id`
 					ORDER BY `date_insert` desc';
 					

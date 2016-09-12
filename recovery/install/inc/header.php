@@ -25,7 +25,7 @@
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-production-plugins.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-production.min.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/smartadmin-skins.min.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/demo.min.css">
+		
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/font-fabtotum.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/js/plugin/magnific-popup/magnific-popup.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/assets/css/fonts.css">
@@ -41,6 +41,9 @@
 				margin-top: 0px !important;
 				position: absolute;
 				top: 0% !important;
+				/*
+				margin-left: -281px;
+				width: 520px;*/
 			}
 			
 			.bootstrapWizard li {
@@ -52,10 +55,17 @@
 				max-width: 100% !important;
 				height: auto;
 			}
-			
-			
+
 			#main {
 				margin-left:0px !important;
+			}
+			
+			.terms-body {
+				padding: 10px;
+			}
+			
+			.terms-body p {
+				text-align: justify !important;
 			}
 			
 		</style>
@@ -63,6 +73,6 @@
 		
 		<script src="/assets/js/libs/jquery-2.1.1.min.js" ></script>
 		<script src="/assets/js/libs/jquery-ui-1.10.3.min.js"></script>
-		
+		<script src="/assets/js/libs/jquery.visible.min.js"></script>
 	</head>
 	<body>

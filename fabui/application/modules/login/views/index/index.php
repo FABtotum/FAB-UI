@@ -21,7 +21,6 @@
 
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fonts.css" />
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fabtotum_style.css" />
-		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fabtotum_style.css" />
 
 		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-2.1.1.min.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/libs/jquery-ui-1.10.3.min.js"></script>

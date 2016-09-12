@@ -6,6 +6,7 @@
 require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/serial.php';
 require_once '/var/www/fabui/application/config/production/fabtotum.php';
+require_once '/var/www/lib/utilities.php';
 
 $ini_array = parse_ini_file(SERIAL_INI);
 
@@ -15,11 +16,11 @@ fopen(LOCK_FILE, "w");
 define('TIME_TO_SLEEP', 0.3);
 
 //==================================================================
-//force serial flush
-//shell_exec('sudo python '.PYTHON_PATH.'flush.py');
-//sleep(0.5);
 
-//==================================================================
+if(!file_exists(FABUI_PATH.'config/config.json')){ //if config doesn't exists then create default
+	create_default_config();
+}
+
 //load config
 $json_config = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);
 
@@ -50,23 +51,14 @@ $serial -> serialflush();
 $serial->sendMessage('M728'.PHP_EOL);
 sleep(TIME_TO_SLEEP);
 $alive_machine = $serial->readPort();
-//==================================================================
+
+
 $serial -> serialflush();
 $serial->sendMessage('M701 S'.$json_config['color']['r'].PHP_EOL); //red
-sleep(TIME_TO_SLEEP);
-$color_red = $serial->readPort();
-
-//==================================================================
-$serial -> serialflush();
 $serial->sendMessage('M702 S'.$json_config['color']['g'].PHP_EOL); //green
-sleep(TIME_TO_SLEEP);
-$color_green = $serial->readPort();
-
-//==================================================================
-$serial -> serialflush();
 $serial->sendMessage('M703 S'.$json_config['color']['b'].PHP_EOL); //blue
 sleep(TIME_TO_SLEEP);
-$color_blue = $serial->readPort();
+$colors = $serial->readPort();
 
 //==================================================================
 //set safety door open: enable/disable warnings
@@ -100,21 +92,22 @@ sleep(0.1);
 $serial -> sendMessage('M793 S'.$config['heads_fw_id'][$head] . PHP_EOL);
 sleep(0.1);
 $serial -> sendMessage('M500' . PHP_EOL);
-
+$serial -> deviceClose();
 //==================================================================
 $hw_id = (isset($json_config['settings_type']) && $json_config['settings_type'] == 'custom') ? 'custom' : $hw_id;
-
-
 //include and exec specific hardware config settings
 if(file_exists(dirname(__FILE__).'/hardware/settings_'.$hw_id.'.php')){
 	include dirname(__FILE__).'/hardware/settings_'.$hw_id.'.php';
 }else{
-		
+	
 	$json_config = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);	
 	$json_config['feeder']['show'] = true;
 	file_put_contents(FABUI_PATH.'config/config.json', json_encode($json_config));
+	
+	
 }
 //==================================================================
+$serial->deviceOpen();
 $serial->sendMessage('M999'.PHP_EOL.'M728'.PHP_EOL);
 $serial -> deviceClose();
 shell_exec('sudo rm '.LOCK_FILE);

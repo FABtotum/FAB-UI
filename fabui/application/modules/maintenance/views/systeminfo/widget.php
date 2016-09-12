@@ -8,6 +8,10 @@
 				<caption></caption>
 				<tbody>
 					<tr>
+						<td>OS</td>
+						<td><span class="pull-right"><?php echo $os_info; ?></span></td>
+					</tr>
+					<tr>
 						<td>Firmware</td>
 						<td><span class="pull-right">v. <?php echo $fabtotum_info['fw']; ?></span></td>
 					</tr>

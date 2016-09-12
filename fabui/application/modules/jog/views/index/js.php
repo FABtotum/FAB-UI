@@ -412,9 +412,7 @@
 		var gcode = jQuery.trim($("#mdi").val());
 		jQuery("#mdi").val(gcode.replace('<br>', ''));
 	    if(gcode != ''){
-	    	
 	    	jog_call('mdi', gcode);
-	    	
 	    }	
 	}
 	

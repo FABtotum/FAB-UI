@@ -10,7 +10,7 @@ import ConfigParser
 import json
 
 config = ConfigParser.ConfigParser()
-config.read('/var/www/lib/config.ini')
+config.read('/var/www/lib/config.ini') 
 
 '''#### WEB SOCKET CLIENT ####'''
 host=config.get('socket', 'host')
