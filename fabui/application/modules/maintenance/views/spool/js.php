@@ -109,18 +109,16 @@
     		url: "<?php  echo module_url("maintenance").'ajax/spool.php' ?>",
     		data: {action: choice},
     		dataType: "json"
-    		
     	}).done(function(response){
+    		IS_MACRO_ON = false;
     		choice = 'unload';
-    		
     		closeWait();
-    		 
-    		 
-    		$(".pre_unload-choice").slideUp( "slow", function() {});
-    		$( ".choice" ).slideUp( "slow", function() {});
-            $("." + choice + "-choice").slideDown('slow');
-            $(".re-choice").slideDown('slow');
-    		
+    		if(response.response != 'error'){
+    			$(".pre_unload-choice").slideUp( "slow", function() {});
+        		$( ".choice" ).slideUp( "slow", function() {});
+                $("." + choice + "-choice").slideDown('slow');
+                $(".re-choice").slideDown('slow');
+        	}
     	});
     	
     }

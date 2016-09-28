@@ -22,7 +22,6 @@ class Dashboard extends Module {
 	
 	public function index(){
 		
-		
 		$this->load->helper('smart_admin_helper');
 		
 		$this -> load -> library('WidgetsFactory');

@@ -423,10 +423,12 @@
                 }
                
             });
-            
-            $("#btn-next").trigger('click');
-            
+
+           disable_button("#btn-next");
            $("#btn-next").trigger('click');
+           $("#btn-next").trigger('click');
+           disable_button("#btn-next");
+          
                    
         <?php endif; ?>
         
@@ -1406,7 +1408,7 @@ function save_z_override(){
 
 	$.ajax({
 		type: "POST",
-		url : "<?php echo module_url('maintenance').'ajax/override_probe_lenght.php' ?>",
+		url : "<?php echo module_url('maintenance').'ajax/override_probe_length.php' ?>",
 		data : {over : z_override},
 		dataType: "json"
 	}).done(function( data ) {

@@ -51,7 +51,7 @@ if($settings_type == 'custom'){
 
 
 if($action == 'exec'){
-	include '/var/www/fabui/script/boot.php';
+	shell_exec('python '.PYTHON_PATH.'boot.py');
 }
 
 $response['response'] = true;

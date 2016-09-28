@@ -22,6 +22,7 @@ $monitor_response['download']['downloaded'] = 0;
 $monitor_response['download']['speed'] = 0;
 $monitor_response['download']['size'] = $file_size;
 $monitor_response['download']['complete'] = false;
+$monitor_response['download']['download_prevSize'] = 0;
 $monitor_response['version'] = $version;
 //start download
 $target_file = fopen( $temp_file, 'w+') or die("can't open file");
@@ -69,7 +70,7 @@ shell_exec($_command_finalize);
 
 
 /* download progress handler */
-function progress($download_size, $downloaded, $upload_size, $uploaded){
+function progress($resource,$download_size, $downloaded, $upload_size, $uploaded){
 	global $monitor_response;
 	global $download_prevSize;
 	global $download_prevTime;
@@ -79,6 +80,7 @@ function progress($download_size, $downloaded, $upload_size, $uploaded){
 	$download_prevTime = microtime(true);
 	$monitor_response['download']['downloaded'] = $downloaded;
 	if($currentSpeed > 0) $monitor_response['download']['speed'] = $currentSpeed;
+	$monitor_response['download']['download_prevSize'] = $download_prevSize;
 	write_to_monitor();
 	
 }

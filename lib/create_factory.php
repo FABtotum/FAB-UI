@@ -154,11 +154,10 @@ class CreateFactory {
 	}
 
 	public function writeDataFile() {
-
+		
 		if ($this -> _command != '') {
 			write_file($this -> _data_file, $this -> _command . PHP_EOL, 'a+');
 		}
-
 	}
 
 	public function updateDB() {
@@ -213,8 +212,9 @@ class CreateFactory {
 
 	public function stop() {
 		
-		if($this -> _action == 'stop' && $this->_type != 'additive'){	
-			$task_type = 'mill';
+		if($this -> _action == 'stop'){
+			if($this->_type == 'additive') $task_type = 'print';
+			else $task_type = 'mill';	
 			shell_exec('sudo php ' . SCRIPT_PATH . 'finalize.php ' . $this -> _id_task . ' '.$task_type.' stopped');
 		}
 	}

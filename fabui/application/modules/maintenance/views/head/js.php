@@ -12,7 +12,7 @@
 				buttons : '[<i class="fa fa-crosshairs"></i> Calibrate][Ignore]'
 			}, function(ButtonPressed) {
 				if(ButtonPressed === "Calibrate") {	
-						document.location.href="<?php echo site_url('maintenance/probe-calibration'); ?>";		
+						document.location.href="<?php echo site_url('maintenance/probe/length-calibration'); ?>";		
 				}
 				if (ButtonPressed === "Ignore") {
 					

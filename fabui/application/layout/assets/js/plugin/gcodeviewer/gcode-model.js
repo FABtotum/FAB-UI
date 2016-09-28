@@ -162,6 +162,12 @@ function createObjectFromGCode(gcode) {
     G28: function(args) {
       //TODO: Only support E0
     },
+	G4: function(args){
+		//TODO
+	},
+	M728: function(args){
+		
+	},
 
     M84: function(args) {
       // M84: Stop idle hold

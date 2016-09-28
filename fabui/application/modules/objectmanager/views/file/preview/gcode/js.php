@@ -67,37 +67,24 @@ function supportsLocalStorage() {
 
 
 $(function() {
-
 	if (!Modernizr.webgl) {
 		
 	    $("#no-webgl").show();
 	    $("#<?php echo $widget_id; ?>").hide();
 	    return;
 	}
-	
 	if (!Modernizr.localstorage) {
 	    alert("Man, your browser is ancient. I can't work with this. Please upgrade.");
 		return;
 	}
-	
-	
 	$('#renderArea').css('height', ($("#main").height() + 50) + 'px' );
-	
-	var uri_file = '<?php echo str_replace('/var/www', '', $file->full_path) ?>';
 
+	var uri_file = '<?php echo str_replace('/var/www', '', $file->file_path.urlencode($file->file_name)) ?>';
 	
 	scene = createScene($('#renderArea'));
 	 
 	openWait('Loading GCode file');
 	/*openGCodeFromPath(uri_file);*/
-	
-	
 	openGcode(uri_file);
-	
-  
- 
-});
-
-
-	
+});	
 </script>

@@ -260,7 +260,7 @@
 		
 		$.ajax({
 				type: "POST",
-				url : "<?php echo module_url('maintenance').'ajax/override_probe_lenght.php' ?>",
+				url : "<?php echo module_url('maintenance').'ajax/override_probe_length.php' ?>",
 				dataType: "json",
 				data : {over : $("#over").val()}
 			}).done(function( data ) {

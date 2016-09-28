@@ -332,7 +332,8 @@ elif preset=="end_print_additive":
    
 elif preset=="end_print_additive_safe_zone":
     serial.flush()
-    macro("G90","ok", 2, "Setting Absolute position", 0)
+    macro("G90","ok", 5, "Setting Absolute position", 1)
+    macro("M220 S100","ok",20,"Reset Speed factor override", 1)
     macro("G0 X210 Y210 Z200 F10000", "ok", 100, "Moving to safe zone", 1)
     
 elif preset=="raise_bed":
@@ -442,6 +443,7 @@ elif preset=="end_scan":
     macro("M700 S0","ok",3,"Shutting Down Laser",0)
     macro("G90","ok",10,"Setting Absolute position",0,verbose=False) #long waiting time
     macro("G0 Z140 E0 F5000","ok",55,"Rasing Probe",0.1,verbose=False)
+    macro("M92 E"+str(units['e']),"ok",2,"Setting 4th axis mode",0,verbose=False)
     #go back to user-defined colors
     macro("M701 S"+str(units['color']['r']),"ok",2,"Turning on lights",0.1,verbose=False)
     macro("M702 S"+str(units['color']['g']),"ok",2,"Turning on lights",0.1,verbose=False)

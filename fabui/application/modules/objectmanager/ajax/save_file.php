@@ -12,6 +12,7 @@ $_name         = urldecode($_POST["name"]);
 
 /** SAVE FILE */
 if($_file_content != false){
+	shell_exec('sudo chmod 777 '.$_file_path);
     file_put_contents($_file_path, $_file_content, FILE_USE_INCLUDE_PATH);
 }
 

@@ -38,7 +38,6 @@ if($_tasks_number == 0){
 		                $_percent = $_monitor['print']['stats']['percent'];
 						$_detail  = site_url($_task['controller'].'/'.$_task['type']);
 		                break;
-		                
 	                case 'mill':
 	                	$_icon    = 'icon-fab-print';
 	                	$_monitor = json_decode(file_get_contents(TEMP_PATH.'task_monitor.json'), TRUE);
@@ -72,10 +71,16 @@ if($_tasks_number == 0){
 	<li>
 		<span>
 			<div class="bar-holder no-padding">
-				<p class="margin-bottom-5"><i class="<?php echo $_icon; ?>"></i> <strong><?php echo ucfirst($_task['controller']) ?></strong> - <strong><?php echo ucfirst($_task['type']) ?></strong> <span class="pull-right semi-bold text-muted"><?php echo number_format($_percent , 2, ',', ''); ?> %</span></p>
+				<p class="margin-bottom-5"><i class="<?php echo $_icon; ?>"></i> <strong><?php echo ucfirst($_task['controller']) ?></strong> - <strong><?php echo ucfirst($_task['type']) ?></strong> 
+					<?php if(isset($_percent)):?>
+					<span class="pull-right semi-bold text-muted"><?php echo number_format($_percent , 2, ',', ''); ?> %</span>
+					<?php endif; ?>
+				</p>
+				<?php if(isset($_percent)):?>
 				<div class="progress progress-md progress-striped">
 					<div class="progress-bar bg-color-teal"  style="width: <?php echo number_format($_percent, 2, '.', ''); ?>%;"></div>
 				</div>
+				<?php endif; ?>
 				<em class="note no-margin">last updated on <?php echo date("d/m/Y G:i:s") ?></em>
                 <em class="note no-margin pull-right"><a href="<?php echo $_detail; ?>">Detail</a></em>
 			</div>

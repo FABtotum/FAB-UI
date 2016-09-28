@@ -297,6 +297,9 @@ class Objectmanager extends Module {
 
 		$config['upload_path'] = $upload_dir . $_extension;
 		$config['allowed_types'] = '*';
+		$config['file_ext_tolower'] = true ;
+		$config['remove_spaces']    = true ;
+		$config['encrypt_name']     = false;
 
 		//carico la libreria per la gestione dell'upload
 		$this -> load -> library('upload', $config);
@@ -1047,6 +1050,9 @@ class Objectmanager extends Module {
 
 		$config['upload_path'] = $upload_dir;
 		$config['allowed_types'] = '*';
+		$config['file_ext_tolower'] = true ;
+		$config['remove_spaces']    = true ;
+		$config['encrypt_name']     = false;
 
 		//carico la libreria per la gestione dell'upload
 		$this -> load -> library('upload', $config);

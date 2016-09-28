@@ -15,18 +15,12 @@ function handleProbe()
 	
 	if(action == 'open')  gCodeValue = $("#extend_value").val();
 	if(action == 'close') gCodeValue = $("#retract_value").val();
-
-
-	console.log(action);
-	
 	doCommand(action, gCodeValue);
 
-	
 }
 /* */
 function actionCallBack(data)
 {
-	console.log(data);
 }
 /* */
 function handleReset()
@@ -55,6 +49,13 @@ function doCommand(action, value)
 	if(action == 'close'){
 		gCodeCommand = 'M712';
 		probeCommand = 'M402';
+
+		
+		
+		if(parseInt(value)<24){
+			value = 24;
+			$("#retract_value").val(value);
+		}
 	}
 	var gcode = gCodeCommand+' S'+value+'\n'+probeCommand;
 	jog_make_call_ajax('mdi', gcode, actionCallBack);

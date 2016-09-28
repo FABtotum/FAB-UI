@@ -109,9 +109,81 @@ function scan_wlan() {
 		}
 
 	}
-
+	
 	return $_wlan_list;
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if(!function_exists('scanWlan'))
+{
+	/**
+	 * @param string $interface wlan interface name
+	 * @return array list of discovered wifi's nets
+	 */
+	function scanWlan($interface = 'wlan0')
+	{
+		$scanResult = shell_exec('iwlist '.$interface.' scan');
+		$scanResult = preg_replace('/\s\s+/', ' ', $scanResult);
+		$scanResult = str_replace($interface.' Scan completed :', '', $scanResult);
+		$scanResult = explode('Cell ', $scanResult);
+		$nets = array();
+		foreach($scanResult as $net){
+			if(trim($net) != ''){
+				$temp = array();
+				$temp['address']   		= getFromRegEx('/Address:\s([0-9a-f:]+)/i', $net);
+				$temp['essid']     		= getFromRegEx('/ESSID:\"((?:.)*)\"/i', $net);
+				$temp['protocol']  		= getFromRegEx('/IEEE\s([0-9]+.[0-9]+[a-z]+)/i', $net);
+				$temp['mode']      		= getFromRegEx('/Mode:([a-zA-Z]+)/i', $net);
+				$temp['frequency'] 		= getFromRegEx('/Frequency:([0-9]+.[0-9]+\s[a-z]+)/i', $net);
+				$temp['channel']  		= getFromRegEx('/Channel ([0-9]+)/i', $net);
+				$temp['encryption_key'] = getFromRegEx('/Encryption key:([a-zA-Z]+)/i', $net);
+				$temp['bit_rates']      = getFromRegEx('/Bit Rates:([0-9]+.[0-9]+\s[a-z]+\/[a-z]+)/i', $net);
+				$temp['quality']        = getFromRegEx('/Quality=([0-9]+)/i', $net);
+				$temp['signal_level']   = getFromRegEx('/Signal level=([0-9]+)/i', $net);
+				//add to nets lists
+				$nets[] = $temp;
+			}
+		}
+		return $nets;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if(!function_exists('getFromRegEx'))
+{
+	/**
+	 *
+	 */
+	function getFromRegEx($regEx, $string)
+	{
+		preg_match($regEx, $string, $tempResult);
+		return isset($tempResult[1]) ? $tempResult[1] : '';
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if(!function_exists('decodeWifiSignal'))
+{
+	/**
+	 *
+	 */
+	function decodeWifiSignal($value)
+	{
+		if (strpos($value, 'dBm') !== false) {
+    		$value = abs(intval(trim(str_replace('dBm', '', $value))));
+    		if($value < 50){
+    			return 100;
+    		}elseif($value > 50 && $value < 60){
+    			return 75;
+    		}elseif($value > 60 && $value < 70){
+    			return 50;
+    		}else{
+    			return 25;
+    		}
+		}else{
+			return $value;
+		}
+	}
 }
 
 function lan() {

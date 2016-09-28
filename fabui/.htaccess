@@ -67,3 +67,6 @@ AddDefaultCharset UTF-8
 php_value upload_max_filesize 512M
 php_value post_max_size 512M
 php_value memory_limit 512M
+php_value session.gc_maxlifetime 86400
+php_value session.cookie_lifetime 86400
+php_value session.save_path "/var/www/temp/"

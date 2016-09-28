@@ -48,7 +48,7 @@
 							<div class="col-sm-6 text-center">
 								<h1><span class="badge bg-color-blue txt-color-white">1</span></h1>
 								<h1 class="text-primary">Open the right cover panel</h1>
-								<h2>The Side cover is magnetically locked. Pull the panel confidently in order to access to the spool compartment.</h2>
+								<h2>The side cover is magnetically locked. Pull the panel confidently in order to access to the spool compartment.</h2>
 							</div>
 
 						</div>

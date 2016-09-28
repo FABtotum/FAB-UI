@@ -27,6 +27,7 @@ class Updates extends Module {
 		$_SESSION['updates']['updated'] = $data['updated'] = $data['local_version'] >= $data['remote_version'];
 		$_SESSION['updates']['time'] = time();
 		//layout
+		$this -> layout -> set_compress(false);
 		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('index/js', $data, TRUE), 'comment' => ''));
 		$this -> layout -> add_css_in_page(array('data' => $this -> load -> view('index/css', $data, TRUE), 'comment' => ''));
 		$this -> layout -> view('index/index', $data);

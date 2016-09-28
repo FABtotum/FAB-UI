@@ -41,7 +41,7 @@
 						</td>
 						<td class="hidden-xs">
 							<div class="progress progress-striped active">
-								<div class="progress-bar  bg-color-blue" data-transitiongoal="<?php echo $net['signal_level'] ?>"></div>
+								<div class="progress-bar  bg-color-blue" data-transitiongoal="<?php echo decodeWifiSignal($net['signal_level']) ?>"></div>
 							</div>
 						</td>
 						<td style="width: 100px" class="text-right">

@@ -332,14 +332,14 @@ function _do_action(action, value) {
 
 		var jsonData = {};
 
-		jsonData['function'] = 'operation';
-		jsonData['id_task'] = id_task;
-		jsonData['data_file'] = data_file;
-		jsonData['action'] = action;
-		jsonData['value'] = value;
-		jsonData['progress'] = progress;
+		jsonData['function']        = 'operation';
+		jsonData['id_task']         = id_task;
+		jsonData['data_file']       = data_file;
+		jsonData['action']          = action;
+		jsonData['value']           = value;
+		jsonData['progress']        = progress;
 		jsonData['attributes_file'] = attributes_file;
-		jsonData['type'] = print_type;
+		jsonData['type']            = print_type;
 
 		var message = {};
 

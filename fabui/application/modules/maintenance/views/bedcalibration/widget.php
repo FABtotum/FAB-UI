@@ -12,7 +12,7 @@
 				<br>
 				Use the provided hex key and make sure the screws are almost halfway in.
 				<br>
-				Click "Start" when ready </h2>
+				Click "Start" when ready. </h2>
 				<hr class="simple">
 				<p class="text-center">
 					<a href="javascript:void(0);" class="btn btn-primary btn-default  do-calibration "> Start</a>

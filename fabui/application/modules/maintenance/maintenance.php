@@ -198,6 +198,14 @@ class Maintenance extends Module {
 		$output             = shell_exec('echo "$(</proc/uptime awk \'{print $1}\')"');
 		$data['time_alive'] = seconds_to_time(intval($output));
 		
+		// === Hardware
+		$hardwareVersionList = array(
+			'BCM2708' => 'Raspberry Pi Model B',
+			'BCM2709' => 'Raspberry Pi 3 Model B',
+		);
+		$hardwareVersionID = trim(shell_exec('</proc/cpuinfo grep Hardware | awk \'{print $3}\''));
+		$data['hardwareVersion'] = $hardwareVersionList[$hardwareVersionID];
+		
 		// === NETWORK
 		$output        = shell_exec('sh /var/www/fabui/script/bash/transfer_rate.sh eth0');
         $data['eth_rates'] = explode(' ', $output);
@@ -213,7 +221,7 @@ class Maintenance extends Module {
 		$data['table_header'] = array_splice($data['table_header'], 0, count($data['table_header']) - 1);
 		
 		//== OS INFO
-		$data['os_info'] = shell_exec('uname -a');
+		$data['os_info'] = trim(shell_exec('uname -a'));
 		
 		// == FABTOTUM INFO
 		$data['fabtotum_info'] = json_decode(shell_exec('sudo python '.PYTHONPATH.'sysinfo.py'), true);

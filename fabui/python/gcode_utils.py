@@ -14,7 +14,8 @@ def who_generate_file(file, max_lines = 50):
     first_lines = output.splitlines()
     
     engine = get_engine(last_lines)
-    engine = get_engine(first_lines)
+    if engine == "UNKNOWN":
+        engine = get_engine(first_lines)
     
     return engine
     
@@ -89,8 +90,4 @@ def red_wait_temperature_line(line):
         bed_temp=float(temps[2].split(":")[1])
     return ext_temp, bed_temp
 
-#def get_command_value(command, movement = False):
-#    if(!movement):
-#        match = re.search('(M\d+)\sS([+|-]*[0-9]*.[0-9]*)', command)
-    
         

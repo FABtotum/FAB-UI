@@ -16,7 +16,7 @@
 					</section>
 				</div>
 			</fieldset>
-			<header>Misure and calibrate extruder step</header>
+			<header>Misure and calibrate extruder steps</header>
 			<fieldset>
 				<div class="row">
 					<section class="col col-8">

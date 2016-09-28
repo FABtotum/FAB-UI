@@ -49,7 +49,6 @@ class WebSocketServerFactory {
 		if (!file_exists(LOCK_FILE)) {
 			
 			$JogFactory = new JogFactory($data['feedrate'], $data['step'], $data['z_step'], $data['extruderFeedrate']);
-
 			$function = $data['func'];
 
 			if (method_exists($JogFactory, $function)) {

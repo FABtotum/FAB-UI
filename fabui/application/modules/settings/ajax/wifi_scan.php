@@ -21,11 +21,11 @@ $mac_address = $_POST['mac_address'];
 						</td>
 						<td class="hidden-xs">
 							<div class="progress progress-striped active">
-								<div class="progress-bar  bg-color-blue" data-transitiongoal="<?php echo $net['signal_level'] ?>"></div>
+								<div class="progress-bar  bg-color-blue" data-transitiongoal="<?php echo decodeWifiSignal($net['signal_level']) ?>"></div>
 							</div>
 						</td>
 						<td style="width: 100px" class="text-right">
-							<button data-type="<?php echo $net['type']; ?>" data-protected="<?php echo $net['encryption key'];?>" data-ssid="<?php echo $net['essid']; ?>" data-action="<?php echo $action; ?>" class="btn btn-info btn-block <?php echo $action; ?>"><?php echo ucfirst($action); ?></button>
+							<button data-type="<?php echo $net['type']; ?>" data-protected="<?php echo $net['encryption_key'];?>" data-ssid="<?php echo $net['essid']; ?>" data-action="<?php echo $action; ?>" class="btn btn-info btn-block <?php echo $action; ?>"><?php echo ucfirst($action); ?></button>
 						</td>
 					</tr>
 				<?php endif; ?>

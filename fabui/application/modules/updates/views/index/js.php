@@ -74,20 +74,22 @@
 	}
 	
 	function manage_task_monitor(obj){
+
+		
+		
 		if(obj.content != ''){
 			monitor(jQuery.parseJSON(obj.content));
 		}
 	}
 	
 	function monitor(data){
-		
-		
 		var download_percent = parseFloat((data.download.downloaded / data.download.size) * 100);
 		$(".download-progress").attr('style', 'width:' + download_percent+'%');
 		
 		if(data.download.complete == false){
 			$(".percent").html(precise_round(download_percent, 0) + '%');
 		}else{
+
 			$(".percent").html('<i class="fa fa-check"></i>');
 			$(".download-info").html('Download complete');
 			$(".progress").hide();
@@ -100,10 +102,8 @@
 			}
 			
 		}
-		
 		if(data.status == 'completed'){
 			clearInterval(interval_monitor);
-			console.log("Update terminato");
 			openWait('<i class="fa fa-check"></i> Update complete', '', false);
 			setTimeout(function(){
 				document.location.href=document.location.href;

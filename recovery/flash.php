@@ -204,7 +204,8 @@ function flash($file)
 	shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
 	sleep(5);
 	//reboot all settings
-	include FABUI_PATH.'script/boot.php';
+	//include FABUI_PATH.'script/boot.php';
+	shell_exec('python '.PYTHON_PATH.'boot.py -R');
 	sleep(5);
 	return $response_flash;
 }

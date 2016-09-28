@@ -175,7 +175,7 @@ def parse_unattended():
                 trace("unattended echo: %s" % message)
             else:
                 q[cnt] = None
-                trace("spurious message: %s" % reply)
+                #trace("spurious message: %s" % reply)
 
 ##################################################
 ##################################################

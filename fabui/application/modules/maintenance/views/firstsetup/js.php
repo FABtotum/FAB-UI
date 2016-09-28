@@ -542,7 +542,8 @@
               type: "POST",
               url: "<?php echo module_url("maintenance").'ajax/finish_wizard.php' ?>",
               dataType: 'json'
-        }).done(function( response ) { 
+        }).done(function( response ) {
+        	IS_MACRO_ON = false;
 			setTimeout(function () {document.location.href = '/fabui';}, 3000);
         })
 	 	

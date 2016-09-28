@@ -70,7 +70,7 @@
 								<label class="input">
 									<input id="feedrate" type="text" value="1000" />
 								</label>
-								<p class="note">Feedrate</p>
+								<p class="note">Speed</p>
 							</section>
 							<section>
 								<label class="input">

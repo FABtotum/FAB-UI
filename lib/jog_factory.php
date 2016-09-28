@@ -124,8 +124,6 @@ class JogFactory {
 		$this -> _command = 'G91' . PHP_EOL . $command.PHP_EOL.'G90';
 		$this -> exec();
 		
-		
-
 		return $this -> returnResponse();
 
 	}

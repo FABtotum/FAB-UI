@@ -35,7 +35,7 @@
 <hr class="simple">
 <div class="row">
 	<div class="col-sm-6 margin-bottom-10">
-		<h1 class="txt-color-blueDark">Raspberry Pi <small>Board details</small></h1>
+		<h1 class="txt-color-blueDark"><?php echo $hardwareVersion; ?> <small>Board details</small></h1>
 	</div>
 	<div class="col-sm-6 margin-bottom-10">
 		<div class="well no-padding well-light">
@@ -61,6 +61,7 @@
 			<table class="table table-striped">
 				<caption>Hardware</caption>
 				<tbody>
+					
 					<tr>
 						<td>Time Alive</td>
 						<td><span class="pull-right"><?php echo $time_alive?></span></td>

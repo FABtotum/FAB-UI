@@ -9,7 +9,7 @@
 		<div class="col-sm-12">
 			<div class="well">
 				<!--<h3 class="text-center text-primary">Assisted calibration</h3>-->
-				<h2 class="text-center">The probe lenght will be now calculated in order to correct the nozzle height during prints</h2>
+				<h2 class="text-center">The probe length will be now calculated in order to correct the nozzle height during prints</h2>
 				<h2 class="text-center"><a data-action='normal' href="javascript:void(0);" class="btn btn-default btn-primary btn-circle btn-lg choice-button"><i class="fa fa-chevron-down"></i></a></h2>
 			</div>
 		</div>
@@ -148,7 +148,7 @@
 			<div class="well">
 				<div class="row">
 					<div class="col-sm-6">
-						<h4 class="text-center"> Fine Probe lenght Calibration
+						<h4 class="text-center"> Fine Probe length Calibration
 						<br>
 						If the print first layer is too high or too close to the bed, use this function to finely calibrate the distance from the nozzle and the bed during 3D-prints. Usually 0.05mm increments are enough to make a difference. </h4>
 					</div>

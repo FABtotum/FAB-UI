@@ -5,8 +5,8 @@ $make_sons[] = array('name' => 'mill',  'label'=>'Mill',  'menu' => TRUE, 'icon'
 $make_sons[] = array('name' => 'scan',  'label'=>'Scan',  'menu' => TRUE, 'icon' => '<i class="icon-fab-scan fa-lg fa-fw"></i>');
 $make_sons[] = array('name' => 'history', 'label'=>'History', 'menu' => TRUE, 'icon' => '<i class="fa fa-lg fa-fw fa-history"></i>');
 
-$_probe_sons[] = array('name' => 'length-calibration', 'label'=> 'Lenght Calibration',   'icon' => '<i class="fa fa-lg fa-fw fa-arrows-v"></i>');
-$_probe_sons[] = array('name' => 'angle-calibration',  'label'=> 'Angle Calibration',   'icon' => '');
+$_probe_sons[] = array('name' => 'length-calibration', 'label'=> 'Length Calibration',   'icon' => '<i class="fa fa-lg fa-fw fa-arrows-v"></i>');
+$_probe_sons[] = array('name' => 'angle-calibration',  'label'=> 'Angle Calibration',   'icon' => '<i class="fa fa-lg fa-fw fa-angle-left"></i>');
 
 // maintenance sub-items menu
 $_maintenance_sons[] = array('name' => 'head',              'label'=> 'Head installation',              'icon' => '<i class="fa fa-lg fa-fw  fa-toggle-down"></i>');

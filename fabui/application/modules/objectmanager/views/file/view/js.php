@@ -79,7 +79,7 @@
     		
     		$(".btn").addClass('disabled');
     		
-	   		$.get( "<?php echo 'http://'.$_SERVER['HTTP_HOST'].str_replace('/var/www/', '/', $_file->full_path)."?t=".time() ?>", function( data ) {
+	   		$.get( "<?php echo 'http://'.$_SERVER['HTTP_HOST'].str_replace('/var/www', '', $_file->file_path.urlencode($_file->file_name))."?t=".time() ?>", function( data ) {
 	        	$("#editor").html(data);
 	            editor = ace.edit("editor");
 	            editor.getSession().setMode("ace/mode/gcode");

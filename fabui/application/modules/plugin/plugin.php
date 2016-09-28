@@ -174,72 +174,61 @@ class Plugin extends Module {
 
 	}
 
-	public function upload() {
-
+	/**
+	 * 
+	 */
+	public function upload()
+	{
 		$data = array();
-
-		if (isset($_FILES['plugin-file'])) {
-
-			$config['upload_path'] = '../temp/';
-			$config['allowed_types'] = 'zip';
-
-			$this -> load -> library('upload', $config);
-
-			if (!$this -> upload -> do_upload('plugin-file')) {
-						
-				$data['error'] = strip_tags($this -> upload -> display_errors());
-				
-			} else { // if uploaded with success
-	
-				$file_data = array('upload_data' => $this -> upload -> data());
-				
-				$zip = new ZipArchive;
-
-				$file = $file_data['upload_data']['full_path'];
-
-				chmod($file, 0777);
-				
-				// unzip uploaded file
-				if ($zip -> open($file) === TRUE) {
-						
-					$zip -> extractTo(TEMPPATH . $file_data['upload_data']['raw_name']);
-					$zip -> close();
-
-					$temp_plugin_path = TEMPPATH . $file_data['upload_data']['raw_name'] . '/' . $file_data['upload_data']['raw_name'];
-					
-					if (file_exists($temp_plugin_path) && file_exists($temp_plugin_path.'/'.$file_data['upload_data']['raw_name'].'.php')) {
-						
-						// if the structure of the plugin is valid
-						
-						$_command_copy = 'sudo cp -rvf ' . TEMPPATH . $file_data['upload_data']['raw_name'] . '/' . $file_data['upload_data']['raw_name'] . ' ' . PLUGINSPATH;
-						shell_exec($_command_copy);
-						
-						$data['installed'] = true;
-						$data['file_name'] = $file_data['upload_data']['file_name'];
-
-					}else{
-						$data['error'] = "Invalid plugin, plaese upload a valid plugin";
-					}
-					
-					shell_exec('sudo rm -rf ' . TEMPPATH . $file_data['upload_data']['raw_name']);
-					
-
-				} else {
-					$data['error'] = "Error unzipping file";
+		if(isset($_FILES['plugin-file'])){ //if is uploading
+			
+			shell_exec('sudo chmod 777 '.PLUGINSPATH);
+			$upload_config['upload_path']   = TEMPPATH;
+			$upload_config['allowed_types'] = 'zip';
+			//load upload library
+			$this->load->library('upload', $upload_config);
+			if($this->upload->do_upload('plugin-file')){ //do upload
+				$github = false;
+				$upload_data = $this->upload->data();
+				$zip = new ZipArchive; //init zip class
+				chmod($upload_data['full_path'], 0777);
+				//check if is a master file from github
+				if(strpos($upload_data['orig_name'], '-master') !== false) {
+					$github = true;
+					//rename file
+					shell_exec('sudo mv '.$upload_data['full_path'].' '.str_replace('-master', '', $upload_data['full_path']));
+					//update values
+					$upload_data['file_name']   = str_replace('-master', '', $upload_data['file_name']);
+					$upload_data['full_path']   = str_replace('-master', '', $upload_data['full_path']);
+					$upload_data['raw_name']    = str_replace('-master', '', $upload_data['raw_name']);
+					$upload_data['client_name'] = str_replace('-master', '', $upload_data['client_name']);
 				}
-				
-				shell_exec('sudo rm -rf ' . $file);
-
+				//unzip folder
+				shell_exec('sudo unzip '.$upload_data['full_path'].' -d '.$upload_data['file_path'].$upload_data['raw_name']);
+				if($github){ //if is a file from github need to move all files from *-master folder
+					shell_exec('sudo mv '.$upload_data['file_path'].$upload_data['raw_name'].'/'.$upload_data['raw_name'].'-master/* '.$upload_data['file_path'].$upload_data['raw_name'].'/');
+					shell_exec('sudo rm -vrf '.$upload_data['file_path'].$upload_data['raw_name'].'/'.$upload_data['raw_name'].'-master/');
+				}else{
+					shell_exec('sudo mv '.$upload_data['file_path'].$upload_data['raw_name'].'/'.$upload_data['raw_name'].'/* '.$upload_data['file_path'].$upload_data['raw_name'].'/');
+					shell_exec('sudo rm -rvf '.$upload_data['file_path'].$upload_data['raw_name'].'/'.$upload_data['raw_name']);
+				}
+				//copy to plugin folder
+				if(file_exists($upload_data['file_path'].$upload_data['raw_name'].'/'.$upload_data['raw_name'].'.php') && !file_exists(PLUGINSPATH.$upload_data['raw_name'])){
+					shell_exec('sudo mv '.$upload_data['file_path'].$upload_data['raw_name'].' '.PLUGINSPATH.$upload_data['raw_name']);
+					$data['installed'] = true;
+					$data['file_name'] = $upload_data['file_name'];
+				}else{
+					$data['error'] = "Invalid plugin, plaese upload a valid plugin";
+				}
+				shell_exec('sudo rm -rvf '.$upload_data['full_path']);
+				shell_exec('sudo rm -rvf '.$upload_data['file_path'].$upload_data['raw_name']);
+			}else{
+				$data['error'] = strip_tags($this->upload->display_errors());
 			}
-
 		}
-
-		$js_in_page = $this -> load -> view('upload/js', '', TRUE);
-		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
-
-		$this -> layout -> view('upload/index', $data);
-
+		//ouput
+		$this->layout->add_js_in_page(array('data' => $this->load->view('upload/js', '', TRUE), 'comment' => ''));
+		$this->layout->view('upload/index', $data);
 	}
-
 }
 ?>

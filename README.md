@@ -1,5 +1,35 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version: 0.961 - 2016-09-28 (hotifx)
+
+#### General
+* Fixed typo
+* Minor bugfixes
+
+#### Make
+* Print
+	* Fixed gcode utilites for Cura 2.X
+
+#### Objectmanager
+* Minor bugfixes
+
+#### Maintenance
+* Head Installation
+	* Fixed link to "Probe Length Calibration"
+* Spool Management
+	* Improved load and unload spool procedure
+* Feeder Calibration
+	* Fixed step value overwritten after scan tasks
+
+#### Plugin
+* Fixed and improved install procedure: now is possible to install zip files downloaded from github repos
+	
+#### Recovery 
+* install
+	* Updated terms, conditions and security disclaimer
+	
+==================================================================
+
 ### Version: 0.96 - 2016-09-12
 
 #### Make
@@ -689,3 +719,4 @@ OTHER
 - added "Report a bug" button
 
 ==================================================================
+

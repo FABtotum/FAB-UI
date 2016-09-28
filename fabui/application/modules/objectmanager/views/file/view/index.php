@@ -57,19 +57,14 @@
 									<?php if(!$is_stl): ?>
 										<button class="btn btn-default pull-left" type="button" id="load-content"><i class="fa fa-angle-double-down"></i> view content </button>
 									<?php endif; ?>
-									
-									
+
 									<label class="checkbox-inline" style="padding-top:0px;">
 										 <input type="checkbox" class="checkbox" disabled="disabled" id="also-content">
-										 <span>Save also content </span>
+										 <span>Save content also </span>
 									</label>
 									<button class="btn btn-primary" type="button" id="save"><i class="fa fa-save"></i> Save </button>
 								</div>
-								
-								
-								
 							</div>
-							
 						</div>
 					</div>
 				</div>

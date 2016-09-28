@@ -24,7 +24,7 @@
 				Keep clean dust and clear of any liquid. </p>
 	
 				<h6>Important safety notes:</h6>
-				<p class="font-sm">
+				<p class="font-sm"> 
 				Caution: The main health risks come from the Moving parts and components that heats, such as the heated bed and the heater nozzle.
 				These parts have warning stickers and status LEDs to warn of the danger.
 				Do not touch the printing nozzle, the heated bed , the inside or any of the moving parts of the unit.</p>
@@ -36,9 +36,17 @@
 					<li class="text-left">leave the product unattended when it's operating or turned on.</li>
 					<li class="text-left">touch or move the product while it's operating or turned on.</li>
 					<li class="text-left">modify, disassemble or alter the product/parts of the product in any way.</li>
-					<li class="text-left">touch or bend the flexible connection cable, connectors and cables. </li>
-					<li class="text-left">turn the product off without proper shutdown procedure</li>
+					<li class="text-left">turn the product off without proper shutdown procedure.</li>
+					<li class="text-left">use outside or when the temperature is too cold (15&deg;C) or warm (28&deg;C).</li>
 					<li class="text-left">dispose the unit improperly.</li>
+					<li class="text-left">touch or bend the flexible connection cable.</li>
+				</ul>
+				
+				<p class="font-sm"><i class="fa fa-check  text-success"></i> DO :</p>
+				<ul>
+					<li class="text-left">use proper safety measures.</li>
+					<li class="text-left">place the unit on stable, clean surfaces, away from any obstacles within 30cm / 12" from the unit</li>
+					<li class="text-left">place unit far from sources of heat, humidity or cold air and liquids</li>
 				</ul>
 	
 				<h6>Support</h6>
@@ -82,30 +90,32 @@
 				</p>
 				<h6>Warranty</h6>
 				<p class="font-sm">
-				Warranty will be void if the product is modified or altered in any way. Warranty is also void if the electronics
-				Operating outside the specification or the scope of the product will also void the warranty.<br>
-				Using unofficial 3D Printing materials, accessories , consumables or any third party products or following unauthorized maintenance procedures is done at the owner own discretion and may also cause damage to the unit, for which the Manufactuer will not be held liable.
+				Warranty will be void if the product is modified, opened or altered in any way.<br>
+				Operating outside the specification or the scope of the product will also void the warranty. Using unofficial filaments, accessories or third party products or procedures is done at the owner own discretion and risk
 				</p>
 				<p class="font-sm">
 				The product must be kept in reasonable use conditions with the original box and accessories.
 				<br>Do not dispose of the shipping box and packaging. 
-				<br>The warranty does not cover damages from misuse, incorrect use or incorrect commands sent by the user, mishandling or damages by third party accessories.
+				<br>The warranty does not cover damages from misuse, incorrect use or incorrect commands sent by the user, mishandling or damages by third party accessories
 				</p>
 				<p class="font-sm">
-				The warranty does not cover consumables such as head thermistor, head heating cartridges, milling chuck, SD card , Fans , Nozzle , 4th axis feeder gear,   Hotplate's Pogo pins and all removeable connectors and PCBs.
+				The warranty does not cover consumables such as head thermistor, head heating cartridges, milling chuck, SD card, fans, nozzle, 4th axis feeder gear, hotplate's pogo pins and all removable connectors and PCBs
 				</p>
 				<p class="font-sm">
 				Legally applicable warranty period:</p>
 				<ul>
-					<li class="text-left">2 years for physical persons in Italy</li>
+					<li class="text-left">2 years for private customers in Italy</li>
 					<li class="text-left">1 year for all businesses and private citizens in countries of the European Union</li>
 					<li class="text-left">6 months for the rest of the World</li>
 				</ul>
 				<p class="font-sm">			
-				The Warranty period starts from the delivery date of the product for online sales or the purchase date. <br>
-				Warranty rights must be exercised before the end of the warranty period, and only within 2 weeks of discovering the defect.
-				<br>Repairs or replacement of the products do not extend the warranty period.<br>
-				For the parts or products installed or replaced no new warranty period will start for this product.</p>
+				The Warranty period starts from the delivery date of the product for online sales or the
+				purchase date. Warranty rights must be exercised before the end of the warranty period, and
+				only within 2 weeks of discov-ering the defect.<br>
+				Repairs or replacement of the products do not extend the warranty period.
+				For the parts or products installed or replaced no new warranty period will start for this
+				specific product
+</p>
 	
 				<h6>Software License and Warranty</h6>
 					<p class="font-sm">

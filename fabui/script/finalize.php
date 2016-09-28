@@ -115,42 +115,28 @@ function finalize_print($tid, $status) {
 		return;
 	}
 
-	if ($status == 'stopped') {
-	}
-
 	//IF % PROGRESS IS < 0.5 FOR SECURITY REASON I RESET THE BOARD CONTROLLER
 	$monitor = json_decode(file_get_contents($attributes['monitor']), TRUE);
 	$percent = $monitor['print']['stats']['percent'];
-
-	if ($percent < 0.2) {
-
-		$_command = 'sudo python ' . PYTHON_PATH . 'force_reset.py ';
-		shell_exec($_command);
-		$reset = true;
-		
-	}
-
+	
+	//kill process
+	print_r($attributes['pid']);
 	shell_exec('sudo kill -9 ' . $attributes['pid']);
-
+	
 	//UPDATE TASK
 	update_task($tid, $status, file_get_contents($task['attributes']));
-
-	$_macro_end_print_response = TEMP_PATH . 'macro_response';
-	$_macro_end_print_trace    = TEMP_PATH . 'macro_trace';
-
-	$end_macro = 'end_print_additive';
-
-	write_file($_macro_end_print_trace, '', 'w');
-	chmod($_macro_end_print_trace, 0777);
-
-	write_file($_macro_end_print_response, '', 'w');
-	chmod($_macro_end_print_response, 0777);
-
-	//EXEC END MACRO
-	if(!$reset){
-		shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
+	
+	if($percent < 0.2){
+		shell_exec('sudo python '.PYTHON_PATH.'boot.py -R -f');
 		sleep(2);
 	}
+
+	$end_macro = 'end_print_additive';
+	//exec macro end
+	//shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
+	shell_exec('sudo python '.PYTHON_PATH.'gmacro_new.py -m '.$end_macro);
+	
+	sleep(2);
 	
 	// SEND MAIL
 	if (isset($attributes['mail']) && $attributes['mail'] == true && $status == 'performed') {
@@ -158,17 +144,8 @@ function finalize_print($tid, $status) {
 		$user = $user[0];
 		send_mail($attributes, $user);
 	}
-
 	$db -> close();
-
-	if ($reset) {
-		sleep(2);
-		include '/var/www/fabui/script/boot.php';
-	}
-
-	if ($status == 'performed') {
-		shell_exec('sudo rm -rf ' . $attributes['folder']); 
-	}
+	shell_exec('sudo rm -rf ' . $attributes['folder']);
 }
 
 function finalize_mill($tid, $status) {
@@ -187,22 +164,18 @@ function finalize_mill($tid, $status) {
 	//GET TASK ATTRIBUTES
 	$attributes = json_decode(file_get_contents($task['attributes']), TRUE);
 
+	shell_exec('sudo kill ' . $attributes['pid']);
+	
 	if ($status == 'stopped') {
 		shell_exec('sudo kill ' . $attributes['pid']);
 
 		/** FORCE RESET CONTROLLER */
-		$_command = 'sudo python ' . PYTHON_PATH . 'force_reset.py';
-		shell_exec($_command);
-
-		sleep(2);
-		include '/var/www/fabui/script/boot.php';
-
+		//$_command = 'sudo python ' . PYTHON_PATH . 'force_reset.py';
+		//shell_exec($_command)
+		shell_exec('python '.PYTHON_PATH.'boot.py -R -f');
 		sleep(3);
 		fopen(LOCK_FILE, "w");
 	}
-
-	shell_exec('sudo kill ' . $attributes['pid']);
-
 	//UPDATE TASK
 	update_task($tid, $status, file_get_contents($task['attributes']));
 
@@ -221,9 +194,9 @@ function finalize_mill($tid, $status) {
 	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
 
 	$db -> close();
-	if ($status == 'performed') {
-		shell_exec('sudo rm -rf ' . $attributes['folder']); 
-	}
+	//if ($status == 'performed') {
+	shell_exec('sudo rm -rf ' . $attributes['folder']); 
+	//}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

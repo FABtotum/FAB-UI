@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="smart-form">
-		<header> Set the Extended Angle (open position)</header>
+		<header> Set the extended angle (open position)</header>
 		<fieldset>
 			<div class="row">
 				<section class="col col-8">
@@ -21,13 +21,13 @@
 				
 			</div>
 		</fieldset>
-		<header> Set the Retracted Angle (closed position)</header>
+		<header> Set the retracted angle (closed position)</header>
 		<fieldset>
 			<div class="row">
 				<section class="col col-8">
 					<label class="label">Change the value until you find the one that is perfectly horizontal</label>
 					<label class="input">
-						<input id="retract_value" min="20" type="number" value="<?php echo $eeprom['servo_endstop']['r']?>">
+						<input id="retract_value" min="24" type="number" value="<?php echo $eeprom['servo_endstop']['r']?>">
 					</label>
 					
 				</section>
