@@ -44,15 +44,16 @@ if($_type == 'additive'){
 	$_engage_feeder = isset($_POST['engage_feeder']) && $_POST['engage_feeder'] == 1 ? true : false;
 	$_raise_bed_macro = $_engage_feeder == true ? 'raise_bed_no_g27' : 'raise_bed';
 	
-	$_raise_bed = 'sudo python '.PYTHON_PATH.'gmacro.py '.$_raise_bed_macro.' /var/www/temp/macro_trace  /var/www/temp/macro_response > /dev/null';
+	$_raise_bed = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m '.$_raise_bed_macro.' > /dev/null';
+	//$_raise_bed = 'sudo python '.PYTHON_PATH.'gmacro.py '.$_raise_bed_macro.' /var/www/temp/macro_trace  /var/www/temp/macro_response > /dev/null';
 	$_output_command = shell_exec ( $_raise_bed );
 	/** SLEEP 1 SEC */
 	sleep(1);
 	
 }else{
 	
-	
-	$_4th_axis_mmode = 'sudo python '.PYTHON_PATH.'gmacro.py 4th_axis_mode /var/www/temp/macro_trace  /var/www/temp/macro_response';
+	$_4th_axis_mmode = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m 4th_axis_mode';
+	//$_4th_axis_mmode = 'sudo python '.PYTHON_PATH.'gmacro.py 4th_axis_mode /var/www/temp/macro_trace  /var/www/temp/macro_response';
 	$_output_command = shell_exec ( $_4th_axis_mmode );
 	
 }
@@ -62,7 +63,8 @@ if($_type == 'additive'){
 sleep(1);
 
 /** EXEC COMMAND */
-$_command        = 'sudo python '.PYTHON_PATH.'gmacro.py check_pre_print '.$_destination_trace.' '.$_destination_response.' > /dev/null';
+$_command        = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m check_pre_print > /dev/null';
+//$_command        = 'sudo python '.PYTHON_PATH.'gmacro.py check_pre_print '.$_destination_trace.' '.$_destination_response.' > /dev/null';
 $_output_command = shell_exec ( $_command );
 $_pid            = trim(str_replace('\n', '', $_output_command));
 

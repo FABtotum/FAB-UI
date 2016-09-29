@@ -1,5 +1,14 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version 0.962 - 2016-09-29 (hotifix)
+
+#### General
+* Important security fix
+* Improved firmware baud rate speed recognition
+* Improved macros executions
+
+==================================================================
+
 ### Version: 0.961 - 2016-09-28 (hotifx)
 
 #### General

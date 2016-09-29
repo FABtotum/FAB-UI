@@ -404,7 +404,8 @@ printlog()
 
 #end
 trace("Done!")
-os.remove(config.get('task', 'lock_file'))
+if os.path.isfile(config.get('task', 'lock_file')):
+    os.remove(config.get('task', 'lock_file'))
 write_status(False)
 #open(log_trace, 'w').close() #reset trace file
 sys.exit()

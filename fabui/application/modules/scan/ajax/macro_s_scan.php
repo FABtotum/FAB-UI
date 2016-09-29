@@ -20,7 +20,8 @@ write_file($_destination_response, '', 'w');
 
 /** EXEC COMMAND */
 
-$_command        = 'sudo python '.PYTHON_PATH.'gmacro.py s_scan '.$_destination_trace.' '.$_destination_response.' > /dev/null';
+//$_command        = 'sudo python '.PYTHON_PATH.'gmacro.py s_scan '.$_destination_trace.' '.$_destination_response.' > /dev/null';
+$_command        = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m s_scan  > /dev/null';
 $_output_command = shell_exec ( $_command );
 $_pid            = trim(str_replace('\n', '', $_output_command));
 

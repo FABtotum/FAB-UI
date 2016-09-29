@@ -1,13 +1,4 @@
 <?php
-if (file_exists('/var/www/lib/log4php/Logger.php')) {
-
-	//require_once '/var/www/lib/log4php/Logger.php';
-	//Logger::configure('/var/www/fabui/config/log_database_config.xml');
-
-}
-//require_once '/var/www/lib/log4php/Logger.php';
-/** INIT LOG */
-//Logger::configure('/var/www/fabui/config/log_database_config.xml');
 
 class Database {
 
@@ -45,9 +36,6 @@ class Database {
 		$this -> _db = new mysqli($this -> _hostname, $this -> _username, $this -> _password, $this -> _database);
 
 		if (mysqli_connect_errno()) {
-
-			error_log('Cannot connect do database', 3, '/var/log/apache2/error.log');
-
 		}
 
 		$this -> _db -> set_charset("utf8");

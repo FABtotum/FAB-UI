@@ -4,24 +4,26 @@ import serial, re, time
 import RPi.GPIO as GPIO
 
 class SerialUtils:
-    def __init__(self):
+    def __init__(self, port=None, baud=None):
         ''' LOAD CONFIG '''
         self.config = ConfigParser.ConfigParser()
         self.config.read('/var/www/lib/config.ini')
         ''' LOAD SERIAL CONFIG '''
         self.serialconfig = ConfigParser.ConfigParser()
         self.serialconfig.read('/var/www/lib/serial.ini')
+        
+        self.port = port or self.serialconfig.get('serial', 'port')
+        self.baud = baud or self.serialconfig.get('serial', 'baud')
         ''' INIT SERIAL CLASS '''
-        self.serial = serial.Serial(self.serialconfig.get('serial', 'port'), self.serialconfig.get('serial', 'baud'), timeout=0.5)
+        self.serial = serial.Serial(self.port, self.baud, timeout=0.5)
     def sendGCode(self, code):
-        self.serial.flushInput()
+        self.serial.reset_input_buffer()
         #print code.encode()
         self.serial.write("%s\r\n" % code.encode())
-    def getReply(self):
-        return self.serial.read(4096).strip()
+    def getReply(self, bytes=4096):
+        return self.serial.read(bytes).strip()
     def close(self):
         self.serial.close()
-    
     def serialize(self,string_source, regex_to_serach, keys):
         match = re.search(regex_to_serach, string_source, re.IGNORECASE)
         if match != None:
@@ -101,6 +103,7 @@ class SerialUtils:
         time.sleep(1)
         return True
     def flush(self):
-        self.serial.flushInput()
-        self.serial.flushOutput()
-        self.serial.flush()
+        self.serial.reset_input_buffer()
+        self.serial.reset_output_buffer()
+    def inWaiting(self):
+        return self.serial.in_waiting

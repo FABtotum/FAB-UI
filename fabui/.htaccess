@@ -63,7 +63,7 @@ AddDefaultCharset UTF-8
     </FilesMatch>
 </IfModule>
 
-
+php_value max_execution_time 3600
 php_value upload_max_filesize 512M
 php_value post_max_size 512M
 php_value memory_limit 512M

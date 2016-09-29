@@ -5,23 +5,18 @@ from watchdog.events import FileSystemEventHandler
 import ConfigParser
 import json
 from ws4py.client.threadedclient import WebSocketClient
-import serial
 import RPi.GPIO as GPIO
 import logging
 import os, sys
 from subprocess import call,Popen,PIPE
 import signal
+from serial_utils import SerialUtils
+import re
 
 monitorPID = os.getpid()
-
-
-#print "Starting new monitor NOW!"
             
 config = ConfigParser.ConfigParser()
 config.read('/var/www/lib/config.ini')
-
-serialconfig = ConfigParser.ConfigParser()
-serialconfig.read('/var/www/lib/serial.ini')
 
 '''### ###'''
 php_script_path = config.get('system', 'php_script_path')
@@ -54,7 +49,7 @@ logging.basicConfig(filename=log_file,level=logging.INFO,format='%(message)s')
 
 '''### READ PRINTER SETTINGS ###'''
 json_f = open(config.get('printer', 'settings_file'))
-units = json.load(json_f)
+settings = json.load(json_f)
 
 '''#### WEB SOCKET CLIENT ####'''
 host=config.get('socket', 'host')
@@ -111,13 +106,57 @@ def is_int(s):
 lasterr=0
 last_status=2
 
+
+def decodeReply(string):
+    match = re.search('ERROR\s:\s([0-9.]+)', string, re.IGNORECASE)
+    if match != None:
+        return int(match.group(1))
+    match = re.search('Error:Printer', string, re.IGNORECASE)
+    if match != None:
+        return 102
+    return None
+
+def safety_callback(channel):
+    
+    open(config.get('task', 'lock_file'), 'w').close()
+    message = {'type': '', 'code': ''}
+    write_emergency(json.dumps(message))
+    su = SerialUtils()
+    GPIO_STATUS=GPIO.input(2)
+    type="emergency"
+    if(GPIO_STATUS == 0):
+        su.sendGCode('M730')
+        reply = su.getReply()
+        decodedReply =  decodeReply(reply)
+        if decodedReply != None :
+            special_codes = [110, 120, 121]
+            if(decodedReply in special_codes):
+                if decodedReply == 110:
+                    type="alert"
+                    su.flush()
+                    su.sendGCode('M999')
+                elif decodedReply == 120 or decodedReply == 121:
+                    if(settings['bothy'] == 'Shutdown' or settings['bothz'] == 'Shutdown'):
+                        call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
+                        GPIO.cleanup() #we can disable GPIO as we are rebooting the system.
+                        
+            message = {'type': type, 'code': str(decodedReply)}
+            ws.send(json.dumps(message))
+            write_emergency(json.dumps(message))
+            
+    su.flush()
+    su.close()
+    GPIO_STATUS=GPIO.HIGH   
+    if os.path.isfile(config.get('task', 'lock_file')):
+        os.remove(config.get('task', 'lock_file'))
+
+'''
 def safety_callback(channel):
 
     #reset error msg
     message = {'type': "", 'code': ""}
     write_emergency(json.dumps(message))
                 
-    
     global SOCKET_CONNECTED
     global lasterr
     global last_status
@@ -131,7 +170,7 @@ def safety_callback(channel):
     if(GPIO_STATUS == 0):
         open(config.get('task', 'lock_file'), 'w').close()
         
-        '''#### SERIAL PORT COMMUNICATION ####'''
+        #### SERIAL PORT COMMUNICATION ####
         serial_port = serialconfig.get('serial', 'port')
         serial_baud = serialconfig.get('serial', 'baud')
         ser = serial.Serial(serial_port, serial_baud, timeout=0.6)
@@ -140,7 +179,7 @@ def safety_callback(channel):
         ser.write("M730\r\n")
         reply=ser.readline()
         ser.flushInput()
-        #print "Reply: ", reply   
+        print "Reply: ", reply   
         type="emergency"
         
         try:
@@ -199,9 +238,11 @@ def safety_callback(channel):
         if os.path.isfile(config.get('task', 'lock_file')):
             os.remove(config.get('task', 'lock_file'))
         GPIO_STATUS=GPIO.HIGH                
-        
+
+'''       
 #event manager
 GPIO.add_event_detect(2, GPIO.BOTH, callback=safety_callback, bouncetime=300)
+
 
 '''#### MONITOR HANDLER CLASS ####'''
 class MonitorHandler(PatternMatchingEventHandler):

@@ -580,7 +580,8 @@ function finalize_scan($tid, $type, $status) {
 	chmod($_destination_response, 0777);
 
 	/** EXEC */
-	$_command = 'sudo python ' . PYTHON_PATH . 'gmacro.py end_scan ' . $_destination_trace . ' ' . $_destination_response . ' 1';
+	$_command = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m end_scan ';
+	//$_command = 'sudo python ' . PYTHON_PATH . 'gmacro.py end_scan ' . $_destination_trace . ' ' . $_destination_response . ' 1';
 	shell_exec($_command);
 
 	//UPDATE TASK

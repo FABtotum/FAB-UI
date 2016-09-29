@@ -193,11 +193,13 @@ class CreateFactory {
 					$_column = 'note';
 					$_value = $this->_value;
 					break;
+				default:
+					$_column = '';
 			}	
 
 			//echo $this->_action.PHP_EOL;
 			//kill echo $_column.PHP_EOL;
-			$_attributes[$_column] = $_value;
+			if($_column != '') $_attributes[$_column] = $_value;
 			
 			
 			file_put_contents($this->_attributes_file, json_encode($_attributes), FILE_USE_INCLUDE_PATH);
