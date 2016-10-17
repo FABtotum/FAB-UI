@@ -212,7 +212,14 @@ class JogFactory {
 			$_units = json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE);
 		}
 		
-		if(isset($_units['e']) || $_units['e'] == ''){
+		if(!isset($_units['e'])){
+			$eeprom = json_decode(shell_exec('sudo python '.PYTHON_PATH.'read_eeprom.py'), true);
+			$_units['e']  = $eeprom['steps_per_unit']['e'];
+			file_put_contents(FABUI_PATH.'config/config.json', json_encode($_units));
+			file_put_contents(CUSTOM_CONFIG_UNITS, json_encode($_units));
+		}
+		
+		if( isset($_units['e']) && ($_units['e'] == '')){
 			$eeprom = json_decode(shell_exec('sudo python '.PYTHON_PATH.'read_eeprom.py'), true);
 			$_units['e']  = $eeprom['steps_per_unit']['e'];
 		}

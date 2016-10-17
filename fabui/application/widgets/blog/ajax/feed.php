@@ -26,7 +26,9 @@ $doc = new DOMDocument();
 	?>
 	<div class="row">
 		<div class="col-md-4">
+			<?php if(isset($image_src)): ?>
 			<img class="img-responsive" src="<?php echo $image_src; ?>">
+			<?php endif; ?>
 			<ul class="list-inline" style="margin-top:5px;">
 				<li class="font-xs">
 					 <?php echo date('j M, Y',strtotime($feed->pubDate)); ?>

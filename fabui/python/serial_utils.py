@@ -1,19 +1,33 @@
 #!/usr/bin/python
 import ConfigParser
-import serial, re, time
+import serial, re, time, logging
 import RPi.GPIO as GPIO
 
+class MacroException(Exception):
+    def __ini__(self, command):
+        self.command = command
+        self.message = 'Macro Exception : ' + command
+class MacroTimeOutException(Exception):
+    def __init__(self, command):
+        self.command = command
+        self.message = 'Timeout Error : ' + command
+
 class SerialUtils:
-    def __init__(self, port=None, baud=None):
+    def __init__(self, port=None, baud=None, trace_file=None, debug=False):
+        self.debug = debug
         ''' LOAD CONFIG '''
         self.config = ConfigParser.ConfigParser()
         self.config.read('/var/www/lib/config.ini')
         ''' LOAD SERIAL CONFIG '''
         self.serialconfig = ConfigParser.ConfigParser()
         self.serialconfig.read('/var/www/lib/serial.ini')
-        
-        self.port = port or self.serialconfig.get('serial', 'port')
-        self.baud = baud or self.serialconfig.get('serial', 'baud')
+        self.port  = port  or self.serialconfig.get('serial', 'port')
+        self.baud  = baud  or self.serialconfig.get('serial', 'baud')
+        ''' LOAD LOGGING '''
+        self.trace_file = trace_file or self.config.get('macro', 'trace_file')
+        logging.basicConfig(filename=self.trace_file,level=logging.INFO,format=' %(message)s',datefmt='%d/%m/%Y %H:%M:%S')
+        self.logger = logging.getLogger('serial_utils')
+        self.resetTrace()
         ''' INIT SERIAL CLASS '''
         self.serial = serial.Serial(self.port, self.baud, timeout=0.5)
     def sendGCode(self, code):
@@ -46,6 +60,19 @@ class SerialUtils:
         if match != None:
             value = match.group(1)
             return value
+    def getPosition(self):
+        self.sendGCode('M114')
+        reply = self.getReply()
+        position = None
+        match = re.search('X:([-|+0-9.]+)\sY:([-|+0-9.]+)\sZ:([-|+0-9.]+)\sE:([-|+0-9.]+)', reply, re.IGNORECASE)
+        if match != None:
+           position = {
+            "x" : match.group(1),
+            "y" : match.group(2),
+            "z" : match.group(3),
+            "e" : match.group(4)
+           }
+        return position
         
     def eeprom(self):
         self.sendGCode('M503')
@@ -107,3 +134,33 @@ class SerialUtils:
         self.serial.reset_output_buffer()
     def inWaiting(self):
         return self.serial.in_waiting
+    def trace(self, string):
+        self.logger.info(string)
+        if(self.debug):
+            print string
+    def resetTrace(self):
+        with open(self.trace_file, "w"):
+            pass
+    def doMacro(self, command, expected_reply, timeout, message, verbose=True, warning=False):
+        if(verbose):
+            self.trace(message)
+        """ wait only if timeout > -1 """
+        wait = False if timeout == -1 else True
+        start_time = time.time() ###
+        finished = False
+        timeoutError = False
+        self.sendGCode(command)
+        if('G0 ' in command):
+            time.sleep(0.5)
+            """ ### send M400 to synchronize movements and get reply 'ok' ### """
+            self.sendGCode('M400');
+        while(finished == False):
+            reply = self.getReply()
+            if(expected_reply in reply):
+                finished = True
+                continue
+            if(wait):
+                if( time.time() - start_time > timeout):
+                    finished = True
+                    if(warning == False):
+                        raise MacroTimeOutException(message)

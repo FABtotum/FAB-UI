@@ -196,16 +196,16 @@ function flash($file)
 	$response_flash = shell_exec($flash_command);
 	unlink(LOCK_FILE);
 	//flash done - just wait 2 seconds
-	sleep(2);
-	shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
-	//recalculate baudrate
-	shell_exec('sudo python '.PYTHON_PATH.'baud.py');
-	//start up printer
-	shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
 	sleep(5);
+	shell_exec('sudo python '.PYTHON_PATH.'baud.py');
+	//shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
+	//recalculate baudrate
+	//start up printer
+	//shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
+	//sleep(5);
 	//reboot all settings
 	//include FABUI_PATH.'script/boot.php';
-	shell_exec('python '.PYTHON_PATH.'boot.py -R');
+	shell_exec('sudo python '.PYTHON_PATH.'boot.py -R');
 	sleep(5);
 	return $response_flash;
 }

@@ -90,19 +90,19 @@ class Controller extends Module {
 
 			$this -> config -> load('fabtotum', TRUE);
 
-			$url = $this -> config -> item('fabtotum_bugs_url', 'fabtotum');
-			$text = $this -> input -> post('text');
+			$url   = $this -> config -> item('fabtotum_bugs_url', 'fabtotum');
+			$text  = $this -> input -> post('text');
 			$title = $this -> input -> post('title');
 
 			$fields = array();
 
 			$fields_string = "";
 
-			$fields['email'] = $_SESSION['user']['email'];
+			$fields['email']      = $_SESSION['user']['email'];
 			$fields['first_name'] = $_SESSION['user']['first_name'];
-			$fields['last_name'] = $_SESSION['user']['last_name'];
-			$fields['text'] = $text;
-			$fields['title'] = $title;
+			$fields['last_name']  = $_SESSION['user']['last_name'];
+			$fields['text']       = $text;
+			$fields['title']      = $title;
 
 			$fields_string = '';
 
@@ -114,18 +114,14 @@ class Controller extends Module {
 			rtrim($fields_string, '&');
 
 			$ch = curl_init();
-
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POST, count($fields));
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
 			$response = curl_exec($ch);
-
+			
 			$_json['result'] = $response;
-
 			echo json_encode($_json);
-
 		}
 
 	}

@@ -58,6 +58,13 @@ if($_type == 'additive'){
 	
 }
 
+if(str_replace(PHP_EOL, '', file_get_contents($_destination_response)) != 'true'){
+	$_response_items['response'] = false;
+	$_response_items['trace'] = str_replace(PHP_EOL, '<br>',file_get_contents($_destination_trace));
+	header('Content-Type: application/json');
+	echo minify(json_encode($_response_items));
+	exit();
+}
 
 /** WAIT JUST 1 SECOND */
 sleep(1);

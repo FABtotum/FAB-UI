@@ -41,10 +41,10 @@ if(is_array($_response)){ // if there is a valid response
 
 	foreach($screws as $screw){
 		array_push($elaboreted_screws, elaborate_screw($screw));
-		
-		if($screw['color'] == 'green'){
-			$greens++;
-		}	
+		if(isset($screw['color']))
+			if($screw['color'] == 'green'){
+				$greens++;
+			}	
 	}
 	
 ?>
@@ -102,7 +102,9 @@ function elaborate_screw($data){
 }
 
 function get_color($value){
-		
+	
+	global $greens;
+	
 	$value = abs(floatval($value));
 
 	if ($value > 0.2) {

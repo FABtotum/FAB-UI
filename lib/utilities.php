@@ -534,7 +534,7 @@ function create_default_config($except = ''){
 			'bothy'         => 'None',
 			'bothz'         => 'None',
 			'api'           => array('keys' => array()),
-			'zprobe'        => array('disbale'=>0, 'zmax'=>206),
+			'zprobe'        => array('disable'=>0, 'zmax'=>206),
 			'settings_type' => 'default',
 			'hardware'      => array('head' => array('type' => 'hybrid', 'description'=>'Hybrid Head', 'max_temp'=>230))
 		);
