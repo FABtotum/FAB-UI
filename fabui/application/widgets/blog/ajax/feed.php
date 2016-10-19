@@ -9,11 +9,18 @@ if($reload || !file_exists(BLOG_FEED_XML)){
 
 $xml = simplexml_load_file(BLOG_FEED_XML,'SimpleXMLElement', LIBXML_NOCDATA);
 $feeds = $xml->channel->item;
+
+
+
+
+
 $doc = new DOMDocument();
+
 ?>
 
 <?php foreach($feeds as $feed):?>
-	<?php 
+	<?php
+		//if(!isCategoryAvailable($feed->category)) continue;
 		$doc->loadHTML($feed->description);  
 		$images = $doc->getElementsByTagName('img');
 		$paragraphs = $doc->getElementsByTagName('p');
@@ -43,3 +50,24 @@ $doc = new DOMDocument();
 	</div>
 	<hr>
 <?php endforeach; ?>
+
+
+<?php 
+
+
+function isCategoryAvailable($category)
+{
+	$category_to_show = array('Fabtotum Development', 'Fabtotum Team');
+	if(is_array($category)){
+		$return  = false;
+		foreach($category as $cat){
+			$return = in_array($cat, $category_to_show);
+			return $return;
+		}
+	}else{
+		return in_array($category, $category_to_show);
+	}
+	return false;
+}
+
+?>

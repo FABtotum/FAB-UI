@@ -163,13 +163,17 @@ class Create extends Module {
 		$data_widget_step5['_rpm'] = $_running && isset($_attributes['rpm']) ? $_attributes['rpm'] : 6000;
 		$data_widget_step5['_running'] = $_running;
 		$data_widget_step5['_file_type'] = $_running ? trim($_file -> print_type) : 'additive';
-		$data_widget_step5['mail'] = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : 0;
+		$data_widget_step5['mail'] = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : 1;
 		$data_widget_step5['layer_total'] = $_running && isset($_monitor_encoded -> print -> stats -> layers -> total) ? intval($_monitor_encoded -> print -> stats -> layers -> total) : 0;
 		$data_widget_step5['layer_actual'] = $_running && isset($_monitor_encoded -> print -> stats -> layers -> actual) ? intval($_monitor_encoded -> print -> stats -> layers -> actual) : 0;
 		$data_widget_step5['flow_rate'] = $_running && isset($_attributes['flow_rate']) ? $_attributes['flow_rate'] : 100;
 		$data_widget_step5['fan'] = $_running && isset($_attributes['fan']) ? $_attributes['fan'] : 0;
 		$data_widget_step5['z_override'] = $_running ? $_monitor_encoded -> print -> stats -> z_override : 0;
-		$data_widget_step5['mail'] = $_running && isset($_attributes['mail']) && $_attributes['mail'] == true ? 'checked' : '';
+		//$data_widget_step5['mail'] = $_running && isset($_attributes['mail']) && $_attributes['mail'] == true ? 'checked' : '';
+		$data_widget_step5['mail'] = 'checked';
+		if($_running ){
+			$data_widget_step5['mail'] = $_attributes['mail'] == true ? 'checked' : '';
+		}
 		$data_widget_step5['note'] = $_running && isset($_attributes['note']) ? $_attributes['note'] : '';
 		$data_widget_step5['_object_name'] = $_running ? $_object -> obj_name : '';
 		$data_widget_step5['_file_name'] = $_running ? $_file -> raw_name : '';
@@ -179,7 +183,7 @@ class Create extends Module {
 		//$data_step5['_tab5_monitor_widget'] = widget('_tab5_monitor_widget', 'Print Monitor', '', $this->load->view('index/step5/widget', $data_widget_step5, TRUE), false);
 		$data_step5['_tab5_monitor_widget'] = $this -> load -> view('index/step5/widget', array_merge($data_widget_step5, $data), TRUE);
 		$data_step5['_running'] = $_running;
-		$data_step5['mail'] = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : 0;
+		$data_step5['mail'] = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : 1;
 
 		/**
 		 *

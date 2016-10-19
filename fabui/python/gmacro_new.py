@@ -58,7 +58,7 @@ def loadSpool(serial_util, settings, params=None):
     serial_util.doMacro('M104 S190', 'ok', -1, 'Heating nozzle...')
     serial_util.doMacro('G90', 'ok', 1, 'Set absolute position')
     serial_util.doMacro('G27', 'ok', -1, 'Zeroing Z axis')
-    serial_util.doMacro('G0 X130 Y150 Z100 F10000', 'ok', -1, 'Rising bed and moving head')
+    serial_util.doMacro('G0 X130 Y150 Z150 F10000', 'ok', -1, 'Rising bed and moving head')
     serial_util.doMacro('M302', 'ok', 1,   'Extrusion prevention disabled')
     serial_util.doMacro('G91', 'ok', 1, 'Set relative position')
     serial_util.doMacro('G92 E0', 'ok', 1, 'Reset extuder position')
@@ -69,7 +69,7 @@ def loadSpool(serial_util, settings, params=None):
     temperature = serial_util.getTemperature()
     if(temperature['extruder']['temperature'] < 190 ):
         serial_util.doMacro('M109 S190', 'ok', -1, 'Heating nozzle...(wait)')
-    serial_util.doMacro('G0 E200 F200', 'ok', -1, 'Entering the hotend (slow)')
+    serial_util.doMacro('G0 E100 F200', 'ok', -1, 'Entering the hotend (slow)')
     serial_util.doMacro('M104 S0', 'ok', 1, 'Disabling extruder')
     serial_util.doMacro('M302 S170', 'ok', 1, 'Extrusion prevention enabled')
 """ ################################################################### """
@@ -185,9 +185,18 @@ def photogrammetryScan(serial_util, settings, params=None):
 def raiseBed(serial_util, settings, params=None):
     serial_util.doMacro('M402', 'ok', -1, 'Retracting Probe')
     serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
-    print settings
-    if(settings['zprobe']['disable'] == 1):
-        serial_util.doMacro('G27 X0 Y0 Z' + str(settings['zprobe']['zmax']), 'ok', -1, 'Homing all axes')
+    
+    try:
+        ####
+        zprobe_disabled = int(settings['zprobe']['disable']) == 1
+        zprobe_zmax   = settings['zprobe']['zmax']
+    except KeyError:
+        ###
+        zprobe_disabled = False
+        zprobe_zmax = 206.0
+    if(zprobe_disabled == True):
+        serial_util.trace("Use of probe disabled")
+        serial_util.doMacro('G27 X0 Y0 Z' + str(zprobe_zmax), 'ok', -1, 'Homing all axes')
         serial_util.doMacro('G0 Z50 F10000', 'ok', -1, 'Rising')
     else:
         serial_util.doMacro('G27', 'ok', -1, 'Homing all axes')
@@ -197,8 +206,18 @@ def raiseBed(serial_util, settings, params=None):
 def raiseBedNo27(serial_util, settings, params=None):
     serial_util.doMacro('M402', 'ok', -1, 'Retracting Probe')
     serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
-    if(settings['zprobe']['disable'] == 1):
-        serial_util.doMacro('G27 X0 Y0 Z' + str(settings['zprobe']['zmax']), 'ok', -1, 'Homing all axes')
+    try:
+        ####
+        zprobe_disabled = int(settings['zprobe']['disable']) == 1
+        zprobe_zmax   = settings['zprobe']['zmax']
+    except KeyError:
+        ###
+        zprobe_disabled = False
+        zprobe_zmax = 206.0
+        
+    if(zprobe_disabled == True):
+        serial_util.trace("Use of probe disabled")
+        serial_util.doMacro('G27 X0 Y0 Z' + str(zprobe_zmax), 'ok', -1, 'Homing all axes')
         serial_util.doMacro('G0 Z50 F10000', 'ok', -1, 'Rising')
     else:
         serial_util.doMacro('G0 Z20 F10000', 'ok', -1, 'Raising bed', verbose=False)
@@ -209,9 +228,18 @@ def fourthAxisMode(serial_util, settings, params=None):
 """ ################################################################### """
 def homeAll(serial_util, settings, params=None):
     serial_util.trace("Now homing all axes")
+    try:
+        ####
+        zprobe_disabled = int(settings['zprobe']['disable']) == 1
+        zprobe_zmax   = settings['zprobe']['zmax']
+    except KeyError:
+        ###
+        zprobe_disabled = False
+        zprobe_zmax = 206.0
     serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
-    if(settings['zprobe']['disable'] == 1):
-        serial_util.doMacro('G27 X0 Y0 Z' + str(settings['zprobe']['zmax']), 'ok', -1, 'Homing all axes', verbose=False)
+    if(zprobe_disabled == True):
+        serial_util.trace("Use of probe disabled")
+        serial_util.doMacro('G27 X0 Y0 Z' + str(zprobe_zmax), 'ok', -1, 'Homing all axes', verbose=False)
         serial_util.doMacro('G0 Z50 F10000', 'ok', -1, 'Rising', verbose=False)
     else:
         serial_util.doMacro('G28', 'ok', -1, 'Homing all axes', verbose=False)
@@ -301,8 +329,8 @@ if macro_name in MACROS_CMDS:
         handleExceptionEnd(su, e)
     except serial_utils.MacroTimeOutException as e:
         handleExceptionEnd(su, e.message)
-    except:
-        handleExceptionEnd(su, 'Unexpected error: ' + str(sys.exc_info()[0]))
+    except Exception as e:
+        handleExceptionEnd(su, 'Error : ' + e.__doc__ + "  '" + e.message + "'")
 else:
     #print "Macro not found"
     response('false')

@@ -104,8 +104,32 @@ def hardware3(serialUtils, settings, settings_file):
 
 def hardware4():
     """
-    - TBA
+    Rev4:
     """
+    ### invert x endstop logic
+    serialUtils.sendGCode("M747 X1")
+    ### save to eeprom
+    serialUtils.sendGCode("M500")
+    ### save config file
+    settings['hardware']['id'] = 4
+    settings['feeder']['show'] = False
+    settings['a'] = 88.888889
+    saveSettings(settings, settings_file)
+    return None
+
+def hardware5():
+    """
+    - Rev4:
+    """
+    ### invert x endstop logic
+    serialUtils.sendGCode("M747 X1")
+    ### save to eeprom
+    serialUtils.sendGCode("M500")
+    ### save config file
+    settings['hardware']['id'] = 5
+    settings['feeder']['show'] = False
+    settings['a'] = 88.888889
+    saveSettings(settings, settings_file)
     return None
 
 def saveSettings(data, file):
@@ -116,7 +140,7 @@ def saveSettings(data, file):
 
 def hybridHead(serialUtils, settings):
     ### set pid
-    serialUtils.sendGCode('M301 P15 I5 D30')
+    serialUtils.sendGCode('M301 P15 I5 D30') 
     ### set fw version
     serialUtils.sendGCode('M793 S1')
     ### save to eeprom
@@ -142,7 +166,8 @@ HW_VERSION_CMDS = {
  '1'      : hardware1,
  '2'      : hardware2,
  '3'      : hardware3,
- '4'      : hardware4
+ '4'      : hardware4,
+ '5'      : hardware5
 }
 
 HEAD_VERSION_CMDS = {

@@ -1,17 +1,34 @@
 #!/bin/bash
 
-usage() {
-   echo "uso: $0 <new hostname>"
-   exit 1
-}
-
-[ "$1" ] || usage
-
-CURRENT_HOSTNAME=$(</etc/hostname)
-NEW_HOSTNAME=$1
+OLD_HOSTNAME="$( hostname )"
+NEW_HOSTNAME="$1"
 NEW_SERVICE_DESCRIPTION=$2
 
-echo "Setting new hostname for Avahi-daemon.."
+if [ -z "$NEW_HOSTNAME" ]; then
+ echo -n "Please enter new hostname: "
+ read NEW_HOSTNAME < /dev/tty
+fi
+
+if [ -z "$NEW_HOSTNAME" ]; then
+ echo "Error: no hostname entered. Exiting."
+ exit 1
+fi
+
+echo "Changing hostname from $OLD_HOSTNAME to $NEW_HOSTNAME..."
+
+hostname "$NEW_HOSTNAME"
+
+#sed -i "s/HOSTNAME=.*/HOSTNAME=$NEW_HOSTNAME/g" /etc/systemd/network
+
+if [ -n "$( grep "$OLD_HOSTNAME" /etc/hosts )" ]; then
+ sed -i "s/$OLD_HOSTNAME/$NEW_HOSTNAME/g" /etc/hosts
+else
+ echo -e "$( hostname -I | awk '{ print $1 }' )\t$NEW_HOSTNAME" >> /etc/hosts
+fi
+
+echo "$NEW_HOSTNAME" > /etc/hostname
+
+echo "Setting $NEW_HOSTNAME as new hostname for Avahi-daemon.."
 sudo avahi-set-host-name $NEW_HOSTNAME
 echo "Setting service description"
 cat <<EOF> /etc/avahi/services/fabtotum.service
@@ -27,3 +44,4 @@ cat <<EOF> /etc/avahi/services/fabtotum.service
                 </service>
         </service-group>
 EOF
+echo "Done."

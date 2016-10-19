@@ -115,7 +115,7 @@ class Objectmanager extends Module {
 
 			//torno all'homepage del modulo
 			//$this->session->set_flashdata('obj_inserted', 'New object '.$_obj_data['obj_name'].' was inserted with success');
-			redirect('objectmanager');
+			redirect('objectmanager/edit/'.$_obj_id);
 		}
 
 		//carico file configurazione

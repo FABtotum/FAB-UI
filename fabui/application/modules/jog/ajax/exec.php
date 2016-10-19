@@ -30,13 +30,13 @@ if (!$macro) {
 } else {
 
 	$macros['home_all_axis'] = 'home_all';
-	$macros['bed-align'] = 'auto_bed_leveling';
+	$macros['bed-align']     = 'auto_bed_leveling';
 
 	if (!in_array($function, $macros)) {
 
 	}
 	
-	$_destination_trace = TEMP_PATH . 'macro_trace';
+	$_destination_trace    = TEMP_PATH . 'macro_trace';
 	$_destination_response = TEMP_PATH . 'macro_response';
 
 	write_file($_destination_trace, '', 'w');
@@ -45,10 +45,11 @@ if (!$macro) {
 	write_file($_destination_response, '', 'w');
 	chmod($_destination_response, 0777);
 
-	$_command_macro = 'sudo python ' . PYTHON_PATH . 'gmacro.py ' . $macros[$function] . ' ' . $_destination_trace . ' ' . $_destination_response . ' & echo $!';
+	//$_command_macro = 'sudo python ' . PYTHON_PATH . 'gmacro.py ' . $macros[$function] . ' ' . $_destination_trace . ' ' . $_destination_response . ' & echo $!';
+	$_command_macro = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m '.$macros[$function].' & echo $!';
 	$_output_macro = shell_exec($_command_macro);
 	$_pid_macro = trim(str_replace('\n', '', $_output_macro));
-
+	
 	$data['command'] = $macros[$function];
 	$data['command_macro'] = $_command_macro;
 	$data['response'] = file_get_contents($_destination_response, FILE_USE_INCLUDE_PATH);

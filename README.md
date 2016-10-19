@@ -1,5 +1,16 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version 0.965/0.9651 - 2016-10-19 (hotifix)
+
+#### General
+* Fixed macro execution when probe is disabled
+* Improved unit boot
+* Added new hardware number revisions
+* Fixed probe macro error during print preparation
+* General bugfixes
+
+==================================================================
+
 ### Version 0.963/0.964 - 2016-10 (hotifix)
 
 #### General

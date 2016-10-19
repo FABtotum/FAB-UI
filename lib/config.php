@@ -100,7 +100,7 @@ if(isset($_SERVER['SERVER_NAME'])){
 }
 
 
-
+defined('MAIL_TASK_COMPLETE_URL')  ? null : define("MAIL_TASK_COMPLETE_URL",      'http://update.fabtotum.com/mail/task_complete.php');
 defined('INSTAGRAM_FEED_URL')  ? null : define("INSTAGRAM_FEED_URL",      'http://www.fabtotum.com/instagram_feed.json');
 defined('INSTAGRAM_HASH_URL')  ? null : define("INSTAGRAM_HASH_URL",      'http://www.fabtotum.com/instagram_hash.json');
 defined('INSTAGRAM_FEED_JSON') ? null : define("INSTAGRAM_FEED_JSON",      TEMP_PATH.'instagram_feed.json');
@@ -109,7 +109,7 @@ defined('INSTAGRAM_HASH_JSON') ? null : define("INSTAGRAM_HASH_JSON",      TEMP_
 defined('TWITTER_FEED_URL')  ? null : define("TWITTER_FEED_URL",      'http://www.fabtotum.com/twitter_feed.json');
 defined('TWITTER_FEED_JSON') ? null : define("TWITTER_FEED_JSON",      TEMP_PATH.'twitter.json');
 
-defined('BLOG_FEED_URL')  ? null : define("BLOG_FEED_URL",      'http://www.fabtotum.com/feed/');
+defined('BLOG_FEED_URL')  ? null : define("BLOG_FEED_URL",      'http://www.fabtotum.com/feed/?cat=5%2C6');
 defined('BLOG_FEED_XML')  ? null : define("BLOG_FEED_XML",      TEMP_PATH.'blog.xml');
 
 defined('FAQ_URL')  ? null : define("FAQ_URL", 'http://www.fabtotum.com/faq_new.json');

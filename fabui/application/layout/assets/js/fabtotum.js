@@ -551,12 +551,18 @@ function restart() {
 
 /** CHECK FOR AVAILABLE UPDATES */
 function check_for_updates() {
-	$.get("/fabui/updates/check", function(data, status){
-		if(data.updates.updated == false){
-			set_updates(1);
-			update_notifications();
-		}
+	
+	setTimeout(function() {
+		
+		$.get("/fabui/updates/check", function(data, status){
+			if(data.updates.updated == false){
+				set_updates(1);
+				update_notifications();
+			}
 	});
+		
+		
+	}, 3000);
 }
 
 /** SUGGESTION */
@@ -837,9 +843,13 @@ function show_connected(bool) {
 
 function check_connected() {
 	
-	$.get("/fabui/controller/internet", function(data){
-		show_connected(data.available);
-	});
+	//krios
+	
+	setTimeout(function(){ 
+		$.get("/fabui/controller/internet", function(data){
+			show_connected(data.available);
+		});
+	}, 3000);
 	
 }
 

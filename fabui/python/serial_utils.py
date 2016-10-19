@@ -17,7 +17,7 @@ class SerialUtils:
         self.debug = debug
         ''' LOAD CONFIG '''
         self.config = ConfigParser.ConfigParser()
-        self.config.read('/var/www/lib/config.ini')
+        self.config.read('/var/www/lib/config.ini') 
         ''' LOAD SERIAL CONFIG '''
         self.serialconfig = ConfigParser.ConfigParser()
         self.serialconfig.read('/var/www/lib/serial.ini')
@@ -29,7 +29,7 @@ class SerialUtils:
         self.logger = logging.getLogger('serial_utils')
         self.resetTrace()
         ''' INIT SERIAL CLASS '''
-        self.serial = serial.Serial(self.port, self.baud, timeout=0.5)
+        self.serial = serial.Serial(self.port, self.baud, timeout=1)
     def sendGCode(self, code):
         self.serial.reset_input_buffer()
         #print code.encode()

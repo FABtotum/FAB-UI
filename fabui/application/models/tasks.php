@@ -148,6 +148,7 @@ class Tasks extends CI_Model {
 						 TIMEDIFF(sys_tasks.finish_date, sys_tasks.start_date) as duration', false)
 				->where('controller', 'make')
 				->where('sys_tasks.user', $_SESSION['user']['id'])
+				->where('sys_tasks.status != ', 'running')
 				->or_where('private', 1)
 				->join('sys_objects', 'sys_objects.id = sys_tasks.id_object', 'left')
 				->join('sys_files', 'sys_files.id = sys_tasks.id_file', 'left')

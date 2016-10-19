@@ -620,22 +620,27 @@ function finalize_update_sw($tid, $status) {
 }
 
 function send_mail($attributes, $user) {
-
-	// subject
-	$subject = 'Task completed';
-
-	// message
-	$message = 'Hi ' . ucfirst($user['first_name']) . '<br> The print is completed';
-
-	// To send HTML mail, the Content-type header must be set
-	$headers = 'MIME-Version: 1.0' . "\r\n";
-	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-	// Additional headers
-	$headers .= 'To: ' . ucfirst($user['first_name']) . ' ' . ucfirst($user['last_name']) . ' <' . $user['email'] . ">\r\n";
-	$headers .= 'From: Your Fabtotum Personal Fabricator <noreply@fabtotum.com>' . "\r\n";
-	// Mail it
-	$to = $user['email'];
-	mail($to, $subject, $message, $headers);
+	
+	if(!is_internet_avaiable()) return false;
+	
+	$fields['email']      = $user['email'];
+	$fields['first_name'] = $user['first_name'];
+	$fields['last_name']  = $user['last_name'];
+	
+	$fields_string = '';
+	
+	foreach ($fields as $key => $value) {
+		$fields_string .= $key . '=' . $value . '&';
+	}
+	rtrim($fields_string, '&');
+	
+	$ch = curl_init();
+	
+	curl_setopt($ch, CURLOPT_URL, MAIL_TASK_COMPLETE_URL);
+	curl_setopt($ch, CURLOPT_POST, count($fields));
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	$response = curl_exec($ch);
 
 }
 
