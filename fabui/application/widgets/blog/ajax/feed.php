@@ -24,7 +24,7 @@ $doc = new DOMDocument();
 		$doc->loadHTML($feed->description);  
 		$images = $doc->getElementsByTagName('img');
 		$paragraphs = $doc->getElementsByTagName('p');
-		
+		$image_src = '';
 		foreach($images as $tag) {
 			$image_src = $tag->getAttribute('src');
 			$tag->parentNode->removeChild($tag); 

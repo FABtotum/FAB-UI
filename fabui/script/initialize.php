@@ -23,7 +23,7 @@ $customUnits = json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE);
  * IF VALUE IN EEPROM IS DIFFERENT THAN THE LAST SAVED VALUE
  * IT MEANS THAT SOMETHING WENT WRONG SO IS NEEDED A RESTORE
  */
-if($eeprom['steps_per_unit']['e'] != round($units['e'],2)){
+if(isset($units['e']) && ($eeprom['steps_per_unit']['e'] != round($units['e'],2))){
 	
 	$eeprom['steps_per_unit']['e'] = $units['e'];
 	$jogFactory = new JogFactory();

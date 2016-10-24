@@ -20,12 +20,12 @@ $_header_fixed     = $_POST['header_fixed'] == 'true' ? true : false;
 $_ribbon_fixed     = $_POST['ribbon_fixed'] == 'true' ? true : false;
 $_footer_fixed     = $_POST['footer_fixed'] == 'true' ? true : false;
 $_menu_on_top      = $_POST['menu_on_top']  == 'true' ? true : false;
+$_end_print_email  = $_POST['end_print_email']  == 'true' ? true : false;
 
  
 $_avatar = $_SESSION['user']['avatar'];
 
 if($_avatar_change){
-	
 	
 	$_avatar = $_POST['avatar'];
 	
@@ -97,9 +97,10 @@ if($_menu_on_top){
 }
 
 
-$_settings['avatar']        = $_avatar;
-$_settings['theme-skin']    = $_theme_skin;
-$_settings['lock-screen']   = $_lock_screen;
+$_settings['avatar']          = $_avatar;
+$_settings['theme-skin']      = $_theme_skin;
+$_settings['lock-screen']     = $_lock_screen;
+$_settings['end-print-email'] = $_end_print_email;
 
 $_data_update['settings']   = json_encode($_settings);
 
@@ -107,12 +108,13 @@ $db->update('sys_user', array('column' => 'id', 'value' => $_SESSION['user']['id
 $db->close();
 
 /** UPDATE SESSION BASIC USER INFO */
-$_SESSION['user']['first_name']  = $_first_name;
-$_SESSION['user']['last_name']   = $_last_name;
-$_SESSION['user']['email']       = $_email;
-$_SESSION['user']['avatar']      = $_avatar;
-$_SESSION['user']['theme-skin']  = $_theme_skin;
-$_SESSION['user']['lock-screen'] = $_lock_screen;
-$_SESSION['user']['layout']      = $_settings['layout'];
+$_SESSION['user']['first_name']      = $_first_name;
+$_SESSION['user']['last_name']       = $_last_name;
+$_SESSION['user']['email']           = $_email;
+$_SESSION['user']['avatar']          = $_avatar;
+$_SESSION['user']['theme-skin']      = $_theme_skin;
+$_SESSION['user']['lock-screen']     = $_lock_screen;
+$_SESSION['user']['layout']          = $_settings['layout'];
+$_SESSION['user']['end-print-email'] = $_settings['end-print-email'];
 
 ?>

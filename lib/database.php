@@ -47,7 +47,6 @@ class Database {
 	 *
 	 */
 	public function query($query) {
-
 		$this -> _result = $this -> _db -> query($query);
 
 		if (!$this -> _result) {

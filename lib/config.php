@@ -101,9 +101,9 @@ if(isset($_SERVER['SERVER_NAME'])){
 
 
 defined('MAIL_TASK_COMPLETE_URL')  ? null : define("MAIL_TASK_COMPLETE_URL",      'http://update.fabtotum.com/mail/task_complete.php');
-defined('INSTAGRAM_FEED_URL')  ? null : define("INSTAGRAM_FEED_URL",      'http://www.fabtotum.com/instagram_feed.json');
+defined('INSTAGRAM_FEED_URL')  ? null : define("INSTAGRAM_FEED_URL",      'http://www.fabtotum.com/instagram.json');
 defined('INSTAGRAM_HASH_URL')  ? null : define("INSTAGRAM_HASH_URL",      'http://www.fabtotum.com/instagram_hash.json');
-defined('INSTAGRAM_FEED_JSON') ? null : define("INSTAGRAM_FEED_JSON",      TEMP_PATH.'instagram_feed.json');
+defined('INSTAGRAM_FEED_JSON') ? null : define("INSTAGRAM_FEED_JSON",      TEMP_PATH.'instagram.json');
 defined('INSTAGRAM_HASH_JSON') ? null : define("INSTAGRAM_HASH_JSON",      TEMP_PATH.'instagram_hash.json');
 
 defined('TWITTER_FEED_URL')  ? null : define("TWITTER_FEED_URL",      'http://www.fabtotum.com/twitter_feed.json');

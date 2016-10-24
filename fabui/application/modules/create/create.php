@@ -163,14 +163,14 @@ class Create extends Module {
 		$data_widget_step5['_rpm'] = $_running && isset($_attributes['rpm']) ? $_attributes['rpm'] : 6000;
 		$data_widget_step5['_running'] = $_running;
 		$data_widget_step5['_file_type'] = $_running ? trim($_file -> print_type) : 'additive';
-		$data_widget_step5['mail'] = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : 1;
+		$data_widget_step5['mail'] = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : $_SESSION['user']['end-print-email'];
 		$data_widget_step5['layer_total'] = $_running && isset($_monitor_encoded -> print -> stats -> layers -> total) ? intval($_monitor_encoded -> print -> stats -> layers -> total) : 0;
 		$data_widget_step5['layer_actual'] = $_running && isset($_monitor_encoded -> print -> stats -> layers -> actual) ? intval($_monitor_encoded -> print -> stats -> layers -> actual) : 0;
 		$data_widget_step5['flow_rate'] = $_running && isset($_attributes['flow_rate']) ? $_attributes['flow_rate'] : 100;
 		$data_widget_step5['fan'] = $_running && isset($_attributes['fan']) ? $_attributes['fan'] : 0;
 		$data_widget_step5['z_override'] = $_running ? $_monitor_encoded -> print -> stats -> z_override : 0;
 		//$data_widget_step5['mail'] = $_running && isset($_attributes['mail']) && $_attributes['mail'] == true ? 'checked' : '';
-		$data_widget_step5['mail'] = 'checked';
+		$data_widget_step5['mail'] = $_SESSION['user']['end-print-email'] == true ? 'checked' : '';
 		if($_running ){
 			$data_widget_step5['mail'] = $_attributes['mail'] == true ? 'checked' : '';
 		}
@@ -183,7 +183,7 @@ class Create extends Module {
 		//$data_step5['_tab5_monitor_widget'] = widget('_tab5_monitor_widget', 'Print Monitor', '', $this->load->view('index/step5/widget', $data_widget_step5, TRUE), false);
 		$data_step5['_tab5_monitor_widget'] = $this -> load -> view('index/step5/widget', array_merge($data_widget_step5, $data), TRUE);
 		$data_step5['_running'] = $_running;
-		$data_step5['mail'] = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : 1;
+		$data_step5['mail'] = $_running && isset($_attributes['mail']) ? $_attributes['mail'] : $_SESSION['user']['end-print-email'];
 
 		/**
 		 *
@@ -379,8 +379,6 @@ class Create extends Module {
 
 		$tasks = $this -> _get_make_tasks($filters);
 
-		$this -> load -> helper('ft_date_helper');
-
 		$data['icons'] = array('print' => 'icon-fab-print', 'mill' => 'icon-fab-mill', 'scan' => 'icon-fab-scan');
 
 		$data['status_label'] = array('performed' => '<span class="label label-success">COMPLETED</span>', 'stopped' => '<span class="label label-warning">ABORTED</span>', 'deleted' => '<span class="label label-danger">STOPPED</span>');
@@ -388,38 +386,36 @@ class Create extends Module {
 		$aaData = array();
 
 		foreach ($tasks as $task) {
-
-			$attributes = json_decode(utf8_encode(preg_replace('!\\r?\\n!', "<br>", $task['task_attributes'])), true);
 			
-			
+				$attributes = json_decode(utf8_encode(preg_replace('!\\r?\\n!', "<br>", $task['task_attributes'])), true);
+				
+				$when = strtotime($task['finish_date']) > strtotime("-1 day") ? get_time_past($task['finish_date']) . ' ago' : date('d M, Y', strtotime($task['finish_date']));
+				$info = '<h4>';
+				if ($task['file_name'] != '')
+					$info .= '<a href="' . site_url('objectmanager/edit/' . $task['id_object']) . '"><i class="fa fa fa-file-o"></i> ' . $task['raw_name'] . '</a>';
+				if ($task['object_name'] != '')
+					$info .= ' <small>> <i class="fa fa fa-folder-open-o"></i> ' . $task['object_name'] . '</small>';
+				if (isset($attributes['mode_name']) && $attributes['mode_name'] != '')
+					$info .= '<a href="#">' . ucfirst($attributes['mode_name']) . '</a><small> </small>';
+				$info .= '</h4>';
+	
+	
+				$td_0 = '<a href="#" > <i class="fa fa-chevron-right fa-lg" data-toggle="row-detail" title="Show Details"></i> </a>';
+				$td_1 = $when;
+				$td_2 = '<strong><i class="<' . $data['icons'][$task['type']] . '"></i> <span class="hidden-xs">' . ucfirst($task['type']) . '</strong></span>';
+				$td_3 = $data['status_label'][$task['status']];
+				$td_4 = $info;
+				$td_5 = $task['duration'];
+				$td_6 = date('d M, Y', strtotime($task['start_date'])) . ' at ' . date('G:i', strtotime($task['start_date']));
+				$td_7 = date('d M, Y', strtotime($task['finish_date'])) . ' at ' . date('G:i', strtotime($task['finish_date']));
+				$td_8 = isset($attributes['note']) ? $attributes['note'] : '';
+				$td_9 = $task['type'];
+				$td_10 = $task['id_file'];
+				$td_11 = $task['id_object'];
+	
+				$aaData[] = array($td_0, $td_1, $td_2, $td_3, $td_4, $td_5, $td_6, $td_7, $td_8, $td_9, $td_10, $td_11);
+			}
 
-			$when = strtotime($task['finish_date']) > strtotime("-1 day") ? get_time_past($task['finish_date']) . ' ago' : date('d M, Y', strtotime($task['finish_date']));
-			$info = '<h4>';
-			if ($task['file_name'] != '')
-				$info .= '<a href="' . site_url('objectmanager/edit/' . $task['id_object']) . '"><i class="fa fa fa-file-o"></i> ' . $task['raw_name'] . '</a>';
-			if ($task['object_name'] != '')
-				$info .= ' <small>> <i class="fa fa fa-folder-open-o"></i> ' . $task['object_name'] . '</small>';
-			if (isset($attributes['mode_name']) && $attributes['mode_name'] != '')
-				$info .= '<a href="#">' . ucfirst($attributes['mode_name']) . '</a><small> </small>';
-			$info .= '</h4>';
-
-
-			$td_0 = '<a href="#" > <i class="fa fa-chevron-right fa-lg" data-toggle="row-detail" title="Show Details"></i> </a>';
-			$td_1 = $when;
-			$td_2 = '<strong><i class="<' . $data['icons'][$task['type']] . '"></i> <span class="hidden-xs">' . ucfirst($task['type']) . '</strong></span>';
-			$td_3 = $data['status_label'][$task['status']];
-			$td_4 = $info;
-			$td_5 = $task['duration'];
-			$td_6 = date('d M, Y', strtotime($task['start_date'])) . ' at ' . date('G:i', strtotime($task['start_date']));
-			$td_7 = date('d M, Y', strtotime($task['finish_date'])) . ' at ' . date('G:i', strtotime($task['finish_date']));
-			$td_8 = isset($attributes['note']) ? $attributes['note'] : '';
-			$td_9 = $task['type'];
-			$td_10 = $task['id_file'];
-			$td_11 = $task['id_object'];
-
-			$aaData[] = array($td_0, $td_1, $td_2, $td_3, $td_4, $td_5, $td_6, $td_7, $td_8, $td_9, $td_10, $td_11);
-
-		}
 
 		$stats = $this -> load -> view('history/stats', $data, TRUE);
 

@@ -10,8 +10,6 @@
 		
 		
 		 $("#uploadFile").on("change", function(){
-		 	
-		 	
 		 	avatar_change = 1;
 		 	
 	        var files = !!this.files ? this.files : [];
@@ -142,13 +140,7 @@
 	
 	$("#save-button").click(function(){
 		
-		
-		
 		var active_tab = $("#myTabContent1").find('.active').attr("id");
-		
-		
-		
-		
 		if(active_tab == 'password-tab'){
 			
 			$valid = $("#password-form").valid();
@@ -214,11 +206,10 @@
           data:{ first_name: $("#first_name").val(), last_name: $("#last_name").val(), email: $("#email").val(), avatar: avatar, 
           			avatar_change: avatar_change, theme_skin : theme_skin, lock_screen : $("#lock_screen").val(), 
           			header_fixed: $('#smart-fixed-header').prop('checked'), navigation_fixed: $('#smart-fixed-navigation').prop('checked'),
-          			ribbon_fixed: $('#smart-fixed-ribbon').prop('checked'), footer_fixed: $('#smart-fixed-footer').prop('checked'), menu_on_top: $('#smart-top-menu').prop('checked')},
+          			ribbon_fixed: $('#smart-fixed-ribbon').prop('checked'), footer_fixed: $('#smart-fixed-footer').prop('checked'), menu_on_top: $('#smart-top-menu').prop('checked'),
+          			end_print_email: $('#end_print_email').prop('checked')},
           type: "POST"
 		}).done(function( html ) {
-			
-			
 			$.smallBox({
     				title : "Success",
     				content : "<i class='fa fa-check'></i> Basic info saved",
@@ -236,13 +227,8 @@
 				$("#user-avatar").attr('src', '<?php echo base_url()."application/layout/assets/img/male.png"; ?>');
 			}
 			
-			
 			$("#user_basic_info").html($("#first_name").val() + ' ' + $("#last_name").val());
-			
-			
 			max_idle_time = parseInt($("#lock_screen").val());
-
-		           
 		});
 		
 		

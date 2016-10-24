@@ -543,6 +543,25 @@ function create_default_config($except = ''){
 		shell_exec('sudo chmod 777 '.FABUI_PATH . 'config/config.json');
 		shell_exec('sudo chown www-data:www-data '.FABUI_PATH . 'config/config.json');	
      }
+function word_limiter($str, $limit = 100, $end_char = '&#8230;')
+{
+     	if (trim($str) === '')
+     	{
+     		return $str;
+     	}
+     
+     	preg_match('/^\s*+(?:\S++\s*+){1,'.(int) $limit.'}/', $str, $matches);
+     
+     	if (strlen($str) === strlen($matches[0]))
+     	{
+     		$end_char = '';
+     	}     
+     	return rtrim($matches[0]).$end_char;
+}
 
-
+function isJSON($string)
+{
+	json_decode($string);
+	return (json_last_error() == JSON_ERROR_NONE);
+}
 ?>

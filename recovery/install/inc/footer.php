@@ -11,6 +11,9 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 <script src="/assets/js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
 <script src="/assets/js/plugin/fastclick/fastclick.min.js"></script>
 <script src="/assets/js/plugin/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
+<script src="/assets/js/notification/FabtotumNotification.js"></script>
+<script src="/assets/js/fab.app.js"></script>
+<script src="/assets/js/fabtotum.js"></script>
 <!--[if IE 7]>
 	<h1>
 		Your browser is out of date, please update your browser by going to www.microsoft.com/download
@@ -22,7 +25,7 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 	
     
     runAllForms();
-    
+    var fabui = false;
     var ask_wifi_password = false;
     var wifi_password;
     var wifi_ssid;
@@ -198,17 +201,18 @@ $imOnCable = $_SERVER['SERVER_ADDR'] == $networkConfiguration['eth'] ? true : fa
 		
 function install(){
 
+	openWait("<i class='fa fa-spin fa-spinner'></i> Installation in progress", "This may take awhile, please wait", false);
 	$(".next").find('a').html('<i class="fa fa-spinner fa-pulse"></i>');
 	disable_button($(".next").find('a'));
 	disable_button($(".previous").find('a'));
-	
 	$.ajax({
 		type: "POST",
 		url: "install.php",
 		dataType: 'json',
 		data: { first_name : $("#first_name").val(), last_name : $("#last_name").val(), email: $("#email").val(), password : $("#password").val(), net_password : $("#net_password").val(), net: '', ip_address: $("#ip_address").val() }
 	}).done(function( response ) {
-		document.location.href = 'http://' +  location.host;
+		openWait("<i class='fa fa-check'></i> Installation complete", "Redirecting to FABui", false);
+		setTimeout(function(){ document.location.href = 'http://' +  location.host; }, 3000);
 	});
 	
 }

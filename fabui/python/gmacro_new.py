@@ -104,15 +104,15 @@ def checkPrePrint(serial_util, settings, params=None):
     serial_util.doMacro('M744', 'TRIGGERED', 1, 'Spool panel control',  warning=True)
 """ ################################################################### """
 def endPrintAdditive(serial_util, settings, params=None):
-    serial_util.doMacro('G90', 'ok', 1, 'Set Absolute movement')
+    serial_util.doMacro('G90', 'ok', -1, 'Set Absolute movement')
     serial_util.doMacro('G27 Z0', 'ok', -1, 'Lowering the plane')
-    serial_util.doMacro('M104 S0', 'ok', 1, 'Shutting down extruder')
-    serial_util.doMacro('M140 S0', 'ok', 1, 'Shutting down heated Bed')
-    serial_util.doMacro('M220 S100', 'ok', 1, 'Reset Speed factor override')
-    serial_util.doMacro('M221 S100', 'ok', 1, 'Reset Extruder factor override')
-    serial_util.doMacro('M107 S100', 'ok', 1, 'Turning Fan off')
-    serial_util.doMacro('M18', 'ok', 1, 'Motor off')
-    serial_util.doMacro('M300', 'ok', 1, 'Done!')
+    serial_util.doMacro('M104 S0', 'ok', -1, 'Shutting down extruder')
+    serial_util.doMacro('M140 S0', 'ok', -1, 'Shutting down heated Bed')
+    serial_util.doMacro('M220 S100', 'ok', -1, 'Reset Speed factor override')
+    serial_util.doMacro('M221 S100', 'ok', -1, 'Reset Extruder factor override')
+    serial_util.doMacro('M107 S100', 'ok', -1, 'Turning Fan off')
+    serial_util.doMacro('M18', 'ok', -1, 'Motor off')
+    serial_util.doMacro('M300', 'ok', -1, 'Done!')
 """ ################################################################### """
 def checkPreScan(serial_util, settings, params=None):
     serial_util.trace("Preparing the FABtotum to scan")

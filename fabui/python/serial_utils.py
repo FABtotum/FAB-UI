@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import ConfigParser
-import serial, re, time, logging
+import serial, re, time, logging, sys
 import RPi.GPIO as GPIO
 
 class MacroException(Exception):
@@ -35,7 +35,11 @@ class SerialUtils:
         #print code.encode()
         self.serial.write("%s\r\n" % code.encode())
     def getReply(self, bytes=4096):
-        return self.serial.read(bytes).strip()
+        try:
+            return self.serial.read(bytes).strip()
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            return ''
     def close(self):
         self.serial.close()
     def serialize(self,string_source, regex_to_serach, keys):
@@ -64,13 +68,18 @@ class SerialUtils:
         self.sendGCode('M114')
         reply = self.getReply()
         position = None
-        match = re.search('X:([-|+0-9.]+)\sY:([-|+0-9.]+)\sZ:([-|+0-9.]+)\sE:([-|+0-9.]+)', reply, re.IGNORECASE)
+        match = re.search('X:([-|+0-9.]+)\sY:([-|+0-9.]+)\sZ:([-|+0-9.]+)\sE:([-|+0-9.]+)\sCount\sX:\s([-|+0-9.]+)\sY:([-|+0-9.]+)\sZ:([-|+0-9.]+)', reply, re.IGNORECASE)
         if match != None:
            position = {
             "x" : match.group(1),
             "y" : match.group(2),
             "z" : match.group(3),
-            "e" : match.group(4)
+            "e" : match.group(4),
+            "count": {
+                "x" : match.group(5),
+                "y" : match.group(6),
+                "z" : match.group(7),
+            }
            }
         return position
         

@@ -26,7 +26,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	$_settings['token'] = '';
 	$_settings['lock-screen'] = 0;
 	$_settings['layout'] = '';
-
+	$_settings['end-print-email'] = true;
 	$_user_data['first_name'] = $_first_name;
 	$_user_data['last_name']  = $_last_name;
 	$_user_data['email']      = $_email;
@@ -103,10 +103,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	$db -> close();	
 
 	$network = false;
-
 	$response_items['installed'] = true;
 	$response_items['network'] = $network;
-
 	echo json_encode($response_items);
 
 } else {

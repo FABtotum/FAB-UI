@@ -80,15 +80,16 @@ class Login extends Module {
 
 				$_settings = json_decode($user -> settings, TRUE);
 
-				$_user_session['id']          = $user -> id;
-				$_user_session['first_name']  = $user -> first_name;
-				$_user_session['last_name']   = $user -> last_name;
-				$_user_session['email']       = $user -> email;
-				$_user_session['avatar']      = $_settings['avatar'];
-				$_user_session['theme-skin']  = $_settings['theme-skin'];
-				$_user_session['lock-screen'] = isset($_settings['lock-screen']) ? $_settings['lock-screen'] : 0;
-				$_user_session['layout']      = isset($_settings['layout']) ? $_settings['layout'] : '';
-
+				$_user_session['id']              = $user -> id;
+				$_user_session['first_name']      = $user -> first_name;
+				$_user_session['last_name']       = $user -> last_name;
+				$_user_session['email']           = $user -> email;
+				$_user_session['avatar']          = $_settings['avatar'];
+				$_user_session['theme-skin']      = $_settings['theme-skin'];
+				$_user_session['lock-screen']     = isset($_settings['lock-screen']) ? $_settings['lock-screen'] : 0;
+				$_user_session['layout']          = isset($_settings['layout']) ? $_settings['layout'] : '';
+				$_user_session['end-print-email'] = isset($_settings['end-print-email']) ? $_settings['end-print-email'] : true;
+				
 				$_SESSION['user'] = $_user_session;
 				$_SESSION['logged_in'] = TRUE;
 				$_SESSION['type'] = 'fabtotum';

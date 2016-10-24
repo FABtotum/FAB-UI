@@ -1,11 +1,7 @@
-
 <style>.hardware-save{margin-right:10px;}</style>
 <div class="tab-content padding-10">
-	
 	<!-- hardware -->
 	<div class="tab-pane fade in active" id="hardware">
-	
-		
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="smart-form">
@@ -352,10 +348,8 @@
 </div>
 
 <div class="widget-footer text-right">
-	
 	<!--<button value="save" type="button"  class="btn btn-primary hardware-save"><i class="fa fa-save"></i> Save</button> -->
 	<button value="exec" type="button"  class="btn btn-primary hardware-save"><i class="fa fa-save"></i> Save & Exec</button>
-	
 	<button id="save-button" class="btn btn-primary" type="button" style="display:none;"><i class="fa fa-save"></i>&nbsp;Save</button>
 </div>
 

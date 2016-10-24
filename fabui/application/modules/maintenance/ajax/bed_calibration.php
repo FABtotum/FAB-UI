@@ -6,6 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 $_time                 = $_POST['time'];
 $_num_probes           = isset($_POST['num_probes']) ? $_POST['num_probes'] : 4;
 $_skip_homing          = isset($_POST['skip_homing']) ? $_POST['skip_homing'] : 0;
+
 $_destination_trace    = TEMP_PATH.'macro_trace';
 $_destination_response = TEMP_PATH.'macro_response';
 
@@ -18,8 +19,11 @@ sleep(1);
 
 /** EXEC COMMAND */
 $h_over = 38;
+$_skip_homing = $_skip_homing == 1 ? ' -s ' : '';
 
-$_command = 'sudo python ' . PYTHON_PATH . 'manual_bed_lev.py ' . $_destination_response . ' ' . $_destination_trace . ' ' . $h_over . ' ' . $_num_probes . ' ' . $_skip_homing;
+//$_command = 'sudo python ' . PYTHON_PATH . 'manual_bed_lev.py ' . $_destination_response . ' ' . $_destination_trace . ' ' . $h_over . ' ' . $_num_probes . ' ' . $_skip_homing;
+
+$_command = 'sudo python '.PYTHON_PATH.'manual_bed_lev_new.py -r '.$_destination_response.' -n '.$_num_probes.' -l '.$h_over.' '.$_skip_homing;
 
 $_output_command = shell_exec($_command);
 

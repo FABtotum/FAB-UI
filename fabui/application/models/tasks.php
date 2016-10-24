@@ -147,9 +147,9 @@ class Tasks extends CI_Model {
 						 sys_tasks.attributes as task_attributes, sys_files.raw_name as raw_name,
 						 TIMEDIFF(sys_tasks.finish_date, sys_tasks.start_date) as duration', false)
 				->where('controller', 'make')
-				->where('sys_tasks.user', $_SESSION['user']['id'])
+				->where('(sys_tasks.user = '. $_SESSION['user']['id'].' or private = 1)')
 				->where('sys_tasks.status != ', 'running')
-				->or_where('private', 1)
+				//->or_where('private', 1)
 				->join('sys_objects', 'sys_objects.id = sys_tasks.id_object', 'left')
 				->join('sys_files', 'sys_files.id = sys_tasks.id_file', 'left')
 				->order_by('finish_date', 'DESC');
@@ -174,9 +174,13 @@ class Tasks extends CI_Model {
 			}
 
 			if(isset($filters['status']) && $filters['status'] != ''){
-				$this->db->where('status', $filters['status']);
+				if(in_array($filters['status'], $this->_COMPLETED_STATUS)) $this->db->where('status', $filters['status']);
+			}else{
+				$this->db->where_in('status', $this->_COMPLETED_STATUS);
 			}
 			
+		}else{
+			$this->db->where_in('status', $this->_COMPLETED_STATUS);
 		}
 		//$result = $this->db->get($this->_table_name)->result_array();
 		//echo $this->db->last_query(); exit();
@@ -333,6 +337,11 @@ class Tasks extends CI_Model {
 		
 	}
 	
+	
+	public function getCompletedStatus()
+	{
+		return $this->_COMPLETED_STATUS;
+	}
 
 
 }

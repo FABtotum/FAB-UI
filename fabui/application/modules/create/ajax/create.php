@@ -214,7 +214,7 @@ $_attributes_items['stats']       =  $_stats_file;
 $_attributes_items['speed']       =  100;
 $_attributes_items['print_type']  =  $_print_type;
 $_attributes_items['z_override']  =  0;
-$_attributes_items['mail']        = true;
+$_attributes_items['mail']        = $_SESSION['user']['end-print-email'];
 
 file_put_contents($_attributes_file, json_encode($_attributes_items));
 

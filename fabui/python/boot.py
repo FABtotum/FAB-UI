@@ -30,6 +30,12 @@ fw_version = su.fwVersion()
 hw_version = su.hwVersion()
 
 
+def saveSettings(data, file):
+    ### save config file
+    with open(file, 'w') as outfile:
+        json.dump(data, outfile)
+    outfile.close()
+
 def customHardware(serialUtils, settings, settings_file):
     """
     Revision for customs edits
@@ -102,12 +108,14 @@ def hardware3(serialUtils, settings, settings_file):
     saveSettings(settings, settings_file)
     return None
 
-def hardware4():
+def hardware4(serialUtils, settings, settings_file):
     """
     Rev4:
     """
     ### invert x endstop logic
     serialUtils.sendGCode("M747 X1")
+    ### Maximum feedrates (mm/s):
+    serialUtils.sendGCode("M203 X550.00 Y550.00 Z15.00 E12.00")
     ### save to eeprom
     serialUtils.sendGCode("M500")
     ### save config file
@@ -117,12 +125,14 @@ def hardware4():
     saveSettings(settings, settings_file)
     return None
 
-def hardware5():
+def hardware5(serialUtils, settings, settings_file):
     """
     - Rev4:
     """
     ### invert x endstop logic
     serialUtils.sendGCode("M747 X1")
+    ### Maximum feedrates (mm/s):
+    serialUtils.sendGCode("M203 X550.00 Y550.00 Z15.00 E12.00")
     ### save to eeprom
     serialUtils.sendGCode("M500")
     ### save config file
@@ -131,12 +141,6 @@ def hardware5():
     settings['a'] = 88.888889
     saveSettings(settings, settings_file)
     return None
-
-def saveSettings(data, file):
-    ### save config file
-    with open(file, 'w') as outfile:
-        json.dump(data, outfile)
-    outfile.close()
 
 def hybridHead(serialUtils, settings):
     ### set pid

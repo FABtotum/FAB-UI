@@ -12,8 +12,6 @@ import serial, re
 """
 
 def testBaud(port, baud_rate):
-    
-    
     print "Testing baud: ", baud_rate
     ser = serial.Serial(port, baud_rate, timeout=0.5)
     ser.flushInput()
@@ -36,6 +34,8 @@ def testBaud(port, baud_rate):
 serial_port   = '/dev/ttyAMA0'
 baud_list     = [250000, 115200]
 accepted_baud = 0
+default_baud = 250000
+
 
 for baud in baud_list:
     if testBaud(serial_port, baud):
@@ -45,7 +45,10 @@ for baud in baud_list:
 if accepted_baud > 0:
     print "Baud Rate available is: " + str(accepted_baud)
 else:
-    accepted_baud=115200
+    accepted_baud=default_baud
+    
+
+print "Baudrate set to: " + str(accepted_baud)
     
 if os.path.exists("/var/www/lib/serial.ini") == False:
     file = open('/var/www/lib/serial.ini', 'w+')

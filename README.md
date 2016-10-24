@@ -1,5 +1,16 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version 0.9652 - 2016-10-24
+
+#### General
+* Set default baudrate to 250000 during baudrate recognition. This will prevent communication errors with Firmware
+* Fixed javascript error on History page
+* Added reports option on user profile settings
+* Updated instagram widget
+* Improved Bed calibration script
+
+==================================================================
+
 ### Version 0.965/0.9651 - 2016-10-19 (hotifix)
 
 #### General
