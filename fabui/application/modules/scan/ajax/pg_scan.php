@@ -11,7 +11,7 @@
             <div class="well">
                 <div class="row">
                     <div class="col-sm-6 text-center">
-                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/scan/assets/img/rotating/1.png" />
+                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="../application/modules/scan/assets/img/rotating/1.png" />
                     </div>
                     <div class="col-sm-6 text-center">
                         <h1>
@@ -54,7 +54,7 @@
             <div class="row">
                     
                     <div class="col-sm-6 text-center">
-                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/scan/assets/img/rotating/2.png" />
+                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="../application/modules/scan/assets/img/rotating/2.png" />
                     </div>
                     
                     <div class="col-sm-6 text-center">
@@ -82,7 +82,7 @@
             <div class="row">
                     
                     <div class="col-sm-6 text-center">
-                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="application/modules/scan/assets/img/rotating/3.png" />
+                        <img style="max-width: 50%; display: inline;" class="img-responsive" src="../application/modules/scan/assets/img/rotating/3.png" />
                     </div>
                     
                     <div class="col-sm-6 text-center">
@@ -224,7 +224,7 @@ function check_r_scan(){
     
     $.ajax({
 		  type: "POST",
-		  url: macro_r_scan_url,
+		  url: macro_pg_scan_url,
 		  dataType: 'json',
 		  asynch: true,
           data: {time: timestamp}

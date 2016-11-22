@@ -117,7 +117,6 @@ def decodeReply(string):
     return None
 
 def safety_callback(channel):
-    
     open(config.get('task', 'lock_file'), 'w').close()
     message = {'type': '', 'code': ''}
     write_emergency(json.dumps(message))
@@ -127,6 +126,7 @@ def safety_callback(channel):
     if(GPIO_STATUS == 0):
         su.sendGCode('M730')
         reply = su.getReply()
+        print ">>>> ", reply
         decodedReply =  decodeReply(reply)
         if decodedReply != None :
             special_codes = [110, 120, 121]

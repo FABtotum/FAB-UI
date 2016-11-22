@@ -54,7 +54,7 @@ if ( ! function_exists('create_default_config'))
 			'safety'        => array('door'=>1, 'collision-warning'=>1),
 			'switch'        => 0,
 			'feeder'        => array('disengage-offset'=> 2, 'show' => true),
-			'print'         => array('pre-heating' => array('extruder' => 130, 'bed' => 40)),
+			'print'         => array('pre-heating' => array('extruder' => 130, 'bed' => 40), 'calibration' => 'homing'),
 			'milling'       => array('layer-offset' => 12),
 			//'e'             => 3048.1593,
 			'a'             => 177.777778,
@@ -65,8 +65,10 @@ if ( ! function_exists('create_default_config'))
 			'settings_type' => 'default',
 			'hardware'      => array('head' => array('type' => 'hybrid', 'description'=>'Hybrid Head', 'max_temp'=>230))
 		);
-		
 		write_file(CONFIG_FOLDER . 'config.json', json_encode($dafault_config));
+		write_file(CONFIG_FOLDER . 'custom_config.json', json_encode($dafault_config));
+		shell_exec('sudo chmod 0777 '.CONFIG_FOLDER . 'config.json');
+		shell_exec('sudo chmod 0777 '.CONFIG_FOLDER . 'custom_config.json');
      }
 	 
 }

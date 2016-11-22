@@ -191,7 +191,7 @@ function finalize_mill($tid, $status) {
 	chmod($_macro_end_print_response, 0777);
 
 	//EXEC END MACRO
-	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro.py ' . $end_macro . ' ' . $_macro_end_print_trace . ' ' . $_macro_end_print_response . ' 1 > /dev/null &');
+	shell_exec('sudo python ' . PYTHON_PATH . 'gmacro_new.py -m ' . $end_macro);
 
 	$db -> close();
 	//if ($status == 'performed') {

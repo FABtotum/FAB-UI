@@ -1,5 +1,6 @@
 <?php
 
+require_once '/var/www/lib/config.php';
 require 'utilities.php';
 
 $mode = isset($_GET['mode']) && $_GET['mode'] != '' ? $_GET['mode'] : 'net';
@@ -7,6 +8,7 @@ $mode = isset($_GET['mode']) && $_GET['mode'] != '' ? $_GET['mode'] : 'net';
 switch($mode){
 	case 'net':
 		$content = '<pre>'.shell_exec("sudo ifconfig").'</pre>';
+		$content .= '<pre>'.shell_exec('sudo iwconfig').'</pre>';
 		break;
 	case 'php':
 		
@@ -54,18 +56,21 @@ switch($mode){
 		
 		$content .= '<h6>Raspi Cam</h6>';
 		$content .= '<pre>';
-		$content .= shell_exec('sudo raspistill -v');   
+		$content .= doCommand('sudo raspistill -v', false);   
 		$content .= '</pre>'; 
-		
-		
+		break;
+	case 'fw':
+		$fabtotum_info = json_decode(shell_exec('sudo python '.PYTHON_PATH.'sysinfo.py'), true);
+		$eeprom = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c M503'), true);
+		$content = '<pre> Firmware version: '.$fabtotum_info['fw']['version'].PHP_EOL.$eeprom['reply'].'</pre>';
 		break;
 }
 
 
 
-$option['net'] = "Network";
-$option['fw']  = "Firmware";
-$option['php'] = "Php";
+$option['net']   = "Network";
+$option['fw']    = "Firmware";
+$option['php']   = "Php";
 $option['raspi'] = "Rasberry Pi";
 
 
@@ -124,16 +129,44 @@ include 'header.php';
 				$('.modes').on('change', change_mode);
 				
 			});
-			
-			
+
 			function change_mode(){
 				document.location.href = 'info.php?mode=' + $(this).val();
 			}
 			
-			
-			
-		
 		</script>
 		
 	</body>
 </html>
+<?php 
+
+
+function doCommand($cmd, $echo = true)
+{
+	while (@ ob_end_flush()); // end all output buffers if any
+	
+	$proc = popen("$cmd 2>&1 ; echo Exit status : $?", 'r');
+	
+	$live_output     = "";
+	$complete_output = "";
+	
+	while (!feof($proc))
+	{
+		$live_output     = fread($proc, 4096);
+		$complete_output = $complete_output . $live_output;
+		if($echo) echo "$live_output";
+		@ flush();
+	}
+	pclose($proc);
+	// get exit status
+	preg_match('/[0-9]+$/', $complete_output, $matches);
+	// return exit status and intended output
+	return str_replace("Exit status : " . $matches[0], '', $complete_output);
+	/*return array (
+			'exit_status'  => $matches[0],
+			'output'       => str_replace("Exit status : " . $matches[0], '', $complete_output)
+	);*/
+}
+
+
+?>

@@ -16,7 +16,9 @@
 					</section>
 				</div>
 			</fieldset>
-			<header>Measure and calibrate extruder steps</header>
+			<header>Measure and calibrate extruder steps
+			<p class="note" style="font-size:13px;color:#232323;">Make sure to remove the bowden from the head by heating it up to 185 degrees, once the temperature is reached press the push-fit down and gently pull up the PTFE tube. Cut the residual filament at the level of the tube edge</p>
+			</header>
 			<fieldset>
 				<div class="row">
 					<section class="col col-8">

@@ -1,5 +1,22 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version 0.97 - 2016-11-22
+
+#### General
+* Fixed Photogrammetry scan starting macro
+* Settings > General > Print : added "Calibration Preference"
+* Menu: "Feeder Calibration" moved under "Feeder > Step Calibration"
+* Menu: "Engage Feeder" moved under "Feeder > Engage"
+* Added endstop hit alert notification
+* Recovery: improved firmware flash procedure
+* General improvemets
+* General bugfixes
+
+#### Firmware
+See complete changelog [here] (https://github.com/FABtotum/FABlin#version-100096)
+
+==================================================================
+
 ### Version 0.9652 - 2016-10-24
 
 #### General

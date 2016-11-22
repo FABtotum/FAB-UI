@@ -351,6 +351,7 @@
 			var pressedEmergencyButton = false;
 			var PRINTER_BUSY = <?php echo $_printer_busy; ?>;
 			var MAX_NOZZLE_TEMP = <?php echo $_max_temp; ?>;
+			var SHOW_FEEDER = <?php echo $_show_feeder == 1 ? 'true' : 'false'; ?>;
 		</script>
 		<!-- END JAVASCRIPT VARS -->
 		<!-- JAVASCRIPT INCLUSIONS -->

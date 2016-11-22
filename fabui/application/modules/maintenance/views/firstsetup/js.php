@@ -233,11 +233,11 @@
 			$('.screws-rows > tbody  > tr').each(function() {
 				
 				
-				if($(this).hasClass('danger')){
+				if($(this).hasClass('result-danger')){
 					reds++;
 				}
 				
-				if($(this).hasClass('warning')){
+				if($(this).hasClass('result-warning')){
 					oranges++;
 				}
 				

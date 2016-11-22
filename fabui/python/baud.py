@@ -3,7 +3,7 @@ import ConfigParser
 import os
 from time import sleep
 from serial_utils import SerialUtils
-import serial, re
+import serial, re, time
 
 """ 
 ########################################
@@ -16,7 +16,7 @@ def testBaud(port, baud_rate):
     ser = serial.Serial(port, baud_rate, timeout=0.5)
     ser.flushInput()
     ser.write("\r\n")
-    sleep(0.5)
+    time.sleep(0.5)
     while ser.inWaiting():
         print "First reply: ", ser.readline()
     

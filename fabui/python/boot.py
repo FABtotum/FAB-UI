@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from serial_utils import SerialUtils
 import ConfigParser, json, os, time, argparse
+from subprocess import call
 
 config = ConfigParser.ConfigParser()
 config.read('/var/www/lib/config.ini')
@@ -10,10 +11,15 @@ open(config.get('task', 'lock_file'), 'w+').close()
 parser = argparse.ArgumentParser()
 parser.add_argument("-R", "--reset", action="store_true")
 parser.add_argument("-f", "--flush", action="store_true")
+parser.add_argument("-s", "--save",  action="store_true")
 args = parser.parse_args()
-hardware_reset = args.reset
-flush = args.flush
 
+hardware_reset = args.reset
+flush          = args.flush
+save_settings  = args.save
+
+if(os.path.isfile(config.get('printer', 'settings_file')) == False):
+    call(["sudo php /var/www/fabui/index.php settings recreateSettingsFiles"],shell=True)
 #read config steps/units
 settings_file = open(config.get('printer', 'settings_file'))
 settings = json.load(settings_file)
@@ -219,7 +225,11 @@ elif hw_version in HW_VERSION_CMDS:
 else:
     settings['feeder']['show'] = True
     saveSettings(settings, config.get('printer', 'settings_file'))
-
+    
+if(save_settings):    
+    eeprom        = su.eeprom()
+    settings['e'] = eeprom['steps_per_unit']['e']
+    saveSettings(settings, config.get('printer', 'settings_file'))    
 ### alive machine
 su.sendGCode('M728')
 su.close()

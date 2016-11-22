@@ -1,3 +1,18 @@
+<?php
+	$fw_error     = $wrong_baudrate || $fabtotum_info['fw']['version'] == '';
+	$fw_tr_class  = $fw_error ? 'danger' : '';
+?>
+<?php if($fw_error): ?>
+
+<div class="row">
+	<div class="col-sm-12">
+	<div class="alert alert-danger animated fadeIn">
+			<i class="fa-fw fa fa-warning"></i> We weren't unable to communicate with the firmware, to solve try to <a href="/recovery/flash.php" class="btn btn-default">Flah</a> it again
+		</div>
+	</div>
+</div>
+
+<?php endif;?>
 <div class="row">
 	<div class="col-sm-6 margin-bottom-10">
 		<h1 class="txt-color-blueDark"><i class="fa fa-play fa-rotate-90 fa-border"></i> FABtotum Personal Fabricator</h1>
@@ -5,15 +20,21 @@
 	<div class="col-sm-6 margin-bottom-10">
 		<div class="well no-padding well-light">
 			<table class="table table-striped table-condensed">
-				<caption></caption>
+				
 				<tbody>
 					<tr>
 						<td>OS</td>
 						<td><span class="pull-right"><?php echo $os_info; ?></span></td>
 					</tr>
-					<tr>
-						<td>Firmware</td>
-						<td><span class="pull-right">v. <?php echo $fabtotum_info['fw']; ?></span></td>
+					<tr class="<?php echo $fw_tr_class; ?>">
+						<td>Firmware </td>
+						<td>
+							<?php if($fw_error): ?>
+							<span class="pull-right"><i class="fa fa-warning"></i> <?php echo $fabtotum_info['fw']['version']; ?> unknown </span>
+							<?php else: ?>
+							<span class="pull-right">v. <?php echo $fabtotum_info['fw']['version']; ?> <?php //echo $firmwares_baudrate[$fabtotum_info['fw']['version']] ?> <small>( baud rate  <?php echo $serial_ini['baud'] ?>)</small></span>
+							<?php endif; ?>
+						</td>
 					</tr>
 					<tr>
 						<td>FabUI</td>
@@ -26,6 +47,10 @@
 					<tr>
 						<td>Installed Head</td>
 						<td><span class="pull-right"><?php echo $unit_configs['hardware']['head']['description']; ?></span></td>
+					</tr>
+					<tr>
+						<td>Picamera</td>
+						<td><span class="pull-right"><?php echo 'v. '.$fabtotum_info['camera']['version'];?></span></td>
 					</tr>
 				</tbody>
 			</table>
@@ -81,11 +106,11 @@
 				<tbody>
 					<tr>
 						<td>Down</td>
-						<td><span class="pull-right"><?php echo pretty_baud($eth_rates[0])?> - <?php echo pretty_baud($wlan_rates[0])?></span></td>
+						<td><span class="pull-right"><?php if(isset($eth_rates[0])) echo pretty_baud($eth_rates[0]); ?> - <?php if(isset($wlan_rates[0])) echo pretty_baud($wlan_rates[0])?></span></td>
 					</tr>
 					<tr>
 						<td>Up</td>
-						<td><span class="pull-right"><?php echo pretty_baud($eth_rates[1])?> - <?php echo pretty_baud($wlan_rates[1])?></span></td>
+						<td><span class="pull-right"><?php if(isset($eth_rates[1])) echo pretty_baud($eth_rates[1])?> - <?php if(isset($wlan_rates[1])) echo pretty_baud($wlan_rates[1])?></span></td>
 					</tr>
 				</tbody>
 			</table>

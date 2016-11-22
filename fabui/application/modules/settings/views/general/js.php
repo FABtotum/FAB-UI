@@ -144,6 +144,7 @@ function save(){
           		feeder_extruder_steps_per_unit_a_mode: $("#feeder-extruder-steps-per-unit-a").val(),
           		print_preheating_extruder : $("#print-preheating-extruder").val(),
           		print_preheating_bed : $("#print-preheating-bed").val(),
+          		print_calibration: $("#print-calibration").val(),
           		both_y_endstops: $("#both-y-endstops").val(),
           		both_z_endstops: $("#both-z-endstops").val(),
           		upload_api_key: $("#upload-api-key").val(),

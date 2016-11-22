@@ -158,6 +158,8 @@ class FT_Layout {
 
 	public function set_layout_hardware() {
 		
+		
+		
 		if(!file_exists(CONFIG_FOLDER . 'config.json')){
 			
 			$this -> _ci -> load -> helper('print_helper'); 
@@ -174,7 +176,6 @@ class FT_Layout {
 		$this -> _show_feeder = isset($fabtotum_config['feeder']['show']) ? $fabtotum_config['feeder']['show'] : true;
 		$this -> _show_nozzle_temp = isset($fabtotum_config['hardware']['head']['max_temp']) && $fabtotum_config['hardware']['head']['max_temp'] > 0 ? true : false;
 		$this -> _max_temp = isset($fabtotum_config['hardware']['head']['max_temp']) ? $fabtotum_config['hardware']['head']['max_temp'] : 230;
-		
 		unset($fabtotum_config);
 
 	}
@@ -232,7 +233,10 @@ class FT_Layout {
 		$data['_show_nozzle_temp'] = $this -> _show_nozzle_temp;
 		
 		$data['_max_temp'] = $this -> _max_temp;
+		$data['_show_feeder'] = $this -> getFeeder();
 
+		
+		
 		return $this -> _ft_load(array('_ci_view' => 'index', '_ci_vars' => $this -> _ci_object_to_array($data), '_ci_return' => $return));
 	}
 
@@ -597,27 +601,6 @@ class FT_Layout {
 				$html .= '<ul>';
 
 				foreach ($item['sons'] as $son) {
-
-					if ($son['name'] == 'feeder' || $son['name'] == '4-axis') {
-
-						if ($this -> _show_feeder == true) {
-
-							$active = isset($uri[2]) && $uri[2] == $son['name'] ? 'active' : '';
-							$html .= '<li class="' . $active . '">';
-							$href = site_url($item['name'] . '/' . $son['name']);
-							$html .= '<a data-href="' . $href . '"  href="' . $href . '">';
-
-							if (isset($son['icon'])) {
-								$html .= $son['icon'] . ' ';
-							}
-
-							$html .= $son['label'];
-							$html .= '</a>';
-							$html .= '</li>';
-						}
-
-					} else {
-						
 						$active = $uri_string == $item['name'].'/'.$son['name'] ? 'active' : '';
 						
 						
@@ -643,22 +626,17 @@ class FT_Layout {
 							$html .= '<ul>';
 							
 							foreach ($son['sons'] as $subson) {
-
+								
 								$active = isset($uri[3]) && $uri[3] == $subson['name'] ? 'active' : '';
-
 								$html .= '<li class="' . $active . '">';
-
 								$href = site_url($item["name"].'/'.$son['name'] . '/' . $subson['name']);
-
 								$html .= '<a data-controller="' . $son['name'] . '/' . $subson['name'] . '" data-href="' . $href . '"  href="' . $href . '">';
 
 								if (isset($subson['icon'])) {
 									$html .= $subson['icon'] . ' ';
 								}
-
 								$html .= $subson['label'];
 								$html .= '</a>';
-
 								$html .= '</li>';
 
 							}
@@ -667,7 +645,7 @@ class FT_Layout {
 
 						$html .= '</li>';
 
-					}
+					
 
 				}
 				$html .= '</ul>';

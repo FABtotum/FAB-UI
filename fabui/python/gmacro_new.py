@@ -148,9 +148,9 @@ def sweepScan(serial_util, settings, params=None):
         serial_util.doMacro('M741', 'TRIGGERED', 1, 'Front panel door control')
     serial_util.doMacro('M744', 'open', 1, 'Building plane removed!', warning=True)
     serial_util.doMacro('M744', 'TRIGGERED', 1, 'Spool panel is not closed!', verbose=False, warning=True)
-    serial_util.doMacro('M701 S0', 'ok', 1, 'Turning off lights')
-    serial_util.doMacro('M702 S0', 'ok', 1, 'Turning off lights', verbose=False)
-    serial_util.doMacro('M703 S0', 'ok', 1, 'Turning off lights', verbose=False)
+    serial_util.doMacro('M701 S0', 'ok', -1, 'Turning off lights')
+    serial_util.doMacro('M702 S0', 'ok', -1, 'Turning off lights', verbose=False)
+    serial_util.doMacro('M703 S0', 'ok', -1, 'Turning off lights', verbose=False)
     serial_util.doMacro('G28 X0 Y0', 'ok', -1, 'Homing all axis')
     serial_util.doMacro('G90', 'ok', 1, 'Setting Absolute position')
     serial_util.doMacro('G0 Z145 F1000', 'ok', -1, 'Lowering the plane')
@@ -170,7 +170,7 @@ def rotatingScan(serial_util, settings, params=None):
     serial_util.trace("Checking panel door status and bed inserted")
     if(settings['safety']['door'] == 1):
         serial_util.doMacro('M741', 'TRIGGERED', 1, 'Front panel door control')
-    serial_util.doMacro('M744', 'open', 1, 'Building plane (must be removed)', warning=True)
+    serial_util.doMacro('M744', 'open', 1, 'Building plane (must be removed)')
     serial_util.doMacro('M744', 'TRIGGERED', 1, 'Spool panel closed', verbose=False, warning=True)
     serial_util.doMacro('M701 S0', 'ok', 1, 'Turning off lights')
     serial_util.doMacro('M702 S0', 'ok', 1, 'Turning off lights', verbose=False)
@@ -180,7 +180,18 @@ def rotatingScan(serial_util, settings, params=None):
     serial_util.doMacro('M302 S0', 'ok', 1, 'Disabling cold extrusion prevention', verbose=False)
 """ ################################################################### """
 def photogrammetryScan(serial_util, settings, params=None):
-    print
+    serial_util.trace("Initializing Photogrammetry")
+    serial_util.trace("Checking panel door status and bed inserted")
+    if(settings['safety']['door'] == 1):
+        serial_util.doMacro('M741', 'TRIGGERED', 1, 'Front panel door control', verbose=False)
+    serial_util.doMacro('M744', 'open', 1, 'Building plane (must be removed)')
+    serial_util.doMacro('M744', 'TRIGGERED', 1, 'Spool panel closed', verbose=False, warning=True)
+    serial_util.doMacro('M701 S255', 'ok', -1, 'Turning on lights')
+    serial_util.doMacro('M702 S255', 'ok', -1, 'Turning on lights', verbose=False)
+    serial_util.doMacro('M703 S255', 'ok', -1, 'Turning on lights', verbose=False)
+    serial_util.doMacro('G90', 'ok', -1, 'Setting Absolute position', verbose=False)
+    serial_util.doMacro('G0 X96 Y175 Z135 E0 F10000', 'ok', -1, 'Moving to collimation position', verbose=False)
+    serial_util.doMacro('M302 S0', 'ok', -1, 'Disabling cold extrusion prevention', verbose=False)
 """ ################################################################### """
 def raiseBed(serial_util, settings, params=None):
     serial_util.doMacro('M402', 'ok', -1, 'Retracting Probe')
@@ -246,10 +257,10 @@ def homeAll(serial_util, settings, params=None):
 """ ################################################################### """
 def autoBedLeveling(serial_util, settings, params=None):
     serial_util.trace("Auto Bed leveling Initialized")
-    serial_util.doMacro('G91', 'ok', 1, 'Setting relative position', verbose=False)
-    serial_util.doMacro('G0 Z25 F1000', 'ok', -1, 'Moving away from the plane', verbose=False)
-    serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
-    serial_util.doMacro('G28', 'ok', -1, 'Homing all axes')
+    #serial_util.doMacro('G91', 'ok', 1, 'Setting relative position', verbose=False)
+    #serial_util.doMacro('G0 Z25 F1000', 'ok', -1, 'Moving away from the plane', verbose=False)
+    #serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
+    serial_util.doMacro('G28 X Y', 'ok', -1, 'Homing all axes')
     serial_util.doMacro('G29', 'ok', -1, 'Auto bed leveling procedure')
     serial_util.doMacro('G0 X5 Y5 Z60 F2000', 'ok', -1, 'Getting to idle position')
 """ ################################################################### """
@@ -257,14 +268,26 @@ def startPrint(serial_util, settings, params=None):
     serial_util.trace("Preparing the FABtotum Personal Fabricator")
     serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
     serial_util.doMacro('G0 X5 Y5 Z60 F1500', 'ok', -1, 'Moving to oozing point')
-    serial_util.trace('Pre heating nozzle (' + + '&deg;) (fast)')
+    serial_util.trace('Pre heating nozzle (' + str(params['param1']) + '&deg;) (fast)')
     serial_util.sendGCode('M104 S' + str(params['param1']))
-    serial_util.trace('Pre heating bed (' + + '&deg;) (fast)')
+    serial_util.trace('Pre heating bed (' + str(params['param2']) + '&deg;) (fast)')
     serial_util.sendGCode('M140 S' + str(params['param2']))
     serial_util.doMacro('M220 S100', 'ok', -1, 'Reset Speed factor override', verbose=False)
     serial_util.doMacro('M221 S100', 'ok', -1, 'Reset Extruder factor override', verbose=False)
     serial_util.doMacro('M92 E' + str(settings['e']), 'ok', 1, 'Setting extruder mode', verbose=False)
 """ ################################################################### """
+def startSubtractivePrint(serial_util, settings, params=None):
+    serial_util.doMacro('M92 E' + str(settings['a']), 'ok', 1, 'Setting 4th Axis mode', verbose=False)
+def endPrintSubtractive(serial_util, settings, params=None):
+    serial_util.doMacro('M5', 'ok', -1, 'Shutting Down Milling Motor')
+    serial_util.doMacro('M220 S100', 'ok', -1, 'Reset Speed factor override')
+    serial_util.doMacro('M221 S100', 'ok', -1, 'Reset Extruder factor override')
+    serial_util.doMacro('M107', 'ok', -1, 'Turning Fan off')
+    serial_util.doMacro('M18', 'ok', -1, 'Motor Off')
+    serial_util.doMacro('M300', 'ok', -1, 'Completed!')
+    serial_util.doMacro('M92 E' + str(settings['e']), 'ok', 1, 'Setting extruder mode', verbose=False)
+    
+""" ################################################################### """  
 def probeSetupPrepare(serial_util, settings, params=None):
     serial_util.trace("Preparing Calibration procedure")
     serial_util.trace("This may take a wile")
@@ -274,6 +297,7 @@ def probeSetupPrepare(serial_util, settings, params=None):
     serial_util.doMacro('G0 X17 Y61.5 F6000', 'ok', -1, 'Offset', verbose=False)
     serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
     serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving to calibration position')
+""" ################################################################### """  
 def probeSetupCalibrate(serial_util, settings, params=None):
     serial_util.trace("Calibrating probe")
     #serial_util.doMacro('M109 S30', 'ok', -1, 'Shutting down extruder')
@@ -293,27 +317,41 @@ def probeSetupCalibrate(serial_util, settings, params=None):
         serial_util.doMacro('M300', 'ok', 1, 'Done')
     else:
         raise serial_utils.MacroException('Get current Z position failed')
+""" ################################################################### """  
+def extrude(serial_util, settings, params=None):
+    serial_util.doMacro('M92 E' + str(settings['e']), 'ok', 1, 'Setting extruder mode', verbose=False)
+    serial_util.doMacro('M302', 'ok', 1, 'Extrusion prevention disabled', verbose=False)
+    #temperature = serial_util.getTemperature()
+    #if(temperature['extruder']['temperature'] < 180):
+    #    serial_util.doMacro('M109 S185', 'ok', -1, 'Heating nozzle...(wait)')
+    #    serial_util.trace("Temperature reached")
+    serial_util.doMacro('G91', 'ok', 1, 'Setting relative position', verbose=False)
+    serial_util.doMacro('G0 E' + str(params['param1']) + ' F400', 'ok', -1, 'Espelling filament', verbose=True)
+    
     
 MACROS_CMDS = {
- 'load_spool'         : loadSpool,
- 'unload_spool'       : unloadSpool,
- 'pre_unload_spool'   : preUnloadSpool,
- 'check_pre_print'    : checkPrePrint,
- 'end_print_additive' : endPrintAdditive,
- 's_scan'             : sweepScan,
- 'p_scan'             : probingScan,
- 'r_scan'             : rotatingScan,
- 'pg_scan'            : photogrammetryScan,
- 'end_scan'           : endScan,
- 'check_pre_scan'     : checkPreScan,
- 'raise_bed'          : raiseBed,
- 'raise_bed_no_g27'   : raiseBedNo27,
- '4th_axis_mode'      : fourthAxisMode,
- 'home_all'           : homeAll,
- 'auto_bed_leveling'  : autoBedLeveling,
- 'start_print'        : startPrint,
- 'probe_setup_prepare' : probeSetupPrepare,
- 'probe_setup_calibrate' : probeSetupCalibrate
+ 'load_spool'              : loadSpool,
+ 'unload_spool'            : unloadSpool,
+ 'pre_unload_spool'        : preUnloadSpool,
+ 'check_pre_print'         : checkPrePrint,
+ 'end_print_additive'      : endPrintAdditive,
+ 's_scan'                  : sweepScan,
+ 'p_scan'                  : probingScan,
+ 'r_scan'                  : rotatingScan,
+ 'pg_scan'                 : photogrammetryScan,
+ 'end_scan'                : endScan,
+ 'check_pre_scan'          : checkPreScan,
+ 'raise_bed'               : raiseBed,
+ 'raise_bed_no_g27'        : raiseBedNo27,
+ '4th_axis_mode'           : fourthAxisMode,
+ 'home_all'                : homeAll,
+ 'auto_bed_leveling'       : autoBedLeveling,
+ 'start_print'             : startPrint,
+ 'probe_setup_prepare'     : probeSetupPrepare,
+ 'probe_setup_calibrate'   : probeSetupCalibrate,
+ 'start_subtractive_print' : startSubtractivePrint,
+ 'end_print_subtractive'   : endPrintSubtractive,
+ 'extrude'                 : extrude
 }
 
 su = serial_utils.SerialUtils(trace_file = trace_file, debug=debug)

@@ -14,8 +14,10 @@
 | path to your installation.
 |
 */
-
-$config['base_url']	= 'http://'.$_SERVER['HTTP_HOST'].'/fabui/';
+if(isset($_SERVER['HTTP_HOST']))
+	$config['base_url']	= 'http://'.$_SERVER['HTTP_HOST'].'/fabui/';
+else
+	$config['base_url'] = '/fabui/';
 /*
 |--------------------------------------------------------------------------
 | Index File

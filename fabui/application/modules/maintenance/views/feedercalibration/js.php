@@ -15,9 +15,30 @@ function extrudeFilament()
 	disable_button('.step-change-modal-open');
 	$(".response-container").html('');
 	$(".calc-row").slideUp(function(){});
-	var filamentToExtrude = $("#filament-to-extrude").val();
+	/*var filamentToExtrude = $("#filament-to-extrude").val();
 	var gCode = 'M302\nG91\nG0 E+'+filamentToExtrude+' F400';
-	jog_make_call_ajax('mdi', gCode, extrudeCallBack);
+	jog_make_call_ajax('mdi', gCode, extrudeCallBack); */
+
+	var data = {
+		action : "extrude",
+		filament_to_extrude: $("#filament-to-extrude").val(), 
+	};
+	openWait("<i class=\"fa fa-spin fa-spinner\"></i> Extruding");
+	$.ajax({
+		type: "POST",
+		url: '/fabui/application/modules/maintenance/ajax/calculate_feeder_step.php',
+		dataType: 'json',
+		data: data
+	}).done(function( data ) {
+		enable_button('.extrude');
+		enable_button('.step-change-modal-open');
+		closeWait();
+		$(".calc-row").slideDown(function(){
+			$('.extrude').html('<i class="fab-lg fab-fw icon-fab-e"></i> Start to extrude');
+		});
+	});		
+
+	
 }
 /* */
 function extrudeCallBack(response)
@@ -62,7 +83,6 @@ function calculateStep()
 		/*});*/
 		$("#actual-step").val(data.new_step);
 		jog_call('extruder_mode', 'e');
-		
 	});		
 }
 /* */

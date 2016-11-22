@@ -101,6 +101,8 @@ class Maintenance extends Module {
 		
 		$data['widget'] = $widget;
 
+		//background-color: #0084ff!important;
+		
 		$js_in_page = $this -> load -> view('bedcalibration/js', '', TRUE);
 		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
 
@@ -224,8 +226,31 @@ class Maintenance extends Module {
 		$data['os_info'] = trim(shell_exec('uname -a'));
 		
 		// == FABTOTUM INFO
+		$data['serial_ini'] = parse_ini_file('/var/www/lib/serial.ini');
 		$data['fabtotum_info'] = json_decode(shell_exec('sudo python '.PYTHONPATH.'sysinfo.py'), true);
 		$data['unit_configs']  = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
+		$data['firmwares_baudrate'] = array(
+				'1.0.002' => 115200,
+				'1.0.003' => 115200,
+				'1.0.004' => 115200,
+				'1.0.005' => 115200,
+				'1.0.006' => 115200,
+				'1.0.007' => 115200,
+				'1.0.008' => 115200,
+				'1.0.009' => 115200,
+				'1.0.0091' => 115200,
+				'1.0.0093' => 115200,
+				'1.0.0095' => 250000,
+				'1.0.0095.1' => 250000,
+				'1.0.0096' => 250000
+		);
+		
+		if(isset($data['firmwares_baudrate'][$data['fabtotum_info']['fw']['version']])){
+			$data['wrong_baudrate'] = $data['firmwares_baudrate'][$data['fabtotum_info']['fw']['version']] != $data['serial_ini']['baud'];
+		}else{
+			$data['wrong_baudrate'] = true;
+		}
+		
 		
 		$widget_content = $this -> load -> view('systeminfo/widget', $data, TRUE);
 		
@@ -246,7 +271,7 @@ class Maintenance extends Module {
 		$data['eeprom'] = json_decode(shell_exec('sudo python '.PYTHONPATH.'read_eeprom.py'), true);
 		
 		$widget_config['data-widget-icon'] = 'icon-fab-e';
-		$widget = widget('feederCalibration' . time(), 'Feeder Calibration', $widget_config, $this->load->view('feedercalibration/widget', $data, TRUE), false, false, false);
+		$widget = widget('feederCalibration' . time(), 'Feeder Step Calibration', $widget_config, $this->load->view('feedercalibration/widget', $data, TRUE), false, false, false);
 		$data['widget'] = $widget;
 		
 		$this->layout->add_js_in_page(array('data' => $this->load->view('feedercalibration/js', $data, TRUE), 'comment' => ''));

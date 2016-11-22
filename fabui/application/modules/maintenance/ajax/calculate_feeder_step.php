@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/database.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/jog_factory.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/jog_factory.php';
 
 $action = $_POST['action'];
 
@@ -19,14 +19,25 @@ if($action == 'calculate'){
 	
 	
 }elseif($action == 'change'){
-	
 	$new_step_value = $_POST['new_step'];
+}elseif($action == 'extrude'){
+	$filament_to_extrude = $_POST['filament_to_extrude'];
+	$command = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m extrude -p1 '.$filament_to_extrude;
+	shell_exec($command);
+	$response['command'] = $command;
+	echo json_encode($response);
+	exit();
 }
 
-$response['new_step'] = $new_step_value;
 
+
+$response['new_step'] = $new_step_value;
+$response['python']   = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M92 E'.$new_step_value.'-M500"'));
+
+/*
 $jogFactory = new JogFactory();
 $jogFactory -> mdi('M92 E'.$new_step_value.PHP_EOL.'M500');
+*/
 
 /** GET UNITS */
 $_units = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);

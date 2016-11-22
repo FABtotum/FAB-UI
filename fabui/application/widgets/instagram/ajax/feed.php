@@ -7,16 +7,12 @@ if($reload || !file_exists(INSTAGRAM_FEED_JSON) || !file_exists(INSTAGRAM_FEED_J
 	require_once '/var/www/cron/instagram_feed.php';
 }
 $feed = json_decode(file_get_contents(INSTAGRAM_FEED_JSON), true);
-
-
-
 $items = $feed['data'];
+$items = array_unique($items, SORT_REGULAR);
 
 uasort($items, 'cmp');
 
 function cmp($a, $b) {
-	
-	
 	
 	if ($a['date'] == $b['date']) {
 		return 0;
@@ -34,7 +30,7 @@ function cmp($a, $b) {
 				<div class="grid-item">
 					<div class="grid-item-inner">
 						<ul class="list-inline">
-							<li class="font-xs" ><a href="http://www.instagram.com/p/<?php echo $item['code'] ?>"><i class="fa  fa-instagram"></i></a></li>
+							<li class="font-xs" ><a target="_blank" href="http://www.instagram.com/p/<?php echo $item['code'] ?>"><i class="fa  fa-instagram fa-fw fa-lg"></i></a></li>
 							<li class="pull-right text-muted font-xs"><?php echo date('j M, Y', $item['date']); ?></li>
 						</ul>	
 						<a href="<?php echo $item['display_src'] ?>" class="fancybox-instagram" data-rel="fancybox-button" title="<?php echo $item['caption'] ?>"><img src="<?php echo $item['display_src'] ?>" /></a>

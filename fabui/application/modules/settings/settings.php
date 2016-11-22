@@ -57,6 +57,7 @@ class Settings extends Module {
 		$data['_milling_sacrificial_layer_offset'] = isset($config_units['milling']['layer-offset']) ? $config_units['milling']['layer-offset'] : 12.0;
 		$data['_print_preheating_extruder'] = isset($config_units['print']['pre-heating']['extruder']) ? $config_units['print']['pre-heating']['extruder'] : 150;
 		$data['_print_preheating_bed'] = isset($config_units['print']['pre-heating']['bed']) ? $config_units['print']['pre-heating']['bed'] : 50;
+		$data['_print_calibration'] = isset($config_units['print']['calibration']) ? $config_units['print']['calibration'] : 'homing';
 		$data['max_temp'] = $this -> layout -> get_max_temp();
 		
 		/***
@@ -70,6 +71,7 @@ class Settings extends Module {
 		$data['settings_type'] = isset($config_units['settings_type']) ? $config_units['settings_type'] : 'default';
 		
 		$data['options_customized_actions'] = array('None'=>'None', 'Shutdown'=>'Shutdown');
+		$data['print_calibration_options'] = array('homing' => 'Simple Homing', 'auto_bed_leveling' => 'Auto Bed Leveling');
 		
 		$data['show_feeder'] = $this -> layout -> getFeeder();
 		
@@ -252,9 +254,14 @@ class Settings extends Module {
 		$this -> layout -> add_js_in_page(array('data' => $this -> load -> view('network/dns/js', $data, TRUE), 'comment' => ''));
 		
 		$this -> layout -> add_js_file(array('src' => '/assets/js/plugin/jquery-validate/jquery.validate.min.js', 'comment' => 'jquery validate'));
-		
 		$this->layout->view('network/dns/index', $data);
 		
+	}
+	
+	public function recreateSettingsFiles()
+	{
+		$this->load->helper('print_helper');
+		create_default_config();
 	}
 	
 	

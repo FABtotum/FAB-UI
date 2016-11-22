@@ -16,6 +16,9 @@ $eeprom = json_decode(shell_exec('sudo python '.PYTHON_PATH.'read_eeprom.py'), t
 $system_info = json_decode(shell_exec('sudo python '.PYTHON_PATH.'sysinfo.py'), true);
 
 //save values to config files
+if(!file_exists(CONFIG_UNITS)){ //if settings file doesn't exists create it
+	shell_exec('sudo php '.FABUI_PATH.'index.php settings recreateSettingsFiles');
+}
 $units       = json_decode(file_get_contents(CONFIG_UNITS), TRUE);
 $customUnits = json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE);
 
@@ -39,7 +42,6 @@ $customUnits['e'] = $eeprom['steps_per_unit']['e']; //set steps per unit
 
 if($system_info['hw'] < 4){
 	$new_units_a = $units['a'];
-	
 	if($eeprom['steps_per_unit']['e'] > 2000){
 		$new_units_a = 177.777778;
 	}else{
@@ -48,6 +50,7 @@ if($system_info['hw'] < 4){
 	$units['a'] = $customUnits['a'] = $new_units_a;
 }
 
+$units['hardware']['id'] = $customUnits['hardware']['id'] =  $system_info['hw'];
 //write
 file_put_contents(CONFIG_UNITS,        json_encode($units));
 file_put_contents(CUSTOM_CONFIG_UNITS, json_encode($customUnits));

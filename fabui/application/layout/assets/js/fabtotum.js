@@ -350,6 +350,7 @@ $(function() {
 					show_connected(obj.data);
 					break;
 				case 'serial':
+					analizeResponse(obj.data.response);
 					write_to_console(obj.data.command + ": " + obj.data.response);
 					/* */
 					break;
@@ -1071,8 +1072,16 @@ function update_temperature_info(data) {
 			document.getElementById('top-ext-target-temp').noUiSlider.set([parseInt(ext_target)]);
 		}
 		
-		document.getElementById('top-act-bed-temp').noUiSlider.set([parseInt(bed_temp)]);
-		document.getElementById('top-bed-target-temp').noUiSlider.set([parseInt(bed_target)]);
+		if($("#top-act-bed-temp").length > 0){
+			document.getElementById('top-act-bed-temp').noUiSlider.set([parseInt(bed_temp)]);
+		}
+		
+		if($("#top-bed-target-temp").length > 0){
+			document.getElementById('top-bed-target-temp').noUiSlider.set([parseInt(bed_target)]);
+		}
+		
+		
+		
 		
 		
 
@@ -1203,7 +1212,9 @@ function initUI(){
 		document.getElementById("top-ext-target-temp").noUiSlider.on('start', blockSliders);
 		document.getElementById("top-ext-target-temp").noUiSlider.on('end', enableSliders);
 		
-		$("#top-act-ext-temp .noUi-handle").remove();	
+		$("#top-act-ext-temp .noUi-handle").remove();
+		
+		analizeMenu();
 	
 	}
 	
@@ -1315,4 +1326,34 @@ function RefreshTable(tableId, urlData)
 		$(tableId + "_wrapper").css({ opacity: 1 });
     
     });
+}
+
+/** analize serial response */
+function analizeResponse(response){
+	var regex_endstop_hit = /echo:endstops\shit:\s\s([^a-z])/g;
+	m = regex_endstop_hit.exec(response);
+	if( m !== null){
+		var axis = m[1];	
+		$.smallBox({
+			title : "Warning",
+			content : axis + " endstop hit",
+			color : "#C79121",
+			iconSmall : "fa fa-warning bounce animated",
+			timeout : 3000
+		});
+	}
+}
+/** */
+function analizeMenu()
+{
+	var item_to_hide = ['feeder/engage', 'maintenance/4-axis'];
+	var a = $("nav li > a");
+	a.each(function() {
+		var link = $(this);
+		var controller = link.attr('data-controller');
+		
+		if(jQuery.inArray( controller, item_to_hide ) >= 0 && SHOW_FEEDER == false){
+			link.remove();
+		}
+	});
 }

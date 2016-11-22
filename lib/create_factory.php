@@ -33,7 +33,8 @@ class CreateFactory {
 			$this -> $key = $value;
 
 		}
-
+                $this->_usock = socket_create(AF_UNIX, SOCK_DGRAM, 0);
+                socket_connect($this->_usock, '/var/www/temp/task_usock');
 		$this -> _command = "";
 		$this -> _message = "";
 	}
@@ -154,20 +155,22 @@ class CreateFactory {
 	}
 
 	public function writeDataFile() {
-		
+
 		if ($this -> _command != '') {
-			write_file($this -> _data_file, $this -> _command . PHP_EOL, 'a+');
+			//write_file($this -> _data_file, $this -> _command . PHP_EOL, 'a+');
+                        socket_write($this->_usock, $this->_command.PHP_EOL);
 		}
+
 	}
 
 	public function updateDB() {
 
-		if ($this -> _action == 'velocity' || $this -> _action == 'mail' || $this -> _action == 'rpm' 
-				|| $this->_action == 'flow-rate' || $this->_action == 'fan' || $this->_action == 'zup' || $this->_action == 'zdown' || $this->_action == 'notes') {
-					
+		if ($this -> _action == 'velocity' || $this -> _action == 'mail' || $this -> _action == 'rpm' || $this->_action == 'flow-rate' || $this->_action == 'fan' || $this->_action == 'zup' || $this->_action == 'zdown' || $this->_action == 'notes') {
+		        $_column = '';
+                        $_value = '';
 			$_attributes = json_decode(file_get_contents($this->_attributes_file), TRUE);
 
-			switch($this->_action) {
+			switch ($this->_action) {
 
 				case 'velocity' :
 					$_column = 'speed';
@@ -193,13 +196,11 @@ class CreateFactory {
 					$_column = 'note';
 					$_value = $this->_value;
 					break;
-				default:
-					$_column = '';
-			}	
+			}
 
 			//echo $this->_action.PHP_EOL;
 			//kill echo $_column.PHP_EOL;
-			if($_column != '') $_attributes[$_column] = $_value;
+			$_attributes[$_column] = $_value;
 			
 			
 			file_put_contents($this->_attributes_file, json_encode($_attributes), FILE_USE_INCLUDE_PATH);
@@ -213,10 +214,9 @@ class CreateFactory {
 	}
 
 	public function stop() {
-		
-		if($this -> _action == 'stop'){
-			if($this->_type == 'additive') $task_type = 'print';
-			else $task_type = 'mill';	
+		socket_close($this->_usock);
+		if($this -> _action == 'stop' && $this->_type != 'additive'){	
+			$task_type = 'mill';
 			shell_exec('sudo php ' . SCRIPT_PATH . 'finalize.php ' . $this -> _id_task . ' '.$task_type.' stopped');
 		}
 	}

@@ -13,6 +13,7 @@ class Updates extends Module {
 		$data['internet_available'] = is_internet_avaiable();
 		$data['remote_version'] = myfab_get_remote_version();
 		
+		
 		if(!$data['internet_available'] || $data['remote_version'] == false){ // no connection or update server not reachable
 			$this -> layout -> view('index/noconnection', $data);
 			return;

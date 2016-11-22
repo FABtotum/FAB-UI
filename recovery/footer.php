@@ -10,7 +10,10 @@
 <script src="/assets/js/bootstrap/bootstrap.min.js"></script>
 <script src="/assets/js/app.min.js"></script>
 <script src="/assets/js/fabwebsocket.js"></script>
+<script src="/assets/js/notification/SmartNotification.min.js"></script>
+<script src="/assets/js/notification/FabtotumNotification.js"></script>
 <script src="/assets/js/fabtotum.js"></script>
 <script type="text/javascript">
 	var fabui = false;
+	var MODULE = '';
 </script>

@@ -523,7 +523,7 @@ function print_object() {
 	bed_target_temperatures = [];
 
 	$.ajax({
-		url : ajax_endpoint + 'ajax/create.php',
+		url : ajax_endpoint + 'ajax/create_new.php',
 		type : 'POST',
 		dataType : 'json',
 		async : true,

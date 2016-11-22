@@ -12,8 +12,13 @@ $eeprom = json_decode(shell_exec('sudo python '.PYTHON_PATH.'read_eeprom.py'), t
 //calc new value
 $new_lenght =  abs($eeprom['probe_length']) - $over;
 
+
+$r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M710 S'.abs($new_lenght).'"'));
+$r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M500"'));
+/*
 $jogFactory = new JogFactory();
 $jogFactory -> mdi('M710 S'.abs($new_lenght).PHP_EOL.'M500'.PHP_EOL);
+*/
 
 $_response_items['old_probe_lengt'] = $eeprom['probe_length'];
 $_response_items['over']            = $over;

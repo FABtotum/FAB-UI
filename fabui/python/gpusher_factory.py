@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 import serial
 import time
-import os, sys
+import os, sys, pwd
 
 import ConfigParser
 import argparse
 import logging
 
+import socket
 import json
 import threading
 import Queue
 
-import gcode_utils, cura_utils
+import gcode_utils, cura_utils, simplify_utils
 
 from subprocess import call
-
 from contextlib import contextmanager
 
 from watchdog.observers import Observer
@@ -27,6 +27,7 @@ ser = None # Will be replaced by a Serial() object during initialization
 recvq = []
 trace_fname = ""
 lock_fname  = ""
+chksum_line_count = 1
 
 statistics = {
     "pid": os.getpid(),
@@ -71,9 +72,20 @@ class ReplyNotFoundException(Exception):
     pass
 class PrintWaitTemperatures(Exception):
     pass
+class PrintTemperaturesReached(Exception):
+    pass
 class PrintCompleted(Exception):
     pass
 class PrintKilled(Exception):
+    pass
+class ChecksumErrorException(Exception):
+    pass
+############################################
+class SubprogramCompleted(Exception):
+    pass
+class SubprogramStored(Exception):
+    pass
+class SubprogramCall(Exception):
     pass
 ############################################
 
@@ -121,9 +133,15 @@ def parse_comment(line):
         cp = cura_utils.process_comment(comment)
         if cp is not None and cp[0] == 'layer':
             statistics["actual_layer"] = int(cp[1])+1
+    def simplify_comment(comment):
+        cp = simplify_utils.process_comment(comment)
+        if cp is not None and cp[0] == 'layer':
+            statistics["actual_layer"] = int(cp[1])+1
 
     if statistics["engine"] == "CURA":
         cura_comment(line)
+    elif statistics["engine"] == "SIMPLIFY":
+        simplify_comment(line)
 
     if line.startswith(";;"):
         trace(".> %s" % line[2:])
@@ -181,7 +199,7 @@ def parse_unattended():
 ##################################################
 
 def polled_write(s, expected="ok", cmpfunc=lambda r,e: r==e):
-    global recvq
+    global recvq, chksum_line_count
 
     #print "writing:'%s' expecting:'%s' recvq:'%s'" % (s, expected, recvq)
     ser.write("%s\n" % s)
@@ -197,10 +215,20 @@ def polled_write(s, expected="ok", cmpfunc=lambda r,e: r==e):
         with read_buffered() as q:
             #print "recvq: %s" % q
             for cnt, msg in enumerate(q):
-                if msg.startswith("ERROR :"):
+                if (msg.startswith("checksum mismatch") or
+                    msg.startswith("No Checksum")):
                     # Mark our reply as read. list.pop() must not be used 
                     # here because it changes the list length causing the
                     # loop to exit prematurely.
+                    q[cnt] = None
+                    exc = ChecksumErrorException
+                    breakOuter = True
+                    break
+                elif msg.startswith("Resend:"):
+                    q[cnt] = None
+                    chksum_line_count = int(msg.split(" ")[1])
+                    replyFound = True
+                elif msg.startswith("ERROR :"):
                     q[cnt] = None
                     reply = msg
                     msg = msg.split(":", 1)[1]
@@ -216,6 +244,17 @@ def polled_write(s, expected="ok", cmpfunc=lambda r,e: r==e):
                         exc = PrintInterruptedException
                         breakOuter = True
                         break
+                elif msg.startswith("Invalid command given:"):
+                    trace(msg)
+                    q[cnt] = None
+                    reply = msg
+                    breakOuter = True
+                    replyFound = True
+                # An empty message means that the serial communication timed
+                # out, so we should exit prematurely and raise an exception.
+                elif msg == '':
+                    breakOuter = True
+                    break
                 # checking the expected reply last, so we can catch
                 # higher priority messages first
                 elif cmpfunc(msg, expected):
@@ -238,12 +277,27 @@ def polled_write(s, expected="ok", cmpfunc=lambda r,e: r==e):
 
     return reply
 
-def spool_gline(line, expected="ok"):
+def calculate_checksum(string):
+    checksum = 0
+
+    for char in map(ord, string):
+        checksum ^= char
+
+    return checksum
+
+def spool_gline(line, expected="ok", cmpfunc=lambda r,e: r==e, checksumed=True):
+    global chksum_line_count
+
     line = line.strip()
     if not line:
         return
 
-    return polled_write(line, expected)
+    if checksumed:
+        line = "N%d %s" % (chksum_line_count, line)
+        line = "%s*%d" % (line, calculate_checksum(line))
+        chksum_line_count = (chksum_line_count + 1) & 0x7FFFFFFF
+
+    return polled_write(line, expected, cmpfunc)
 
 def spool_multiple(stream):
     if isinstance(stream, str):
@@ -260,7 +314,7 @@ def spool_multiple(stream):
 def ask_for_temps():
     ext_temp, bed_temp = 0, 0
 
-    reply = polled_write("M105", "ok T:", cmpfunc=lambda r,e: r.startswith(e))
+    reply = spool_gline("M105", "ok T:", cmpfunc=lambda r,e: r.startswith(e))
     tokens = reply.split(" ")
     try:
         ext, extt, bed, bedt = tokens[1:5] # T:xx.x /xx.x B:xx.x /xx.x
@@ -287,33 +341,11 @@ def ask_for_temps():
 
     return ext_temp, bed_temp
 
-###
-# unused at the moment
-
-def macro(gline, expected=None, timeout=0, description="", delay=0, verbose=True):
-    polled_write(gline, expected)
-    if description and verbose:
-        trace(description)
-    time.sleep(delay)
+##################################################
+##################################################
 
 def start_print():
-    trace("Preparing the FABtotum Personal Fabricator")
-    macro("G27", "ok", description="Homing axes (Z down)", delay=5)
-    #macro("G27 X Y", "ok")
-    macro("G90", "ok")
-    macro("G0 X5 Y5 Z10 F10000", "ok", delay=10)
-    macro("G28", "ok", description="Homing with probe", delay=10)
-    macro("G90", "ok", 2, "Setting absolute position", 0, verbose=False)
-    macro("G0 X10 Y10 Z60 F1500", "ok", 3, "Moving to oozing point", 1)
-    #pre heating M104 S0
-    macro("M220 S100", "ok", 1, "Reset Speed factor override", 0.1, verbose=False)
-    macro("M221 S100", "ok", 1, "Reset Extruder factor override", 0.1, verbose=False)
-    macro("M121", "ok", description="Enabling endstops")
-    #macro("M106 S255","ok",1,"Turning Fan On",1) moved to FW
-    #macro("M92 E"+str(units['e']),"ok",1,"Setting extruder mode",0.1,verbose=False)
-
-##################################################
-##################################################
+    pass
 
 def end_print(fast_end=False):
     procedures = {}
@@ -410,6 +442,7 @@ class JSONWriter(threading.Thread):
             "print_started": str(statistics["started"]),
             "started": statistics["startedat"],
             "status": str(statistics["state"]),
+            "paused": statistics["paused"],
             "completed": str(statistics["printdone"]),
             "completed_time": statistics["completedat"],
             "shutdown": "",
@@ -417,7 +450,7 @@ class JSONWriter(threading.Thread):
             "stats": _stats
         }
         stats = {
-            "type": "print",
+            "type": statistics["print_type"],
             "print": _print,
             "engine": statistics["engine"],
             "pid": statistics["pid"]
@@ -426,10 +459,11 @@ class JSONWriter(threading.Thread):
         stats_file = open(self._monitor_file,'w+')
         stats_file.write(json.dumps(stats))
         stats_file.close()
+        print "%.2f%%" % (100.0 * statistics["line"] / statistics["gcode_lines"])
 
     def run(self):
         while not self._die:
-            if statistics["state"] == "printing":
+            if statistics["state"] != "waiting_temps":
                 self._ovr_queue.put("!temps")
             self.update_json()
             time.sleep(self._every)
@@ -439,6 +473,47 @@ class JSONWriter(threading.Thread):
 
 ##################################################
 ##################################################
+
+class USocketServer(threading.Thread):
+    def __init__(self, oq, group=None, target=None, name=None,
+                 verbose=None, *args, **kwargs):
+        super(USocketServer, self).__init__(
+            group=group, target=target, name=name, verbose=verbose
+        )
+        self._ovr_queue = oq
+        self._die = False
+
+    def run(self):
+        usock_path = "/var/www/temp/task_usock"
+
+        if os.path.exists(usock_path):
+            os.remove(usock_path)
+
+        pw = pwd.getpwnam("www-data")
+        server = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        server.bind(usock_path)
+        server.settimeout(2)
+        os.chown(usock_path, pw.pw_uid, pw.pw_gid)
+
+        while not self._die:
+            try:
+                datagram = server.recv(1024).strip()
+            except socket.timeout:
+                datagram = ""
+
+            if not datagram:
+                continue
+
+            for s in datagram.splitlines():
+                #print ">>>>>", s
+                self._ovr_queue.put(datagram)
+
+        server.close()
+        os.remove(usock_path)
+
+    def die(self):
+        self._die = True;
+
 
 class OverrideCommandsHandler(PatternMatchingEventHandler):
     def __init__(self, overrides_queue, *args, **kwargs):
@@ -519,25 +594,26 @@ def do_ovr_gettemps(params, stats):
 def do_ovr_rpm_cw(params, stats):
     try:
         stats["rpm"] = int(params[0][1:], 10)
+        trace("RPM speed set to %d " % (stats["rpm"]))
     except IndexError:
         trace("ovr_rpm_cw: No parameter given")
         return
     except ValueError:
         trace("ovr_rpm_cw: Invalid parameter given: '%s'" % params[0])
         return
-
     return "M3 %s" % params[0]
 
 def do_ovr_rpm_ccw(params, stats):
     try:
         stats["rpm"] = int(params[0][1:], 10)
+        trace("RPM speed set to %d " % (stats["rpm"]))
     except IndexError:
         trace("ovr_rpm_ccw: No parameter given")
         return
     except ValueError:
         trace("ovr_rpm_ccw: Invalid parameter given: '%s'" % params[0])
         return
-
+    
     return "M4 %s" % params[0]
 
 
@@ -546,7 +622,9 @@ def do_ovr_extt(params, stats):
     try:
         temperatures["extruder_target"] = float(params[0][1:])
         if temperatures["extruder_target"] > 0:
-            trace("Extruder temperature set to %.f &deg;C" % temperatures["extruder_target"])
+            trace("Extruder temperature set to %.f &deg;C" % (
+                temperatures["extruder_target"]
+            ))
     except IndexError:
         trace("ovr_extt: No parameter given")
         return
@@ -574,7 +652,9 @@ def do_ovr_bedt(params, stats):
     try:
         temperatures["bed_target"] = float(params[0][1:])
         if temperatures["bed_target"] > 0:
-            trace("Bed temperature set to %.f &deg;C" % temperatures["bed_target"])
+            trace("Bed temperature set to %.f &deg;C" % (
+                temperatures["bed_target"]
+            ))
     except IndexError:
         trace("ovr_bedt: No parameter given")
         return
@@ -618,40 +698,93 @@ def do_ovr_lockfan(params, stats):
 ##################################################
 ################### HOOKS ########################
 
+def do_nothing(params, stats, temps):
+    #trace("Command '%s' skipped" % (params))
+    # Skip commands like G28-G27
+    return False
+
 def do_m0(params, stats, temps):
     raise PrintPausedException
 
 def do_m3(params, stats, temps):
+    rpm = None
+ 
+    for param in stats:
+        if param.startswith("S"):
+            stats["rpm"] = param[1:]
+
     try:
-        stats["rpm"] = float(params[0][1:])
-    except (IndexError, ValueError):
+        stats["rpm"] = float(rpm)
+    except TypeError:
+        stats["rpm"] = 0.0
+    except ValueError:
         trace("M3: invalid parameter given.")
         return False
 
 def do_m4(params, stats, temps):
+    rpm = None
+ 
+    for param in stats:
+        if param.startswith("S"):
+            stats["rpm"] = param[1:]
+
     try:
-        stats["rpm"] = float(params[0][1:])
-    except (IndexError, ValueError):
+        stats["rpm"] = float(rpm)
+    except TypeError:
+        stats["rpm"] = 0.0
+    except ValueError:
         trace("M4: invalid parameter given.")
         return False
 
 def do_m5(params, stats, temps):
-    stats["rpm"] = 0
+    stats["rpm"] = 0.0
+
+def do_m98(params, stats, temps):
+    subprogram_id  = None
+    subprogram_cnt = 1
+
+    for param in params:
+        if param.startswith("P"):
+            try:
+                subprogram_id = str(int(param[1:]))
+            except ValueError:
+                break
+        elif param.startswith("L"):
+            try:
+                subprogram_cnt = int(param[1:])
+            except ValueError:
+                continue
+
+    if subprogram_id:
+        raise SubprogramCall([subprogram_id, subprogram_cnt])
+    else:
+        trace("!!! Got M98 without subprogram number, ignoring.")
+        return False
+
+def do_m99(params, stats, temps):
+    raise SubprogramStored
 
 def do_m106(params, stats, temps):
+    fan = None
+    s_index = 0
+
     if stats["fan_locked"]:
         return False
-    try:
-        stats["fan"] = float(params[0][1:])
 
-    except IndexError:
-        trace("M106: no parameter given")
-        return False
-    
+    for index, param in enumerate(params):
+        if param.startswith("S"):
+            fan = param[1:]
+            s_index = index
+    try:
+        stats["fan"] = float(fan)
+    except TypeError:
+        trace("M106: No parameter given, defaulting to S255")
+        stats["fan"] = 255
+        params.append("S255")
     except ValueError:
         trace("M106 %s: invalid parameter, defaulting to S255" % params[0])
         stats["fan"] = 255
-        params[0] = "S255"
+        params[s_index] = "S255"
 
     return "M106", params, "ok"
 
@@ -661,52 +794,102 @@ def do_m107(params, stats, temps):
     stats["fan"] = 0
     
 def do_m109(params, stats, temps):
+    ext_target = None
+    s_index = 0
+
+    for index, param in enumerate(params[:]):
+        if param[0] == 'S':
+            ext_target = param[1:]
+            s_index = index
+        elif param[0] == 'T':
+            params.pop(index)
+        
     try:
-        ext_target = float(params[0][1:]) # Get rid of the S
-        trace("Extruder temperature set to %.f &deg;C" % ext_target)
-    except IndexError:
+        ext_target = float(ext_target)
+    except TypeError:
         trace("M109: no parameter given, defaulting to S0")
         params.append("S0")
         ext_target = 0
     except ValueError:
-        trace("M109 %s: invalid parameter, defaulting to S0" % params[0])
-        params[0] = "S0"
+        trace("M109 %s: invalid parameter, defaulting to S0" % ext_target)
+        params[s_index] = "S0"
         ext_target = 0
 
     ext_curtemp, bed_curtemp = ask_for_temps()
+    print "do_m109() Extruder:%f Bed:%f" % (ext_curtemp, bed_curtemp)
+
     # this is necessary because the command has not been executed yet, causing
     # the value into the temperatures dict to be out of sync
     temps["extruder_target"] = ext_target
-    print "do_m109() Extruder:%f Bed:%f" % (ext_curtemp, bed_curtemp)
-    trace("Wait for Extruder temperature to reach %.f &deg;C" % ext_target)
+
+    if ext_target > 0:
+        trace("Extruder temperature set to %.f &deg;C" % ext_target)
+
     return "M104", params, "ok"
 
 
 def do_m190(params, stats, temps):
+    bed_target = None
+    s_index = 0
+
+    for index, param in enumerate(params):
+        if param[0] == 'S':
+            bed_target = param[1:]
+            s_index = index
+        
     try:
-        bed_target = float(params[0][1:]) # Get rid of the S
-        trace("Bed temperature set to %.f &deg;C" % bed_target)
-    except IndexError:
-        trace("M190: no parameter given, defaulting to S0")
+        bed_target = float(bed_target)
+    except TypeError:
+        trace("M190: no S given, defaulting to S0")
         params.append("S0")
         bed_target = 0
     except ValueError:
-        trace("M190 %s: invalid parameter, defaulting to S0" % params[0])
-        params[0] = "S0"
+        trace("M190 %s: invalid S, defaulting to S0" % ext_target)
+        params[s_index] = "S0"
         bed_target = 0
 
     ext_curtemp, bed_curtemp = ask_for_temps()
+    print "do_m190() Extruder:%f Bed:%f" % (ext_curtemp, bed_curtemp)
+
     # this is necessary because the command has not been executed yet, causing
     # the value into the temperatures dict to be out of sync
     temps["bed_target"] = bed_target
-    print "do_m190() Extruder:%f Bed:%f" % (ext_curtemp, bed_curtemp)
-    trace("Wait for Bed temperature to reach %.f &deg;C" % bed_target)
+
+    if bed_target > 0:
+        trace("Bed temperature set to %.f &deg;C" % bed_target)
+
     return "M140", params, "ok"
 
+def do_m220(params, stats, temps):
+    speed_ovr = None
+
+    for index, param in enumerate(params):
+        if param[0] == 'S':
+            speed_ovr = params[1:]
+
+    try:
+        stats["speed_ovr"] = float(speed_ovr)
+    except TypeError:
+        pass
+
+def do_m221(params, stats, temps):
+    extruder_ovr = None
+
+    for index, param in enumerate(params):
+        if param[0] == 'S':
+            extruder_ovr = params[1:]
+
+    try:
+        stats["extruder_ovr"] = float(extruder_ovr)
+    except TypeError:
+        pass
 
 def do_g0(params, stats, temps):
     if stats["started"] is False:
-        print "do_g0() extt %.f bedt %.f" % (temps["extruder_target"], temps["bed_target"])
+        print "do_g0() extt %.f bedt %.f" % (
+            temps["extruder_target"],
+            temps["bed_target"]
+        )
         if temps["bed_target"] > 0 or temps["extruder_target"] > 0:
             raise PrintWaitTemperatures
         else:
@@ -724,16 +907,6 @@ def do_g0(params, stats, temps):
 
 ##################################################
 ##################################################
-
-### Unused for the moment
-def calculate_checksum(string):
-    checksum = 0
-
-    for char in map(ord, string):
-        checksum ^= char
-        checksum &= 0xFF
-
-    return checksum
 
 class GSender(threading.Thread):
 
@@ -759,23 +932,33 @@ class GSender(threading.Thread):
         "M3": do_m3,
         "M4": do_m4,
         "M5": do_m5,
+        "M98": do_m98,
+        "M99": do_m99,
         "M109": do_m109,
         "M190": do_m190,
         "M104": do_m109,
         "M140": do_m190,
         "M106": do_m106,
         "M107": do_m107,
+        "M220": do_m220,
+        "M221": do_m221, 
 # FABlin makes no difference between G0 and G1, so we don't care about this.
         "G0": do_g0,
         "G1": do_g0,
+        "G28" : do_nothing,
+        "G27" : do_nothing,
+        "T0"  : do_nothing
     }
 
 
     def __setpaused(self, x):
         self._statistics["paused"] = x
 
+    def __setstate(self, x):
+        self._statistics["state"] = x
+
     _paused = property(lambda self: self._statistics["paused"], __setpaused)
-    _state = property(lambda self: self._statistics["state"])
+    _state = property(lambda self: self._statistics["state"], __setstate)
 
     def __init__(self, group=None, target=None, name=None, verbose=None,
                  *args, **kwargs):
@@ -786,7 +969,14 @@ class GSender(threading.Thread):
         self._statistics = kwargs["statistics"]
         self._temperatures = kwargs["temperatures"]
         self._gcode_file = kwargs["gcode_file"]
+        self._subprograms = {}
+        self._subprogram_curcycle = 0
+        self._subprogram_numcycles = 0
+        self._current_source = None
+        self._source_name = "main"
         self._die = False
+        self._retransmit = False
+        self._curline = ""
 
     def _manage_overrides(self):
         while not self._overrides_queue.empty():
@@ -824,12 +1014,23 @@ class GSender(threading.Thread):
         try:
             func = self.hooks[gcmd]
         except KeyError:
-            pass
+            if gcmd.startswith("O"):
+                try:
+                    subpgm = str(int(gcmd[1:]))
+                except ValueError:
+                    trace("!!! '%s' invalid subprogram name, ignoring." % gcmd)
+                    return False, ""
+                else:
+                    self._subprograms[subpgm] = []
+                    self._source_name = subpgm
+                    self._state = "storing_subprogram"
+                    return False, ""
         else:
             ret = func(
                 params.split(" "),
                 self._statistics,
                 self._temperatures
+                
             )
             if ret is False:
                 return False, ""
@@ -840,7 +1041,6 @@ class GSender(threading.Thread):
         return line, expected
 
     def _wait_temperatures(self):
-        self._manage_overrides()
         ext, bed = ask_for_temps()
 
         print "Extruder: %f/%f Bed: %f/%f" % (
@@ -854,7 +1054,56 @@ class GSender(threading.Thread):
 
         return True
 
+    def _print_run(self):
+        if self._retransmit:
+            self._retransmit = False
+        else:
+            try:
+                self._curline = self._current_source.next().strip()
+            except StopIteration:
+                raise PrintCompleted
+
+            statistics["line"] += 1
+            if not self._curline:
+                return
+
+        if self._curline.startswith(";"):
+            parse_comment(self._curline)
+            return
+
+        # remove inline comment
+        line = self._curline.split(";", 1)[0].strip() 
+
+        line, expected = self._run_hooks(line)
+        if line is not False:
+            spool_gline(line, expected)
+
+    def _subprogram_store(self):
+        try:
+            line = self._current_source.next().strip()
+            line, expected = self._run_hooks(line)
+            self._subprograms[self._source_name].append(line)
+        except StopIteration:
+            raise PrintCompleted
+
+    def _subprogram_run(self):
+        try:
+            self._print_run()
+        except PrintCompleted:
+            self._subprogram_curcycle += 1
+            if self._subprogram_curcycle > self._subprogram_numcycles:
+                raise SubprogramCompleted
+            self._current_source = iter(self._subprograms[self._source_name])
+
+    def _waittemps_run(self):
+        if self._wait_temperatures():
+            time.sleep(1)
+        else:
+            raise PrintTemperaturesReached
+
     def run(self):
+        global chksum_line_count
+
         statistics = self._statistics
         temperatures = self._temperatures
         exc = None
@@ -868,53 +1117,51 @@ class GSender(threading.Thread):
         ##
 
         statistics["startedat"] = time.time()
+        spool_gline("M999", checksumed=False)
         #start_print()
 
-        with open(self._gcode_file) as f:
-            iterator = enumerate(f, 1)
+        with open(self._gcode_file, "Ur") as f:
+            self._current_source = f
             while not self._die:
+                #print "%d/%d" % (statistics["line"], statistics["gcode_lines"])
                 try:
-                    if self._paused:
-                        self._manage_overrides()
+                    self._manage_overrides()
+
+                    if self._paused:                        
                         time.sleep(0.1)
-                    else:
-                        try:
-                            cnt, line = iterator.next()
-                        except StopIteration:
-                            raise PrintCompleted
+                    elif self._state == "printing":
+                        self._print_run()
+                    elif self._state == "waiting_temps":
+                        self._waittemps_run()
+                    elif self._state == "storing_subprogram":
+                        self._subprogram_store()
+                    elif self._state == "printing_subprogram":
+                        self._subprogram_run()
 
-                        statistics["line"] = cnt
-                        line = line.strip()
+                    if parse_unattended():
+                        raise PrintInterruptedException
 
-                        if not line:
-                            continue
-                        elif line.startswith(";"):
-                            parse_comment(line)
-                        else:
-                            try:
-                                line, comment = line.split(";", 1) # remove inline comment
-                                line = line.strip()
-                            except ValueError:
-                                pass
-
-                            self._manage_overrides()
-                            try:
-                                line, expected = self._run_hooks(line)
-                            except PrintWaitTemperatures:
-                                trace("Now reaching temperatures..")
-                                statistics["state"] = "waiting_temps"
-                                while self._wait_temperatures():
-                                    time.sleep(1)
-                                statistics["state"] = "printing"
-                                self._statistics["started"] = True
-                                trace("Temperatures reached!")
-                                trace("Now starting print")
-
-                            if line is not False:
-                                spool_gline(line, expected)
-                            if parse_unattended():
-                                raise PrintInterruptedException
-
+                ################################
+                #     Exceptions handling      #
+                ################################
+                except ChecksumErrorException:
+                    trace("!!! Checksum error on line %d: '%s'" % (
+                          chksum_line_count, self._curline
+                    ))
+                    self._retransmit = True
+                    chksum_line_count = (chksum_line_count - 1) & 0x7FFFFFFF
+                ################################
+                # Print related section        #
+                ################################
+                except PrintWaitTemperatures:
+                    trace("Now reaching temperatures..")
+                    self._retransmit = True
+                    self._state = "waiting_temps"
+                except PrintTemperaturesReached:
+                    self._state = "printing"
+                    self._statistics["started"] = True
+                    trace("Temperatures reached!")
+                    trace("Now starting print")
                 except PrintPausedException:
                     self._paused = True
                 except PrintResumedException:
@@ -926,14 +1173,41 @@ class GSender(threading.Thread):
                     self.die()
                 except PrintInterruptedException:
                     self.die()
+                ################################
+
+                ################################
+                # Subprograms handling section #
+                ################################
+                except SubprogramCompleted:
+                    self._source_name = "main"
+                    self._current_source = f
+                    self._state = "printing"
+                except SubprogramStored:
+                    self._state = "printing"
+                except SubprogramCall, e:
+                    srcname, numcycles = e.message
+                    if srcname not in self._subprograms:
+                        trace("!!! Subprogram '%s' not found." % (
+                            srcname
+                        ))
+                        continue
+                    if self._state != "printing":
+                        trace("!!! Subprogram nesting unsupported.")
+                        continue
+                    self._subprogram_curcycle = 1
+                    self._source_name, self._subprogram_numcycles = srcname, numcycles
+                    self._current_source = iter(self._subprograms[self._source_name])
+                    self._state = "printing_subprogram"
+                ################################
+
+                ################################
+                #     Unhandled exceptions     #
+                ################################
                 except Exception, e:
                     statistics["state"] = "dumped"
-                    exc = e
-                    break
-
-        if exc:
-            end_print(fast_end=True)
-            raise exc
+                    end_print(fast_end=True)
+                    raise
+                ################################
 
         if self._die:
             statistics["state"] = "stopped"
@@ -951,16 +1225,54 @@ class GSender(threading.Thread):
 
 ##################################################
 ##################################################
+try:
+    import file_utils
+except ImportError:
+    class file_utils:
+        @staticmethod
+        def file_len(fname):
+            f = open(fname)
+            i = 0
+            subpgm = False
+            subpgm_lines = {}
+            for l in f:
+                cmd = l.split(" ")[0].strip()
+
+                if subpgm:
+                    if cmd == "M99":
+                        subpgm = False
+                    else:    
+                        subpgm_lines[subpgm] += 1
+                    continue
+
+                i += 1
+
+                if cmd[0] == "O":
+                    subpgm = cmd[1:]
+                    subpgm_lines[subpgm] = 0
+                elif cmd == "M98":
+                    subpgm_idx = 0
+                    subpgm_rep = 1
+                    for param in l.split(" ")[1:]:
+                        param = param.strip()
+                        if param[0] == "P":
+                            try:
+                                subpgm_idx = param[1:]
+                            except ValueError:
+                                break
+                        elif param[0] == "L":
+                            try:
+                                subpgm_rep = int(param[1:])
+                            except ValueError:
+                                subpgm_rep = 1
+                                continue
+                    if subpgm_idx in subpgm_lines:
+                        i += (subpgm_lines[subpgm_idx] * subpgm_rep)
+            f.close()
+            return i
 
 def app_init():
     global trace_fname, lock_fname, ser
-
-    def file_len(fname):
-        with open(fname) as f:
-            i = 0
-            for i, l in enumerate(f, 1):
-                pass
-        return i
     
     config = ConfigParser.ConfigParser()
     config.read('/var/www/lib/config.ini')
@@ -975,7 +1287,7 @@ def app_init():
     serialconfig.read('/var/www/lib/serial.ini')
     serial_port = serialconfig.get('serial', 'port')
     serial_baud = serialconfig.get('serial', 'baud')
-    ser = serial.Serial(serial_port, serial_baud, timeout=10)
+    ser = serial.Serial(serial_port, serial_baud, timeout=35)
 
     ''' SETTING EXPECTED ARGUMENTS  '''
     parser = argparse.ArgumentParser()
@@ -991,16 +1303,19 @@ def app_init():
     args = parser.parse_args()
     logging.basicConfig(filename=args.trace, level=logging.INFO, format='%(message)s')
     trace_fname = args.trace
-    print trace_fname
-    
     trace("Loading file...")
 
     ''' INITIALIZE SOME STATISTICS '''
-    statistics["gcode_lines"] = file_len(args.file)
+    statistics["gcode_lines"] = file_utils.file_len(args.file)
     statistics["engine"] = gcode_utils.who_generate_file(args.file)
     if statistics["engine"] == "CURA":
         try:
             statistics["layers"] = int(cura_utils.get_layers_count(args.file)[0])
+        except (IndexError, ValueError):
+            pass
+    elif statistics["engine"] == "SIMPLIFY":
+        try:
+            statistics["layers"] = int(simplify_utils.get_layers_count(args.file)[0])
         except (IndexError, ValueError):
             pass
 
@@ -1012,57 +1327,57 @@ def app_init():
 
 def main(print_type):
     global statistics
-
+    
     def kill_threads():
         for thr in threads:
+            print "killing thread %s" % thr
             try:
                 thr.die()
+                thr.join(10)
             except AttributeError:
                 pass
 
 
-    threads = []
     args = None
+    threads = []
     statistics["print_type"] = print_type
 
     try:
         args = app_init()
         q = Queue.Queue()
 
-        jsonwriter = JSONWriter(overrides_queue=q,
-                                statistics=statistics,
-                                temperatures=temperatures,
-                                monitor_file=args.monitor,
-                                every=3, 
-                                name="JSONWriterThread")
+        threads = [
+            JSONWriter(overrides_queue=q,
+                       statistics=statistics,
+                       temperatures=temperatures,
+                       monitor_file=args.monitor,
+                       every=3, 
+                       name="JSONWriterThread"),
+            GSender(overrides_queue=q,
+                    gcode_file=args.file,
+                    print_type=print_type,
+                    statistics=statistics,
+                    temperatures=temperatures,
+                    name="GSenderThread"),
+            #Observer(),
+            USocketServer(oq=q, name="USocketServerThread")
+        ]
 
-        observer = Observer()
-        observer.schedule(
+        """
+        threads[2].schedule(
             OverrideCommandsHandler(overrides_queue=q, patterns=[args.command_file]),
             "/var/www/tasks/",
             #"/root/",
             recursive=True
         )
-
-        senderthread = GSender(
-            overrides_queue=q,
-            gcode_file=args.file,
-            print_type=print_type,
-            statistics=statistics,
-            temperatures=temperatures,
-            name="GSenderThread"
-        )
+        """
 
         lock_printer()
 
-        jsonwriter.start()
-        observer.start()
-        senderthread.start()
+        for thr in threads:
+            thr.start()
 
         print "all threads on"
-        threads.append(jsonwriter)
-        threads.append(observer)
-        threads.append(senderthread)
 
         while True:
             alives = []
@@ -1085,7 +1400,7 @@ def main(print_type):
             unlock_printer()
 
             if statistics["started"]:
-                jsonwriter.update_json()
+                threads[0].update_json()
                 time.sleep(2) # give some time to monitor.py to catch up
 
             if args:
@@ -1096,9 +1411,10 @@ def main(print_type):
             raise
         finally:
             kill_threads()
+            print "Threads killed"
             if ser and ser.isOpen():
                 ser.close()
+            print "Done, exiting"
 
 if __name__ == "__main__":
     main("print")
-

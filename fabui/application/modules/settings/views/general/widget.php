@@ -251,6 +251,14 @@
 								</label>
 							</section>
 						</div>
+						<div class="row">
+							<section class="col col-6">
+								<label class="label">Calibration preference</label>
+								<label class="select">
+									<label class="select"><?php echo form_dropdown('print-calibration', $print_calibration_options, $_print_calibration, 'id="print-calibration"'); ?> <i></i></label>
+								</label>
+							</section>
+						</div>
 					</fieldset>
 				</div>
 			</div>

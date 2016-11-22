@@ -3,6 +3,7 @@
 import json
 import re
 import argparse
+import commands
 
 
 parser = argparse.ArgumentParser()
@@ -18,6 +19,13 @@ bed_gcodes=[190]
 
 extrudert_target=0
 bed_target=0
+
+file_total_num_lines =  int(commands.getoutput('wc -l < %s' % file))
+
+
+if(file_total_num_lines < num_lines):
+    num_lines = file_total_num_lines
+
 
 ''' READ FIRST NUM_LINES '''
 with open(file) as myfile:

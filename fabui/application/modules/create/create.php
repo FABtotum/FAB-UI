@@ -293,6 +293,20 @@ class Create extends Module {
 		$data = array();
 
 		if ($type == 'additive') {
+			
+			$this -> config -> load('fabtotum', TRUE);
+			
+			if(!file_exists($this -> config -> item('fabtotum_config_units', 'fabtotum'))){
+				$this->load->helper('print_helper');
+				create_default_config();
+			}
+			
+			$config_units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
+			
+			if($config_units['settings_type'] == 'custom'){
+				$config_units = json_decode(file_get_contents($this -> config -> item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
+			}
+			
 
 			$label_button = 'Engage';
 			$action_button = 'feeder';
@@ -304,8 +318,9 @@ class Create extends Module {
 				$action_button = '';
 			}
 
-			$data['label_button'] = $label_button;
+			$data['label_button']  = $label_button;
 			$data['action_button'] = $action_button;
+			$data['calibration']   = isset($config_units['print']['calibration']) ? $config_units['print']['calibration'] : 'homing';
 
 		}
 

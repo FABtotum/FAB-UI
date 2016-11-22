@@ -30,15 +30,24 @@ class SerialUtils:
         self.resetTrace()
         ''' INIT SERIAL CLASS '''
         self.serial = serial.Serial(self.port, self.baud, timeout=1)
+        if self.debug:
+            print "serial_util >> serial connect to port '%s'" % self.port
+            print "serial_util >> serial connect speed '%s'" % self.baud
+            print self.serial.isOpen()
     def sendGCode(self, code):
         self.serial.reset_input_buffer()
         #print code.encode()
         self.serial.write("%s\r\n" % code.encode())
+        if self.debug:
+            print "serial_util >> sent '%s'" % code.encode()
     def getReply(self, bytes=4096):
         try:
-            return self.serial.read(bytes).strip()
+            reply = self.serial.read(bytes).strip()
+            if self.debug:
+                print "serial_util >> reply '%s'" % reply
+            return reply
         except:
-            print "Unexpected error:", sys.exc_info()[0]
+            print "Unexpected error:", sys.exc_info()
             return ''
     def close(self):
         self.serial.close()
@@ -61,6 +70,11 @@ class SerialUtils:
             return object
     def getProbeLength(self, string_source):
         match = re.search('Z\sProbe\sLength:\s([-|+][0-9.]+)', string_source, re.IGNORECASE)
+        if match != None:
+            value = match.group(1)
+            return value
+    def getBaudrate(self, string_source):
+        match = re.search('Baudrate:\s([0-9.]+)', string_source, re.IGNORECASE)
         if match != None:
             value = match.group(1)
             return value
@@ -95,7 +109,8 @@ class SerialUtils:
             "home_offset": self.serialize(reply,'(M206\sX[0-9.]+\sY[0-9.]+\sZ[0-9.]+)', ['x', 'y', 'z']),
             "pid": self.serialize(reply,'(M301\sP[0-9.]+\sI[0-9.]+\sD[0-9.]+)', ['p', 'i', 'd']),
             "servo_endstop": self.getServoEndstopValues(reply),
-            "probe_length" : self.getProbeLength(reply)
+            "probe_length" : self.getProbeLength(reply),
+            "baudrate": self.getBaudrate(reply)
         }
     
     def fwVersion(self):
@@ -106,6 +121,14 @@ class SerialUtils:
         if match != None:
             fw_version = match.group(1)
         return fw_version
+    def fwBuildDate(self):
+        self.sendGCode('M766')
+        reply = self.getReply()
+        return reply.replace('\n', '').replace('ok', '')
+    def fwAuthor(self):
+        self.sendGCode('M767')
+        reply = self.getReply()
+        return reply.replace('\n', '').replace('ok', '')
     def hwVersion(self):
         self.sendGCode('M763')
         reply = self.getReply()
@@ -121,8 +144,8 @@ class SerialUtils:
         match = re.search('ok\sT:([0-9.]+)\s\/([0-9.]+)\sB:([0-9.]+)\s\/([0-9.]+)', reply, re.IGNORECASE)
         if match != None:
             temperature = {
-                'extruder': {'temperature': match.group(1), 'target': match.group(2)},
-                'bed'     : {'temperature': match.group(1), 'target': match.group(2)}
+                'extruder': {'temperature': float(match.group(1)), 'target': float(match.group(2))},
+                'bed'     : {'temperature': float(match.group(1)), 'target': float(match.group(2))}
             }
         return temperature
     def reset(self):
@@ -138,6 +161,16 @@ class SerialUtils:
         GPIO.cleanup()
         time.sleep(1)
         return True
+    def g30(self):
+        reply = self.doMacro('G30', 'echo:', -1, None, verbose=False)
+        reply = reply.split('\n')
+        z = float( reply[-1].split("Z:")[1].strip() )
+        z = round(z, 3)  # round to 3 decimanl points
+        
+        #match = re.search('echo:endstops\shit:\s\sZ:([0-9.]+)', reply, re.IGNORECASE)
+        #if match != None:
+        #    return match.group(1)
+        return z
     def flush(self):
         self.serial.reset_input_buffer()
         self.serial.reset_output_buffer()
@@ -167,6 +200,7 @@ class SerialUtils:
             reply = self.getReply()
             if(expected_reply in reply):
                 finished = True
+                return reply
                 continue
             if(wait):
                 if( time.time() - start_time > timeout):

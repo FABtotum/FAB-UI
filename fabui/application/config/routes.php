@@ -59,7 +59,8 @@ $route['maintenance/probe/length-calibration']  = "maintenance/probecalibration"
 $route['maintenance/probe/angle-calibration']  = "maintenance/probeAngleCalibration";
 $route['maintenance/first-setup']        = "maintenance/firstsetup";
 $route['maintenance/system-info']        = "maintenance/systeminfo";
-$route['maintenance/feeder-calibration'] = "maintenance/feederCalibration";
+$route['maintenance/feeder/step-calibration'] = "maintenance/feederCalibration";
+$route['maintenance/feeder/engage'] = "maintenance/feeder";
 
 //$route['settings/set-eth']    = "settings/seteth";
 //$route['settings/set-wifi']   = "settings/setwifi";

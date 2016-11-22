@@ -23,7 +23,7 @@ $_skip_homing = $_skip_homing == 1 ? ' -s ' : '';
 
 //$_command = 'sudo python ' . PYTHON_PATH . 'manual_bed_lev.py ' . $_destination_response . ' ' . $_destination_trace . ' ' . $h_over . ' ' . $_num_probes . ' ' . $_skip_homing;
 
-$_command = 'sudo python '.PYTHON_PATH.'manual_bed_lev_new.py -r '.$_destination_response.' -n '.$_num_probes.' -l '.$h_over.' '.$_skip_homing;
+$_command = 'sudo python '.PYTHON_PATH.'bed_leveling.py -r '.$_destination_response.' -n '.$_num_probes.' -l '.$h_over.' '.$_skip_homing;
 
 $_output_command = shell_exec($_command);
 
@@ -135,7 +135,8 @@ function get_results($data){
 
 		$trs .= '<tr class="'.get_row_color($screw['color']).'">';
 		
-		$trs .= '<td class="text-center"><span class="badge bg-color-'.$screw['color'].'">'.$counter.'</span></td>';
+		//$trs .= '<td class="text-center"><span class="badge bg-color-'.$screw['color'].'">'.$counter.'</span></td>';
+		$trs .= '<td class="text-center">'.$counter.'</td>';
 		$trs .= '<td><strong>'.get_instructions($screw).'</strong></td>';
 		
 		$trs .= '</tr>';
@@ -146,12 +147,13 @@ function get_results($data){
 }
 
 function get_row_color($value){
+	
 	switch($value){
 		case 'red':
-			return 'danger';
+			return 'result-danger';
 			break;
 		case 'orange':
-			return 'warning';
+			return 'result-warning';
 			break;
 		case 'green':
 			return 'success';
@@ -165,11 +167,12 @@ function get_instructions($screw){
 		return '<i class="fa fa-check"></i> Well done';
 	}
 	
+	$color_direction = $screw['direction'] == 'left' ? ' background-color: #ff0000!important; ': 'background-color: #0084ff!important;';
 	
-	$rotation_section = 'following this rotation sense <i class="fa fa-rotate-'.$screw['direction'].'"></i>';
+	$rotation_section = 'following this rotation sense <span class="badge" style=" '.$color_direction.'"> <i class="fa fa-rotate-'.$screw['direction'].' "></i></span>';
 	
 	if($screw['turns']['times'] < 1 ){
-		return 'Turn for '.$screw['turns']['degrees'].' degrees, '.$rotation_section;
+		return '<p>Turn for '.$screw['turns']['degrees'].' degrees, '.$rotation_section.'</p>';
 	}
 	
 	if($screw['turns']['times'] > 0){
@@ -178,7 +181,7 @@ function get_instructions($screw){
 		if($screw['turns']['degrees'] > 0){
 			$degrees_section =  ' and '.$screw['turns']['degrees'].' degrees';
 		}	
-		return 'Turn for '.$screw['turns']['times'].' '.$times_label.$degrees_section.' '.$rotation_section;
+		return '<p class="">Turn for '.$screw['turns']['times'].' '.$times_label.$degrees_section.' '.$rotation_section.'</p>';
 	}
 }
 

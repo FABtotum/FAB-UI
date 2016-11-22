@@ -56,22 +56,22 @@ if($_print_type ==  'additive'){
 	if($do_macro){
 		
 		/** START MACRO */
-		$_command_macro  = 'sudo python '.PYTHON_PATH.'gmacro.py '.$_macro_function.' '.$_macro_trace.' '.$_macro_response;
+		$_command_macro  = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m '.$_macro_function.' > /dev/null';
 		$_output_macro   = shell_exec ( $_command_macro );
 		$_pid_macro      = trim(str_replace('\n', '', $_output_macro));
 		
-		/** WAIT MACRO TO FINISH */
-		while(str_replace(PHP_EOL, '', file_get_contents($_macro_response)) == ''){   
-			sleep(0.2);
+		
+		
+		
+		if(str_replace(PHP_EOL, '', file_get_contents($_macro_response)) != 'true'){
+			$_response_items['response'] = false;
+			$_response_items['trace'] = str_replace(PHP_EOL, '<br>',file_get_contents($_macro_trace));
+			header('Content-Type: application/json');
+			echo minify(json_encode($_response_items));
+			exit();
 		}
 		
 		
-		/** CHECK MACRO RESPONSE */
-		if(str_replace(PHP_EOL, '', file_get_contents($_macro_response)) != 'true'){
-			header('Content-Type: application/json');
-			echo json_encode(array('response' => false, 'message' => str_replace(PHP_EOL, '<br>', file_get_contents($_macro_trace)), 'response_text' => file_get_contents($_macro_response)));
-			exit();
-		}	
 	}
 	
 	file_put_contents($_macro_response, '');

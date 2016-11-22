@@ -21,7 +21,7 @@ if(!($sock = socket_create(AF_INET, SOCK_STREAM, 0)))
     //die("Couldn't create socket: [$errorcode] $errormsg \n");
 }
 
-socket_set_option($sock, SOL_SOCKET, SO_SNDTIMEO, array('sec' => 5, 'usec' => 5000)); 
+socket_set_option($sock, SOL_SOCKET, SO_SNDTIMEO, array('sec' => 10, 'usec' => 5000)); 
 
 if(!socket_connect($sock , $ip , $port))
 {

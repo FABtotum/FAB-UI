@@ -10,33 +10,13 @@ $head        = $_POST['head'];
 $pid         = $config['heads_pids'][$head];
 $description = $config['heads_list'][$head];
 
-//init serial
-$serial = new Serial;
-$serial -> deviceSet($ini_array['port']);
-$serial -> confBaudRate($ini_array['baud']);
-$serial -> confParity("none");
-$serial -> confCharacterLength(8);
-$serial -> confStopBits(1);
-$serial -> deviceOpen();
-$serial -> serialflush();
-sleep(2);
-//if pid
-if ($pid != '') {
-	$serial -> sendMessage($pid . PHP_EOL);
-	sleep(0.1);
-	$serial -> sendMessage('M500' . PHP_EOL);
-	$reply = $serial -> readPort();
-	sleep(0.1);
+
+if($pid != ''){
+	$r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "'.$pid.'-M500"'));
 }
 //set head id
-$serial -> serialflush();
-$serial -> sendMessage('M793 S'.$config['heads_fw_id'][$head] . PHP_EOL);
-sleep(0.1);
-$serial -> sendMessage('M500' . PHP_EOL);
-$serial -> serialflush();
-$serial->sendMessage('M999'.PHP_EOL.'G4 P500'.PHP_EOL.'M728'.PHP_EOL);
-sleep(0.1);
-$serial -> deviceClose();
+$r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M793 S'.$config['heads_fw_id'][$head].'-M500"'));
+$r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M999-G4 P500-M728"'));
 
 /** GET UNITS */
 $_units = json_decode(file_get_contents(FABUI_PATH . 'config/config.json'), TRUE);

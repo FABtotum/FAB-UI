@@ -39,7 +39,7 @@
 
 				<div class="row">
 					<div class="col-sm-6 text-center margin-bottom-10">
-						<img style="max-width: 50%; display: inline;" class="img-responsive" src="<?php echo module_url('maintenance') ?>assets/img/bedcalibration/2.png" />
+						<img style="display: inline;" class="img-responsive" src="<?php echo module_url('maintenance') ?>assets/img/bedcalibration/hybrid_bed.png" />
 					</div>
 					<div class="col-sm-6 text-center">
 						

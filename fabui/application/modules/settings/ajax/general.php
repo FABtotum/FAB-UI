@@ -22,6 +22,7 @@ $_feeder_extruder_steps_per_unit_a_mode = $_POST['feeder_extruder_steps_per_unit
 
 $_print_preheating_extruder             = $_POST['print_preheating_extruder'];
 $_print_preheating_bed                  = $_POST['print_preheating_bed'];
+$_print_calibration                     = $_POST['print_calibration'];
 
 $_units['milling']['layer-offset']      = $_milling_sacrificial_layer_offset;
 $_both_y_endstops                       = $_POST['both_y_endstops'];
@@ -32,6 +33,7 @@ $_zprobe                             	= $_POST['zprobe'];
 $_zmax									= $_POST['zmax'];
 
 $_collision_warning                     = $_POST['collision_warning'];
+
 
 
 $_colors['r'] = $_red;
@@ -72,6 +74,7 @@ $_units['zprobe']['zmax']                    	= $_custom_units['zprobe']['zmax']
 
 $_units['print']['pre-heating']['extruder'] =  $_print_preheating_extruder;
 $_units['print']['pre-heating']['bed']      =  $_print_preheating_bed;
+$_units['print']['calibration']             =  $_print_calibration;
 
 file_put_contents(FABUI_PATH.'config/config.json', json_encode($_units));
 file_put_contents(FABUI_PATH.'config/custom_config.json', json_encode($_custom_units));

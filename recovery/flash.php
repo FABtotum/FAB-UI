@@ -10,15 +10,16 @@ include '/var/www/lib/serial.php';
 $local_file = BUILD_PATH.'Marlin.cpp.hex';
 $response = '';
 
+
 if($_SERVER['REQUEST_METHOD'] == 'POST'){ //if is post call	
 	
 	$flash_type = $_POST['flash'];
 	switch($flash_type){
 		case 'local':
-			$response = flash_local();
+			$response_flash = flash_local();
 			break;
 		case 'remote':
-			if(is_internet_avaiable()) $response = flash_remote();
+			if(is_internet_avaiable()) $response_flash = flash_remote();
 			break;
 		default:
 			break;
@@ -29,11 +30,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){ //if is post call
 		exit();
 	}
 }
-
-if($response != '' && strpos($response, 'done with autoreset') !== false){
-	$message = '<div class="alert alert-success fade in"><i class="fa-fw fa fa-check"></i><strong> Flash done.</strong></div>';
+if(isset($flash_type)){
+	if($response_flash){
+		$message = '<div class="alert alert-success fade in"><i class="fa-fw fa fa-check"></i><strong> Flash done.</strong>';
+	}else{
+		$message = '<div class="alert alert-warning fade in"><i class="fa-fw fa fa-warning"></i><strong> Flash failed. Please try again.</strong>';
+	}
+	
+	$message .= ' <button id="details" type="button">view details</button> </div>';
 }
-
 //load remote fw versions
 $remote_versions = json_decode(file_get_contents('http://update.fabtotum.com/MARLIN/versions.php'), TRUE);
 //read system info
@@ -58,9 +63,16 @@ include 'header.php';
 			</div>
 			<div id="content">
 				<?php if(isset($message)) echo $message; ?>
+				<?php if(isset($response_flash)): ?>
+				<div class="row flash-details" style="display:none;">
+					<div class="col-sm-12">
+						<pre><?php echo $response_flash[1]; ?></pre>
+					</div>
+				</div>
+				<?php endif; ?>
 				<div class="row">
 					<div class="col-sm-12">
-						<pre>Installed Firmware: <?php echo $sysinfo['fw'];?></pre>
+						<pre>Installed Firmware: <?php echo $sysinfo['fw']['version'];?></pre>
 					</div>
 				</div>
 				
@@ -99,7 +111,9 @@ include 'header.php';
 										<label>Version: </label>
 										<select class="form-control" name="version">
 											<?php foreach($remote_versions as $version): ?>
+												<?php if($version != 'latest'): ?>
 												<option><?php echo $version ?></option>
+												<?php endif; ?>
 											<?php endforeach; ?>
 										</select>
 										<button name="flash" value="remote" class="btn btn-primary" type="submit"><i class="fa"></i>Flash Remote</button>
@@ -145,6 +159,21 @@ include 'header.php';
 		 	});
 	 		
 	 	});
+
+		$("#details").on('click', showFlashDetails);
+		
+	 	function showFlashDetails()
+	 	{
+	 		if($('.flash-details').is(":visible")){
+	 			$(".flash-details").slideUp(function() { 	
+		 			$("#details").html('view details');
+			 	});
+	 		}else{
+	 			$(".flash-details").slideDown(function() {
+	 				$("#details").html('hide details');
+			 	});
+	 		}
+	 	}
 		
  	</script>
  
@@ -191,21 +220,48 @@ function flash_remote()
  */
 function flash($file)
 {	
+	$re = '/avrdude-original: AVR device initialized and ready to accept instructions/i';
 	write_file(LOCK_FILE, '');
 	$flash_command = 'sudo /usr/bin/avrdude -D -q -V -v -p atmega1280 -C /etc/avrdude.conf -c arduino -b 57600 -P  /dev/ttyAMA0 -U flash:w:' . $file . ':i';
-	$response_flash = shell_exec($flash_command);
+	$response_flash = liveExecuteCommand($flash_command, false);
+	//preg_match_all($re, $response_flash['output'], $matches);
+	if(preg_match($re, $response_flash['output'] )){
+		$flash_ok = true;
+	}else{
+		$flash_ok = false;
+	}
 	unlink(LOCK_FILE);
 	//flash done - just wait 2 seconds
-	sleep(5);
+	sleep(2);
 	shell_exec('sudo python '.PYTHON_PATH.'baud.py');
-	//shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
-	//recalculate baudrate
-	//start up printer
-	//shell_exec('echo "M728\r\n" > /dev/ttyAMA0');
-	//sleep(5);
-	//reboot all settings
-	//include FABUI_PATH.'script/boot.php';
 	shell_exec('sudo python '.PYTHON_PATH.'boot.py -R');
 	sleep(5);
-	return $response_flash;
+	return array($flash_ok, $response_flash['output']);
+}
+
+function liveExecuteCommand($cmd, $echo = true)
+{
+
+	while (@ ob_end_flush()); // end all output buffers if any
+
+	$proc = popen("$cmd 2>&1 ; echo Exit status : $?", 'r');
+
+	$live_output     = "";
+	$complete_output = "";
+
+	while (!feof($proc))
+	{
+		$live_output     = fread($proc, 4096);
+		$complete_output = $complete_output . $live_output;
+		if($echo) echo "$live_output";
+		@ flush();
+	}
+	pclose($proc);
+	// get exit status
+	preg_match('/[0-9]+$/', $complete_output, $matches);
+	// return exit status and intended output
+	return array (
+		'exit_status'  => $matches[0],
+		'output'       => str_replace("Exit status : " . $matches[0], '', $complete_output)
+	);
 }

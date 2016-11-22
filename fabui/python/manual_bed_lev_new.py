@@ -10,7 +10,7 @@ import logging
 import re
 from geometry import Point, Line, Plane
 from serial_utils import SerialUtils
-import argparse
+import argparse, re
 
 config = ConfigParser.ConfigParser()
 config.read('/var/www/lib/config.ini')
@@ -132,7 +132,6 @@ def main():
     
     su.doMacro('M744', 'TRIGGERED', -1, 'Milling bed side up', warning=True, verbose=False)
     #su.trace("Milling sacrificial layer thickness: "+str(milling_offset))
-    
     su.doMacro('M402', 'ok', 1, 'Retracting Probe (safety)', verbose=False)
     su.doMacro('G90', 'ok', -1, 'Setting absolute mode', verbose=False)
     
@@ -141,7 +140,7 @@ def main():
         su.doMacro('G92 Z241.2', 'ok', -1, 'Setting correct Z', verbose=False)
         su.doMacro('M402', 'ok', 1, 'Retracting Probe (safety)', verbose=False)
     
-    su.doMacro("G0 Z"+str(probe_height)+" F5000", 'ok', -1, 'Moving to start Z height', verbose=False)#mandatory!
+    su.doMacro("G0 Z"+str(probe_height)+" F15000", 'ok', -1, 'Moving to start Z height', verbose=False)#mandatory!
     
     for (p,point) in enumerate(probed_points):
     
@@ -149,55 +148,18 @@ def main():
         x=point[0]-17
         y=point[1]-61.5
         
-        su.doMacro("G0 X"+str(x)+" Y"+str(y)+" Z"+str(probe_height)+" F10000", 'ok', -1, 'Moving to Pos', verbose=False)
+        su.doMacro("G0 X"+str(x)+" Y"+str(y)+" Z"+str(probe_height)+" F15000", 'ok', -1, 'Moving to Pos', verbose=False)
         msg="Measuring point " +str(p+1)+ " of "+ str(len(probed_points)) + " (" +str(num_probes) + " times)"
         su.trace(msg)
         #Touches 4 times the bed in the same position
         probes=num_probes #temp
         for i in range(0,num_probes):
-            
-            #M401
-            su.doMacro("M401", 'ok', -1, 'Lowering Probe', verbose=False)
-            #serial.flushInput()
-            #G30
-            su.doMacro("G30", 'ok', -1, 'Lowering Probe', verbose=False)
-            position = su.getPosition()
-            #serial.write("G30\r\n")
-            #time.sleep(0.5)            #give it some to to start  
-            '''probe_start_time = time.time()
-            while not serial_reply[:22]=="echo:endstops hit:  Z:":
-                serial_reply=serial.readline().rstrip()    
-                #issue G30 Xnn Ynn and waits reply.
-                if (time.time() - probe_start_time>20):  #timeout management
-                    trace("Probe failed on this point")
-                    probes-=1 #failed, update counter
-                    break    
-                pass
-               
-            #print serial_reply
-            #if probes==0:
-            #print serial_reply
-            if probes==0:
-                trace("Aborting Not enough contacts. Please check bed height!")
-                call("sudo python /var/www/fabui/python/force_reset.py", shell=True) #safety reset.
-                time.sleep(5)
-                call("sudo python /var/www/fabui/python/gmacro.py start_up log.log trace.trace", shell=True) #safety reset.
-                time.sleep(1)
-                sys.exit();
-            #get the z position
-            if serial_reply!="":
-                z=float(serial_reply.split("Z:")[1].strip())
-                #trace("probe no. "+str(i+1)+" = "+str(z) )
-                probed_points[p,2]+=z # store Z
-                
-            serial_reply=""
-            serial.flushInput()
-            ''' 
-            probed_points[p,2]+=float(position['count']['z']) # store Z
-            
+            su.sendGCode('M401')
+            z = su.g30()
+            probed_points[p,2]+=float(z) # store Z
             #G0 Z40 F5000
             #macro("G0 Z40 F5000","ok",10,"Rising Bed",0.1, warning=True, verbose=False)
-            su.doMacro("G0 Z"+str(probe_height)+" F5000", 'ok', -1, 'Rising Bed', verbose=False)
+            su.doMacro("G0 Z"+str(probe_height)+" F15000", 'ok', -1, 'Rising Bed', verbose=False)
             
         #mean of the num of measurements
         probed_points[p,0]=probed_points[p,0]
@@ -208,15 +170,16 @@ def main():
         
         #msg="Point " +str(p+1)+ "/"+ str(len(probed_points)) + " , Z= " +str(probed_points[p,2])
         #trace(msg)
-        su.doMacro("M402", 'ok', -1, 'Raising Probe', verbose=False)
+        su.sendGCode('M402')
+        #su.doMacro("M402", 'ok', -1, 'Raising Probe', verbose=False)
         #macro("M402","ok",2,"Raising Probe",0.1, warning=True, verbose=False)    
         
         #G0 Z40 F5000
         #macro("G0 Z40 F5000","ok",2,"Rising Bed",0.1, warning=True, verbose=False)
-        su.doMacro("G0 Z"+str(probe_height)+" F5000", 'ok', -1, 'Rising Bed', verbose=False)
+        su.doMacro("G0 Z"+str(probe_height)+" F15000", 'ok', -1, 'Rising Bed', verbose=False)
         #macro("G0 Z"+str(probe_height)+" F5000","ok",2,"Rising Bed",0.5, warning=True, verbose=False)
         
-    su.doMacro("G0 X5 Y5 Z"+str(probe_height)+" F10000", 'ok', -1, 'Idle Position', verbose=False)
+    su.doMacro("G0 X5 Y5 Z"+str(probe_height)+" F15000", 'ok', -1, 'Idle Position', verbose=False)
     su.doMacro("M18", 'ok', -1, 'Motors off', verbose=False)
     su.trace("Completed")
     
@@ -290,4 +253,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+         print "Unexpected error:", sys.exc_info()[0]
+         if os.path.isfile(config.get('task', 'lock_file')):
+             os.remove(config.get('task', 'lock_file'))
