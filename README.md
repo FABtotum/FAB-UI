@@ -1,5 +1,14 @@
 # FABTOTUM USER INTERFACE
 ## the FABtotum User Interface Repo
+### Version 0.971 - 2016-11-23
+
+#### Firmware
+* Increased MAX TEMP value for different heads
+See complete changelog [here] (https://github.com/FABtotum/FABlin#version-100096)
+
+
+==================================================================
+
 ### Version 0.97 - 2016-11-22
 
 #### General

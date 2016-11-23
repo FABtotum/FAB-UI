@@ -41,6 +41,7 @@ if(isset($flash_type)){
 }
 //load remote fw versions
 $remote_versions = json_decode(file_get_contents('http://update.fabtotum.com/MARLIN/versions.php'), TRUE);
+$reversed = array_reverse($remote_versions);
 //read system info
 $sysinfo = json_decode(shell_exec('sudo python '.PYTHON_PATH.'sysinfo.py'), true);
 
