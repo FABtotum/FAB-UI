@@ -90,6 +90,11 @@
 	            $("#load-content").addClass('disabled');
 	            $("#also-content").removeAttr('disabled');
 	            contentLoaded = true;
+
+	            editor.getSession().on('change', function(e) {
+	                $("#also-content").prop('checked', true);
+	            });
+	            
 	         });
         }
         

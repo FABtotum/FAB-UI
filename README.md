@@ -1,5 +1,27 @@
 # FABTOTUM USER INTERFACE
-## the FABtotum User Interface Repo
+### Version 0.98 - 2017-01-23
+
+#### General
+* Added support for Laser Head
+* Menu: "Probe" > "Length Calibration" moved to "Nozzle" > "Height Calibration"
+* Added new Z height calibration procedure
+* Bed Calibration procedure has ben made faster
+* Fixed bug that was not showing RPM values for some milling tasks
+* Fixed comments management for gcodes generated with Simplify3D
+* Improved wifi connection's management
+* General bugfixes
+* General improvements
+
+#### Firmware
+* Final laser support: moved dedicated commands from M6/7 to M60/1/2
+* Broadened head misplacement detection cases
+* Workaround for faulty z-min endstops
+
+See complete changelog [here] (https://github.com/FABtotum/FABlin#version-100097)
+
+==================================================================
+
+
 ### Version 0.971 - 2016-11-23
 
 #### Firmware

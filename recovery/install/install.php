@@ -55,24 +55,30 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	}
 	
 	/** CLEAN SESSION */
-	foreach ($_SESSION as $key => $value) {
+	foreach ($_SESSION as $key => $value) { 
 		unset($_SESSION[$key]);
 	}
 
 	// ==== SAMPLES FILES
-	if (file_exists(RECOVERY_PATH . 'install/samples')) {
-		
-		foreach (glob(RECOVERY_PATH.'install/samples/*.tar.gz') as $zip) {
-			if(file_exists($zip)){ //if zip exists
-				$folderName = str_replace('.tar.gz', '', $zip);
-				shell_exec('sudo tar -zxvf '.$zip.' -C '.RECOVERY_PATH.'install/samples/');
-				if(file_exists($folderName.'/install.php')){
-					require_once ($folderName . '/install.php');
-					shell_exec('sudo rm -rvf '.$folderName);
-				}
-			}	
+	if(file_exists(RECOVERY_PATH . 'install/samples')) {
+		if(!file_exists(UPLOAD_PATH.'gcode')){
+			mkdir(UPLOAD_PATH.'gcode', 0777);
 		}
- 
+		foreach (glob(RECOVERY_PATH.'install/samples/*.tar.gz') as $zip) {
+			if(file_exists($zip)){
+				$folder = str_replace('.tar.gz', '', $zip);
+				$temp = explode("/", $folder);
+				$folder_name = end($temp);
+				if(!file_exists($folder)) shell_exec('mkdir '.$folder);
+				shell_exec('sudo tar -zxvf '.$zip.' -C '.$folder);
+				if(file_exists($folder.'/install.php')){
+					require_once $folder.'/install.php';
+				}else if(file_exists($folder.'/'.$folder_name.'/install.php')){
+					require_once $folder.'/'.$folder_name.'/install.php';
+				}
+				shell_exec('sudo rm -rvf '.$folder);
+			}
+		}
 	} elseif (file_exists(RECOVERY_PATH . 'install/file')) {   
 		
 		$query_files = 'INSERT INTO `sys_files` (`id`, `file_name`, `file_type`, `file_path`, `full_path`, `raw_name`, `orig_name`, `client_name`, `file_ext`, `file_size`, `print_type`, `is_image`, `image_width`, `image_height`, `image_type`, `image_size_str`, `insert_date`, `update_date`, `note`, `attributes`) VALUES ';

@@ -51,6 +51,15 @@ if($_tasks_number == 0){
 						$_percent = $_monitor['scan']['stats']['percent'];
 						$_detail  = site_url($_task['controller'].'/'.$_task['type']);
 		                break;
+		            
+		            case 'laser':
+		            	$_icon = 'icon-communication-143';
+		            	$_monitor = json_decode(file_get_contents(TEMP_PATH.'task_monitor.json'), TRUE);
+		            	
+		            	
+		            	$_percent = $_monitor['print']['stats']['percent'];
+		            	$_detail  = site_url($_task['controller'].'/'.$_task['type']);
+		            	break;
 		                
             	}
             	break;

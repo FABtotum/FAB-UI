@@ -18,8 +18,8 @@
 	height: 100px; 
 	border: 1px solid #ccc; 
 	
-	background-color: rgb(<?php echo $_standby_color['r'] ?>, <?php echo $_standby_color['g'] ?>, <?php echo $_standby_color['b'] ?>); 
-	color: rgb(<?php echo $_standby_color['r'] ?>, <?php echo $_standby_color['g'] ?>, <?php echo $_standby_color['b'] ?>);
+	background-color: rgb(<?php echo $settings['color']['r'] ?>, <?php echo $settings['color']['g'] ?>, <?php echo $settings['color']['b'] ?>); 
+	color: rgb(<?php echo $settings['color']['r']?>, <?php echo $settings['color']['g'] ?>, <?php echo $settings['color']['b'] ?>);
 }
 
 .custom-settings{

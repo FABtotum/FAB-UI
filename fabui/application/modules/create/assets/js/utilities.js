@@ -54,7 +54,9 @@ function detail_files(object) {
 		html += '</tr>';
 		html += '</thead>';
 
-		html += '<tbody>'
+		html += '<tbody>';
+		
+		
 
 		$.each(files, function(index, file) {
 
@@ -105,8 +107,6 @@ function detail_files(object) {
 			startFromRecent = false;
 
 			/** LAOD INTERSTITIAL */
-
-			print_type = file_selected.print_type != '' ? file_selected.print_type : 'additive';
 
 			/** MODAL IF IS NOT PRINTABLE FILE */
 			if (not_printable.indexOf(file_selected.file_ext) > -1) {
@@ -207,7 +207,7 @@ function model_info(file){
 		return;
 	}
 	
-	if (file.print_type != 'subtractive') {
+	if (file.print_type != 'mill') {
 
 		var attributes = JSON.parse(file.attributes);
 
@@ -383,7 +383,17 @@ function _do_action(action, value) {
 
 /** ask stop */
 function ask_stop() {
-	var make_label = print_type == 'additive' ?  'print' : 'mill';
+	switch(print_type){
+		case 'print':
+			make_label = 'print';
+			break;
+		case 'mill':
+			make_label = 'mill';
+			break;
+		case 'laser':
+			make_label = 'laser engraving';
+			break;
+	}
 	$.SmartMessageBox({
 		title : "<i class='fa fa-warning'></i> Do you really want to stop the " + make_label,
 		buttons : '[No][Yes]'
@@ -396,7 +406,17 @@ function ask_stop() {
 }
 
 function stop_print() {
-	var make_label = print_type == 'additive' ?  'print' : 'mill';
+	switch(print_type){
+		case 'print':
+			make_label = 'print';
+			break;
+		case 'mill':
+			make_label = 'mill';
+			break;
+		case 'laser':
+			make_label = 'laser engraving';
+			break;
+	}
 	openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Aborting ' + make_label, '', false);
 	_do_action('stop', true);
 	_stop_monitor();
@@ -510,7 +530,17 @@ function print_object() {
 	IS_MACRO_ON = true;
 	$(".final-step-response").html("");
 	
-	var make_label = print_type == 'additive' ?  'print' : 'mill';
+	switch(print_type){
+		case 'print':
+			make_label = 'print';
+			break;
+		case 'mill':
+			make_label = 'mill';
+			break;
+		case 'laser':
+			make_label = 'laser engraving';
+			break;
+	}
 	
 	openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Starting '+ make_label, '', false);
 	var timestamp = new Date().getTime();
@@ -532,7 +562,8 @@ function print_object() {
 			file : id_file,
 			print_type : print_type,
 			calibration : calibration,
-			time : timestamp
+			time : timestamp,
+			go_to_focus_point : go_to_focus_point
 		}
 	}).done(function(response) {
 
@@ -573,17 +604,29 @@ function print_object() {
 			$("#details").trigger('click');
 			$(".stop").removeClass('disabled');
 
-			if (print_type == 'additive') {
+			if (print_type == 'print') {
 				$(".subtractive-print").hide();
+				$(".laser-print").hide();
 				initGraphs();
-			} else {
+			} else if( print_type == 'mill' ) {
 				$(".additive-print").hide();
+				$(".laser-print").hide();
 				$(".speed-well").removeClass("col-sm-4").addClass("col-sm-6");
 				$(".stats-well").removeClass("col-sm-4").addClass("col-sm-12");
 				$(".controls-tab").removeClass("disabled");
 				$(".controls-tab").find("a").attr("data-toggle", "tab");
 				print_started = true;
 				enableSliders();
+			} else if( print_type == 'laser' ) {
+				$(".additive-print").hide();
+				$(".subtractive-print").hide();
+				$(".speed-well").removeClass("col-sm-4").addClass("col-sm-6");
+				$(".stats-well").removeClass("col-sm-4").addClass("col-sm-12");
+				$(".controls-tab").removeClass("disabled");
+				$(".controls-tab").find("a").attr("data-toggle", "tab");
+				print_started = true;
+				enableSliders();
+				$("#z-height").html('<option value="0.5">0.5</option><option value="1">1</option>');
 			}
 
 			IS_TASK_ON = true;

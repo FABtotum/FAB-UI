@@ -1194,7 +1194,8 @@ class Objectmanager extends Module {
 		$data['options'] = array(
 			'performed' => array('label' => 'Completed', 'color' => '#7e9d3a'),
 			'stopped'   => array('label' => 'Aborted',   'color' => '#FF9F01'),
-			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329')
+			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329'),
+			'error'     => array('label' => 'Error',     'color' => '#a90329')
 		);
 		
 		
@@ -1262,6 +1263,8 @@ class Objectmanager extends Module {
 		$this -> load -> model('tasks');
 		$stats = $this->tasks->get_file_stats($file, $start_date, $end_date);
 		
+		
+		
 		//print_r($stats); 
 		
 		$temp_stats = array();
@@ -1308,7 +1311,8 @@ class Objectmanager extends Module {
 		$options = array(
 			'performed' => array('label' => 'Completed', 'color' => '#7e9d3a'),
 			'stopped'   => array('label' => 'Aborted',   'color' => '#FF9F01'),
-			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329')
+			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329'),
+			'error'     => array('label' => 'Error',     'color' => '#a90329')
 		);
 		
 		$stats =  $this->get_statistics($file, $start_date, $end_date);
@@ -1387,10 +1391,13 @@ class Objectmanager extends Module {
 		
 		$tasks = $this->get_file_tasks($file, $params);
 		
+		
+		
 		$options = array(
 			'performed' => array('label' => 'Completed', 'color' => '#7e9d3a'),
 			'stopped'   => array('label' => 'Aborted',   'color' => '#FF9F01'),
-			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329')
+			'deleted'   => array('label' => 'Stopped',   'color' => '#a90329'),
+			'error'     => array('label' => 'Error',     'color' => '#a90329')
 		);
 		
 		$aaData = array();

@@ -20,7 +20,7 @@ if(!file_exists(CONFIG_UNITS)){ //if settings file doesn't exists create it
 	shell_exec('sudo php '.FABUI_PATH.'index.php settings recreateSettingsFiles');
 }
 $units       = json_decode(file_get_contents(CONFIG_UNITS), TRUE);
-$customUnits = json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE);
+//$customUnits = json_decode(file_get_contents(CUSTOM_CONFIG_UNITS), TRUE);
 
 /**
  * IF VALUE IN EEPROM IS DIFFERENT THAN THE LAST SAVED VALUE
@@ -34,7 +34,7 @@ if(isset($units['e']) && ($eeprom['steps_per_unit']['e'] != round($units['e'],2)
 }
 
 $units['e']       = $eeprom['steps_per_unit']['e']; //set steps per unit 
-$customUnits['e'] = $eeprom['steps_per_unit']['e']; //set steps per unit
+//$customUnits['e'] = $eeprom['steps_per_unit']['e']; //set steps per unit
 
 /**
  *  CHECK FOR STEP PER UNIT A mode
@@ -47,13 +47,13 @@ if($system_info['hw'] < 4){
 	}else{
 		$new_units_a = 88.888889;
 	}
-	$units['a'] = $customUnits['a'] = $new_units_a;
+	$units['a'] = $new_units_a;
 }
 
-$units['hardware']['id'] = $customUnits['hardware']['id'] =  $system_info['hw'];
+$units['hardware']['id'] =  $system_info['hw'];
 //write
-file_put_contents(CONFIG_UNITS,        json_encode($units));
-file_put_contents(CUSTOM_CONFIG_UNITS, json_encode($customUnits));
+file_put_contents(CONFIG_UNITS, json_encode($units));
+
 
 /**
  * CLEAN SESSIONS 

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import argparse, ConfigParser, json, os
+import argparse, ConfigParser, json, os,time
 from serial_utils import SerialUtils
 import threading
 from threading import Event, Thread
@@ -21,7 +21,8 @@ class BedLeveling():
     CARRIAGE_POSITION   = [17, 61.5]
     XY_FEEDRATE = 10000
     Z_FEEDRATE  = 10000
-    PROBE_OFFSET_SECURITY = 10
+    PROBE_OFFSET_SECURITY = 15
+    MAX_NUM_PROBES = 4
     
     def __init__(self, trace_file, response_file, settings, num_probes = 1, skip_homing = False):
         print "init"
@@ -38,6 +39,8 @@ class BedLeveling():
         self.screw_turns           = ["" for x in range(4)]
         self.screw_height          = ["" for x in range(4)]
         self.screw_degrees         = ["" for x in range(4)]
+        if(self.num_probes > self.MAX_NUM_PROBES):
+            self.num_probes = self.MAX_NUM_PROBES
         
     def prepareTask(self):
         self.eeprom = self.serial.eeprom()
@@ -45,16 +48,17 @@ class BedLeveling():
         self.safety_door = int (self.hardware_settings['safety']['door']) == 1
         #print self.probe_height
         #print self.safety_door
+        self.serial.doMacro('G21', 'ok', 1, "Set units millimeters", verbose=False)
         if(self.safety_door):
             self.serial.doMacro('M741', 'TRIGGERED', -1, 'Front panel door control', verbose=False)
-        self.serial.doMacro('M744', 'TRIGGERED', -1, 'Milling bed side up', warning=True, verbose=False)
-        self.serial.doMacro('M402', 'ok', 1, 'Retracting Probe (safety)', verbose=False)
+        self.serial.doMacro('M744', 'TRIGGERED', 1, 'Milling bed side up', verbose=False, errorMessage="Please revert platform")
+        self.serial.doMacro('M402', 'ok', -1, 'Retracting Probe (safety)', verbose=False)
         self.serial.doMacro('G90', 'ok', -1, 'Setting absolute mode', verbose=False)
         if(self.skip_homing == False):
             self.serial.doMacro('G27', 'ok', -1, 'Homing Z - Fast', verbose=False)
             self.serial.doMacro('G92 Z241.2', 'ok', -1, 'Setting correct Z', verbose=False)
-            self.serial.doMacro('M402', 'ok', 1, 'Retracting Probe (safety)', verbose=False)
-        self.serial.doMacro("G0 Z"+str(self.probe_height)+" F15000", 'ok', -1, 'Moving to start Z height', verbose=False)#mandatory!
+            #self.serial.doMacro('M402', 'ok', 1, 'Retracting Probe (safety)', verbose=False)
+        self.serial.doMacro("G0 Z"+str(self.probe_height)+" F15000", 'ok', -1, 'Moving to start Z height Z{0}'.format(self.probe_height), verbose=False)#mandatory!
         if os.path.isfile(config.get('task', 'lock_file')) == False:
             open(config.get('task', 'lock_file'), 'w').close()
         
@@ -90,20 +94,24 @@ class BedLeveling():
         #return plane
         return B[:]
             
-    def probe(self, x, y):
+    def probe(self, x, y, open):
         print "probe point %s %s " % (x, y)
         # move to position
+        self.serial.doMacro('G90', 'ok', -1, 'Setting absolute mode', verbose=False)
         self.serial.doMacro('G0 X{0} Y{1} F{2}'.format(x, y, self.XY_FEEDRATE), 'ok', -1, 'Moving to Pos', verbose=False)
         # open probe
-        self.serial.sendGCode('M401')
+        if(open==True):
+            self.serial.doMacro('M401', 'ok', -1, 'Open probe', verbose=False)
         # rise bed
         z_touched = self.serial.g30()
-        self.serial.sendGCode('G0 Z{0} F{1}'.format(self.probe_height, self.Z_FEEDRATE))
-        self.serial.doMacro('M402', 'ok', -1, 'Retracting Probe (safety)', verbose=False)
+        #self.serial.sendGCode('G0 Z{0} F{1}'.format(self.probe_height, self.Z_FEEDRATE))
+        #self.serial.doMacro('G0 Z{0} F{1}'.format(self.probe_height, self.Z_FEEDRATE), 'ok', -1, 'Safety Z height', verbose=True)
+        #self.serial.doMacro('M402', 'ok', -1, 'Retracting Probe (safety)', verbose=False)
         return z_touched
       
     def idlePosition(self, x=5, y=5):
         # move to idle position
+        self.serial.doMacro('G90', 'ok', -1, 'Setting absolute mode', verbose=False)
         self.serial.doMacro('G0 X{0} Y{1} Z{2} F{3}'.format(x, y, self.probe_height, self.XY_FEEDRATE), 'ok', -1, 'Idle Position', verbose=False)
         
     def outuput(self):
@@ -132,22 +140,26 @@ class BedLeveling():
         self.serial.trace('Bed leveling procedure')
         self.prepareTask()
         probed_points = np.array(self.PROBE_POINTS)
+        openProbe = True
         for (p,point) in enumerate(self.PROBE_POINTS):    
             self.serial.trace('Measuring point {0} of {1} ({2} times)'.format(p+1, len(probed_points), self.num_probes))
             # Real carriage position
             x = point[0] - self.CARRIAGE_POSITION[0]
             y = point[1] - self.CARRIAGE_POSITION[1]
-            
+            #self.serial.doMacro('M401', 'ok', -1, 'Open Probe (safety)', verbose=False)
             for i in range(0,self.num_probes):
-                z = self.probe(x, y)
+                z = self.probe(x, y, openProbe)
+                if(openProbe == True):
+                    openProbe = False
                 probed_points[p,2]+=float(z) # store Z
             
             probed_points[p,0]=probed_points[p,0]
             probed_points[p,1]=probed_points[p,1]
             probed_points[p,2]=probed_points[p,2]/self.num_probes;
-        
+            #self.serial.doMacro('M402', 'ok', -1, 'Retracting Probe (safety)', verbose=False)
         #move to idle position
         self.idlePosition()
+        self.serial.doMacro('M402', 'ok', -1, 'Retracting Probe (safety)', verbose=False)
         self.serial.doMacro("M18", 'ok', -1, 'Motors off', verbose=False)
         self.serial.trace('Processing points..')
         
@@ -204,9 +216,10 @@ def main():
     settings_file = open(config.get('printer', 'settings_file'))
     settings = json.load(settings_file)
     
-    if 'settings_type' in settings and settings['settings_type'] == 'custom':
+    '''if 'settings_type' in settings and settings['settings_type'] == 'custom':
         settings_file = open(config.get('printer', 'custom_settings_file'))
-        settings = json.load(settings_file)
+        settings = json.load(settings_file) '''
+    
     settings_file.close()
     open(config.get('task', 'lock_file'), 'w').close()
     app = BedLeveling(log_trace, response_file, settings, num_probes, skip_homing)
@@ -218,4 +231,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+        print "Caught it!"

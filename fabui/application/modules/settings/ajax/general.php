@@ -2,7 +2,6 @@
 session_start();
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/serial.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 
 $ini_array = parse_ini_file(SERIAL_INI);
@@ -45,16 +44,11 @@ $_colors['b'] = $_blue;
 $_feeder['disengage-offset'] = $_feeder_disengage;
 
 
-shell_exec('sudo chmod 0777 ' . FABUI_PATH.'config/');
+shell_exec('sudo chmod 0777 ' . FABUI_PATH.'config/*');
 
 /** GET UNITS */
 $_units = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);
 
-if(!file_exists(FABUI_PATH.'config/custom_config.json')){
-	write_file(FABUI_PATH.'config/custom_config.json', json_encode($_units), 'w');
-}
-
-$_custom_units = json_decode(file_get_contents(FABUI_PATH.'config/custom_config.json'), TRUE);
 
 /** SET NEW COLOR */
 $_units['color']                                = $_custom_units['color'] = $_colors;
@@ -77,36 +71,12 @@ $_units['print']['pre-heating']['bed']      =  $_print_preheating_bed;
 $_units['print']['calibration']             =  $_print_calibration;
 
 file_put_contents(FABUI_PATH.'config/config.json', json_encode($_units));
-file_put_contents(FABUI_PATH.'config/custom_config.json', json_encode($_custom_units));
 
-/** LOAD SERIAL CLASS */
-$serial = new Serial();
 
-$serial->deviceSet($ini_array['port']);
-$serial->confBaudRate($ini_array['baud']);
-$serial->confParity("none");
-$serial->confCharacterLength(8);
-$serial->confStopBits(1);
-$serial->deviceOpen();
-// safety door 
-$_command = 'M732 S'.$_safety_door;
-$serial->sendMessage($_command."\r\n");
-$response = $serial->readPort();
+$response['python']   = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M732 S'.$_safety_door.'-M734 S'.$_collision_warning.'-M714 S'.$_switch.'-M500-M300"'));
+$response['result'] = true;
 
-//collision warning
-$_command = 'M734 S'.$_collision_warning;
-$serial->sendMessage($_command."\r\n");
-$response = $serial->readPort();
 
-//switch
-$_command = 'M714 S'.$_switch;
-$serial->sendMessage($_command."\r\n");
-$response = $serial->readPort();
-
-$serial->serialflush();
-
-$serial->deviceClose();
-
-echo json_encode(array('result'=>true));
+echo json_encode($response);
 
 ?>

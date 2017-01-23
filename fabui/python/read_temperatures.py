@@ -20,7 +20,7 @@ bed_gcodes=[190]
 extrudert_target=0
 bed_target=0
 
-file_total_num_lines =  int(commands.getoutput('wc -l < %s' % file))
+file_total_num_lines =  int(commands.getoutput('wc -l < "{0}"'.format(file)))
 
 
 if(file_total_num_lines < num_lines):

@@ -17,5 +17,7 @@ def get_layers_count(file, max_lines = 500):
 def process_comment(comment):
     if('; layer' in comment):
         comment_splitted = comment.split('; layer')
-        return 'layer',  comment_splitted[1].strip().split(',')[0]
+        layer_counter = comment_splitted[1].strip().split(',')[0]
+        if(layer_counter.isdigit()):
+            return 'layer',  layer_counter
     return None

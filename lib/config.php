@@ -109,7 +109,7 @@ defined('INSTAGRAM_HASH_JSON') ? null : define("INSTAGRAM_HASH_JSON",      TEMP_
 defined('TWITTER_FEED_URL')  ? null : define("TWITTER_FEED_URL",      'http://www.fabtotum.com/twitter_feed.json');
 defined('TWITTER_FEED_JSON') ? null : define("TWITTER_FEED_JSON",      TEMP_PATH.'twitter.json');
 
-defined('BLOG_FEED_URL')  ? null : define("BLOG_FEED_URL",      'http://www.fabtotum.com/feed/?cat=5%2C6');
+defined('BLOG_FEED_URL')  ? null : define("BLOG_FEED_URL",      'http://www.fabtotum.com/feed/?cat=5%2C6%2C887');
 defined('BLOG_FEED_XML')  ? null : define("BLOG_FEED_XML",      TEMP_PATH.'blog.xml');
 
 defined('FAQ_URL')  ? null : define("FAQ_URL", 'http://www.fabtotum.com/faq_new.json');

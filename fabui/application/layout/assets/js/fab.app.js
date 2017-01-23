@@ -226,6 +226,24 @@ fabApp = (function(app) {
 			}
 		});
 	}
+	
+	app.checkUpdateActionFile= function(){
+		$.get('/fabui/controller/update_action_file', function(data, status){
+			if(data.response == true){
+				
+				$.SmartMessageBox({
+                    title: "<i class='fa fa-refresh'></i> <span class='txt-color-orangeDark'><strong>Update completed</strong></span> ",
+                    content: "Now that the update is completed, please make sure to shutdown the machine, wait a few seconds and then turn it on again",
+                    buttons: "[Shutdown]"
+                }, function(ButtonPressed) {
+                   if(ButtonPressed == 'Shutdown'){
+                	   shutdown();
+                   }
+               });
+				
+			}
+		});
+	}
 
 	return app;
 
@@ -237,4 +255,5 @@ jQuery(document).ready(function() {
 		fabApp.domReadyMisc();
 		fabApp.drawBreadCrumb();
 		fabApp.checkForFirstSetupWizard();
+		fabApp.checkUpdateActionFile();
 });

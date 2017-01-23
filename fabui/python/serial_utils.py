@@ -13,6 +13,9 @@ class MacroTimeOutException(Exception):
         self.message = 'Timeout Error : ' + command
 
 class SerialUtils:
+    
+    MAX_MACRO_TIMEOUT = 90
+    
     def __init__(self, port=None, baud=None, trace_file=None, debug=False):
         self.debug = debug
         ''' LOAD CONFIG '''
@@ -36,10 +39,17 @@ class SerialUtils:
             print self.serial.isOpen()
     def sendGCode(self, code):
         self.serial.reset_input_buffer()
-        #print code.encode()
-        self.serial.write("%s\r\n" % code.encode())
-        if self.debug:
-            print "serial_util >> sent '%s'" % code.encode()
+        if(type(code) is list):
+            for command in code:
+                self.serial.write("{0}\r\n".format(command.encode()))
+                time.sleep(0.2)
+                if self.debug:
+                    print "serial_util >> sent '{0}'".format(command.encode())
+        else:
+            self.serial.write("{0}\r\n".format(code.encode()))
+            if self.debug:
+                print "serial_util >> sent '{0}'".format(code.encode())
+                
     def getReply(self, bytes=4096):
         try:
             reply = self.serial.read(bytes).strip()
@@ -47,7 +57,8 @@ class SerialUtils:
                 print "serial_util >> reply '%s'" % reply
             return reply
         except:
-            print "Unexpected error:", sys.exc_info()
+            if self.debug:
+                print "Unexpected error:", sys.exc_info()
             return ''
     def close(self):
         self.serial.close()
@@ -162,14 +173,18 @@ class SerialUtils:
         time.sleep(1)
         return True
     def g30(self):
-        reply = self.doMacro('G30', 'echo:', -1, None, verbose=False)
+        reply = ""
+        #self.sendGCode('G30')
+        self.serial.write("G30\r\n")
+        while not 'echo:' in reply:
+        #while not reply[:22]=="echo:endstops hit:  Z:":
+            reply = self.serial.readline().rstrip()
+        #self.sendGCode('G91')
+        #self.sendGCode('G0 Z1 F1000')
+        self.serial.write('G91\r\nG1 Z+1 F1000\r\n')
         reply = reply.split('\n')
         z = float( reply[-1].split("Z:")[1].strip() )
         z = round(z, 3)  # round to 3 decimanl points
-        
-        #match = re.search('echo:endstops\shit:\s\sZ:([0-9.]+)', reply, re.IGNORECASE)
-        #if match != None:
-        #    return match.group(1)
         return z
     def flush(self):
         self.serial.reset_input_buffer()
@@ -183,9 +198,11 @@ class SerialUtils:
     def resetTrace(self):
         with open(self.trace_file, "w"):
             pass
-    def doMacro(self, command, expected_reply, timeout, message, verbose=True, warning=False):
+    def doMacro(self, command, expected_reply, timeout, traceMessage, verbose=True, warning=False, errorMessage=''):
+        if(errorMessage == ''):
+            errorMessage = traceMessage
         if(verbose):
-            self.trace(message)
+            self.trace(traceMessage)
         """ wait only if timeout > -1 """
         wait = False if timeout == -1 else True
         start_time = time.time() ###
@@ -198,12 +215,16 @@ class SerialUtils:
             self.sendGCode('M400');
         while(finished == False):
             reply = self.getReply()
+            #reply = self.serial.readline().rstrip()
             if(expected_reply in reply):
                 finished = True
                 return reply
                 continue
             if(wait):
-                if( time.time() - start_time > timeout):
+                if(( time.time() - start_time > timeout)):
                     finished = True
                     if(warning == False):
-                        raise MacroTimeOutException(message)
+                        raise MacroException(errorMessage)
+            if((time.time() - start_time > self.MAX_MACRO_TIMEOUT)):
+                finished = True
+                raise MacroTimeOutException(errorMessage)

@@ -67,6 +67,7 @@ except Exception as inst:
 '''#### SETTING GPIO ####'''
 #GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 GPIO.setup(2, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
 
@@ -126,27 +127,28 @@ def safety_callback(channel):
     if(GPIO_STATUS == 0):
         su.sendGCode('M730')
         reply = su.getReply()
-        print ">>>> ", reply
-        decodedReply =  decodeReply(reply)
-        if decodedReply != None :
-            special_codes = [110, 120, 121]
-            if(decodedReply in special_codes):
-                if decodedReply == 110:
-                    type="alert"
-                    su.flush()
-                    su.sendGCode('M999')
-                elif decodedReply == 120 or decodedReply == 121:
-                    if(settings['bothy'] == 'Shutdown' or settings['bothz'] == 'Shutdown'):
-                        call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
-                        GPIO.cleanup() #we can disable GPIO as we are rebooting the system.
-                        
-            message = {'type': type, 'code': str(decodedReply)}
-            ws.send(json.dumps(message))
-            write_emergency(json.dumps(message))
+        #print ">>>> ", reply
+        if(reply != ''):
+            decodedReply =  decodeReply(reply)
+            if decodedReply != None :
+                special_codes = [110, 120, 121]
+                if(decodedReply in special_codes):
+                    if decodedReply == 110:
+                        type="alert"
+                        su.flush()
+                        su.sendGCode('M999')
+                    elif decodedReply == 120 or decodedReply == 121:
+                        if(settings['bothy'] == 'Shutdown' or settings['bothz'] == 'Shutdown'):
+                            call (['sudo php /var/www/fabui/application/modules/controller/ajax/shutdown.php'], shell=True)
+                            GPIO.cleanup() #we can disable GPIO as we are rebooting the system.
+                            
+                message = {'type': type, 'code': str(decodedReply)}
+                ws.send(json.dumps(message))
+                write_emergency(json.dumps(message))
             
     su.flush()
     su.close()
-    GPIO_STATUS=GPIO.HIGH   
+    GPIO_STATUS=GPIO.HIGH
     if os.path.isfile(config.get('task', 'lock_file')):
         os.remove(config.get('task', 'lock_file'))
 

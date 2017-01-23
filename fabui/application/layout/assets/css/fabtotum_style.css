@@ -499,3 +499,29 @@ body.smart-style-6 .top-bed-target-temp, body.smart-style-6 .top-ext-target-temp
   background: #006fa6 !important;
 }
 
+#top-alert-messages {
+	display: inline-block;
+    margin: 0;
+    padding: 11px 0px 11px 0!important;
+    background: 0 0;
+    vertical-align: top;
+    list-style: none;
+    border-radius: 2px;
+}
+
+#top-alert-messages .label {
+	font-size:100%;
+}
+
+#top-alert-messages .label-warning{
+	background-color: #c79121 !important;
+}
+
+
+.tooltip {
+	z-index: 999999999999999999999999 !important;
+}
+
+.tooltip-inner{
+	z-index: 999999999999999999999999 !important;
+}

@@ -11,7 +11,8 @@ class Create extends Module {
 	
 	protected $_PRINT_VALID_HEADS = array('hybrid', 'print_v2');
 	protected $_MILL_VALID_HEADS  = array('hybrid', 'mill_v2');
-	protected $_MAKE_TYPES        = array('additive' => 'print', 'subtractive' => 'mill');
+	protected $_LASER_VALID_HEADS = array('laser_v1');
+	protected $_MAKE_TYPES        = array('additive' => 'print', 'subtractive' => 'mill', 'laser' => 'laser');
 
 	public function __construct() {
 		parent::__construct();
@@ -42,13 +43,19 @@ class Create extends Module {
 		 * check if printer is already printing
 		 */
 		if ($type == 'subtractive') {
-			
 			$data['valid_head'] = in_array(get_head(), $this->_MILL_VALID_HEADS);
 			$_task = $this -> tasks -> get_running('make', 'mill');
+			$data['head_type'] = 'milling';
 			
-		} else {
+		}elseif( $type == 'laser'){
+			$data['valid_head'] = in_array(get_head(), $this->_LASER_VALID_HEADS);
+			$_task = $this -> tasks -> get_running('make', 'laser');
+			$data['head_type'] = 'laser';
+		}
+		else {
 			$data['valid_head'] = in_array(get_head(), $this->_PRINT_VALID_HEADS);
 			$_task = $this -> tasks -> get_running('make', 'print');
+			$data['head_type'] = 'printing';
 		}
 
 		$_running = $_task ? true : false;
@@ -92,13 +99,24 @@ class Create extends Module {
 
 		$this -> config -> load('fabtotum', TRUE);
 		$units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
-
-		if (isset($units['settings_type']) && $units['settings_type'] == 'custom') {
-			$units = json_decode(file_get_contents($this -> config -> item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
-		}
-
+	
+		
 		$data['max_temp'] = $this -> layout -> get_max_temp();
-		$data['label'] = $type == 'subtractive' ? 'Mill' : 'Print';
+		switch($type){
+			case 'additive':
+				$label = 'Printing';
+				$print_type = 'print';
+				break;
+			case 'subtractive':
+				$label = 'Milling';
+				$print_type = 'mill';
+				break;
+			case 'laser':
+				$label = 'Laser Engraving';
+				$print_type = 'laser';
+				break;
+		}
+		$data['label'] = $label;
 		
 		
 
@@ -107,8 +125,9 @@ class Create extends Module {
 		 */
 		$data_step1['objects'] = !$_running ? $this -> objects -> get_for_create($type) : array();
 		$data_step1['type'] = $type;
+		$data_step1['head_type'] = $data['head_type'];
 		$data_step1['last_creations'] = !$_running ? $this->tasks->get_last_creations($this->_MAKE_TYPES[$type]) : array();
-		$data_step1['status_label'] = array('performed' => '<span class="label label-success">COMPLETED</span>', 'stopped' => '<span class="label label-warning">ABORTED</span>', 'deleted' => '<span class="label label-danger">STOPPED</span>');
+		$data_step1['status_label'] = array('performed' => '<span class="label label-success">COMPLETED</span>', 'stopped' => '<span class="label label-warning">ABORTED</span>', 'deleted' => '<span class="label label-danger">STOPPED</span>', 'error' => '<span class="label label-danger">ERROR</span>');
 		
 		
 		$_widget_tabs   = $this -> load -> view('index/step1/toolbar', $data_step1, TRUE);
@@ -174,6 +193,7 @@ class Create extends Module {
 		if($_running ){
 			$data_widget_step5['mail'] = $_attributes['mail'] == true ? 'checked' : '';
 		}
+		$data_widget_step5['laser_pwm'] = $_running && isset($_attributes['laser_pwm']) ? $_attributes['laser_pwm'] : 0;
 		$data_widget_step5['note'] = $_running && isset($_attributes['note']) ? $_attributes['note'] : '';
 		$data_widget_step5['_object_name'] = $_running ? $_object -> obj_name : '';
 		$data_widget_step5['_file_name'] = $_running ? $_file -> raw_name : '';
@@ -218,7 +238,7 @@ class Create extends Module {
 		$data_js['_uri_monitor'] = $_running ? $_attributes['uri_monitor'] : '';
 		$data_js['_uri_trace'] = $_running ? $_attributes['uri_trace'] : '';
 		$data_js['_seconds'] = $_running ? (time() - intval($_monitor_encoded -> print -> started)) : 0;
-		$data_js['_print_type'] = $_running ? $_attributes['print_type'] : $type;
+		$data_js['_print_type'] = $_running ? $_task['type'] : $print_type;
 		$data_js['progress_percent'] = $data_widget_step5['_progress_percent'];
 		$data_js['print_started'] = $_running ? strtolower($_monitor_encoded -> print -> print_started) : 'false';
 
@@ -292,7 +312,7 @@ class Create extends Module {
 		
 		$data = array();
 
-		if ($type == 'additive') {
+		if ($type == 'print') {
 			
 			$this -> config -> load('fabtotum', TRUE);
 			
@@ -303,11 +323,6 @@ class Create extends Module {
 			
 			$config_units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
 			
-			if($config_units['settings_type'] == 'custom'){
-				$config_units = json_decode(file_get_contents($this -> config -> item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
-			}
-			
-
 			$label_button = 'Engage';
 			$action_button = 'feeder';
 
@@ -321,7 +336,6 @@ class Create extends Module {
 			$data['label_button']  = $label_button;
 			$data['action_button'] = $action_button;
 			$data['calibration']   = isset($config_units['print']['calibration']) ? $config_units['print']['calibration'] : 'homing';
-
 		}
 
 		$this -> load -> view('index/ajax/' . $type, $data);
@@ -394,15 +408,19 @@ class Create extends Module {
 
 		$tasks = $this -> _get_make_tasks($filters);
 
-		$data['icons'] = array('print' => 'icon-fab-print', 'mill' => 'icon-fab-mill', 'scan' => 'icon-fab-scan');
+		$data['icons'] = array('print' => 'icon-fab-print', 'mill' => 'icon-fab-mill', 'scan' => 'icon-fab-scan', 'laser' => 'icon-fab-mill');
 
-		$data['status_label'] = array('performed' => '<span class="label label-success">COMPLETED</span>', 'stopped' => '<span class="label label-warning">ABORTED</span>', 'deleted' => '<span class="label label-danger">STOPPED</span>');
+		$data['status_label'] = array('performed' => '<span class="label label-success">COMPLETED</span>', 'stopped' => '<span class="label label-warning">ABORTED</span>', 'deleted' => '<span class="label label-danger">STOPPED</span>', 'error' => '<span class="label label-danger">ERROR</span>');
 
 		$aaData = array();
 
 		foreach ($tasks as $task) {
 			
+				
+			
 				$attributes = json_decode(utf8_encode(preg_replace('!\\r?\\n!', "<br>", $task['task_attributes'])), true);
+				
+				
 				
 				$when = strtotime($task['finish_date']) > strtotime("-1 day") ? get_time_past($task['finish_date']) . ' ago' : date('d M, Y', strtotime($task['finish_date']));
 				$info = '<h4>';
@@ -415,9 +433,12 @@ class Create extends Module {
 				$info .= '</h4>';
 	
 	
+				
+				
 				$td_0 = '<a href="#" > <i class="fa fa-chevron-right fa-lg" data-toggle="row-detail" title="Show Details"></i> </a>';
 				$td_1 = $when;
 				$td_2 = '<strong><i class="<' . $data['icons'][$task['type']] . '"></i> <span class="hidden-xs">' . ucfirst($task['type']) . '</strong></span>';
+				//$td_2 = '';
 				$td_3 = $data['status_label'][$task['status']];
 				$td_4 = $info;
 				$td_5 = $task['duration'];
@@ -427,8 +448,9 @@ class Create extends Module {
 				$td_9 = $task['type'];
 				$td_10 = $task['id_file'];
 				$td_11 = $task['id_object'];
+				$td_12 = isset($attributes['error']) ? $attributes['error'] : '';
 	
-				$aaData[] = array($td_0, $td_1, $td_2, $td_3, $td_4, $td_5, $td_6, $td_7, $td_8, $td_9, $td_10, $td_11);
+				$aaData[] = array($td_0, $td_1, $td_2, $td_3, $td_4, $td_5, $td_6, $td_7, $td_8, $td_9, $td_10, $td_11, $td_12);
 			}
 
 
@@ -453,13 +475,13 @@ class Create extends Module {
 		
 		
 		
-		$data['icons'] = array('print' => 'icon-fab-print', 'mill' => 'icon-fab-mill', 'scan' => 'icon-fab-scan');
+		$data['icons'] = array('print' => 'icon-fab-print', 'mill' => 'icon-fab-mill', 'scan' => 'icon-fab-scan', 'laser' => 'icon-fab-mill');
 
 		$data['status_label'] = array('performed' => '<span class="label label-success">COMPLETED</span>', 'stopped' => '<span class="label label-warning">ABORTED</span>', 'deleted' => '<span class="label label-danger">STOPPED</span>');
 
 		$data['stats_label'] = array('total_time' => '<i class="fa fa-clock-o"></i> Total time', 'performed' => '<i class="fa fa-check"></i> Completed', 'stopped' => '<i class="fa fa-times"></i> Aborted', 'deleted' => '<i class="fa fa-ban"></i> Stopped');
 
-		$data['type_options'] = array('print' => 'Print', 'mill' => 'Mill', 'scan' => 'Scan');
+		$data['type_options'] = array('print' => 'Print', 'mill' => 'Mill', 'scan' => 'Scan', 'laser' => 'Laser');
 
 		$data['status_options'] = array('performed' => 'Completed', 'stopped' => 'Aborted', 'deleted' => 'Stopped');
 		$data['status_colors']  = array('performed' => '#7e9d3a', 'stopped' => '#FF9F01', 'deleted' => '#a90329');

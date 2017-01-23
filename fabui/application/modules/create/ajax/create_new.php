@@ -12,16 +12,17 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
 define("MULTI_CORE", true);
 define("CONTROLLER", 'make');
 define("RUNNING_STATUS", 'running');
-$createTypes = array('additive' => 'print', 'subtractive' => 'mill');
+$createTypes = array('print' => 'print', 'mill' => 'mill', 'laser' => 'laser');
 //get user settings
 $user = $_SESSION['user'];
 /**
  * get params from post
  */
-$objectID     = $_POST['object_id'];
-$fileID       = $_POST['file'];
-$createType   = $_POST['print_type']; //{additive / subtractive} 
-$calibration  = $_POST['calibration']; //{classic homing / auto bed leveling}
+$objectID          = $_POST['object_id'];
+$fileID            = $_POST['file'];
+$createType        = $_POST['print_type']; //{additive / subtractive} 
+$calibration       = $_POST['calibration']; //{classic homing / auto bed leveling}
+$go_to_focus_point = $_POST['go_to_focus_point'] == 'true';
 //load db class utility
 $db = new Database();
 //get all file info
@@ -33,11 +34,14 @@ $file = $file[0];
 
 switch($createType)
 {
-	case 'additive':
+	case 'print':
 		$temperatures = prepareAdditive($calibration, $file);
 		break;
-	case 'subtractive':
+	case 'mill':
 		prepareSubtractive();
+		break;
+	case 'laser':
+		prepareLaser($go_to_focus_point);
 		break;
 }
 /**
@@ -56,13 +60,13 @@ $taskID                = $db->insert('sys_tasks', $newTask);
 shell_exec('sudo php '.SCRIPT_PATH.'/notifications.php &');
 //creating task files support
 $timestamp      = time();
-$taskFolder     = TASKS_PATH.'print_'.$taskID.'_'.$timestamp.'/';
+$taskFolder     = TASKS_PATH.$createType.'_'.$taskID.'_'.$timestamp.'/';
 $monitorFile    = TEMP_PATH.'task_monitor.json';
-$dataFile       = $taskFolder.'print_'.$taskID.'_'.$timestamp.'.data';
+$dataFile       = $taskFolder.$createType.'_'.$taskID.'_'.$timestamp.'.data';
 $traceFile      = TEMP_PATH.'task_trace';
 $debugFile      = TEMP_PATH.'task_debug';
-$statsFile      = $taskFolder.'print_'.$taskID.'_'.$timestamp.'_stats.json';
-$attributesFile = $taskFolder.'print_'.$taskID.'_'.$timestamp.'_attributes.json';
+$statsFile      = $taskFolder.$createType.'_'.$taskID.'_'.$timestamp.'_stats.json';
+$attributesFile = $taskFolder.$createType.'_'.$taskID.'_'.$timestamp.'_attributes.json';
 $uriMonitor     = '/temp/task_monitor.json';
 $uriTrace       = '/temp/task_trace';
 mkdir($taskFolder, 0777);
@@ -80,11 +84,14 @@ $db->close();
  * STARTING TASK
  */
 switch($createType){
-	case 'additive':
+	case 'print':
 		$command = 'sudo python '.PYTHON_PATH.'gpusher_fast_multiproc.py "'.$file['full_path'].'" '.$dataFile.' '.$taskID.' --ext_temp '.intval($temperatures['extruder']).' --bed_temp '.intval($temperatures['bed']).' > /dev/null & echo $!';
 		break;
-	case 'subtractive':
+	case 'mill':
 		$command = 'sudo python '.PYTHON_PATH.'g_mill.py "'.$file['full_path'].'" '.$dataFile.' '.$taskID.'  > /dev/null & echo $!';
+		break;
+	case 'laser':
+		$command = 'sudo python '.PYTHON_PATH.'g_laser.py "'.$file['full_path'].'" '.$dataFile.' '.$taskID.'  > /dev/null & echo $!';
 		break;
 }
 $outputCommand  = shell_exec ( $command );
@@ -136,12 +143,13 @@ echo output($outputResponse);
 
 /**
  * 
- */
+ 
 function output($data)
 {
 	header('Content-Type: application/json');
 	return minify(json_encode($data));
 }
+*/
 /**
  * prepare additive task
  */
@@ -171,7 +179,7 @@ function prepareAdditive($calibration, $file)
 		{
 			$response['response'] = false;
 			$response['trace']    = str_replace(PHP_EOL, '<br>',file_get_contents($macroTrace));
-			echo output($response);
+			output($response);
 			exit();
 		}
 	}
@@ -184,7 +192,7 @@ function prepareAdditive($calibration, $file)
 	{
 		$response['response'] = false;
 		$response['trace']    = str_replace(PHP_EOL, '<br>',file_get_contents($macroTrace));
-		echo output($response);
+		output($response);
 		exit();
 	}
 		
@@ -204,7 +212,27 @@ function prepareSubtractive()
 	{
 		$response['response'] = false;
 		$response['trace']    = str_replace(PHP_EOL, '<br>',file_get_contents($macroTrace));
-		echo output($response);
+		output($response);
+		exit();
+	}
+}
+
+/**
+ *  Prepare laser task
+ * */
+
+function prepareLaser($goToFocus)
+{
+	$macroResponse = TEMP_PATH.'macro_response';
+	$macroTrace    = TEMP_PATH.'macro_trace';
+	$param1 = $goToFocus ? 1 : 0;
+	$command = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m start_laser -p1 '.$param1;
+	$output = shell_exec($command);
+	if(str_replace(PHP_EOL, '', file_get_contents($macroResponse)) != 'true')
+	{
+		$response['response'] = false;
+		$response['trace']    = str_replace(PHP_EOL, '<br>',file_get_contents($macroTrace));
+		output($response);
 		exit();
 	}
 }

@@ -417,7 +417,7 @@
            ticker_url = '/temp/macro_trace';
                        
            $.ajax({
-        		  url: ajax_endpoint + 'ajax/pre_print.php',
+        		  url: ajax_endpoint + 'ajax/pre_task.php',
         		  dataType : 'json',
                   type: "POST", 
         		  async: true,
@@ -436,7 +436,7 @@
                     disable_button('#btn-next');
                     
                 }else{
-                    $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-warning').addClass('txt-color-red');
+                    $("#res-icon").removeClass('fa-spin').removeClass('fa-spinner').addClass('fa-warning').addClass('txt-color-red').parent().append('<br>' + response.trace);
                     /*$('.check_result').html(response.trace);*/
                     $("#modal_link").html('Oops.. try again');
                     $("#modal_link").attr('data-action', 'check');

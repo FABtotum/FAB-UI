@@ -3,21 +3,21 @@
 	<div class="col-sm-12">
 		<div class="well well-light">
 			<div class="row">
-				<div class="col-sm-8">
-					<div class="form-horizontal">			
-						<fieldset>
-							<div class="form-group">
-								<label class="col-md-2 control-label">Name</label>
-								<div class="col-md-10">
-									<input type="text" id="name" name="name" class="form-control" value="<?php echo $_file -> raw_name; ?>" />
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-2 control-label">Note</label>
-								<div class="col-md-10">
-									<textarea style="resize: none !important;" id="note" name="note" class="form-control" rows="2"><?php echo $_file -> note; ?></textarea>
-								</div>
-							</div>		
+				<div class="col-sm-<?php echo $_file->print_type == 'additive' ? '8' : '12' ?>">
+					<div class="smart-form">
+						<fieldset  style="padding:0px">
+							<section>
+								<label class="label">Name</label>
+								<label class="input">
+									<input type="text" name="name" id="name" value="<?php echo $_file -> raw_name; ?>">
+								</label>
+							</section>
+							<section>
+								<label class="label">Note</label>
+								<label class="textarea textarea-expandable">
+									<textarea rows="4" id="note" name="note" class="custom-scroll" ><?php echo $_file -> note; ?></textarea>
+								</label>
+							</section>
 						</fieldset>
 					</div>
 				</div>

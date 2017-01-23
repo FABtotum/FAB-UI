@@ -138,7 +138,6 @@
 						<hr/>
 						<a rel="tooltip" data-placement="right" data-original-title="Move Z Down" href="javascript:void(0)" class="btn btn-default jog axisz" data-attribute-step="1" data-attribute-function="zup"> <i class="fa fa-angle-double-down"> </i>&nbsp; Z </a>
 					</div>
-					
 				</div>
 				<!-- AXIS MODE, EXTRUDER MODE -->
 				<div class="col-sm-3">

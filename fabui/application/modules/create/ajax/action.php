@@ -8,7 +8,7 @@ $data_file = $_POST['data_file'];
 $id_task   = $_POST['id_task']; 
 $progress  = $_POST['progress'];
 $attributes_file = $_POST["attributes_file"];
-$type = $_POST['type'];
+$type =  $_POST['type'];
 
 $data["action"]          = $action;
 $data["value"]           = $value;

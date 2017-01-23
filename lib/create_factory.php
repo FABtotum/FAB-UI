@@ -116,6 +116,10 @@ class CreateFactory {
 				$_command = 'M3 S' . $this -> _value;
 				$_message = 'Command for the RPM speed sent ' . $this -> _value;
 				break;
+			case 'laser_pwm' :
+				$_command = 'M61 S' . $this -> _value;
+				$_message = 'Command for the Laser PWM sent ' . $this -> _value;
+				break;
 			case 'mail' :
 				$_command = '';
 				if($this->_value) $_message = 'Mail notification enabled';
@@ -215,7 +219,7 @@ class CreateFactory {
 
 	public function stop() {
 		socket_close($this->_usock);
-		if($this -> _action == 'stop' && $this->_type != 'additive'){	
+		if($this -> _action == 'stop' && ($this->_type == 'subtractive' || $this->_type == 'mill') ){	
 			$task_type = 'mill';
 			shell_exec('sudo php ' . SCRIPT_PATH . 'finalize.php ' . $this -> _id_task . ' '.$task_type.' stopped');
 		}

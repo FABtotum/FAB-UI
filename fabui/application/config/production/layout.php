@@ -4,7 +4,7 @@ $layout['_layout_title'] = 'FAB UI beta';
 
 /*
  * Default METATAG
- * 
+ *
  */
 
 $layout['_meta'][] = array('name'=>'author',           'content'=>'FABteam', 'comment'=>'');
@@ -16,7 +16,7 @@ $layout['_meta'][] = array('name'=>'apple-mobile-web-app-status-bar-style', 'con
 
 /*
  * Default CSS to include on all pages
-*/
+ */
 /** TEMPLATE SMART ADMIN DEFAULT CSS */
 $layout['_css'][] = array('src' => '/assets/css/bootstrap.min.css', 'comment'=> '', 'external' => FALSE);
 $layout['_css'][] = array('src' => '/assets/css/font-awesome.min.css', 'comment'=> '', 'external' => FALSE, 'font' =>true);
@@ -29,6 +29,7 @@ $layout['_css'][] = array('src' => '/assets/css/fabtotum_style.css', 'comment'=>
 $layout['_css'][] = array('src' => '/assets/js/plugin/noUiSlider.8.2.1/nouislider.min.css', 'comment' => 'CSS for the noUISlider', 'external' => FALSE);
 $layout['_css'][] = array('src' => '/assets/js/plugin/noUiSlider.8.2.1/nouislider.pips.css', 'comment' => 'CSS for the noUISlider', 'external' => FALSE);
 $layout['_css'][] = array('src' => '/assets/js/plugin/fancybox/jquery.fancybox.css', 'comment' => 'CSS for the noUISlider', 'external' => FALSE);
+$layout['_css'][] = array('src'=>'/assets/css/line-icons-pro/styles.css', 'comment' => 'line-icons-pro', 'external' => FALSE);
 
 /*
  * Default JS to include on all pages

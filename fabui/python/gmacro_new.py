@@ -30,11 +30,15 @@ debug         = args.debug
 settings_file = open(config.get('printer', 'settings_file'))
 settings = json.load(settings_file)
 
+SECURITY_Z_OFFSET = 50
+LASER_FOCUS_OFFSET = 2
+
+'''
 if 'settings_type' in settings and settings['settings_type'] == 'custom':
     settings_file = open(config.get('printer', 'custom_settings_file'))
     settings = json.load(settings_file)
 settings_file.close()
-
+'''
 #write LOCK FILE    
 open(config.get('task', 'lock_file'), 'w').close()
 
@@ -52,6 +56,12 @@ def handleExceptionEnd(serial_util, message):
         os.remove(config.get('task', 'lock_file'))
     raise SystemExit()
 """ ### custom exceptions ### """
+
+def saveSettings(settings):
+    settings_file = config.get('printer', 'settings_file')
+    with open(settings_file, 'w') as outfile:
+        json.dump(settings, outfile)
+    outfile.close()
 
 """ ################################################################### """
 def loadSpool(serial_util, settings, params=None):
@@ -100,8 +110,16 @@ def checkPrePrint(serial_util, settings, params=None):
     serial_util.trace("Checking safety measures")
     if(settings['safety']['door'] == 1):
         serial_util.doMacro('M741', 'TRIGGERED', 1, 'Front panel door control')
-    serial_util.doMacro('M744', 'TRIGGERED', 1, 'Building plane inserted correctly',  warning=True)
-    serial_util.doMacro('M744', 'TRIGGERED', 1, 'Spool panel control',  warning=True)
+    serial_util.doMacro('M744', 'TRIGGERED', 1, 'Check Heat bed', errorMessage='Heat bed not correctly inserted')
+    #serial_util.doMacro('M744', 'TRIGGERED', 1, 'Spool panel control',  warning=True)
+""" ################################################################### """
+def checkPreMill(serial_util, settings, params=None):
+    """ preparing printer to print """
+    serial_util.trace("Checking safety measures")
+    if(settings['safety']['door'] == 1):
+        serial_util.doMacro('M741', 'TRIGGERED', 1, 'Front panel door control')
+    serial_util.doMacro('M744', 'open', 1, 'Check platform', errorMessage='Please invert platform')
+    #serial_util.doMacro('M744', 'TRIGGERED', 1, 'Spool panel control',  warning=True)
 """ ################################################################### """
 def endPrintAdditive(serial_util, settings, params=None):
     serial_util.doMacro('G90', 'ok', -1, 'Set Absolute movement')
@@ -194,25 +212,27 @@ def photogrammetryScan(serial_util, settings, params=None):
     serial_util.doMacro('M302 S0', 'ok', -1, 'Disabling cold extrusion prevention', verbose=False)
 """ ################################################################### """
 def raiseBed(serial_util, settings, params=None):
-    serial_util.doMacro('M402', 'ok', -1, 'Retracting Probe')
+    serial_util.doMacro('M402', 'ok', -1, 'Retracting Probe', verbose=False)
     serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
-    
     try:
         ####
         zprobe_disabled = int(settings['zprobe']['disable']) == 1
-        zprobe_zmax   = settings['zprobe']['zmax']
+        zprobe_zmax     = settings['zprobe']['zmax']
     except KeyError:
         ###
         zprobe_disabled = False
-        zprobe_zmax = 206.0
+        zprobe_zmax     = 206.0
+        
     if(zprobe_disabled == True):
-        serial_util.trace("Use of probe disabled")
-        serial_util.doMacro('G27 X0 Y0 Z' + str(zprobe_zmax), 'ok', -1, 'Homing all axes')
-        serial_util.doMacro('G0 Z50 F10000', 'ok', -1, 'Rising')
+        serial_util.trace("Touching probe disabled")
+        serial_util.doMacro('G27', 'ok', -1, 'Lowering bed', verbose=True)
+        serial_util.doMacro('G92 X1 Y1 Z{0}'.format(zprobe_zmax), 'ok', -1, 'Setting fixed offset ({0})'.format(zprobe_zmax), verbose=False)
+        serial_util.doMacro('G0 X10 Y10 Z70 F1000', 'ok', -1, 'Raising bed')
     else:
-        serial_util.doMacro('G27', 'ok', -1, 'Homing all axes')
-        serial_util.doMacro('G0 Z10 F10000', 'ok', -1, 'Raising')
-        serial_util.doMacro('G28', 'ok', -1, 'Homing all axes')
+        serial_util.trace("Touching probe enabled")
+        serial_util.doMacro('G27', 'ok', -1, 'Homing all axes', verbose=True)
+        serial_util.doMacro('G0 Z{0} F10000'.format(SECURITY_Z_OFFSET), 'ok', -1, 'Raising', verbose=False)
+        serial_util.doMacro('G28', 'ok', -1, 'Homing all axes', verbose=False)
 """ ################################################################### """
 def raiseBedNo27(serial_util, settings, params=None):
     serial_util.doMacro('M402', 'ok', -1, 'Retracting Probe')
@@ -228,7 +248,7 @@ def raiseBedNo27(serial_util, settings, params=None):
         
     if(zprobe_disabled == True):
         serial_util.trace("Use of probe disabled")
-        serial_util.doMacro('G27 X0 Y0 Z' + str(zprobe_zmax), 'ok', -1, 'Homing all axes')
+        serial_util.doMacro('G27 X0 Y0 Z{0}'.format(zprobe_zmax), 'ok', -1, 'Homing all axes')
         serial_util.doMacro('G0 Z50 F10000', 'ok', -1, 'Rising')
     else:
         serial_util.doMacro('G0 Z20 F10000', 'ok', -1, 'Raising bed', verbose=False)
@@ -278,45 +298,68 @@ def startPrint(serial_util, settings, params=None):
 """ ################################################################### """
 def startSubtractivePrint(serial_util, settings, params=None):
     serial_util.doMacro('M92 E' + str(settings['a']), 'ok', 1, 'Setting 4th Axis mode', verbose=False)
+    serial_util.doMacro('M3', 'ok', -1, 'Turning on milling motor', verbose=True)
 def endPrintSubtractive(serial_util, settings, params=None):
-    serial_util.doMacro('M5', 'ok', -1, 'Shutting Down Milling Motor')
+    #serial_util.doMacro('M3 S0', 'ok', -1, 'Shutting Down Milling Motor')
+    serial_util.doMacro('M5', 'ok', -1, 'Shutting Down Milling Motor', verbose=True)
     serial_util.doMacro('M220 S100', 'ok', -1, 'Reset Speed factor override')
     serial_util.doMacro('M221 S100', 'ok', -1, 'Reset Extruder factor override')
     serial_util.doMacro('M107', 'ok', -1, 'Turning Fan off')
     serial_util.doMacro('M18', 'ok', -1, 'Motor Off')
     serial_util.doMacro('M300', 'ok', -1, 'Completed!')
-    serial_util.doMacro('M92 E' + str(settings['e']), 'ok', 1, 'Setting extruder mode', verbose=False)
+    serial_util.doMacro('M92 E' + str(settings['e']), 'ok', -1, 'Setting extruder mode', verbose=False)
     
 """ ################################################################### """  
 def probeSetupPrepare(serial_util, settings, params=None):
+    try:
+        zprobe_disabled = int(settings['zprobe']['disable']) == 1
+    except KeyError:
+        zprobe_disabled = False
+    
+    #if(zprobe_disabled == True):
+    serial_util.doMacro('G90', 'ok', -1, 'Setting absolute position', verbose=False)
+    serial_util.doMacro('G0 X86 Y58 Z50 F10000', 'ok', -1, 'Raising bed', verbose=True)
+        
     serial_util.trace("Preparing Calibration procedure")
     serial_util.trace("This may take a wile")
-    serial_util.doMacro('M104 S200', 'ok', 1, 'Heating extruder')
-    serial_util.doMacro('M140 S45', 'ok', 1, 'Heating Bed - fast')
+    serial_util.doMacro('M104 S200', 'ok', -1, 'Heating extruder')
+    serial_util.doMacro('M140 S45', 'ok', -1, 'Heating Bed - fast')
     serial_util.doMacro('G91', 'ok', 1, 'Relative mode', verbose=False)
     serial_util.doMacro('G0 X17 Y61.5 F6000', 'ok', -1, 'Offset', verbose=False)
-    serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
-    serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving to calibration position')
+    #serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving to calibration position')
 """ ################################################################### """  
 def probeSetupCalibrate(serial_util, settings, params=None):
-    serial_util.trace("Calibrating probe")
-    #serial_util.doMacro('M109 S30', 'ok', -1, 'Shutting down extruder')
-    serial_util.doMacro('M104 S0', 'ok', 1, 'Shutting down extruder', verbose=True)
-    serial_util.doMacro('M140 S0', 'ok', 1, 'Shutting down bed')
-    eeprom = serial_util.eeprom()
-    serial_util.trace("Old Position : " + str(eeprom['probe_length']) + " mm")
-    position = serial_util.getPosition()
-    if(position != None):        
-        serial_util.trace("Current height : " + str(position['z']) + " mm")
-        z_probe_new=abs(float(eeprom['probe_length'])+(float(position['z'])-0.1))
-        serial_util.doMacro('M710 S' + str(z_probe_new), 'ok', 1, 'Saving new value')
-        serial_util.doMacro('G90', 'ok', 1, 'Setting absolute position', verbose=False)
-        serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving the plane', verbose=False)
-        serial_util.doMacro('G28 X0 Y0', 'ok', -1, 'Homing all axes', verbose=False)
-        serial_util.trace("Probe calibrated : " +  str(z_probe_new) + " mm" )
-        serial_util.doMacro('M300', 'ok', 1, 'Done')
-    else:
-        raise serial_utils.MacroException('Get current Z position failed')
+    #serial_util.trace("Calibrating probe")
+    serial_util.trace("Calculating Z Max Height")
+    serial_util.doMacro('M104 S0', 'ok', -1, 'Shutting down extruder', verbose=False)
+    serial_util.doMacro('M140 S0', 'ok', -1, 'Shutting down bed', verbose=False)
+    serial_util.doMacro('G90', 'ok', -1, 'Set absolute coordinates', verbose=False)
+    serial_util.doMacro('G92 Z0.08', 'ok', -1, 'Setting paper heigth', verbose=False)
+    serial_util.doMacro('G0 Z300 F1000', 'ok', -1, 'Lowering bed', verbose=False)
+    current_position = serial_util.getPosition()
+    z_offset_max = current_position['count']['z']
+    serial_util.doMacro('G92 Z{0}'.format(z_offset_max), 'ok', -1, 'setting position', verbose=False)
+    #serial_util.trace("Z Lenght calibrated : {0} mm".format(z_offset_max))
+    ''' ============================================== '''
+    ### probe lenght calibration
+    serial_util.trace("Calculating Probe Length")
+    serial_util.doMacro('G0 X86 Y58 Z50 F1000', 'ok', -1, 'calibration point', verbose=False)
+    serial_util.doMacro('M401', 'ok', -1, 'Open probe', verbose=False)
+    probe_length = serial_util.g30()
+    
+    serial_util.doMacro('G91', 'ok', 1, 'Relative mode', verbose=False)
+    #serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving the plane', verbose=False)
+    serial_util.doMacro('M402', 'ok', -1, 'close probe', verbose=False)
+    serial_util.doMacro('M710 S{0}'.format(probe_length), 'ok', -1, 'Saving new value: {0}'.format(probe_length), verbose=False)
+    serial_util.doMacro('G90', 'ok', -1, 'Setting absolute position', verbose=False)
+    serial_util.doMacro('G28 X0 Y0', 'ok', -1, 'Homing all axes', verbose=False)
+    serial_util.doMacro('M300', 'ok', -1, 'Complete')
+    settings['zprobe']['zmax'] = z_offset_max
+    serial_util.trace("New Z Max Height : {0}".format(z_offset_max) + " mm" )
+    serial_util.trace("New Probe Length : {0}".format(probe_length) + " mm" )
+    saveSettings(settings)
+    #else:
+    #    raise serial_utils.MacroException('Get current Z position failed')
 """ ################################################################### """  
 def extrude(serial_util, settings, params=None):
     serial_util.doMacro('M92 E' + str(settings['e']), 'ok', 1, 'Setting extruder mode', verbose=False)
@@ -326,9 +369,41 @@ def extrude(serial_util, settings, params=None):
     #    serial_util.doMacro('M109 S185', 'ok', -1, 'Heating nozzle...(wait)')
     #    serial_util.trace("Temperature reached")
     serial_util.doMacro('G91', 'ok', 1, 'Setting relative position', verbose=False)
-    serial_util.doMacro('G0 E' + str(params['param1']) + ' F400', 'ok', -1, 'Espelling filament', verbose=True)
+    serial_util.doMacro('G0 E{0}'.format(params['param1']) + ' F400', 'ok', -1, 'Expelling filament', verbose=True)
+""" ################################################################### """  
+def preLaser(serial_util, settings, params=None):
+    serial_util.trace("Preparing laser engraving procedure")
+    serial_util.doMacro('M744', 'open', 1, 'Checking platform',verbose=False, errorMessage='Please revert platform')
+    #if(int(params['param1']) == 0): ## if is not restart
+    #    serial_util.doMacro('G27 Z', 'ok', -1, 'Lowering platform', verbose=False)
+    #    serial_util.doMacro('G28 X Y', 'ok', -1, 'G28 Homing', verbose=False)
+    #    serial_util.doMacro('G90', 'ok', -1, 'Setting absolute position', verbose=False)
+    #    serial_util.doMacro('G0 Z100 F1000', 'ok', -1, 'Raising platform', verbose=False)
+    serial_util.doMacro('M61 S5', 'ok', -1, 'Laser ON (Minimum Power)', verbose=True)
+def startLaserPrint(serial_util, settings, params=None):
+    serial_util.doMacro('M732 S1', 'ok', -1, 'Door control enabled', verbose=True)
+    serial_util.doMacro('G92 X0 Y0 Z0', 'ok', -1, 'Set home position', verbose=False)
+    if(int(params['param1']) == 1): ## if is not restart
+        serial_util.doMacro('G91', 'ok', -1, 'Set relative position', verbose=False)
+        serial_util.doMacro('G0 Z+{0} F1000'.format(LASER_FOCUS_OFFSET), 'ok', -1, 'Going to focus point', verbose=True)
+    position= serial_util.getPosition()
+    #serial_util.trace("Position saved: X{0} Y{1} Z{2}".format(position["x"], position["y"], position['z']))
+    settings['position'] = position
+    saveSettings(settings)
     
+def endLaserPrint(serial_util, settings, params=None):
+    if(params['param1'] != None):
+        z_height = float(settings['position']['z']) + float(params['param1'])
+    else:
+        z_height = settings['position']['z']
     
+    serial_util.trace("End laser macro")
+    serial_util.doMacro('G90', 'ok', -1, 'Set absoulte position', verbose=False)
+    serial_util.doMacro('G0 X{0} Y{1} Z{2} F10000'.format(settings['position']['x'], settings['position']['y'], z_height), 'ok', -1, "Going to home", verbose=False)
+    serial_util.doMacro('M61 S0', 'ok', -1, 'Shutting down laser', verbose=True)
+    serial_util.doMacro('M60 S0', 'ok', -1, 'Shutting down laser', verbose=False)
+    serial_util.doMacro('M732 S{0}'.format(settings['safety']['door']), 'ok', -1, 'Door control restored', verbose=True)
+
 MACROS_CMDS = {
  'load_spool'              : loadSpool,
  'unload_spool'            : unloadSpool,
@@ -351,7 +426,11 @@ MACROS_CMDS = {
  'probe_setup_calibrate'   : probeSetupCalibrate,
  'start_subtractive_print' : startSubtractivePrint,
  'end_print_subtractive'   : endPrintSubtractive,
- 'extrude'                 : extrude
+ 'end_laser_print'         : endLaserPrint,
+ 'extrude'                 : extrude,
+ 'pre_laser'               : preLaser,
+ 'start_laser'             : startLaserPrint,
+ 'check_pre_mill'          : checkPreMill
 }
 
 su = serial_utils.SerialUtils(trace_file = trace_file, debug=debug)
@@ -370,7 +449,6 @@ if macro_name in MACROS_CMDS:
     except Exception as e:
         handleExceptionEnd(su, 'Error : ' + e.__doc__ + "  '" + e.message + "'")
 else:
-    #print "Macro not found"
     response('false')
 
 if os.path.isfile(config.get('task', 'lock_file')):

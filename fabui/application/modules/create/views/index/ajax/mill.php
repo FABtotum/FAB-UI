@@ -310,13 +310,11 @@
         
                         
         $.ajax({
-        		  url: ajax_endpoint + 'ajax/pre_print.php',
-        		  dataType : 'json',
-                  type: "POST", 
-        		  async: true,
-                  data : { file : file_selected.full_path, time:timestamp},
-        		  beforeSend: function( xhr ) {
-        		  }
+        	url: ajax_endpoint + 'ajax/pre_task.php',
+        	dataType : 'json',
+            type: "POST", 
+			data : { file : file_selected.full_path, time:timestamp, type: 'subtractive'},
+        		  
         	}).done(function(response) {
                 
                 var status = response.status;
@@ -341,6 +339,7 @@
                     $('.check_result').html(response.trace);
                     $("#exec_button").html('Oops.. try again');
                     $("#exec_button").attr('data-action', 'check');
+                    $('#exec_button').removeClass('disabled');
                 }
                 
                 

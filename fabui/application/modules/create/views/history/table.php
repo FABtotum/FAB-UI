@@ -16,6 +16,9 @@
 				<a  data-type="type" data-value="mill" href="javascript:void(0);"><i class="icon-fab-mill"></i> Mill</a>
 			</li>
 			<li>
+				<a  data-type="type" data-value="laser" href="javascript:void(0);"><i class="icon-fab-mill"></i> Laser</a>
+			</li>
+			<li>
 				<a  data-type="type" data-value="scan" href="javascript:void(0);"><i class="icon-fab-scan"></i> Scan</a>
 			</li>
 			<li class="divider"></li>
@@ -38,6 +41,9 @@
 			</li>
 			<li>
 				<a  data-type="status" data-value="deleted" href="javascript:void(0);">Stopped</a>
+			</li>
+			<li>
+				<a  data-type="status" data-value="error" href="javascript:void(0);">Error</a>
 			</li>
 			<li class="divider"></li>
 			<li>

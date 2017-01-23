@@ -10,7 +10,7 @@
 	
 	$(document).ready(function() {
 
-		
+		scan();
 		$('.progress-bar').progressbar({});
 		$("#scan").on('click', scan);
 		
@@ -60,6 +60,8 @@
 	function start_connection(){
 		
 		var action = $(this).attr('data-action');
+
+		
 		
 		if(action == 'disconnect'){
 			asck_disconnect($(this).attr('data-ssid'));
@@ -73,6 +75,8 @@
 		$("#essid").val($(this).attr('data-ssid'));
 		$("#type").val($(this).attr('data-type'));
 		$("#action").val(action);
+
+		
 				
 		if(protected){
 			
@@ -81,7 +85,7 @@
 			$("#modal-password-input").val('');
 			password_modal();
 		}else{
-			connect();
+			connect(action);
 		}
 		
 	}

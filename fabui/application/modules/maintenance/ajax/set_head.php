@@ -1,10 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/utilities.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/serial.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/fabui/application/config/production/fabtotum.php';
-
-$ini_array = parse_ini_file(SERIAL_INI);
 
 $head        = $_POST['head'];
 $pid         = $config['heads_pids'][$head];
@@ -16,8 +13,6 @@ if($pid != ''){
 }
 //set head id
 $r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M793 S'.$config['heads_fw_id'][$head].'-M500"'));
-$r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M999-G4 P500-M728"'));
-
 /** GET UNITS */
 $_units = json_decode(file_get_contents(FABUI_PATH . 'config/config.json'), TRUE);
 
@@ -38,6 +33,8 @@ if (file_exists(FABUI_PATH . 'config/custom_config.json')) {
 	
 	file_put_contents(FABUI_PATH . 'config/custom_config.json', json_encode($_custom_units));
 }
+//reset controller
+shell_exec('sudo python '.PYTHON_PATH.'boot.py -R -d -f');
 
 echo json_encode(array('head' => $head, 'pid' => $pid, 'description'=>$description));
 ?>

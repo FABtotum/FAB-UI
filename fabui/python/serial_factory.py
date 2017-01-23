@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import argparse, ConfigParser, json, os
+import argparse, ConfigParser, json, os, time
 from serial_utils import SerialUtils
 
 config = ConfigParser.ConfigParser()
@@ -29,6 +29,7 @@ class SerialFactory():
         for code in codes:
             self.serial.sendGCode(code)
             replies.append(self.serial.getReply())
+            time.sleep(0.2)
         self.command = codes
         self.reply   = replies
         if(output):

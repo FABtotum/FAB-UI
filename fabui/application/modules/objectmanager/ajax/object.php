@@ -9,6 +9,18 @@ $_printable = $_POST["printable"];
 
 $print_type = $_POST['print_type'];
 
+switch($print_type){
+	case 'print':
+		$manufactoring = 'additive';
+		break;
+	case 'mill':
+		$manufactoring = 'subtractive';
+		break;
+	case 'laser':
+		$manufactoring = 'laser';
+		break;
+}
+
 /** UTIL PARAMS */
 $_printable_files[] = '.gc';
 $_printable_files[] = '.gcode';
@@ -27,7 +39,9 @@ $_object['date_updated'] =  date('d/m/Y', strtotime($_object['date_updated']));
 $_object['id']           =  $_object["id"];
 
 /** LOAD OBJECT'S FILES FROM DB */
-$_object_files = $db->query("select * from sys_obj_files left join sys_files on sys_files.id = sys_obj_files.id_file where id_obj=".$_object_id.' and print_type="'.$print_type.'" ' );
+$_object_files = $db->query("select * from sys_obj_files left join sys_files on sys_files.id = sys_obj_files.id_file where id_obj=".$_object_id.' and print_type="'.$manufactoring.'" ' );
+
+//echo "select * from sys_obj_files left join sys_files on sys_files.id = sys_obj_files.id_file where id_obj=".$_object_id.' and print_type="'.$print_type.'" ';
 
 $_files = array();
 

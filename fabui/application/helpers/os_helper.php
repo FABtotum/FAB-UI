@@ -44,9 +44,12 @@ function search($string, $file) {
  *
  */
 function scan_wlan() {
-
+	
+	if(!isWlanUp()){
+		wlanUp();
+	}
+	
 	$_wlan_list = array();
-
 	$_scan_result = shell_exec("sudo iwlist wlan0 scan");
 
 	$_wlan_device = array();
@@ -124,28 +127,8 @@ if(!function_exists('scanWlan'))
 	 */
 	function scanWlan($interface = 'wlan0')
 	{
-		$scanResult = shell_exec('iwlist '.$interface.' scan');
-		$scanResult = preg_replace('/\s\s+/', ' ', $scanResult);
-		$scanResult = str_replace($interface.' Scan completed :', '', $scanResult);
-		$scanResult = explode('Cell ', $scanResult);
-		$nets = array();
-		foreach($scanResult as $net){
-			if(trim($net) != ''){
-				$temp = array();
-				$temp['address']   		= getFromRegEx('/Address:\s([0-9a-f:]+)/i', $net);
-				$temp['essid']     		= getFromRegEx('/ESSID:\"((?:.)*)\"/i', $net);
-				$temp['protocol']  		= getFromRegEx('/IEEE\s([0-9]+.[0-9]+[a-z]+)/i', $net);
-				$temp['mode']      		= getFromRegEx('/Mode:([a-zA-Z]+)/i', $net);
-				$temp['frequency'] 		= getFromRegEx('/Frequency:([0-9]+.[0-9]+\s[a-z]+)/i', $net);
-				$temp['channel']  		= getFromRegEx('/Channel ([0-9]+)/i', $net);
-				$temp['encryption_key'] = getFromRegEx('/Encryption key:([a-zA-Z]+)/i', $net);
-				$temp['bit_rates']      = getFromRegEx('/Bit Rates:([0-9]+.[0-9]+\s[a-z]+\/[a-z]+)/i', $net);
-				$temp['quality']        = getFromRegEx('/Quality=([0-9]+)/i', $net);
-				$temp['signal_level']   = getFromRegEx('/Signal level=([0-9]+)/i', $net);
-				//add to nets lists
-				$nets[] = $temp;
-			}
-		}
+		$result = shell_exec('sudo python /var/www/fabui/python/scan_wifi.py '.$interface);
+		$nets = json_decode( $result, true);
 		return $nets;
 	}
 }
@@ -591,9 +574,9 @@ function eth_info(){
 	);
 }
 
-function disconnectWifi(){
+function disconnectWifi($interface = 'wlan0'){
 	
-	shell_exec('sudo bash /var/www/fabui/script/bash/disconnect_wifi.sh');
+	shell_exec('sudo bash /var/www/fabui/script/bash/disconnect_wifi.sh '.$interface);
 	$info = wlan_info();
 	return $info['ssid'] == '';
 }
@@ -632,4 +615,20 @@ function avahi_service_name(){
 	}else{
 		return 'Fabtotum Personal Fabricator';
 	}
+}
+/**
+ * 
+*/
+function isWlanUp()
+{
+	$ifconfigOutput = shell_exec('sudo ifconfig');
+	$re = '/(wlan0|wlan1)/';
+	return preg_match($re, $ifconfigOutput);
+}
+/**
+ * 
+ * 
+ */
+function wlanUp(){
+	shell_exec('sudo ifup wlan0 --no-mappings --no-loopback --no-scripts --force --ignore-errors & > /dev/null');
 }

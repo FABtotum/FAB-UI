@@ -29,7 +29,7 @@
 								<label class="select">
 									<select name='invert_x_endstop_logic' id="invert_x_endstop_logic">
 										<option value="no" >No</option>
-										<option value="yes" <?php echo $invert_x_endstop_logic ?'selected="selected"' : '';  ?>>Yes</option>
+										<option value="yes" <?php echo $settings['custom']['invert_x_endstop_logic'] ?'selected="selected"' : '';  ?>>Yes</option>
 									</select> <i></i> </label>
 								</label>
 							</section>
@@ -48,7 +48,7 @@
 							<section class="col col-3">
 								<label class="label">Extruder steps per unit A mode</label>
 								<label class="input">
-									<input type="text" id="hw-feeder-extruder-steps-per-unit-a" name="hw-feeder-extruder-steps-per-unit-a" placeholder="" value="<?php echo $hw_feeder_extruder_steps_per_unit_a_mode; ?>">
+									<input type="text" id="hw-feeder-extruder-steps-per-unit-a" name="hw-feeder-extruder-steps-per-unit-a" placeholder="" value="<?php echo $settings['a']; ?>">
 								</label>
 								
 							</section>
@@ -62,7 +62,7 @@
 						
 						<section class="custom-settings">
 							<label class="label">Custom overrides</label>
-							<label class="textarea"> <textarea rows="8" name="custom_overrides" id="custom_overrides" style="text-transform: uppercase;"><?php echo $custom_overrides; ?></textarea> </label>
+							<label class="textarea"> <textarea rows="8" name="custom_overrides" id="custom_overrides" style="text-transform: uppercase;"><?php echo  file_get_contents($settings['custom']['overrides']); ?></textarea> </label>
 						</section>
 						
 							
@@ -78,17 +78,17 @@
 	<div class="tab-pane fade in" id="safety">
 		<div class="row">
 			<div class="col-sm-12">
-				<p>Enable / disable warnings</p>
 				<div class="smart-form">
+					<header>Enable / disable warnings</header>
 					<fieldset>
 						<section>
 							<label class="label">Door Safety Messages</label>
 							<div class="inline-group">
 								<label class="radio">
-									<input type="radio" name="safety-door" value="1" <?php echo $_safety_door == '1' ? 'checked="checked"' : '' ?> >
+									<input type="radio" name="safety-door" value="1" <?php echo $settings['safety']['door'] == '1' ? 'checked="checked"' : '' ?> >
 									<i></i>Enable</label>
 								<label class="radio">
-									<input type="radio" name="safety-door" value="0" <?php echo $_safety_door == '0' ? 'checked="checked"' : '' ?>>
+									<input type="radio" name="safety-door" value="0" <?php echo $settings['safety']['door'] == '0' ? 'checked="checked"' : '' ?>>
 									<i></i>Disabled</label>
 							</div>
 						</section>
@@ -99,10 +99,10 @@
 							<label class="label">Machine Limits Collision warning</label>
 							<div class="inline-group">
 								<label class="radio">
-									<input type="radio" name="collision-warning" value="1" <?php echo $_collision_warning == '1' ? 'checked="checked"' : '' ?> >
+									<input type="radio" name="collision-warning" value="1" <?php echo $settings['safety']['collision-warning'] == '1' ? 'checked="checked"' : '' ?> >
 									<i></i>Enable</label>
 								<label class="radio">
-									<input type="radio" name="collision-warning" value="0" <?php echo $_collision_warning == '0' ? 'checked="checked"' : '' ?>>
+									<input type="radio" name="collision-warning" value="0" <?php echo $settings['safety']['collision-warning'] == '0' ? 'checked="checked"' : '' ?>>
 									<i></i>Disabled</label>
 							</div>
 						</section>
@@ -118,15 +118,16 @@
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="smart-form">
+					<header>Set homing preferences</header>
 					<fieldset>
 						<section>
 							<label class="label">Default Homing Direction</label>
 							<div class="inline-group">
 								<label class="radio">
-									<input type="radio" name="switch" value="0" <?php echo $_switch == '0' ? 'checked="checked"' : '' ?> >
+									<input type="radio" name="switch" value="0" <?php echo $settings['switch'] == '0' ? 'checked="checked"' : '' ?> >
 									<i></i>Left</label>
 								<label class="radio">
-									<input type="radio" name="switch" value="1" <?php echo $_switch == '1' ? 'checked="checked"' : '' ?>>
+									<input type="radio" name="switch" value="1" <?php echo $settings['switch'] == '1' ? 'checked="checked"' : '' ?>>
 									<i></i>Right</label>
 							</div>
 						</section>
@@ -136,18 +137,18 @@
 							<label class="label">Use the Z Touch Probe during homing</label>
 							<div class="inline-group">
 								<label class="radio">
-									<input type="radio" name="zprobe" value="0" <?php echo $_zprobe == '0' ? 'checked="checked"' : '' ?> >
+									<input type="radio" name="zprobe" value="0" <?php echo $settings['zprobe']['disable'] == '0' ? 'checked="checked"' : '' ?> >
 									<i></i>Enabled</label>
 								<label class="radio">
-									<input type="radio" name="zprobe" value="1" <?php echo $_zprobe == '1' ? 'checked="checked"' : '' ?>>
+									<input type="radio" name="zprobe" value="1" <?php echo $settings['zprobe']['disable'] == '1' ? 'checked="checked"' : '' ?>>
 									<i></i>Disabled</label>
 							</div>
 						</section>
-						<div class="row">
+						<div class="row" id="zmax-homing-container">
 							<section class="col col-6">
 								<label class="label">Z Max Home Pos (mm)</label>
 								<label class="input">
-									<input type="text" id="zmax-homing" value="<?php echo $_zmax; ?>">
+									<input type="text" id="zmax-homing" value="<?php echo $settings['zprobe']['zmax']; ?>">
 								</label>
 							</section>
 						</div>
@@ -166,13 +167,13 @@
 						<div class="row">
 							<section class="col col-6">
 								<label class="label">Both Y Endstops pressed</label>
-								<label class="select"><?php echo form_dropdown('both-y-endstops', $options_customized_actions, $_both_y_endstops, 'id="both-y-endstops"'); ?> <i></i></label>
+								<label class="select"><?php echo form_dropdown('both-y-endstops', $options_customized_actions, $settings['bothy'], 'id="both-y-endstops"'); ?> <i></i></label>
 							</section>
 						</div>
 						<div class="row">
 							<section class="col col-6">
 								<label class="label">Both Z Endstops pressed</label>
-								<label class="select"><?php echo form_dropdown('both-z-endstops', $options_customized_actions, $_both_z_endstops, 'id="both-z-endstops"'); ?> <i></i></label>
+								<label class="select"><?php echo form_dropdown('both-z-endstops', $options_customized_actions, $settings['bothz'], 'id="both-z-endstops"'); ?> <i></i></label>
 							</section>
 						</div>
 						<div class="row">
@@ -197,7 +198,7 @@
 							<section class="col col-6">
 								<label class="label">Disengage Offset (mm)</label>
 								<label class="input">
-									<input type="text" id="feeder-disengage-offset" value="<?php echo $_feeder_disengage; ?>">
+									<input type="text" id="feeder-disengage-offset" value="<?php echo $settings['feeder']['disengage-offset']; ?>">
 								</label>
 							</section>
 						</div>
@@ -206,7 +207,7 @@
 							<section class="col col-6">
 								<label class="label">Extruder steps per unit E mode</label>
 								<label class="input">
-									<input type="text" id="feeder-extruder-steps-per-unit-e" value="<?php echo $_feeder_extruder_steps_per_unit_e_mode; ?>">
+									<input type="text" id="feeder-extruder-steps-per-unit-e" value="<?php echo $settings['e']; ?>">
 								</label>
 							</section>
 						</div>
@@ -214,7 +215,7 @@
 							<section class="col col-6">
 								<label class="label">Extruder steps per unit A mode</label>
 								<label class="input">
-									<input type="text" id="feeder-extruder-steps-per-unit-a" value="<?php echo $_feeder_extruder_steps_per_unit_a_mode; ?>">
+									<input type="text" id="feeder-extruder-steps-per-unit-a" value="<?php echo $settings['a']; ?>">
 								</label>
 							</section>
 						</div>
@@ -239,7 +240,7 @@
 							<section class="col col-6">
 								<label class="label">Pre-heating extruder temperature</label>
 								<label class="input">
-									<input type="number" min="0" max="250" id="print-preheating-extruder" value="<?php echo $_print_preheating_extruder; ?>">
+									<input type="number" min="0" max="250" id="print-preheating-extruder" value="<?php echo $settings['print']['pre-heating']['extruder']; ?>">
 								</label>
 							</section>
 						</div>
@@ -247,7 +248,7 @@
 							<section class="col col-6">
 								<label class="label">Pre-heating bed temperature</label>
 								<label class="input">
-									<input type="number" min="0" max="100" id="print-preheating-bed" value="<?php echo $_print_preheating_bed; ?>">
+									<input type="number" min="0" max="100" id="print-preheating-bed" value="<?php echo $settings['print']['pre-heating']['bed']; ?>">
 								</label>
 							</section>
 						</div>
@@ -255,7 +256,7 @@
 							<section class="col col-6">
 								<label class="label">Calibration preference</label>
 								<label class="select">
-									<label class="select"><?php echo form_dropdown('print-calibration', $print_calibration_options, $_print_calibration, 'id="print-calibration"'); ?> <i></i></label>
+									<label class="select"><?php echo form_dropdown('print-calibration', $print_calibration_options, $settings['print']['calibration'], 'id="print-calibration"'); ?> <i></i></label>
 								</label>
 							</section>
 						</div>
@@ -275,7 +276,7 @@
 							<section class="col col-6">
 								<label class="label">Sacrificial Layer Thickness (mm)</label>
 								<label class="input">
-									<input type="text" id="milling-sacrificial-layer-offset" value="<?php echo $_milling_sacrificial_layer_offset; ?>">
+									<input type="text" id="milling-sacrificial-layer-offset" value="<?php echo $settings['milling']['layer-offset']; ?>">
 								</label>
 							</section>
 						</div>
@@ -295,7 +296,7 @@
 							<section class="col col-6">
 								<label class="label">File Upload API key</label>
 								<label class="input">
-									<input type="text" id="upload-api-key" value="<?php echo $_upload_api_key; ?>">
+									<input type="text" id="upload-api-key" value="<?php echo $settings['api']['keys'][$_SESSION['user']['id']]; ?>">
 								</label>
 							</section>
 							<section class="col col-2">

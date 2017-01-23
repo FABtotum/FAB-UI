@@ -149,13 +149,9 @@ class Maintenance extends Module {
 		$this -> load -> helper('smart_admin_helper');
 
 		$_units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
-
-		if (isset($_units['settings_type']) && $_units['settings_type'] == 'custom') {
-			$_units = json_decode(file_get_contents($this -> config -> item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
-		}
-
+		
 		$data['units'] = $_units;
-
+		$data['no_calibration_heads'] = array ('mill_v2', 'laser_v1');
 		$data['heads_list'] = array_merge(array('head_shape' => '---'), $this -> config -> item('heads_list', 'fabtotum'), array('more_heads' => 'Get more heads'));
 		$data['heads_descriptions'] = $this -> config -> item('heads_descriptions', 'fabtotum');
 
@@ -229,6 +225,9 @@ class Maintenance extends Module {
 		$data['serial_ini'] = parse_ini_file('/var/www/lib/serial.ini');
 		$data['fabtotum_info'] = json_decode(shell_exec('sudo python '.PYTHONPATH.'sysinfo.py'), true);
 		$data['unit_configs']  = json_decode(file_get_contents(CONFIG_FOLDER.'config.json'), true);
+		
+		//print_r($data['unit_configs']); exit();
+		
 		$data['firmwares_baudrate'] = array(
 				'1.0.002' => 115200,
 				'1.0.003' => 115200,
@@ -243,7 +242,8 @@ class Maintenance extends Module {
 				'1.0.0095'   => 250000,
 				'1.0.0095.1' => 250000,
 				'1.0.0096'   => 250000,
-				'1.0.0096.1' => 250000
+				'1.0.0096.1' => 250000,
+				'1.0.0097'   => 250000
 		);
 		
 		if(isset($data['firmwares_baudrate'][$data['fabtotum_info']['fw']['version']])){
@@ -295,6 +295,24 @@ class Maintenance extends Module {
 		
 		$this->layout->add_js_in_page(array('data' => $this->load->view('probeanglecalibration/js', $data, TRUE), 'comment' => ''));
 		$this->layout->view('probeanglecalibration/index', $data);
+	}
+	
+	/**
+	 * nozzle height calibration
+	 */
+	function nozzleHeightCalibration()
+	{
+		$this->load->helper('form');
+		$this->load->helper('smart_admin_helper');
+		
+		$widget_config['data-widget-icon'] = '';
+		$widget = widget('nozzleHeightCalibration' . time(), 'Nozzle Height Calibration', $widget_config, $this->load->view('nozzle/height/widget', null, TRUE), false, false, false);
+		$data['widget'] = $widget;
+		
+		$js_in_page = $this -> load -> view('nozzle/height/js', '', TRUE);
+		$this -> layout -> add_js_in_page(array('data' => $js_in_page, 'comment' => ''));
+		
+		$this -> layout -> view('nozzle/height/index', $data);
 	}
 
 }

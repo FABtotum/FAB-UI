@@ -5,7 +5,7 @@
 	 	$("#set-head").on('click', set_head);
 	 	
 	 	
-	 	<?php if(isset($_REQUEST['head_installed']) && $units['hardware']['head']['type'] != 'mill_v2'): ?>
+	 	<?php if(isset($_REQUEST['head_installed']) &&  !in_array($units['hardware']['head']['type'], $no_calibration_heads)): ?>
 	 		
 	 		$.SmartMessageBox({
 				title : "<i class='fa fa-warning'></i> New head has been installed, it is recommended to repeat the Probe Calibration operation",
@@ -41,7 +41,7 @@
 		}
 		
 		if($(this).val() == 'more_heads'){
-			$("#head_img").parent().attr('href', 'https://store.fabtotum.com?from=fabui&module=maintenance&section=head');
+			$("#head_img").parent().attr('href', 'http://www.fabtotum.com/3d-printers/heads/?from=fabui&module=maintenance&section=head');
 	 		$("#head_img").css('cursor', 'pointer');
 	 		$("#set-head").prop("disabled",true);
 		}

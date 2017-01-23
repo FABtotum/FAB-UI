@@ -6,7 +6,7 @@ class Tasks extends CI_Model {
 	protected $_table_name = 'sys_tasks';
 	
 	
-	protected $_COMPLETED_STATUS = array('performed', 'stopped', 'deleted');
+	protected $_COMPLETED_STATUS = array('performed', 'stopped', 'deleted', 'error');
 
 
 	function __construct()

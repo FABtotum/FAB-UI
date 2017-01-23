@@ -167,11 +167,21 @@ class Controller extends Module {
 		$this->output->set_content_type('application/json')->set_output(json_encode(array('response' =>$response)));	
 	}
 	
-	/* return if internet is available */
-	public function internet($output = 'json'){
+	/* return connection info */
+	public function connection($output = 'json'){
 		$this->load->helper('update_helper');
+		$this->load->helper('os_helper');
+		$wlan = wlan_info();
 		$available = is_internet_avaiable();
-		$this->output->set_content_type('application/json')->set_output(json_encode(array('available' =>$available)));
+		$data['internet'] = is_internet_avaiable();
+		$data['wifi'] = $wlan['ip_address'] != '' && $wlan['ap_mac_address'];
+		$this->output->set_content_type('application/json')->set_output(json_encode($data));
+	}
+	
+	/** */
+	public function update_action_file()
+	{
+		$this->output->set_content_type('application/json')->set_output(json_encode(array('response' => file_exists('/var/www/UPDATE_SHUTDOWN'))));
 	}
 }
 ?>

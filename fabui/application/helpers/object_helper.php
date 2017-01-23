@@ -32,7 +32,18 @@ if ( ! function_exists('file_header_toolbar'))
 		
 		//print-mill
 		if(in_array(strtolower($file->file_ext),$printables_files)){
-			$type = strtolower($file->print_type) == 'additive' ? 'print' : 'mill';
+			
+			switch($file->print_type){
+				case 'additive':
+					$type = 'print';
+					break;
+				case 'subtractive':
+					$type = 'mill';
+					break;
+				case 'laser':
+					$type = 'laser';
+					break;
+			}
 			$action_button = '<a style="margin-left:5px;" rel="tooltip" data-placement="bottom" data-original-title="'.ucfirst($type).' this file" href="'.site_url('make/'.$type.'?obj='.$object->id.'&file='.$file->id).'" class="btn btn-success pull-right"><i class="fa fa-play fa-rotate-90"></i> <span class="hidden-xs">'.ucfirst($type).'</span></a>';
 			if($view != 'stats') $stats_button = '<a rel="tooltip" data-placement="bottom" data-original-title="View file stats" style="margin-left:5px;"  class="btn btn-warning pull-right" href="'.site_url("objectmanager/file/stats/".$object->id.'/'.$file->id).'"><i class="fa fa-area-chart"></i> <span class="hidden-xs">Stats</span></a>';
 		}
@@ -42,7 +53,7 @@ if ( ! function_exists('file_header_toolbar'))
 		
 		//preview
 		if($view != 'preview')
-			if(in_array(strtolower($file->file_ext), $preview_files)){
+			if(in_array(strtolower($file->file_ext), $preview_files) && $type == 'print'){
 				$preview_button = '<a data-placement="bottom" href="'.site_url('objectmanager/file/preview/'.$object->id.'/'.$file->id).'" rel="tooltip" data-original-title="A web-based 3D viewer for GCode files." style="margin-left:5px;" class="btn bg-color-purple txt-color-white pull-right"><i class="fa fa-eye"></i> <span class="hidden-xs">Preview</span> </a>';
 			}
 		

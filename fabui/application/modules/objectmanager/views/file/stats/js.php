@@ -14,9 +14,10 @@
 	var responsiveHelper_dt_basic = undefined;
 	
 	var colors = new Array();
-	colors['stopped'] = 'warning';
+	colors['stopped']   = 'warning';
 	colors['performed'] = 'success';
-	colors['deleted'] = 'danger';
+	colors['deleted']   = 'danger';
+	colors['error']     = 'danger';
 	
 	
 	window.Morris.Donut.prototype.setData = function(data, redraw) {
@@ -181,7 +182,5 @@
 		RefreshTable('#table-list', url);
 		  	
 	}
-	
-	
-	
+
 </script>

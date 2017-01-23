@@ -65,7 +65,8 @@ function freeze_menu(except) {
 		var controller = $(this).attr('data-controller');
 		if(jQuery.inArray( controller, excepet_item_menu ) >= 0 ){
 			if(controller == except){
-				$(this).append('<span class="badge bg-color-red pull-right inbox-badge freeze-menu">!</span>');
+				if($(this).find('span:last').hasClass( "freeze-menu" ) == false)
+					$(this).append('<span class="badge bg-color-red pull-right inbox-badge freeze-menu animated fadeIn">!</span>');
 			}
 		}else{
 			$(this).addClass('menu-disabled');
@@ -347,7 +348,7 @@ $(function() {
 					EMERGENCY = false;
 					break;
 				case 'internet':
-					show_connected(obj.data);
+					show_connecions(obj.data);
 					break;
 				case 'serial':
 					analizeResponse(obj.data.response);
@@ -461,7 +462,7 @@ function lockscreen(){
 /** SHUTDOWN */
 function shutdown() {
 	IS_MACRO_ON = true;
-	openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Shutdown in progress');
+	openWait('<i class="fa fa-circle-o-notch fa-spin"></i> Shutdown in progress', 'Please wait...', false);
 	clearInterval(notifications_interval);
 	clearInterval(safety_interval);
 	clearInterval(idleInterval);
@@ -535,19 +536,31 @@ function timeoutRestart()
 }
 
 function restart() {
-	
-	IS_MACRO_ON = true;
-	openWait("<i class='fa fa-circle-o-notch fa-spin'></i> Restart in progress");
-
 	clearInterval(notifications_interval);
 	clearInterval(safety_interval);
 	clearInterval(idleInterval);
-	
-	$.get("/fabui/application/modules/controller/ajax/restart.php", function(){
-		timeoutRestart();
-	}).fail(function() {
-    	timeoutRestart();
-  	});
+	IS_MACRO_ON = true;
+	openWait("<i class='fa fa-circle-o-notch fa-spin'></i> Restart in progress", 'Please wait...', false);
+
+	$.ajax({
+		url: '/fabui/application/modules/controller/ajax/restart.php',
+	}).done(function(data) {
+	}).fail(function(jqXHR, textStatus){
+		//clear intervals
+		IS_MACRO_ON = false;
+		waitContent("you will be redirect to login page");
+		redirectToUrlWhenisReady('/fabui/login');
+	});
+}
+
+function redirectToUrlWhenisReady (url, timer)
+{
+	timer = timer | 1000;
+	var checkInterval = setInterval(function(){
+		$.get(url)
+			.success(function(result) { clearInterval(checkInterval); document.location.href = url; })
+			.error(function(jqXHR, textStatus, errorThrown) { });
+	}, timer);
 }
 
 /** CHECK FOR AVAILABLE UPDATES */
@@ -827,28 +840,38 @@ function decode_emergency_code(code) {
 
 }
 
-function show_connected(bool) {
+function show_connections(data) {
 	
-	if (bool) {
-		$('.internet').show();
-		$('.no-internet-detected').remove();
-	} else {
-		$('.internet').hide();
-		if($('.no-internet-detected').length <= 0){
-			var html = '<div class="row no-internet-detected"><div class="col-sm-12"><div class="alert alert-warning alert-block animated  bounce"><button class="close" data-dismiss="alert">×</button><h4 class="alert-heading"><i class="fa fa-warning"></i>   No internet connectivity detected. For a better experience please <a style="text-decoration:underline;" href="/fabui/settings/network/wlan">connect</a> </h4></div></div></div>';
-			$("#content").prepend(html);		
+	if(data.internet){
+		if($("#ribbon .internet").length == 0){
+			var html = '<span class="ribbon-button-alignment animated fadeIn intenet"><span class="btn btn-ribbon"  rel="tooltip" data-placement="right" data-original-title="Internet available" data-html="true"><i class="fa fa-globe "></i></span></span>';
+			$("#ribbon").prepend(html);
+			$("#top-alert-messages .no-internet-detected").remove();
 		}
-
+	}else{
+		$("#ribbon .internet").remove();
+		if($("#top-alert-messages .no-internet-detected").length == 0){
+			var html = '<span class="label label-warning animated fadeIn no-internet-detected"><i class="fa fa-warning"></i> No internet connectivity detected. For a better experience please  <a class="txt-color-white" style="text-decoration:underline;" href="/fabui/settings/network/wlan">connect</a></span>';
+			$("#top-alert-messages").html(html);
+		}
 	}
+	if(data.wifi){
+		if($("#ribbon .wifi").length == 0){
+			var html = '<span class="ribbon-button-alignment animated fadeIn wifi"><span class="btn btn-ribbon"  rel="tooltip" data-placement="right" data-original-title="Wifi connected" data-html="true"><i class="fa fa-wifi "></i></span></span>';
+			$("#ribbon").prepend(html);
+		}
+	}else{
+		$("#ribbon .wifi").remove();
+	}
+	$("[rel=tooltip], [data-rel=tooltip]").tooltip();
 }
 
 function check_connected() {
 	
 	//krios
-	
 	setTimeout(function(){ 
-		$.get("/fabui/controller/internet", function(data){
-			show_connected(data.available);
+		$.get("/fabui/controller/connection", function(data){
+			show_connections(data);
 		});
 	}, 3000);
 	
@@ -856,9 +879,6 @@ function check_connected() {
 
 function socket_fallback() {
 	SOCKET_CONNECTED = false;
-	//safety_interval = setInterval(safety, 3000);
-	//notifications_interval = setInterval(check_notifications, 10000);
-
 }
 
 function write_to_console(text, type) {
@@ -925,15 +945,16 @@ function manage_post_processing(obj) {
 function mange_usb_monitor(status, alert) {
 
 	var message = '<p><strong>';
-
 	if (status) {
 		message += 'Usb disk inserted';
-		$(".usb-ribbon").show();
+		if($("#ribbon .usb-ribbon").length == 0){
+			var html = '<span class="ribbon-button-alignment usb-ribbon" ><span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="USB disk inserted" data-html="true"><i class="fa fa-usb "></i></span></span>';
+			$("#ribbon").prepend(html);
+		}
 	} else {
 		message += 'Usb disk removed';
-		$(".usb-ribbon").hide();
+		$("#ribbon .usb-ribbon").remove();
 	}
-
 	message += '</strong></p>';
 
 	if (alert) {
@@ -1133,7 +1154,7 @@ function checkExit() {
 
 function initUI(){
 	
-	
+	analizeMenu();
 	$(".directions").on("click", directions);
 	$( ".axisz" ).on( "click", axisz );
 	$(".zero_all").on("click", zero_all);
@@ -1167,7 +1188,6 @@ function initUI(){
 			})
 		}
 	});
-    
 	//bet actual
 	noUiSlider.create(document.getElementById('top-act-bed-temp'), {
 		start: typeof (Storage) !== "undefined" ? localStorage.getItem("bed_temp") : 0,
@@ -1175,14 +1195,10 @@ function initUI(){
 		range: {'min': 0, 'max' : 100},
 		behaviour: 'none'
 	});
-	
 	$("#top-act-bed-temp .noUi-handle").remove();
-	
 	// ===============================================================================
 	//nozzle target (if is needed)
-	
 	if($("#top-ext-target-temp").length > 0){
-	
 		noUiSlider.create(document.getElementById('top-ext-target-temp'), {
 			start: typeof (Storage) !== "undefined" ? localStorage.getItem("nozzle_temp_target") : 0,
 			connect: "lower",
@@ -1196,7 +1212,6 @@ function initUI(){
 				})
 			}
 		});
-		
 		//nozzle actual
 		noUiSlider.create(document.getElementById('top-act-ext-temp'), {
 			start: typeof (Storage) !== "undefined" ? localStorage.getItem("nozzle_temp") : 0,
@@ -1204,29 +1219,19 @@ function initUI(){
 			range: {'min': 0, 'max' : MAX_NOZZLE_TEMP},
 			behaviour: 'none'
 		});
-		
-		
 		//SLIDER EVENTS - EXTRUDER
 		document.getElementById("top-ext-target-temp").noUiSlider.on('slide', topExtTempSlide);
 		document.getElementById("top-ext-target-temp").noUiSlider.on('change', topExtTempChange);
 		document.getElementById("top-ext-target-temp").noUiSlider.on('start', blockSliders);
 		document.getElementById("top-ext-target-temp").noUiSlider.on('end', enableSliders);
-		
 		$("#top-act-ext-temp .noUi-handle").remove();
-		
-		analizeMenu();
-	
 	}
-	
-	
 	// ===============================================================================
-	
 	//SLIDER EVENTS - BED
 	document.getElementById("top-bed-target-temp").noUiSlider.on('slide', topBedTempSlide);
 	document.getElementById("top-bed-target-temp").noUiSlider.on('change', topBedTempChange);
 	document.getElementById("top-bed-target-temp").noUiSlider.on('start', blockSliders);
 	document.getElementById("top-bed-target-temp").noUiSlider.on('end', enableSliders);
-
 }
 
 
@@ -1313,14 +1318,11 @@ function RefreshTable(tableId, urlData)
   	{
 		table = $(tableId).dataTable();
 		oSettings = table.fnSettings();
-		
 		table.fnClearTable(this);
-		
 		for (var i=0; i<json.aaData.length; i++)
 		{
 		  table.oApi._fnAddData(oSettings, json.aaData[i]);
 		}
-		
 		oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
 		table.fnDraw();
 		$(tableId + "_wrapper").css({ opacity: 1 });
@@ -1351,7 +1353,6 @@ function analizeMenu()
 	a.each(function() {
 		var link = $(this);
 		var controller = link.attr('data-controller');
-		
 		if(jQuery.inArray( controller, item_to_hide ) >= 0 && SHOW_FEEDER == false){
 			link.remove();
 		}

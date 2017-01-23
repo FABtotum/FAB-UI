@@ -15,13 +15,16 @@ $_task_id = $argv[1];
 $_type    = $argv[2];
 $_status  = isset($argv[3]) && $argv[3] != '' ? $argv[3] : 'performed';
 
-switch($_type) {
 
+switch($_type) {
 	case 'print' :
 		finalize_print($_task_id, $_status);
 		break;
 	case 'mill' :
 		finalize_mill($_task_id, $_status);
+		break;
+	case 'laser' :
+		finalize_laser($_task_id, $_status);
 		break;
 	case 'slice' :
 		finalize_slice($_task_id, $_status);
@@ -47,6 +50,7 @@ switch($_type) {
 		break;
 	default :
 		finalize_general($_task_id, $_type, $_status);
+		break;
 }
 
 
@@ -74,6 +78,11 @@ function update_task($tid, $status, $attributes = '') {
 		}
 
 		$_data_update['attributes'] = json_encode($json_attributes);
+	}
+	
+	if($status == 'error'){
+		$monitor = json_decode(file_get_contents(TEMP_PATH.'task_monitor.json'), true);
+		$_data_update['attributes'] = json_encode(array('error' => $monitor['error_message']));
 	}
 
 	$db -> update('sys_tasks', array('column' => 'id', 'value' => $tid, 'sign' => '='), $_data_update);
@@ -164,17 +173,19 @@ function finalize_mill($tid, $status) {
 	//GET TASK ATTRIBUTES
 	$attributes = json_decode(file_get_contents($task['attributes']), TRUE);
 
-	shell_exec('sudo kill ' . $attributes['pid']);
+	//shell_exec('sudo kill -9 ' . $attributes['pid']);
 	
 	if ($status == 'stopped') {
-		shell_exec('sudo kill ' . $attributes['pid']);
+		//shell_exec('sudo kill -9 ' . $attributes['pid']);
 
 		/** FORCE RESET CONTROLLER */
 		//$_command = 'sudo python ' . PYTHON_PATH . 'force_reset.py';
 		//shell_exec($_command)
+		
 		shell_exec('python '.PYTHON_PATH.'boot.py -R -f');
 		sleep(3);
-		fopen(LOCK_FILE, "w");
+		
+		//fopen(LOCK_FILE, "w");
 	}
 	//UPDATE TASK
 	update_task($tid, $status, file_get_contents($task['attributes']));
@@ -195,8 +206,9 @@ function finalize_mill($tid, $status) {
 
 	$db -> close();
 	//if ($status == 'performed') {
-	shell_exec('sudo rm -rf ' . $attributes['folder']); 
+	//shell_exec('sudo rm -rf ' . $attributes['folder']); 
 	//}
+	shell_exec('sudo rm -rf ' . $attributes['folder']);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -467,7 +479,7 @@ function finalize_general($tid, $type, $status) {
 	sleep(5);
 	unlock();
 	//REMOVE ALL TEMPORARY FILES
-	shell_exec('sudo rm -rf ' . $attributes['folder']);
+	//shell_exec('sudo rm -rf ' . $attributes['folder']);
 	//$log->info('Task #'.$tid.' end finalizing');
 
 }
@@ -617,6 +629,41 @@ function finalize_update_sw($tid, $status) {
 	shell_exec('sudo rm -rf /var/www/temp/update.pid');
 	shell_exec('sudo rm -rf /var/www/temp/task.pid');
 
+}
+
+
+function finalize_laser($tid, $status)
+{
+	
+	//LOAD DB
+	$db = new Database();
+	//GET TASK
+	$task = $db -> query('select * from sys_tasks where id=' . $tid);
+	$task = $task[0];
+	
+	//CHECK IF TASK WAS ALREARDY FINALIZED
+	if ($task['status'] == 'stopped' || $task['status'] == 'performed') {
+		return;
+	}
+	
+	
+	$db -> close();
+	//GET TASK ATTRIBUTES
+	$attributes = json_decode($task['attributes'], TRUE);
+	update_task($tid, $status);
+	
+	$monitor = json_decode(file_get_contents(TEMP_PATH.'task_monitor.json'), true);
+	
+	shell_exec('sudo python '.PYTHON_PATH.'gmacro_new.py -m end_laser_print -p1 '.$monitor['print']['stats']['z_override']);
+	
+	
+	//UPDATE TASK
+	//update_task($tid, $status);
+	//sleep(5);
+	unlock();
+	//REMOVE ALL TEMPORARY FILES
+	shell_exec('sudo rm -rfv ' . TASKS_PATH.'laser_'.$tid.'*');
+	
 }
 
 function send_mail($attributes, $user) {

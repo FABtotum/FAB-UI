@@ -4,7 +4,7 @@
 		<div class="col-sm-12">
 			<div class="alert alert-danger animated fadeIn">
 				<i class="fa-fw fa fa-warning"></i>
-				<strong>Error!</strong> Installed head not valid. Please <a class="txt-color-white" style="text-decoration: underline" href="<?php echo site_url('maintenance/head') ?>"><strong>install</a></strong> a valid <?php echo $type == 'additive' ? 'printing' : 'milling'; ?> head!
+				<strong>Error!</strong> Installed head not valid. Please <a class="txt-color-white" style="text-decoration: underline" href="<?php echo site_url('maintenance/head') ?>"><strong>install</a></strong> a valid <?php echo $head_type ?> head!
 			</div>
 		</div>
 	</div>
@@ -43,7 +43,7 @@
 						<span class="badge">
 							4
 						</span>
-						<?php echo $label.'ing'; ?>
+						<?php echo $label; ?>
 						<span class="chevron">
 						</span>
 					</li>

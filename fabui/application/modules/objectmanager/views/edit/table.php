@@ -47,8 +47,22 @@
             <td class="hidden-xs hidden-mobile hidden"><?php echo roundsize($_file -> file_size); ?></td>
             <td class="text-center" width="20px">
             	<?php if(in_array($_file->file_ext, $_printable_files)): ?>
-            	<?php $make_label = $_file->print_type == 'additive' ? 'Print' : 'Mill' ?>
-            	<?php $make_url =  $_file->print_type == 'additive' ? 'print' : 'mill'; ?>
+            	<?php 
+            		switch($_file->print_type){
+            			case 'additive':
+            				$make_label = 'Print';
+            				$make_url = 'print';
+            				break;
+            			case 'subtractive':
+            				$make_label = 'Mill';
+            				$make_url = 'mill';
+            				break;
+            			case 'laser':
+            				$make_label = 'Laser';
+            				$make_url = 'laser';
+            				break;
+            		}
+				?>
             	<a rel="tooltip" data-placement="left" data-original-title="<?php echo $make_label ?> this file" class="btn btn-success btn-xs" href="<?php echo site_url('make/'.$make_url).'?obj='.$_id_object.'&file='.$_file->id ?>"><i class="fa fa-play fa-rotate-90"></i> <span class="hidden-xs hidden-mobile"><?php echo $make_label; ?></span></a>
             	<?php endif; ?>
             </td>

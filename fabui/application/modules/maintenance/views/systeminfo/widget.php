@@ -7,7 +7,7 @@
 <div class="row">
 	<div class="col-sm-12">
 	<div class="alert alert-danger animated fadeIn">
-			<i class="fa-fw fa fa-warning"></i> We weren't unable to communicate with the firmware, to solve try to <a href="/recovery/flash.php" class="btn btn-default">Flah</a> it again
+			<i class="fa-fw fa fa-warning"></i> We were unable to communicate with the firmware, to solve this problem try <a href="/recovery/flash.php" class="btn btn-default">Flashing</a> it again
 		</div>
 	</div>
 </div>

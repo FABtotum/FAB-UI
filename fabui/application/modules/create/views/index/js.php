@@ -124,6 +124,7 @@
 	var fan_slider;
 	var flow_rate_slider;
 	var rpm_slider;
+	var laser_pwm_slider;
 	
 	var z_override  = <?php echo $z_override; ?>;
 	var interval_autostart;
@@ -133,7 +134,11 @@
 	var object;
 	var autostart_timer = 20;
 
-	var SOFT_EXTRUDER_MIN = 175;
+	var SOFT_EXTRUDER_MIN = 180;
+
+	var is_error = false;
+	var go_to_focus_point = true;
+	var restart = <?php echo  (isset($_GET['restart']) && $_GET['restart'] == 1) ? 'true' : 'false'; ?>;
 	
 		
 	$(document).ready(function() {
@@ -431,7 +436,6 @@
           
                    
         <?php endif; ?>
-        
      
         /** TICKER */
         interval_ticker   = setInterval(ticker, 2500);
@@ -556,9 +560,9 @@ function manage_task_monitor(obj){
 
 
 function monitor(data){
-
-	if(data.print.hasOwnProperty('status')) handleTaskStatus(data.print.status);
 	
+	if(data.print.hasOwnProperty('status')) handleTaskStatus(data.print.status, data.error_message);
+		
 	if (data.print.completed == 'True') {
 		print_finished = true;
 		finalize_print();
@@ -706,6 +710,12 @@ function monitor(data){
 			
 	$(".label-fan").html('' + parseInt(fan_percent) + '%');
 	$('.fan-progress').attr('style', 'width:' + parseInt(fan_percent) + '%');
+
+	/* laser pwm */
+	$(".label-laser-pwm").html('' + parseInt(parseInt(data.print.stats.laser_pwm)));
+	var laser_pwm_percent = (parseFloat(data.print.stats.laser_pwm) / 255) * 100;
+	$('.laser-pwm-progress').attr('style', 'width:' + parseInt(laser_pwm_percent) + '%');
+	document.getElementById('laser_pwm').noUiSlider.set([parseInt(data.print.stats.laser_pwm)]);
 	
 	
 	var rpm_percent = (parseInt(data.print.stats.rpm)/14000) * 100;
@@ -772,13 +782,15 @@ function finalize_print(){
 }
 
 
-function _resume() {	
+function _resume() {
+
+	
 	
 	$(".create-monitor").slideDown("slow", function() {});
 	monitor_count = 0;
 	//faccio partire il monitor 1000 = 1 secondo
 	interval_monitor = setInterval(print_monitor, monitor_timeout);
-	interval_timer = setInterval(_timer, 1000);
+	interval_timer   = setInterval(_timer, 1000);
 	interval_trace   = setInterval(_trace, 1000);
 	
 	if(print_started){
@@ -796,7 +808,7 @@ function _resume() {
 	
 	_trace_call();
 	
-	if(print_type == 'additive'){
+	if(print_type == 'print'){
 		$(".subtractive-print").hide();
 		var layer_percent = (parseInt(layer_actual) / parseInt(layer_total) ) * 100;
 		$('.progress-layer').attr('style', 'width:' + parseFloat(layer_percent) + '%');
@@ -821,11 +833,26 @@ function _resume() {
 		}
 		initGraphs();
 
-	}else{
+	}else if(print_type == 'mill'){
 		$(".speed-well").removeClass("col-sm-4").addClass("col-sm-6");
 		$(".stats-well").removeClass("col-sm-4").addClass("col-sm-12");
 		$(".additive-print").hide();
+		$(".laser-print").hide();
+	}else if(print_type == 'laser'){
+		$(".additive-print").hide();
+		$(".subtractive-print").hide();
+		$(".speed-well").removeClass("col-sm-4").addClass("col-sm-6");
+		$(".stats-well").removeClass("col-sm-4").addClass("col-sm-12");
+		$(".controls-tab").removeClass("disabled");
+		$(".controls-tab").find("a").attr("data-toggle", "tab");
+		print_started = true;
+		enableSliders();
+		$("#z-height").html('<option value="0.5">0.5</option><option value="1">1</option>');
 	}
+
+	$.get('/temp/task_monitor.json'+ '?' + jQuery.now(), function(data, status){
+		monitor(data);
+	});
 
 	$(".steps >li").removeClass("complete");
 	
@@ -835,6 +862,9 @@ function _resume() {
 	
 	document.getElementById("top-bed-target-temp").setAttribute('disabled', true);
 	$(".jog").addClass('disabled');
+
+	
+	
 }
 
 
@@ -1145,7 +1175,7 @@ $('.obj').click(function() {
 
 function _stopper() {
 	waitContent('Refreshing page');
-	document.location.href = '<?php echo site_url("make/".strtolower($label)); ?>';
+	document.location.href = '<?php echo site_url("make/".strtolower($_print_type)); ?>';
 }
 
 
@@ -1195,7 +1225,7 @@ function initSliders() {
 		range: {'min': 0, 'max' : <?php echo $max_temp > 0 ? $max_temp : 1; ?>},
 		pips: {
 			mode: 'values',
-			values: [0, 175,<?php echo $max_temp ?>],
+			values: [0, SOFT_EXTRUDER_MIN,<?php echo $max_temp ?>],
 			density: 4,
 			format: wNumb({
 				postfix: '&deg;'
@@ -1253,14 +1283,28 @@ function initSliders() {
 			format: wNumb({})
 		}
 	});
+
+
+  	noUiSlider.create(document.getElementById('laser_pwm'), {
+		start: 255,
+		connect: "lower",
+		range: {'min': 0, 'max' : 255},
+		pips: {
+			mode: 'positions',
+			values: [0,50,100],
+			density: 4,
+			format: wNumb({})
+		}
+	});
   	
     
-    speed_slider = document.getElementById('velocity');
-    nozzle_slider = document.getElementById('temp1');
-    bed_slider    = document.getElementById('temp2');
-    fan_slider    = document.getElementById('fan');
+    speed_slider     = document.getElementById('velocity');
+    nozzle_slider    = document.getElementById('temp1');
+    bed_slider       = document.getElementById('temp2');
+    fan_slider       = document.getElementById('fan');
     flow_rate_slider = document.getElementById('flow-rate');
-    rpm_slider = document.getElementById('rpm');
+    rpm_slider       = document.getElementById('rpm');
+    laser_pwm_slider = document.getElementById('laser_pwm');
     
     
     /*event sliders*/
@@ -1281,6 +1325,9 @@ function initSliders() {
 	
 	rpm_slider.noUiSlider.on('slide', manageRpmSlider);
 	rpm_slider.noUiSlider.on('change', setRpm);
+
+	laser_pwm_slider.noUiSlider.on('slide', manageLaserPwmSlider);
+	laser_pwm_slider.noUiSlider.on('change', setLaserPwm);
 	
 }
 
@@ -1362,6 +1409,17 @@ function setRpm(e){
 	_do_action('rpm', parseInt(e[0]));
 }
 
+
+function manageLaserPwmSlider(e)
+{
+	$(".label-laser-pwm").html('' + parseInt(e[0]));
+   	$('.laser-pwm-progress').attr('style', 'width:' + parseInt(e[0]) + '%');
+}
+
+function setLaserPwm(e){
+	_do_action('laser_pwm', parseInt(e[0]));
+}
+
 function disableSliders(){
 	
 	speed_slider.setAttribute('disabled', true);
@@ -1370,6 +1428,7 @@ function disableSliders(){
 	fan_slider.setAttribute('disabled', true);
 	flow_rate_slider.setAttribute('disabled', true);
 	rpm_slider.setAttribute('disabled', true);
+	laser_pwm_slider.setAttribute('disabled', true);
 	
 }
 
@@ -1380,7 +1439,8 @@ function enableSliders(){
 	bed_slider.removeAttribute('disabled');
 	fan_slider.removeAttribute('disabled');
 	flow_rate_slider.removeAttribute('disabled');
-	rpm_slider.removeAttribute('disabled');	
+	rpm_slider.removeAttribute('disabled');
+	laser_pwm_slider.removeAttribute('disabled');
 }
 
 
@@ -1397,11 +1457,11 @@ function enableControlsTab(){
 
 
 function restart_create(){
-	document.location.href = '<?php echo site_url('make/'.strtolower($label)); ?>?obj='+id_object+'&file='+id_file;
+	document.location.href = '<?php echo site_url('make/'.strtolower($_print_type)); ?>?obj='+id_object+'&file='+id_file+'&restart=1';
 }
 
 function new_create(){
-	document.location.href = '<?php echo site_url('make/'.strtolower($label)); ?>';
+	document.location.href = '<?php echo site_url('make/'.strtolower($_print_type)); ?>';
 }
 
 function save_z_override(){
@@ -1528,27 +1588,29 @@ function countDown(){
 /**
  * 
  */
-function handleTaskStatus(status)
+function handleTaskStatus(status, error_message)
 {
+	
 	switch(status){
 		case 'error':
-			handleStoppedTask();
+			handleErrorTask(error_message);
 			break;
 	}
 }
 /**
  * 
  */
-function handleErrorTask()
+function handleErrorTask(message)
 {
-	$.get('/temp/task_debug', function(data){
-		$('#debugModal').modal({
-				keyboard: false,
-				backdrop: 'static'
+	if(!is_error) {
+		$.SmartMessageBox({
+			title : "<i class='fa fa-warning'></i> Oops, an error occurred!",
+			content : "Details: <strong>" +  message + "</strong>",
+			buttons : '[Abort]'
+		}, function(ButtonPressed) {
+			if(ButtonPressed == 'Abort') stopAll();
 		});
-		$("#modalDebugContent").html('<pre>' + data + '</pre>');
-		$("#debugModal").modal("show");
-	});
-	
+		is_error = true;
+	}
 }
 </script>

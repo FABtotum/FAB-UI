@@ -1,8 +1,19 @@
 #!/bin/bash
 
-cat <<EOF> /etc/wpa_supplicant/wpa_supplicant.conf
-ctrl_interface=DIR=/run/wpa_supplicant GROUP=netdev
-update_config=1
+usage()
+{
+cat << EOF
+usage: $0 interface
+
+This script disconnect a wifi interface.
 EOF
-sudo ifdown wlan0
-sudo ifup wlan0
+}
+
+if [ -z "$1" ]; then
+    usage
+    exit 1
+fi
+
+IFACE="$1"
+
+wpa_cli -p /run/wpa_supplicant -i$IFACE disconnect

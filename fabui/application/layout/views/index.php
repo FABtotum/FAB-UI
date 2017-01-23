@@ -219,23 +219,10 @@
 		<div id="main" role="main">
 			<!-- RIBBON -->
 			<div id="ribbon">
-				<!-- USB -->
-				<span class="ribbon-button-alignment usb-ribbon" >
-					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="USB disk inserted" data-html="true"><i class="fa fa-usb "></i></span>
-				</span>
-				<!-- END USB -->
-				
-				<!-- INTERNET -->
-				<span class="ribbon-button-alignment internet" >
-					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="Connected to internet" data-html="true"><i class="fa fa-globe "></i></span>
-				</span>
-				<!-- END INTERNET -->
-				
 				<!-- LOCK -->
 				<span class="ribbon-button-alignment lock-ribbon">
 					<span class="btn btn-ribbon "  rel="tooltip" data-placement="right" data-original-title="Lock Screen" data-html="true"><i class="fa fa-lock"></i></span>
 				</span>
-				
 				<span class="ribbon-button-alignment">
 					<span id="refresh" data-action="resetWidgets" class="btn btn-ribbon" data-title="refresh" rel="tooltip" data-placement="right" data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings."
 					data-html="true">
@@ -250,6 +237,11 @@
 				<!-- CUSTOM RIBBON -->
 				<?php echo $_custom_ribbon; ?>
 				<!-- END CUSTOM RIBBON -->
+				
+				<div id="top-alert-messages" class="hidden-xs pull-right">
+					
+				</div>
+				
 			</div>
 			<!-- END RIBBON -->
 			<!-- MAIN CONTENT -->

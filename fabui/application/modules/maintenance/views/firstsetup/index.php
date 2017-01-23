@@ -28,7 +28,7 @@
 							<span class="badge">2</span>Manual Bed Calibration<span class="chevron"></span>
 						</li>
 						<li data-target="#step4">
-							<span class="badge">3</span>Probe lenght Calibration<span class="chevron"></span>
+							<span class="badge">3</span>Nozzle Height Calibration<span class="chevron"></span>
 						</li>
 						<?php if($show_feeder): ?>
 						<li data-target="#step5">

@@ -20,7 +20,7 @@ if ( ! function_exists('roundsize'))
 if ( ! function_exists('print_type'))
 {
 	function print_type($file_path){       
-        return strtolower(trim(shell_exec('sudo python '.PYTHONPATH.'check_manufacturing.py "'.$file_path.'"')));
+        return strtolower(trim(shell_exec('sudo python '.PYTHONPATH.'check_manufacturing.py -f "'.$file_path.'"')));
 	}
 	 
 }

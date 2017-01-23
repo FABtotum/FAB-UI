@@ -109,7 +109,7 @@ $(function() {
 				
 		}
 		
-		if(previewFiles.indexOf(fileExt.toLowerCase()) > -1){
+		if(previewFiles.indexOf(fileExt.toLowerCase()) > -1 && fileType == 'additive'){
 			
 			var endTitle = fileExt.toLowerCase() == '.stl' ? 'for STL files' : 'for GCode files.';
 			preview_button = '<a rel="tooltip" data-placement="bottom" data-original-title="A web-based 3D viewer ' + endTitle+'" href="'+ previewUrl +'" class="btn btn-xs bg-color-purple txt-color-white details-button"><i class="fa fa-eye"></i> <span class="hidden-xs">Preview</span></a>';

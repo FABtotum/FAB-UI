@@ -3,13 +3,15 @@
 	<div class="row margin-top-10 choice">
 		
 		<div class="col-sm-12">
-			<h1 class="text-center text-primary"><span class="badge bg-color-blue txt-color-white"  style="vertical-align: middle;">3</span> <strong>Probe Calibration</strong></h1>
+			<h1 class="text-center text-primary"><span class="badge bg-color-blue txt-color-white"  style="vertical-align: middle;">3</span> <strong>Nozzle height Calibration</strong></h1>
 		</div>
 
 		<div class="col-sm-12">
 			<div class="well">
 				<!--<h3 class="text-center text-primary">Assisted calibration</h3>-->
-				<h2 class="text-center">The probe length will be now calculated in order to correct the nozzle height during prints</h2>
+				<h2 class="text-center">
+				The nozzle height will be now calculated in order to correct it during prints
+				</h2>
 				<h2 class="text-center"><a data-action='normal' href="javascript:void(0);" class="btn btn-default btn-primary btn-circle btn-lg choice-button"><i class="fa fa-chevron-down"></i></a></h2>
 			</div>
 		</div>

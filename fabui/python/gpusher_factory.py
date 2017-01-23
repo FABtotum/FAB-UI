@@ -28,6 +28,7 @@ recvq = []
 trace_fname = ""
 lock_fname  = ""
 chksum_line_count = 1
+debug = False
 
 statistics = {
     "pid": os.getpid(),
@@ -38,6 +39,7 @@ statistics = {
     "fan": 0,
     "fan_locked": False,
     "rpm": 0,
+    "laser_pwm": 0,
     "gcode_file": "",
     "gcode_lines": 0,
     "startedat": 0,
@@ -48,7 +50,8 @@ statistics = {
     "task_id": "0", 
     "print_type": "",
     "state": "printing",
-    "engine": ""
+    "engine": "",
+    "error_message" : ""
 }
 
 temperatures = {
@@ -90,8 +93,10 @@ class SubprogramCall(Exception):
 ############################################
 
 def trace(s):
-    print s
+    #print s
     logging.info(s)
+    if(debug):
+        print "Trace:  {0}".format(s)
 
 def reset_trace():
     try:
@@ -168,14 +173,10 @@ def handle_errors(error_code, gline):
 # disabled at the time of writing, but we catch it anyway
         "125": "ERROR_HEAD_ABSENT"
     }
-
-    trace(
-        "!!! Error while executing '%s' (line %d): %s" % (
-            gline,
-            statistics["line"],
-            ERROR_CODES[error_code]
-        )
-    )
+    message = "!!! Error while executing {0} (line {1}): {2}".format(gline, statistics["line"], ERROR_CODES[error_code])
+    trace(message)
+    statistics["state"] = "error"
+    statistics["error_message"] = message
 
     return True
 
@@ -202,7 +203,10 @@ def polled_write(s, expected="ok", cmpfunc=lambda r,e: r==e):
     global recvq, chksum_line_count
 
     #print "writing:'%s' expecting:'%s' recvq:'%s'" % (s, expected, recvq)
+    #trace("%s\n" % s)
     ser.write("%s\n" % s)
+    if(debug):
+        print "serial writing: {0} - expecting {1}".format(s, expected)
     if not expected:
         return
 
@@ -213,7 +217,8 @@ def polled_write(s, expected="ok", cmpfunc=lambda r,e: r==e):
 
     while not breakOuter:
         with read_buffered() as q:
-            #print "recvq: %s" % q
+            if(debug):
+                print "serial reading: {0}".format(q)
             for cnt, msg in enumerate(q):
                 if (msg.startswith("checksum mismatch") or
                     msg.startswith("No Checksum")):
@@ -270,6 +275,7 @@ def polled_write(s, expected="ok", cmpfunc=lambda r,e: r==e):
         raise exc
 
     if not replyFound:
+        
         raise ReplyNotFoundException(
             ("Critical: cannot find the expected reply '%s'.\r\n" + 
              "recvq: %s") % (expected, q)
@@ -349,12 +355,19 @@ def start_print():
 
 def end_print(fast_end=False):
     procedures = {}
-
+    #trace("fast_end: {0}".format(fast_end))
     procedures["mill"] = (
     """
         M121
+        M5
     """
     )
+    
+    procedures["laser"] = {
+    """
+        M61 S0
+    """
+    }
 
     if fast_end:
         procedures["print"] = (
@@ -377,21 +390,20 @@ def end_print(fast_end=False):
             G0 X200 Y200 F2500
         """
         ) 
-
     print_type = statistics["print_type"]
     try:
         proc = procedures[print_type]
         spool_multiple(proc)
+        #trace("print_type: {0}".format(print_type))
     except KeyError:
         pass
 
 def finalize(status, task_id):
-    trace("Moving to safe zone")
-    call(
-        ["sudo php /var/www/fabui/script/finalize.php %s %s %s" % (
-            task_id, statistics["print_type"], status)],
-        shell=True
-    )
+    if(statistics["print_type"] == 'print'):
+        trace("Moving to safe zone")
+    
+    call(["sudo php /var/www/fabui/script/finalize.php {0} {1} {2}".format(task_id, statistics["print_type"], status)], shell=True)
+    #trace("sudo php /var/www/fabui/script/finalize.php {0} {1} {2}".format(task_id, statistics["print_type"], status))
 
 
 ######################################################
@@ -420,6 +432,10 @@ class JSONWriter(threading.Thread):
             'total': [statistics["layers"]],
             'actual': statistics["actual_layer"]
         }
+        percent = (100.0 * statistics["line"] / statistics["gcode_lines"])
+        if(percent > 100.0):
+            percent = 100.0
+        
         _stats = {
             "percent": str(100.0 * statistics["line"] / statistics["gcode_lines"]),
             "line_number": str(statistics["line"]),
@@ -430,7 +446,8 @@ class JSONWriter(threading.Thread):
             "z_override": str(statistics["z_override"]),
             "layers": _layers,
             "fan": str(statistics["fan"]),
-            "rpm": str(statistics["rpm"])
+            "rpm": str(statistics["rpm"]),
+            "laser_pwm" : str(statistics["laser_pwm"])
         }
         _tip = {
             "show": str(""),
@@ -453,17 +470,18 @@ class JSONWriter(threading.Thread):
             "type": statistics["print_type"],
             "print": _print,
             "engine": statistics["engine"],
-            "pid": statistics["pid"]
+            "pid": statistics["pid"],
+            "error_message" : statistics["error_message"],
         }
         
         stats_file = open(self._monitor_file,'w+')
         stats_file.write(json.dumps(stats))
         stats_file.close()
-        print "%.2f%%" % (100.0 * statistics["line"] / statistics["gcode_lines"])
+        #print "%.2f%%" % (100.0 * statistics["line"] / statistics["gcode_lines"])
 
     def run(self):
         while not self._die:
-            if statistics["state"] != "waiting_temps":
+            if statistics["state"] != "waiting_temps" and (self._statistics['print_type'] == 'print' or self._statistics['print_type'] == 'laser'):
                 self._ovr_queue.put("!temps")
             self.update_json()
             time.sleep(self._every)
@@ -539,19 +557,23 @@ class OverrideCommandsHandler(PatternMatchingEventHandler):
 ################# OVERRIDES ######################
 
 def do_ovr_kill(params, stats):
-    print "do_ovr_kill() called: '%s'" % params
+    if(debug):
+        print "do_ovr_kill() called: '%s'" % params
     raise PrintKilled
 
 def do_ovr_pause(params, stats):
-    print "do_ovr_pause() called: '%s'" % params
+    if(debug):
+        print "do_ovr_pause() called: '%s'" % params
     raise PrintPausedException
 
 def do_ovr_resume(params, stats):
-    print "do_ovr_resume() called: '%s'" % params
+    if(debug):
+        print "do_ovr_resume() called: '%s'" % params
     raise PrintResumedException
 
 def do_ovr_zplus(params, stats):
-    print "do_ovr_zplus() called: '%s'" % params
+    if(debug):
+        print "do_ovr_zplus() called: '%s'" % params
     try:
         z_increment = float(params[0])
         trace("Z height increased by %.2f mm" % z_increment)
@@ -570,7 +592,8 @@ def do_ovr_zplus(params, stats):
     """ % z_increment
 
 def do_ovr_zminus(params, stats):
-    print "do_ovr_zminus() called: '%s'" % params
+    if(debug):
+        print "do_ovr_zminus() called: '%s'" % params
     try:
         z_decrement = float(params[0])
         trace("Z height decreased by %.2f mm" % z_decrement)
@@ -618,11 +641,12 @@ def do_ovr_rpm_ccw(params, stats):
 
 
 def do_ovr_extt(params, stats):
-    print "do_ovr_extt() called: '%s'" % params
+    if(debug):
+        print "do_ovr_extt() called: '%s'" % params
     try:
         temperatures["extruder_target"] = float(params[0][1:])
         if temperatures["extruder_target"] > 0:
-            trace("Extruder temperature set to %.f &deg;C" % (
+            trace("<i class='fa fa-thermometer-full'></i> Extruder temperature set to %.f &deg;C" % (
                 temperatures["extruder_target"]
             ))
     except IndexError:
@@ -635,7 +659,8 @@ def do_ovr_extt(params, stats):
     return "M104 %s" % params[0]
 
 def do_ovr_fan(params, stats):
-    print "do_ovr_fan() called: '%s'" % params
+    if(debug):
+        print "do_ovr_fan() called: '%s'" % params
     try:
         stats["fan"] = float(params[0][1:])
     except IndexError:
@@ -647,12 +672,27 @@ def do_ovr_fan(params, stats):
 
     return "M106 %s" % params[0]
 
+def do_ovr_laser_pwm(params, stats):
+    if(debug):
+        print "do_ovr_laser_pwm() called: {0}".format(params)
+    try:
+        stats['laser_pwm'] = int(params[0][1:])
+        trace("Laser PWM set to {0}".format(stats["laser_pwm"]))
+    except IndexError:
+        trace("ovr_laser_pwm: No parameter given")
+        return
+    except ValueError:
+        trace("ovr_laser_pwm: Invalid parameter given: {0}".format(params[0]))
+        return
+    return "M61 S{0}".format(params[0][1:])
+
 def do_ovr_bedt(params, stats):
-    print "do_ovr_bedt() called: '%s'" % params
+    if(debug):
+        print "do_ovr_bedt() called: '%s'" % params
     try:
         temperatures["bed_target"] = float(params[0][1:])
         if temperatures["bed_target"] > 0:
-            trace("Bed temperature set to %.f &deg;C" % (
+            trace("<i class='fa fa-thermometer-full'></i> Bed temperature set to %.f &deg;C" % (
                 temperatures["bed_target"]
             ))
     except IndexError:
@@ -665,7 +705,8 @@ def do_ovr_bedt(params, stats):
     return "M140 %s" % params[0]
 
 def do_ovr_speed(params, stats):
-    print "do_ovr_speed() called: '%s'" % params
+    if(debug):
+        print "do_ovr_speed() called: '%s'" % params
     try:
         trace("Speed factor ovveride set to %d%%" % int(params[0][1:], 10))
         return "M220 S%d" % int(params[0][1:], 10)
@@ -675,7 +716,8 @@ def do_ovr_speed(params, stats):
         trace("ovr_speed: Invalid parameter given: '%s'" % params[0])
 
 def do_ovr_extrusion(params, stats):
-    print "do_ovr_extrusion() called: '%s'" % params
+    if(debug):
+        print "do_ovr_extrusion() called: '%s'" % params
     try:
         trace("Extruder factor override set %d%%" % int(params[0][1:], 10))
         return "M221 S%d" % int(params[0][1:], 10)
@@ -685,7 +727,8 @@ def do_ovr_extrusion(params, stats):
         trace("ovr_extrusion: Invalid parameter given: '%s'" % params[0])
 
 def do_ovr_lockfan(params, stats):
-    print "do_ovr_lockfan() called: '%s'" % params
+    if(debug):
+        print "do_ovr_lockfan() called: '%s'" % params
     try:
         stats["fan_locked"] = True if params[0] == 'true' else False
         trace("M106 command %slocked" % ("" if stats["fan_locked"] else "un"))
@@ -709,12 +752,14 @@ def do_m0(params, stats, temps):
 def do_m3(params, stats, temps):
     rpm = None
  
-    for param in stats:
+    for param in params:
         if param.startswith("S"):
-            stats["rpm"] = param[1:]
+            rpm = param[1:]
 
     try:
         stats["rpm"] = float(rpm)
+        #trace("RPM: " + str(rpm))
+        #return do_ovr_rpm_cw(params, stats)
     except TypeError:
         stats["rpm"] = 0.0
     except ValueError:
@@ -724,9 +769,9 @@ def do_m3(params, stats, temps):
 def do_m4(params, stats, temps):
     rpm = None
  
-    for param in stats:
+    for param in params:
         if param.startswith("S"):
-            stats["rpm"] = param[1:]
+            rpm = param[1:]
 
     try:
         stats["rpm"] = float(rpm)
@@ -738,6 +783,23 @@ def do_m4(params, stats, temps):
 
 def do_m5(params, stats, temps):
     stats["rpm"] = 0.0
+
+def do_m61(params, stats, temps):
+    laser_pwm = None
+ 
+    for param in params:
+        if param.startswith("S"):
+            laser_pwm = param[1:]
+
+    try:
+        stats["laser_pwm"] = float(laser_pwm)
+        #trace("RPM: " + str(rpm))
+        #return do_ovr_rpm_cw(params, stats)
+    except TypeError:
+        stats["laser_pwm"] = 0.0
+    except ValueError:
+        trace("M61: invalid parameter given.")
+        return False
 
 def do_m98(params, stats, temps):
     subprogram_id  = None
@@ -816,14 +878,15 @@ def do_m109(params, stats, temps):
         ext_target = 0
 
     ext_curtemp, bed_curtemp = ask_for_temps()
-    print "do_m109() Extruder:%f Bed:%f" % (ext_curtemp, bed_curtemp)
+    if(debug):
+        print "do_m109() Extruder:%f Bed:%f" % (ext_curtemp, bed_curtemp)
 
     # this is necessary because the command has not been executed yet, causing
     # the value into the temperatures dict to be out of sync
     temps["extruder_target"] = ext_target
 
     if ext_target > 0:
-        trace("Extruder temperature set to %.f &deg;C" % ext_target)
+        trace("<i class='fa fa-thermometer-full'></i> Extruder temperature set to %.f &deg;C" % ext_target)
 
     return "M104", params, "ok"
 
@@ -849,14 +912,15 @@ def do_m190(params, stats, temps):
         bed_target = 0
 
     ext_curtemp, bed_curtemp = ask_for_temps()
-    print "do_m190() Extruder:%f Bed:%f" % (ext_curtemp, bed_curtemp)
+    if(debug):
+        print "do_m190() Extruder:%f Bed:%f" % (ext_curtemp, bed_curtemp)
 
     # this is necessary because the command has not been executed yet, causing
     # the value into the temperatures dict to be out of sync
     temps["bed_target"] = bed_target
 
     if bed_target > 0:
-        trace("Bed temperature set to %.f &deg;C" % bed_target)
+        trace("<i class='fa fa-thermometer-full'></i> Bed temperature set to %.f &deg;C" % bed_target)
 
     return "M140", params, "ok"
 
@@ -886,10 +950,11 @@ def do_m221(params, stats, temps):
 
 def do_g0(params, stats, temps):
     if stats["started"] is False:
-        print "do_g0() extt %.f bedt %.f" % (
-            temps["extruder_target"],
-            temps["bed_target"]
-        )
+        if(debug):
+            print "do_g0() extt %.f bedt %.f" % (
+                temps["extruder_target"],
+                temps["bed_target"]
+            )
         if temps["bed_target"] > 0 or temps["extruder_target"] > 0:
             raise PrintWaitTemperatures
         else:
@@ -925,6 +990,7 @@ class GSender(threading.Thread):
         "M140": do_ovr_bedt,
         "M220": do_ovr_speed,
         "M221": do_ovr_extrusion,
+        "M61" : do_ovr_laser_pwm
     }
 
     hooks = {
@@ -947,7 +1013,9 @@ class GSender(threading.Thread):
         "G1": do_g0,
         "G28" : do_nothing,
         "G27" : do_nothing,
-        "T0"  : do_nothing
+        "T0"  : do_nothing,
+        "M61" : do_m61,
+        "M60" : do_m61
     }
 
 
@@ -1037,16 +1105,17 @@ class GSender(threading.Thread):
             if ret is not None:
                 gcmd, params, expected = ret
                 line = " ".join([gcmd] + params)
-
+        #trace("line: " + line)
+        #trace("expected: " + expected)
         return line, expected
 
     def _wait_temperatures(self):
         ext, bed = ask_for_temps()
-
-        print "Extruder: %f/%f Bed: %f/%f" % (
-            ext, self._temperatures["extruder_target"],
-            bed, self._temperatures["bed_target"]
-        )
+        if(debug):
+            print "Extruder: %f/%f Bed: %f/%f" % (
+                ext, self._temperatures["extruder_target"],
+                bed, self._temperatures["bed_target"]
+            )
 
         if (ext >= self._temperatures["extruder_target"] and
             bed >= self._temperatures["bed_target"]):
@@ -1204,13 +1273,15 @@ class GSender(threading.Thread):
                 #     Unhandled exceptions     #
                 ################################
                 except Exception, e:
-                    statistics["state"] = "dumped"
+                    statistics["state"] = "error"
+                    statistics["error_message"] = str(e)
                     end_print(fast_end=True)
                     raise
                 ################################
 
         if self._die:
-            statistics["state"] = "stopped"
+            if(statistics["state"] != "error"):
+                statistics["state"] = "stopped"
             end_print(fast_end=__fast_end)
         else:
             # reset trace only if print completed successfully!
@@ -1272,7 +1343,7 @@ except ImportError:
             return i
 
 def app_init():
-    global trace_fname, lock_fname, ser
+    global trace_fname, lock_fname, ser, debug
     
     config = ConfigParser.ConfigParser()
     config.read('/var/www/lib/config.ini')
@@ -1280,7 +1351,8 @@ def app_init():
     
     ''' LOCK FILE (if exists it means printer is already busy, else create it and take over) '''
     if os.path.isfile(lock_fname):
-        print "printer busy"
+        if(debug):
+            print "printer busy"
         raise SystemExit
 
     serialconfig = ConfigParser.ConfigParser()
@@ -1298,11 +1370,15 @@ def app_init():
     parser.add_argument("trace", help="trace file",  default=config.get('task', 'trace_file'), nargs='?')
     parser.add_argument("--ext_temp", help="extruder temperature (for UI feedback only)",  default=180, nargs='?')
     parser.add_argument("--bed_temp", help="bed temperature (for UI feedback only)",  default=50,  nargs='?')
+    parser.add_argument("-d", "--debug",    help="Debug: print console",   action="store_true")
 
     ''' GET ARGUMENTS '''
     args = parser.parse_args()
     logging.basicConfig(filename=args.trace, level=logging.INFO, format='%(message)s')
     trace_fname = args.trace
+    debug = args.debug
+    if(debug):
+        print "[Debug Mode ON]"
     trace("Loading file...")
 
     ''' INITIALIZE SOME STATISTICS '''
@@ -1322,6 +1398,7 @@ def app_init():
     trace("Load complete!")
 
     statistics["task_id"] = args.task_id
+    
 
     return args
 
@@ -1330,7 +1407,8 @@ def main(print_type):
     
     def kill_threads():
         for thr in threads:
-            print "killing thread %s" % thr
+            if(debug):
+                print "killing thread %s" % thr
             try:
                 thr.die()
                 thr.join(10)
@@ -1341,7 +1419,7 @@ def main(print_type):
     args = None
     threads = []
     statistics["print_type"] = print_type
-
+    
     try:
         args = app_init()
         q = Queue.Queue()
@@ -1377,7 +1455,8 @@ def main(print_type):
         for thr in threads:
             thr.start()
 
-        print "all threads on"
+        if(debug):
+            print "all threads on"
 
         while True:
             alives = []
@@ -1393,7 +1472,7 @@ def main(print_type):
         statistics["state"] = "stopped"
         end_print()
     except Exception:
-        statistics["state"] = "dumped"
+        statistics["state"] = "error"
         raise
     finally:
         try:
@@ -1407,14 +1486,16 @@ def main(print_type):
                 finalize(statistics["state"], args.task_id)
 
         except Exception:
-            statistics["state"] = "dumped"
+            statistics["state"] = "error"
             raise
         finally:
             kill_threads()
-            print "Threads killed"
+            if(debug):
+                print "Threads killed"
             if ser and ser.isOpen():
                 ser.close()
-            print "Done, exiting"
+            if(debug):
+                print "Done, exiting"
 
 if __name__ == "__main__":
     main("print")

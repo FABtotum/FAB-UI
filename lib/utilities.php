@@ -31,7 +31,7 @@ function write_file($path, $data, $mode = FOPEN_WRITE_CREATE_DESTRUCTIVE) {
 
 /** */
 function print_type($file_path) {
-	return strtolower(trim(shell_exec('sudo python ' . PYTHON_PATH . 'check_manufacturing.py "' . $file_path . '"')));
+	return strtolower(trim(shell_exec('sudo python ' . PYTHON_PATH . 'check_manufacturing.py -f"' . $file_path . '"')));
 }
 
 /** */
@@ -563,5 +563,32 @@ function isJSON($string)
 {
 	json_decode($string);
 	return (json_last_error() == JSON_ERROR_NONE);
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
+function analizeMacroResponse()
+{
+	if(str_replace(PHP_EOL, '', file_get_contents(TEMP_PATH.'macro_response')) != 'true'){
+		$response = false;
+		$status = 500;
+	}else{
+		$response = true;
+		$status = 200;
+	}
+
+	return array(
+			'response' => $response,
+			'status' => $status,
+			'trace' => str_replace(PHP_EOL, '<br>',file_get_contents(TEMP_PATH.'macro_trace'))
+	);
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function output($data)
+{
+	header('Content-Type: application/json');
+	echo minify(json_encode($data));
+	exit();
 }
 ?>

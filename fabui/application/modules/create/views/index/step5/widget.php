@@ -37,7 +37,7 @@
 				
 				<hr class="simple">
 				<!-- PROGRESS -->
-				<p>Progress  <span class="pull-right"><span class="hidden layers" style="margin-left:10px;"> (layer: <span class="layer-actual font-md"><?php echo $layer_actual; ?></span> / <span class="layer-total"><?php echo $layer_total; ?></span> )</span></span> <span class="pull-right progress-status font-md"></span></p>
+				<p>Progress  <span class="pull-right"><span class="additive-print hidden layers" style="margin-left:10px;"> (layer: <span class="layer-actual font-md"><?php echo $layer_actual; ?></span> / <span class="layer-total"><?php echo $layer_total; ?></span> )</span></span> <span class="pull-right progress-status font-md"></span></p>
 				<div class="progress progress-sm progress-striped active">
 					<div id="lines-progress" class="progress-bar bg-color-blue"></div>
 					
@@ -65,6 +65,14 @@
 				<div class="progress progress-xs additive-print">
 					<div class="progress-xs">
 						<div class="progress-bar bg-color-blue fan-progress" style="width: <?php echo $fan == '' ? ((0/255)*100) : (($fan/255)*100) ?>%"></div>
+					</div>
+				</div>
+				
+				
+				<p class="laser-print">Laser Pwm <span class="pull-right"> <span class="label-laser-pwm font-md"><?php echo $laser_pwm == '' ? ((0/255)*100) : (($laser_pwm/255)*100) ?></span> / 255 </span></p>
+				<div class="progress progress-xs laser-print">
+					<div class="progress-xs">
+						<div class="progress-bar bg-color-blue laser-pwm-progress" style="width: <?php echo $fan == '' ? ((0/255)*100) : (($laser_pwm/255)*100) ?> "></div>
 					</div>
 				</div>
 				
@@ -249,6 +257,19 @@
 					</span>
 					<div class="margin-top-10"></div>
 					<div id="rpm" data-action="rpm" class="sliders rpm-range margin-bottom-10"></div>
+					<div class="margin-top-40"></div>
+				</div>
+			</div>
+			
+			<div class="col-sm-6 rpm-well laser-print">
+				<div class="well">
+					<span>Laser PWM
+						<span class="pull-right">
+							<label class="label label-warning label-laser-pwm pull-right"><?php echo $laser_pwm == '' ? 0 : $laser_pwm ?></label>
+						</span>	
+					</span>
+					<div class="margin-top-10"></div>
+					<div id="laser_pwm" data-action="laser_pwm" class="sliders rpm-range margin-bottom-10"></div>
 					<div class="margin-top-40"></div>
 				</div>
 			</div>

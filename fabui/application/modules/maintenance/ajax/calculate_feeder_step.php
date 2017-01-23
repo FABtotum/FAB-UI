@@ -29,10 +29,15 @@ if($action == 'calculate'){
 	exit();
 }
 
+if($new_step_value > 2000){
+	$m203E = "12.00";
+}else{
+	$m203E = "23.00";
+}
 
 
 $response['new_step'] = $new_step_value;
-$response['python']   = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M92 E'.$new_step_value.'-M500"'));
+$response['python']   = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M92 E'.$new_step_value.'-M203 E'.$m203E.'-M500"'));
 
 /*
 $jogFactory = new JogFactory();

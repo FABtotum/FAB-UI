@@ -19,7 +19,7 @@
         <div class="col-sm-6">
             <div class="well">
             <h3 class="text-center text-primary">Fine calibration</h3>
-            <h5 class="text-center">Manually edit the probe length to fine tune the nozzle height during prints</h5>
+            <h5 class="text-center">Manually edit the probe length and Z max height to fine tune the nozzle height during prints</h5>
             <h2 class="text-center"><a data-action='fast' href="javascript:void(0);" class="btn btn-default btn-primary btn-circle  choice-button"><i class="fa fa-chevron-down"></i></a></h2>
             </div>
         </div>
@@ -135,8 +135,8 @@
     		<div class="well">
     			<div class="row">
     				<div class="col-sm-6">
+    					<h3 class="text-center text-primary">Fine Calibration<br></h3>
     					<h4 class="text-center">
-    						Fine Probe length Calibration<br>
 If the print first layer is too high or too close to the bed, use this function to finely calibrate the distance from the nozzle and the bed during 3D-prints. Usually 0.05mm increments are enough to make a difference.
     						
     					</h4>
@@ -151,7 +151,8 @@ If the print first layer is too high or too close to the bed, use this function 
 	    									<label><strong>Closer</strong></label>
 	    								</section>
 	    								<section class="col col-6 text-center">
-	    									<label><strong>Override length (<span id="probe-lenght"></span> mm)</strong></label>
+	    									<label><strong>Probe length (<span id="probe-lenght"></span> mm)</strong></label><br>
+	    									<label><strong>Z Max (<span id="z-max"></span> mm)</strong></label>
 	    								</section>
 	    								<section class="col col-3 text-center">
 	    									<label><strong>Further</strong></label>

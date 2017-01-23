@@ -199,6 +199,17 @@
 	font-size: 75% !important;
 }
 
+.smart-form .laser-label {
+	display: block;
+    margin-bottom: 6px;
+    line-height: 19px;
+    font-weight: 400;
+    font-size: 13px;
+    color: #333;
+    text-align: left;
+    white-space: normal;
+}
+
 /*
 #objects_table_paginate .pagination {
 	width: 300px !important;

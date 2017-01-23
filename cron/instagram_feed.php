@@ -13,14 +13,14 @@ if(!file_exists(INSTAGRAM_FEED_JSON)){
 
 if (is_internet_avaiable()) {
 	$ch = curl_init(INSTAGRAM_FEED_URL);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	$instagram_feed = curl_exec($ch);
 	$info = curl_getinfo($ch);
 	curl_close($ch);
 	
 	if($info['http_code'] == 200) {
-		if(isJSON($instagram_feed)){
+		if(isJSON($instagram_feed) && strlen($instagram_feed) > 0 ){
 			write_file(INSTAGRAM_FEED_JSON, $instagram_feed, 'w');
 		}
 	}

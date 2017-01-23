@@ -17,7 +17,7 @@ if(!file_exists(BLOG_FEED_XML)){
 if (is_internet_avaiable()) {
 				
 	$ch = curl_init(BLOG_FEED_URL);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	
 	$blog_xml = curl_exec($ch);
@@ -26,7 +26,7 @@ if (is_internet_avaiable()) {
 	curl_close($ch);
 	
 	//write feed
-	if($info['http_code'] == 200) write_file(BLOG_FEED_XML, $blog_xml, 'w');
+	if($info['http_code'] == 200 && strlen($blog_xml) > 0) write_file(BLOG_FEED_XML, $blog_xml, 'w');
 }
 
 ?>

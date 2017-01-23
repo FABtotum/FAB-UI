@@ -7,6 +7,8 @@ $_time                 = $_POST['time'];
 $_num_probes           = isset($_POST['num_probes']) ? $_POST['num_probes'] : 4;
 $_skip_homing          = isset($_POST['skip_homing']) ? $_POST['skip_homing'] : 0;
 
+if($_num_probes > 4) $_num_probes = 4;
+
 $_destination_trace    = TEMP_PATH.'macro_trace';
 $_destination_response = TEMP_PATH.'macro_response';
 
@@ -71,7 +73,7 @@ if(is_array($_response)){ // if there is a valid response
 	</div>
 	<hr class="simple">
 	<?php if($greens == 4): ?>
-		<div class="alert alert-success alert-block">
+		<div class="alert alert-success alert-block text-center">
 			
 			<h4 class="alert-heading"><i class="fa fa-check"></i> Well done!</h4>
 			The bed is well calibrated to print

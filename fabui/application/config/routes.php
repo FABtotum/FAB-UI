@@ -55,7 +55,7 @@ $route['plugin/(:any)']            = "$1";
 $route['maintenance/4-axis']             = "maintenance/fourthaxis";
 $route['maintenance/self-test']          = "maintenance/selftest";
 $route['maintenance/bed-calibration']    = "maintenance/bedcalibration";
-$route['maintenance/probe/length-calibration']  = "maintenance/probecalibration";
+$route['maintenance/nozzle/height-calibration']  = "maintenance/nozzleHeightCalibration";
 $route['maintenance/probe/angle-calibration']  = "maintenance/probeAngleCalibration";
 $route['maintenance/first-setup']        = "maintenance/firstsetup";
 $route['maintenance/system-info']        = "maintenance/systeminfo";
@@ -77,6 +77,7 @@ $route['controller/stop-all'] = "controller/stop_all";
 /** make route */
 $route['make/print'] = "create";
 $route['make/mill']  = "create/index/subtractive";
+$route['make/laser'] = "create/index/laser";
 $route['make/scan']  = 'scan';
 $route['make/history']  = 'create/history';
 

@@ -21,10 +21,7 @@ class Jog extends Module {
 		
 		$this -> config -> load('fabtotum', TRUE);
 		$units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
-		
-		if(isset($units['settings_type']) && $units['settings_type'] == 'custom'){
-			$units = json_decode(file_get_contents($this -> config -> item('fabtotum_custom_config_units', 'fabtotum')), TRUE);
-		}
+
         
         $data['max_temp'] = isset($units['hardware']['head']['max_temp']) ? $units['hardware']['head']['max_temp'] : 230;
 		

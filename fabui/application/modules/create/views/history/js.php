@@ -121,6 +121,7 @@
 			var type =aData[9];
 			var id_file = aData[10];
 			var id_object = aData[11];
+			var error = aData[12];
 			
 			var table = '<table style="margin-bottom:1px !important;" cellpadding="5" cellspacing="0" border="0" class="table table-hover table-condensed">';
 			
@@ -130,8 +131,11 @@
 			if(note != ''){
 				table += '<tr><td width="100px">Note </td><td><p>'+note +'</p></td></tr>';
 			}
+			if(error != ''){
+				table += '<tr><td width="100px">Error </td><td><p>'+error +'</p></td></tr>';
+			}
 			
-			if(type == 'print' || type == 'mill'){
+			if(type == 'print' || type == 'mill' || type == 'laser'){
 				
 				
 				var action_url = '/fabui/make/'+type+'?obj='+id_object+'&file='+id_file;

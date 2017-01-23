@@ -23,7 +23,7 @@ $("input[name='theme_skin']").click(function() {
 
 $('.standby-red').noUiSlider({
     /*range: [0, 255],*/    
-	start: <?php echo $_standby_color['r'] != '' ? $_standby_color['r'] : 0 ?>,
+	start: <?php echo $settings['color']['r'] != '' ? $settings['color']['r'] : 0 ?>,
 	connect : "lower",
     handles: 1,
         
@@ -46,7 +46,7 @@ $('.standby-red').noUiSlider({
 $('.standby-green').noUiSlider({
         
 	/*range: [0, 255],*/
-    start: <?php echo $_standby_color['g'] != '' ? $_standby_color['g'] : 0 ?>,
+    start: <?php echo $settings['color']['g'] != '' ? $settings['color']['g'] : 0 ?>,
 	connect : "lower",
     handles: 1,
     
@@ -63,7 +63,7 @@ $('.standby-green').noUiSlider({
 
 $('.standby-blue').noUiSlider({
     /*range: [0, 255],*/   
-	start: <?php echo $_standby_color['b'] != '' ? $_standby_color['b'] : 0 ?>,
+	start: <?php echo $settings['color']['b'] != '' ? $settings['color']['b'] : 0 ?>,
 	connect : "lower",
     handles: 1,    
 
@@ -151,9 +151,7 @@ function save(){
           		zmax:$('#zmax-homing').val(),
           		zprobe:$('[name="zprobe"]:checked').val()},
           dataType: 'json'
-		}).done(function(response) {
-			
-			
+		}).done(function(response) {			
 			$.smallBox({
 				title : "Success",
 				content : "<i class='fa fa-check'></i> Settings saved",
@@ -161,8 +159,6 @@ function save(){
 				iconSmall : "fa fa-thumbs-up bounce animated",
 	            timeout : 4000
             });
-		  
-          
           	$('#save-button').removeClass('disabled');
           	$('#save-button').html('<i class="fa fa-save"></i>&nbsp;Save');
           
@@ -181,12 +177,12 @@ $("#zmax-homing").spinner({
 
 
 $("#feeder-disengage-offset").spinner({
-				step :0.5,
-				numberFormat : "N1",
-				min: 0,
-				max: 6,
-				create: function () { $(this).number(true,1) },
-				stop: function () { $(this).number(true,1) }
+	step :0.5,
+	numberFormat : "N1",
+	min: 0,
+	max: 6,
+	create: function () { $(this).number(true,1) },
+	stop: function () { $(this).number(true,1) }
 				
 });
 
@@ -261,9 +257,9 @@ $("#general-tab li > a").on('click', function() {
 });
 
 
-$('input:radio[name="settings_type"]').filter('[value="<?php echo $settings_type; ?>"]').attr('checked', true);
+$('input:radio[name="settings_type"]').filter('[value="<?php echo $settings['settings_type']; ?>"]').attr('checked', true);
 
-if('<?php echo $settings_type; ?>' == 'custom'){
+if('<?php echo $settings['settings_type']; ?>' == 'custom'){
 	$(".custom-settings").show();
 }else{
 	$(".custom-settings").hide();
@@ -272,11 +268,26 @@ if('<?php echo $settings_type; ?>' == 'custom'){
 $(':radio[name="settings_type"]').change(function() {
 	var type = $(this).filter(':checked').val();
 	if(type == 'custom'){
-		$(".custom-settings").show();
+		$(".custom-settings").slideDown(function(){});
 	}else{
-		$(".custom-settings").hide();
+		$(".custom-settings").slideUp(function(){});
 	}
 });
+
+$(':radio[name="zprobe"]').change(function() {
+	var value = $(this).filter(':checked').val();
+	if(value == 1){
+		$("#zmax-homing-container").slideDown(function(){});
+	}else{
+		$("#zmax-homing-container").slideUp(function(){});
+	}
+});
+
+if('<?php echo $settings['zprobe']['disable']; ?>' == 1){
+	$("#zmax-homing-container").show();
+}else{
+	$("#zmax-homing-container").hide();
+}
 
 
 $(".hardware-save").on('click', save_hardware_settings);
