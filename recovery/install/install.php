@@ -40,7 +40,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	
 	/** UPDATE FW VERSION ON DB */
 	$_data_update = array();
-	$_data_update['value'] = $sysInfo['fw'];
+	$_data_update['value'] = $sysInfo['fw']['version'];
 	$db -> update('sys_configuration', array('column' => 'sys_configuration.key', 'value' => 'fw_version', 'sign' => '='), $_data_update);
 	
 	/** CLEAN UPLOAD DIRECTORY */

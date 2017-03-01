@@ -16,6 +16,7 @@
 							<li>Make sure no one else can approach the  unit without proper safety goggles and being informed of the hazard.</li>
 							<li>Do not remove the goggles unless it's safe to do so</li>
 							<li>Wait for the procedure to end</li>
+							<li>Do not touch, place or remove the laser head while the unit is operating</li>
 						</ol>
 					</h4>
 					<div class="smart-form">

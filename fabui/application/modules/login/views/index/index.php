@@ -17,7 +17,7 @@
 
 		<!-- FAVICONS -->
 		<link rel="shortcut icon" href="<?php echo base_url() ?>application/layout/assets/img/favicon/favicon.ico" type="image/x-icon">
-		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/js/plugin/magnific-popup/magnific-popup.css"> 
+		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url() ?>application/layout/assets/js/plugin/fancybox/jquery.fancybox.css"> 
 
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fonts.css" />
 		<link rel="stylesheet" href="<?php echo base_url() ?>application/layout/assets/css/fabtotum_style.css" />
@@ -141,8 +141,7 @@
 		<!-- ==========================CONTENT ENDS HERE ========================== -->
 
 		<!--================================================== -->
-		<div id="power-off-img" style="display:none;"><img class="img-responsive" src="/assets/img/power-off.png">
-		</div>
+		<a class="fancybox-shutdown hidden" title="Now you can switch off the power" href="/assets/img/power-off.png"><img class="img-responsive" src="/assets/img/power-off.png"></a>
 
 		<script src="<?php echo base_url() ?>application/layout/assets/js/app.config.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/pace/pace.min.js"></script>
@@ -151,7 +150,8 @@
 		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/jquery-validate/jquery.validate.min.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/fastclick/fastclick.min.js"></script>
-		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/magnific-popup/jquery.magnific-popup.min.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/notification/FabtotumNotification.js"></script>
+		<script src="<?php echo base_url() ?>application/layout/assets/js/plugin/fancybox/jquery.fancybox.pack.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/app.min.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/fabtotum.js"></script>
 		<script src="<?php echo base_url() ?>application/layout/assets/js/app.min.js"></script>

@@ -3,7 +3,7 @@ import serial
 import time
 from subprocess import call
 import ConfigParser
-import logging
+#import logging
 import json
 
 config = ConfigParser.ConfigParser()
@@ -85,8 +85,8 @@ open(config.get('task', 'lock_file'), 'w').close()
 
 '''#### LOG ####'''
 logfile=config.get('task', 'monitor_file')
-log_trace=config.get('task', 'trace_file')
-logging.basicConfig(filename=log_trace,level=logging.INFO,format='[%(asctime)s] - %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+#log_trace=config.get('task', 'trace_file')
+#logging.basicConfig(filename=log_trace,level=logging.INFO,format='[%(asctime)s] - %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
         
 started=float(time.time())
 

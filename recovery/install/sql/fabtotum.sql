@@ -199,7 +199,18 @@ INSERT INTO `sys_codes` (`id`, `type`, `code`, `label`, `description`) VALUES
 (154, 'M', 732, 'M732 S<FLAG>', 'Code for enable/disable the operations kill on door opening permanently (M732 S0->disable(unsafe),M732 S1->enable(safe)'),
 (155, 'M', 714, 'M714 S<FLAG>', 'Select the homing X switch (max or min) to allow machine operation even with X min swicth fail (M714 S0->select X min switch, M714 S1->select X max switch)'),
 (156, 'M', 793, 'M793', 'Set/read installed head soft ID'),
-(157, 'M', 735, 'M735 S<FLAG>', 'enable /disable silent mode. M735 S0->disable, M735 S1->enable');
+(157, 'M', 735, 'M735 S<FLAG>', 'enable /disable silent mode. M735 S0->disable, M735 S1->enable'),
+(158, 'M', 60, 'M60 S<0-255>', 'Set laser level immediately'),
+(159, 'M', 61, 'M61 S<0-255>', 'Finish moves and set laser level'),
+(160, 'M', 62, 'M62', 'Turn off laser'),
+(161, 'M', 450 , 'M450  S<1-3>', 'Query or change working mode'),
+(162, 'M', 747 , 'M747  [X<0-3>] [Y<0-3>] [Z<0-3>]', '');
+
+
+
+
+
+
 
 -- --------------------------------------------------------
 
@@ -243,7 +254,7 @@ INSERT INTO `sys_configuration` (`id`, `key`, `value`) VALUES
 (18, 'language', 'english'),
 (19, 'languages', '{"english":{"code":"us","description":"English","name":"english"},"italian":{"code":"it","description":"Italiano","name":"italian"},"german":{"code":"de","description":"Deutsch","name":"german"}}'),
 (20, 'fw_version', ''),
-(21, 'fabui_version', '0.98'),
+(21, 'fabui_version', '0.986'),
 (22, 'wifi', '{"ssid":"","password":"","ip":""}');
 
 -- --------------------------------------------------------

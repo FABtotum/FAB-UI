@@ -479,7 +479,7 @@ function timeoutShutdown()
 	setTimeout(function() {
 		waitTitle('Now you can switch off the power');
 		showShutdownImage();
-		closeWait();
+		//closeWait();
 		IS_MACRO_ON = false;
 	}, 15000);
 }

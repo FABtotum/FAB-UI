@@ -158,8 +158,8 @@ class BedLeveling():
             probed_points[p,2]=probed_points[p,2]/self.num_probes;
             #self.serial.doMacro('M402', 'ok', -1, 'Retracting Probe (safety)', verbose=False)
         #move to idle position
-        self.idlePosition()
         self.serial.doMacro('M402', 'ok', -1, 'Retracting Probe (safety)', verbose=False)
+        self.idlePosition()
         self.serial.doMacro("M18", 'ok', -1, 'Motors off', verbose=False)
         self.serial.trace('Processing points..')
         

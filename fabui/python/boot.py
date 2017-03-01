@@ -217,8 +217,11 @@ if(hardware_reset == False):
 ### rise probe
 commands.append('M402')
 ### laser off
-commands.append('M60 S0')
-commands.append('M61 S0')
+commands.append('M62')
+#Reset Speed factor override
+commands.append('M220 S100')
+#Reset Extruder factor override
+commands.append('M221 S100')
 ### set safety door open: enable/disable warnings
 commands.append('M732 S{0}'.format(settings['safety']['door']))
 ### set collision-warning enable/disable warnings

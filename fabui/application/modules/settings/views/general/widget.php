@@ -144,6 +144,9 @@
 									<i></i>Disabled</label>
 							</div>
 						</section>
+						<section>
+							<p><strong>Important note: please perform a new nozzle calibration (Maintenance --> Nozzle --> Height Calibration) when switching between the two options above.</strong></p>
+						</section>
 						<div class="row" id="zmax-homing-container">
 							<section class="col col-6">
 								<label class="label">Z Max Home Pos (mm)</label>
@@ -361,4 +364,3 @@
 	<button value="exec" type="button"  class="btn btn-primary hardware-save"><i class="fa fa-save"></i> Save & Exec</button>
 	<button id="save-button" class="btn btn-primary" type="button" style="display:none;"><i class="fa fa-save"></i>&nbsp;Save</button>
 </div>
-

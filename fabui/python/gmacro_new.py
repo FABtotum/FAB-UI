@@ -30,7 +30,7 @@ debug         = args.debug
 settings_file = open(config.get('printer', 'settings_file'))
 settings = json.load(settings_file)
 
-SECURITY_Z_OFFSET = 50
+SECURITY_Z_OFFSET = 20
 LASER_FOCUS_OFFSET = 2
 
 '''
@@ -226,8 +226,9 @@ def raiseBed(serial_util, settings, params=None):
     if(zprobe_disabled == True):
         serial_util.trace("Touching probe disabled")
         serial_util.doMacro('G27', 'ok', -1, 'Lowering bed', verbose=True)
-        serial_util.doMacro('G92 X1 Y1 Z{0}'.format(zprobe_zmax), 'ok', -1, 'Setting fixed offset ({0})'.format(zprobe_zmax), verbose=False)
-        serial_util.doMacro('G0 X10 Y10 Z70 F1000', 'ok', -1, 'Raising bed')
+        #serial_util.doMacro('G92 X1 Y1 Z{0}'.format(zprobe_zmax), 'ok', -1, 'Setting fixed offset ({0})'.format(zprobe_zmax), verbose=False)
+        serial_util.doMacro('G92 Z{0}'.format(zprobe_zmax), 'ok', -1, 'Setting fixed offset ({0})'.format(zprobe_zmax), verbose=False)
+        serial_util.doMacro('G0 X5 Y5 Z60 F2000', 'ok', -1, 'Raising bed')
     else:
         serial_util.trace("Touching probe enabled")
         serial_util.doMacro('G27', 'ok', -1, 'Homing all axes', verbose=True)
@@ -311,52 +312,71 @@ def endPrintSubtractive(serial_util, settings, params=None):
     
 """ ################################################################### """  
 def probeSetupPrepare(serial_util, settings, params=None):
+    serial_util.doMacro('G27', 'ok', -1, 'Homing axis', verbose=True)
+    serial_util.doMacro('G90', 'ok', -1, 'Setting absolute position', verbose=False)
+    serial_util.doMacro('G0 Z20 F1000', 'ok', -1, 'Raising bed', verbose=True)
+
+    serial_util.trace("Preparing Calibration procedure")
+    serial_util.trace("This may take a while")
+    serial_util.doMacro('M104 S200', 'ok', -1, 'Heating extruder')
+    serial_util.doMacro('M140 S45', 'ok', 5, 'Heating Bed - fast')
+    serial_util.doMacro('G90', 'ok', 1, 'Absolute mode', verbose=False)
+    serial_util.doMacro('G0 X103 Y119.5 F6000', 'ok', -1, 'Moving to center plate', verbose=False)
+    #serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving to calibration position')
+""" ################################################################### """  
+def probeSetupCalibrate(serial_util, settings, params=None):
     try:
         zprobe_disabled = int(settings['zprobe']['disable']) == 1
     except KeyError:
         zprobe_disabled = False
-    
-    #if(zprobe_disabled == True):
-    serial_util.doMacro('G90', 'ok', -1, 'Setting absolute position', verbose=False)
-    serial_util.doMacro('G0 X86 Y58 Z50 F10000', 'ok', -1, 'Raising bed', verbose=True)
-        
-    serial_util.trace("Preparing Calibration procedure")
-    serial_util.trace("This may take a wile")
-    serial_util.doMacro('M104 S200', 'ok', -1, 'Heating extruder')
-    serial_util.doMacro('M140 S45', 'ok', -1, 'Heating Bed - fast')
-    serial_util.doMacro('G91', 'ok', 1, 'Relative mode', verbose=False)
-    serial_util.doMacro('G0 X17 Y61.5 F6000', 'ok', -1, 'Offset', verbose=False)
-    #serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving to calibration position')
-""" ################################################################### """  
-def probeSetupCalibrate(serial_util, settings, params=None):
+
     #serial_util.trace("Calibrating probe")
-    serial_util.trace("Calculating Z Max Height")
     serial_util.doMacro('M104 S0', 'ok', -1, 'Shutting down extruder', verbose=False)
     serial_util.doMacro('M140 S0', 'ok', -1, 'Shutting down bed', verbose=False)
-    serial_util.doMacro('G90', 'ok', -1, 'Set absolute coordinates', verbose=False)
-    serial_util.doMacro('G92 Z0.08', 'ok', -1, 'Setting paper heigth', verbose=False)
-    serial_util.doMacro('G0 Z300 F1000', 'ok', -1, 'Lowering bed', verbose=False)
+    serial_util.doMacro('G92 Z0.08', 'ok', -1, 'Setting paper height', verbose=False)
+
+    if not zprobe_disabled:
+        zpos = 40
+        G30_offset = 10
+        serial_util.trace("Getting new Z Probe length")
+        serial_util.doMacro('G90', 'ok', 1, 'Absolute mode', verbose=False)
+        serial_util.doMacro('G0 X86 Y58 Z{0} F10000'.format(zpos), 'ok', -1, 'Moving the plane', verbose=False)
+        # Workaround for G30
+        serial_util.doMacro('G92 Z{0}'.format(zpos+G30_offset), 'ok', -1, 'setting position', verbose=False)
+        serial_util.doMacro('M401', 'ok', -1, 'Open probe', verbose=False)
+        probe_length = serial_util.g30()-G30_offset
+        serial_util.doMacro('M710 S{0}'.format(probe_length), 'ok', -1, 'Saving new value: {0}'.format(probe_length), verbose=False)
+        # zpos+1 is the actual position, due to the behavior of G30 and the Z+1 movement done
+        # by the serial_util.g30() function.
+        serial_util.doMacro('G92 Z{0}'.format(zpos+1), 'ok', -1, 'setting position', verbose=False)
+        #serial_util.doMacro('G91', 'ok', -1, 'Relative mode', verbose=False)
+        # Already done during call of serial_util.g30()
+        #serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving the plane', verbose=False)
+        serial_util.doMacro('M402', 'ok', -1, 'close probe', verbose=False)
+
+    serial_util.trace("Calculating Z Max Height")
+    serial_util.doMacro('M121', 'ok', -1, 'Forcefully enable endstops', verbose=False)
+    serial_util.doMacro('G90', 'ok', 1, 'Absolute mode', verbose=False)
+    serial_util.doMacro('G0 Z250 F1000', 'ok', -1, 'Lowering bed', verbose=False)
     current_position = serial_util.getPosition()
     z_offset_max = current_position['count']['z']
     serial_util.doMacro('G92 Z{0}'.format(z_offset_max), 'ok', -1, 'setting position', verbose=False)
+
     #serial_util.trace("Z Lenght calibrated : {0} mm".format(z_offset_max))
     ''' ============================================== '''
     ### probe lenght calibration
-    serial_util.trace("Calculating Probe Length")
-    serial_util.doMacro('G0 X86 Y58 Z50 F1000', 'ok', -1, 'calibration point', verbose=False)
-    serial_util.doMacro('M401', 'ok', -1, 'Open probe', verbose=False)
-    probe_length = serial_util.g30()
-    
+    #serial_util.trace("Calculating Probe Length")
+    #serial_util.doMacro('G0 X86 Y58 Z50 F1000', 'ok', -1, 'calibration point', verbose=False)
     serial_util.doMacro('G91', 'ok', 1, 'Relative mode', verbose=False)
-    #serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving the plane', verbose=False)
-    serial_util.doMacro('M402', 'ok', -1, 'close probe', verbose=False)
-    serial_util.doMacro('M710 S{0}'.format(probe_length), 'ok', -1, 'Saving new value: {0}'.format(probe_length), verbose=False)
-    serial_util.doMacro('G90', 'ok', -1, 'Setting absolute position', verbose=False)
+    serial_util.doMacro('G0 Z-5 F1000', 'ok', -1, 'Moving the plane', verbose=False)
     serial_util.doMacro('G28 X0 Y0', 'ok', -1, 'Homing all axes', verbose=False)
+    serial_util.doMacro('G90', 'ok', 1, 'Absolute mode', verbose=False)
     serial_util.doMacro('M300', 'ok', -1, 'Complete')
+
     settings['zprobe']['zmax'] = z_offset_max
-    serial_util.trace("New Z Max Height : {0}".format(z_offset_max) + " mm" )
-    serial_util.trace("New Probe Length : {0}".format(probe_length) + " mm" )
+    serial_util.trace("New Z Max Height : {0} mm".format(z_offset_max))
+    if not zprobe_disabled:
+        serial_util.trace("New Probe Length : {0} mm".format(probe_length))
     saveSettings(settings)
     #else:
     #    raise serial_utils.MacroException('Get current Z position failed')
@@ -373,7 +393,7 @@ def extrude(serial_util, settings, params=None):
 """ ################################################################### """  
 def preLaser(serial_util, settings, params=None):
     serial_util.trace("Preparing laser engraving procedure")
-    serial_util.doMacro('M744', 'open', 1, 'Checking platform',verbose=False, errorMessage='Please revert platform')
+    serial_util.doMacro('M744', 'open', 1, 'Checking platform',verbose=False, errorMessage='Please flip platform')
     #if(int(params['param1']) == 0): ## if is not restart
     #    serial_util.doMacro('G27 Z', 'ok', -1, 'Lowering platform', verbose=False)
     #    serial_util.doMacro('G28 X Y', 'ok', -1, 'G28 Homing', verbose=False)
@@ -382,10 +402,11 @@ def preLaser(serial_util, settings, params=None):
     serial_util.doMacro('M61 S5', 'ok', -1, 'Laser ON (Minimum Power)', verbose=True)
 def startLaserPrint(serial_util, settings, params=None):
     serial_util.doMacro('M732 S1', 'ok', -1, 'Door control enabled', verbose=True)
-    serial_util.doMacro('G92 X0 Y0 Z0', 'ok', -1, 'Set home position', verbose=False)
+    serial_util.doMacro('M106', 'ok', -1, 'Fan on', verbose=False)
     if(int(params['param1']) == 1): ## if is not restart
         serial_util.doMacro('G91', 'ok', -1, 'Set relative position', verbose=False)
         serial_util.doMacro('G0 Z+{0} F1000'.format(LASER_FOCUS_OFFSET), 'ok', -1, 'Going to focus point', verbose=True)
+    serial_util.doMacro('G92 X0 Y0 Z0', 'ok', -1, 'Set home position', verbose=False)
     position= serial_util.getPosition()
     #serial_util.trace("Position saved: X{0} Y{1} Z{2}".format(position["x"], position["y"], position['z']))
     settings['position'] = position
@@ -400,9 +421,11 @@ def endLaserPrint(serial_util, settings, params=None):
     serial_util.trace("End laser macro")
     serial_util.doMacro('G90', 'ok', -1, 'Set absoulte position', verbose=False)
     serial_util.doMacro('G0 X{0} Y{1} Z{2} F10000'.format(settings['position']['x'], settings['position']['y'], z_height), 'ok', -1, "Going to home", verbose=False)
-    serial_util.doMacro('M61 S0', 'ok', -1, 'Shutting down laser', verbose=True)
-    serial_util.doMacro('M60 S0', 'ok', -1, 'Shutting down laser', verbose=False)
+    serial_util.doMacro('M62', 'ok', -1, 'Shutting down laser', verbose=False)
     serial_util.doMacro('M732 S{0}'.format(settings['safety']['door']), 'ok', -1, 'Door control restored', verbose=True)
+    serial_util.doMacro('M220 S100', 'ok', -1, 'Reset Speed factor override', verbose=False)
+    serial_util.doMacro('M107', 'ok', -1, 'Fan off', verbose=False)
+    
 
 MACROS_CMDS = {
  'load_spool'              : loadSpool,

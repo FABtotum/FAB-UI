@@ -5,7 +5,7 @@ from subprocess import call
 import socket
 
 import ConfigParser
-import logging
+#import logging
 import json
 
 config = ConfigParser.ConfigParser()

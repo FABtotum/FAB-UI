@@ -3,15 +3,32 @@ require_once '/var/www/lib/config.php';
 require_once '/var/www/lib/utilities.php';
 
 $reload = isset($_GET['manually']) ? filter_var($_GET['manually'], FILTER_VALIDATE_BOOLEAN) : false;
-if($reload || !file_exists(INSTAGRAM_FEED_JSON) || !file_exists(INSTAGRAM_FEED_JSON)){
+
+if($reload || !file_exists(INSTAGRAM_FEED_JSON) || file_get_contents(INSTAGRAM_FEED_JSON) == ''){
 	require_once '/var/www/cron/instagram_feed.php';
 }
-$feed = json_decode(file_get_contents(INSTAGRAM_FEED_JSON), true);
-$items = $feed['data'];
-$items = array_unique($items, SORT_REGULAR);
 
-uasort($items, 'cmp');
+$show = false;
 
+if(file_get_contents(INSTAGRAM_FEED_JSON) != ''){
+	$feed = json_decode(file_get_contents(INSTAGRAM_FEED_JSON), true);
+	$items = $feed['data'];
+	$items = array_unique($items, SORT_REGULAR);
+	
+	$filtered_items    = array();
+	$new_items_id = array();
+	
+	foreach ($items as $i) {
+		if(!in_array($i['id'], $new_items_id)){
+			array_push($new_items_id, $i['id']);
+			$filtered_items[] = $i;
+		}
+	}
+	$items = $filtered_items;
+	uasort($items, 'cmp');
+	$show = true;
+
+}
 function cmp($a, $b) {
 	
 	if ($a['date'] == $b['date']) {
@@ -21,11 +38,13 @@ function cmp($a, $b) {
 	return ($a['date'] > $b['date']) ? -1 : 1;
 }
 
+
 ?>
 <div class="row images-container">
 	<div class="col-sm-12">
 		<div class="grid">
 			<div class="grid-sizer"></div>
+			<?php if($show):?>
 			<?php foreach($items as $item): ?>
 				<div class="grid-item">
 					<div class="grid-item-inner">
@@ -46,6 +65,7 @@ function cmp($a, $b) {
 					</div>
 				</div>
 			<?php endforeach; ?>
+			<?php endif;?>
 		</div>
 	</div>
 	<div>

@@ -14,7 +14,7 @@ class MacroTimeOutException(Exception):
 
 class SerialUtils:
     
-    MAX_MACRO_TIMEOUT = 90
+    MAX_MACRO_TIMEOUT = 180
     
     def __init__(self, port=None, baud=None, trace_file=None, debug=False):
         self.debug = debug

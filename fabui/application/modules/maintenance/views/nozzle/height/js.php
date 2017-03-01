@@ -262,10 +262,10 @@
 				
 		       var html = 'Override value: ' +  data.over + '\n';
 		       html += '====================================\n';
-		       html += 'Old Probe Length: ' + Math.abs(data.old_probe_lengt) + '\n';
+		       html += 'Old Probe Length: ' + Math.abs(data.old_probe_length) + '\n';
 		       html += 'Old Z Max: ' + Math.abs(data.old_z_max) + '\n';
 		       html += '====================================\n';
-		       html += 'New Probe Length: ' + data.probe_length+'\n';
+		       html += 'New Probe Length: ' + Math.abs(data.probe_length)+'\n';
 		       html += 'New Z Max: ' + data.z_max;
 
 		       $("#over-calibrate-trace").html(html);

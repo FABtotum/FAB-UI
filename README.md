@@ -1,4 +1,23 @@
 # FABTOTUM USER INTERFACE
+
+### Version 0.986 - 2017-03-01
+
+#### General
+* Fixed and improved Nozzle Height calibration
+* Minor bugfixes
+
+#### Firmware
+* Head state is not reset after M999: this makes possible (again) to use other machine functions while the head is disabled after an error occurred.
+* Fixed G28 not setting X/Y as homed after G28 without arguments
+* Lowered min heater temperature down to 10 degrees
+* Setting laser power to 0 actually turns off the laser beam
+* Ambient color correctly reset after homing
+
+See complete changelog [here] (https://github.com/FABtotum/FABlin#version-1000972)
+
+==================================================================
+
+
 ### Version 0.98 - 2017-01-23
 
 #### General

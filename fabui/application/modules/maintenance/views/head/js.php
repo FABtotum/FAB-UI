@@ -11,8 +11,8 @@
 				title : "<i class='fa fa-warning'></i> New head has been installed, it is recommended to repeat the Probe Calibration operation",
 				buttons : '[<i class="fa fa-crosshairs"></i> Calibrate][Ignore]'
 			}, function(ButtonPressed) {
-				if(ButtonPressed === "Calibrate") {	
-						document.location.href="<?php echo site_url('maintenance/probe/length-calibration'); ?>";		
+				if(ButtonPressed === "Calibrate") {
+						document.location.href="<?php echo site_url('maintenance/nozzle/height-calibration'); ?>";
 				}
 				if (ButtonPressed === "Ignore") {
 					
