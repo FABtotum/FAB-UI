@@ -28,11 +28,13 @@ switch($type){
  */
 function preparingAdditiveTask($data)
 {
-	$settings = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);
+	$configs = json_decode(file_get_contents(FABUI_PATH.'config/config.json'), TRUE);
 	$engage_feeder = isset($data['engage_feeder']) && $data['engage_feeder'] == 1 ? true : false;
 	
-	$ext_temp = isset($configs['print']['pre-heating']['extruder']) ? $configs['print']['pre-heating']['extruder'] : 150;
-	$bed_temp = isset($configs['print']['pre-heating']['bed']) ? $configs['print']['pre-heating']['bed'] : 50;
+	$ext_temp = isset($configs['print']['pre-heating']['extruder']) ? $configs['print']['pre-heating']['extruder'] : 180;
+	$bed_temp = isset($configs['print']['pre-heating']['bed']) ? $configs['print']['pre-heating']['bed'] : 35;
+	
+	
 	//pre-heating bed and nozzle
 	shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M104 S'.$ext_temp.'-M140 S'.$bed_temp.' &"');
 	//raise macro

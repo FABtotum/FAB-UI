@@ -12,7 +12,7 @@ $eeprom = json_decode(shell_exec('sudo python '.PYTHON_PATH.'read_eeprom.py'), t
 //calc new value
 $new_length =  abs($eeprom['probe_length']) - $over;
 $old_z_max = $settings['zprobe']['zmax'];
-$settings['zprobe']['zmax'] = $settings['zprobe']['zmax'] + $over;
+$settings['zprobe']['zmax'] = $settings['zprobe']['zmax'] - $over;
 
 $r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M710 S'.abs($new_length).'"'));
 $r = json_decode(shell_exec('sudo python '.PYTHON_PATH.'serial_factory.py -m send -c "M500"'));

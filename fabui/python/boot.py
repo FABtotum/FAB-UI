@@ -86,7 +86,7 @@ def hardware2(serialUtils, settings, settings_file):
     ### invert x endstop logic
     commands.append('M747 X1')
     ### Maximum feedrates (mm/s):
-    commands.append('M203 X550.00 Y550.00 Z15.00 E12.00')
+    commands.append('M203 X250.00 Y250.00 Z15.00 E11.00')
     ### save config file
     settings['hardware']['id'] = 2
     settings['feeder']['show'] = True
@@ -109,7 +109,7 @@ def hardware3(serialUtils, settings, settings_file):
     ### invert x endstop logic
     commands.append('M747 X1')
     ### Maximum feedrates (mm/s):
-    commands.append('M203 X550.00 Y550.00 Z15.00 E12.00')
+    commands.append('M203 X250.00 Y250.00 Z15.00 E11.00')
     ### save config file
     settings['hardware']['id'] = 3
     settings['feeder']['show'] = False
@@ -142,7 +142,7 @@ def hardware5(serialUtils, settings, settings_file):
     ### invert x endstop logic
     commands.append('M747 X1')
     ### Maximum feedrates (mm/s):
-    commands.append('M203 X550.00 Y550.00 Z15.00 E23.00')
+    commands.append('M203 X250.00 Y250.00 Z15.00 E23.00')
     ### save config file
     settings['hardware']['id'] = 5
     settings['feeder']['show'] = False

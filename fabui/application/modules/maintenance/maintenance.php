@@ -245,7 +245,8 @@ class Maintenance extends Module {
 				'1.0.0096.1'   => 250000,
 				'1.0.0097'     => 250000,
 				'1.0.0097.1'   => 250000,
-				'1.0.0097.2'   => 250000
+				'1.0.0097.2'   => 250000,
+                '1.0.0098'     => 250000
 		);
 		
 		if(isset($data['firmwares_baudrate'][$data['fabtotum_info']['fw']['version']])){

@@ -29,8 +29,13 @@
 								<label class="select">
 									<select name='invert_x_endstop_logic' id="invert_x_endstop_logic">
 										<option value="no" >No</option>
-										<option value="yes" <?php echo $settings['custom']['invert_x_endstop_logic'] ?'selected="selected"' : '';  ?>>Yes</option>
-									</select> <i></i> </label>
+										<option value="yes" <?php
+												echo isset($settings['custom']['invert_x_endstop_logic']) && $settings['custom']['invert_x_endstop_logic'] == true
+												? 'selected="selected"'
+												: '';
+											?>>Yes</option>
+									</select>
+									<i></i>
 								</label>
 							</section>
 							
@@ -45,12 +50,26 @@
 								</label>
 							</section>
 							 -->
-							<section class="col col-3">
+							<section class="col col-6">
 								<label class="label">Extruder steps per unit A mode</label>
 								<label class="input">
 									<input type="text" id="hw-feeder-extruder-steps-per-unit-a" name="hw-feeder-extruder-steps-per-unit-a" placeholder="" value="<?php echo $settings['a']; ?>">
 								</label>
 								
+							</section>
+							<section class="col col-6">
+								<label class="label">Camera</label>
+								<label class="select">
+									<select name='camera_available' id="camera_available">
+										<option value="no" >No</option>
+										<option value="yes" <?php
+												echo isset($settings['custom']['camera_available']) && $settings['custom']['camera_available'] == true
+												? 'selected="selected"'
+												: '';
+											?>>Yes</option>
+									</select>
+									<i></i>
+								</label>
 							</section>
 						</div>
 						

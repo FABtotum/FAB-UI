@@ -116,7 +116,7 @@
     				<h3 class="text-primary">Calibration result</h3>
     			</div>
     			<div class="col-sm-9">
-    				<button class="btn btn-primary btn-default  pull-right calibrate-again">Calibrate again</button>
+    				<button class="btn btn-primary btn-default pull-right calibrate-again">Calibrate again</button>
     			</div>
     		</div>
     		<div class="row margin-top-10">

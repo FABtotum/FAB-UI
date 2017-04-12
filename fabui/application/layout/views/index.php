@@ -344,6 +344,9 @@
 			var PRINTER_BUSY = <?php echo $_printer_busy; ?>;
 			var MAX_NOZZLE_TEMP = <?php echo $_max_temp; ?>;
 			var SHOW_FEEDER = <?php echo $_show_feeder == 1 ? 'true' : 'false'; ?>;
+			var hardware_id = <?php echo $_hardware_id; ?>;
+			var is_custom = <?php echo $_is_custom ? 'true' : 'false'; ?>;
+			var has_camera = <?php echo $_camera_available ? 'true' : 'false'; ?>;
 		</script>
 		<!-- END JAVASCRIPT VARS -->
 		<!-- JAVASCRIPT INCLUSIONS -->

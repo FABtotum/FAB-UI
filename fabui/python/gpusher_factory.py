@@ -385,25 +385,26 @@ def end_print(fast_end=False):
             M121
             M220 S100
             G91
-            G0 Z+1 E-5 F1000
-            G90
-            G0 X200 Y200 F2500
         """
-        ) 
+        )        
+        if temperatures["extruder"] > 175:
+            procedures["print"] += "G0 E-3 F1000\n"
+            procedures["print"] += "G0 Z+3 X+0.5 F1000\n"
+        else:
+            procedures["print"] += "G0 Z+1 F1000\n"
+        procedures["print"] += "G90\n"
+
     print_type = statistics["print_type"]
     try:
         proc = procedures[print_type]
         spool_multiple(proc)
-        #trace("print_type: {0}".format(print_type))
     except KeyError:
         pass
 
 def finalize(status, task_id):
-    if(statistics["print_type"] == 'print'):
+    if statistics["print_type"] == 'print':
         trace("Moving to safe zone")
-    
     call(["sudo php /var/www/fabui/script/finalize.php {0} {1} {2}".format(task_id, statistics["print_type"], status)], shell=True)
-    #trace("sudo php /var/www/fabui/script/finalize.php {0} {1} {2}".format(task_id, statistics["print_type"], status))
 
 
 ######################################################
@@ -1359,7 +1360,9 @@ def app_init():
     serialconfig.read('/var/www/lib/serial.ini')
     serial_port = serialconfig.get('serial', 'port')
     serial_baud = serialconfig.get('serial', 'baud')
-    ser = serial.Serial(serial_port, serial_baud, timeout=35)
+    ser = serial.Serial(serial_port,
+                        serial_baud,
+                        timeout=60 if statistics["print_type"] == 'print' else None)
 
     ''' SETTING EXPECTED ARGUMENTS  '''
     parser = argparse.ArgumentParser()

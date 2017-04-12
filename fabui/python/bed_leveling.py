@@ -51,7 +51,7 @@ class BedLeveling():
         self.serial.doMacro('G21', 'ok', 1, "Set units millimeters", verbose=False)
         if(self.safety_door):
             self.serial.doMacro('M741', 'TRIGGERED', -1, 'Front panel door control', verbose=False)
-        self.serial.doMacro('M744', 'TRIGGERED', 1, 'Milling bed side up', verbose=False, errorMessage="Please revert platform")
+        self.serial.doMacro('M744', 'TRIGGERED', 1, 'Milling bed side up', verbose=False, errorMessage="Please flip platform")
         self.serial.doMacro('M402', 'ok', -1, 'Retracting Probe (safety)', verbose=False)
         self.serial.doMacro('G90', 'ok', -1, 'Setting absolute mode', verbose=False)
         if(self.skip_homing == False):

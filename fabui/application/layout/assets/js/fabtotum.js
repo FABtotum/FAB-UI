@@ -51,24 +51,28 @@ function pad(val) {
 	return val > 9 ? val : "0" + val;
 }
 
-function freeze_menu(except) {
+function freeze_menu(except, task_type) {
+	task_path = (typeof task_type == 'undefined' ? '' : '/'+task_type);
 
-	var excepet_item_menu = new Array();
-	excepet_item_menu[0] = 'dashboard';
-	excepet_item_menu[1] = 'objectmanager';
-	excepet_item_menu[2] = 'make/history';
-	excepet_item_menu[3] = except;
-	
+	var except_item_menu = [
+		'dashboard',
+		'objectmanager',
+		'make',
+		'make/history',
+		'make'+task_path,
+		except
+	];
+
 	var a = $("nav li > a");
 	
 	a.each(function() {
 		var controller = $(this).attr('data-controller');
-		if(jQuery.inArray( controller, excepet_item_menu ) >= 0 ){
-			if(controller == except){
+		if(jQuery.inArray( controller, except_item_menu ) >= 0 ){
+			if (controller == except){
 				if($(this).find('span:last').hasClass( "freeze-menu" ) == false)
 					$(this).append('<span class="badge bg-color-red pull-right inbox-badge freeze-menu animated fadeIn">!</span>');
 			}
-		}else{
+		} else {
 			$(this).addClass('menu-disabled');
 			$(this).removeAttr('href');
 		}
@@ -126,6 +130,10 @@ var IS_MACRO_ON = false;
 var IS_TASK_ON = false;
 var jog_ticket_url = '';
 var interval_temperature;
+var TEMPS_TIMEOUT = 2500;
+
+var FAB_LITE_LOWER = 1000;
+var FAB_LITE_UPPER = 1999;
 
 var BLOCK_TEMP_EXT_SLIDER = false;
 
@@ -194,7 +202,7 @@ function set_tasks(data) {
 	}
 
 	if (data.number > 0) {
-		freeze_menu(controller);
+		freeze_menu(controller, data.items[0].type);
 		freezed = true;
 	} else {
 		freezed = false;
@@ -430,7 +438,7 @@ $(function() {
 		notifications_interval = setInterval(check_notifications, 10000);
 		idleInterval = setInterval(timerIncrement, 1000);
 		safety_interval = setInterval(safety, 3000);
-		interval_temperature = setInterval(get_temperatures, 2500);
+		interval_temperature = setInterval(get_temperatures, TEMPS_TIMEOUT);
 		
 		/* START TIMER... */
 		$("#refresh-notifications").on('click', refresh_notifications);
@@ -1081,6 +1089,7 @@ function update_temperature_info(data) {
 		var ext_target = temperature[1].split('/')[1];
 		var bed_temp = temperature[2].split(':')[1];
 		var bed_target = temperature[3].split('/')[1];
+		var ext_pilot = str_temp.slice(str_temp.indexOf('@:')+2).split(" ")[0];
 
 		/******* TOP BAR *********************/
 		$("#top-bar-nozzle-actual").html(parseInt(ext_temp));
@@ -1089,8 +1098,10 @@ function update_temperature_info(data) {
 		$("#top-bar-bed-target").html(parseInt(bed_target));
 		
 		if($("#top-act-ext-temp").length > 0){
+			var textt_slider = document.getElementById('top-ext-target-temp').noUiSlider;
 			document.getElementById('top-act-ext-temp').noUiSlider.set([parseInt(ext_temp)]);
-			document.getElementById('top-ext-target-temp').noUiSlider.set([parseInt(ext_target)]);
+			if (!textt_slider._clicked)
+				document.getElementById('top-ext-target-temp').noUiSlider.set([parseInt(ext_target)]);
 		}
 		
 		if($("#top-act-bed-temp").length > 0){
@@ -1098,21 +1109,17 @@ function update_temperature_info(data) {
 		}
 		
 		if($("#top-bed-target-temp").length > 0){
-			document.getElementById('top-bed-target-temp').noUiSlider.set([parseInt(bed_target)]);
+			var tbedt_slider = document.getElementById('top-bed-target-temp').noUiSlider;
+			if (!tbedt_slider._clicked)
+				document.getElementById('top-bed-target-temp').noUiSlider.set([parseInt(bed_target)]);
 		}
-		
-		
-		
-		
-		
 
 		if ( typeof (Storage) !== "undefined") {
-			
-			
 			localStorage.setItem("nozzle_temp", ext_temp);
 			localStorage.setItem("nozzle_temp_target", ext_target);
 			localStorage.setItem("bed_temp", bed_temp);
 			localStorage.setItem("bed_temp_target", bed_target);
+			localStorage.setItem("ext_pilot_value", ext_pilot);
 
 		} else {
 
@@ -1120,18 +1127,33 @@ function update_temperature_info(data) {
 
 		/*********** JOG ***************************/
 		if (MODULE == "jog") {
-		
-			if($("#act-ext-temp").length > 0){
+			var bedt_slider = document.getElementById('bed-target-temp').noUiSlider;
+
+			if ($("#act-ext-temp").length > 0) {
+				var extt_slider = document.getElementById('ext-target-temp').noUiSlider;
+
 				$("#ext-actual-degrees").html(parseInt(ext_temp) + '&deg;C');
 				document.getElementById('act-ext-temp').noUiSlider.set([parseInt(ext_temp)]);
-				document.getElementById('ext-target-temp').noUiSlider.set([parseInt(ext_target)]);
+				
+				if (!extt_slider._clicked) {
+					extt_slider.set([parseInt(ext_target)]);
+					$("#ext-degrees").html(parseInt(ext_target) + '&deg;C');
+				}
 			}
-			
-			
+
+			if (typeof updateGraphs == "function")
+				updateGraphs();
+
+			if ($("#ext-pilot-value"))
+				$("#ext-pilot-value").html('@'+parseInt(ext_pilot));
+
 			$("#bed-actual-degrees").html(parseInt(bed_temp) + '&deg;C');
 			document.getElementById('act-bed-temp').noUiSlider.set([parseInt(bed_temp)]);
-			
-			document.getElementById('bed-target-temp').noUiSlider.set([parseInt(bed_target)]);
+			if (!bedt_slider._clicked) {
+				bedt_slider.set([parseInt(bed_target)]);
+				$("#bed-degrees").html(parseInt(bed_target) + '&deg;C');
+			}
+
 			if (showTemperatureConsole) {
 				write_to_console('Temperatures (M105) [Ext: ' + parseInt(ext_temp) + ' / ' + parseInt(ext_target) + ' ---  Bed: ' + parseInt(bed_temp) + ' / ' + parseInt(bed_target) + ']\n');
 				showTemperatureConsole = false;
@@ -1222,24 +1244,40 @@ function initUI(){
 		//SLIDER EVENTS - EXTRUDER
 		document.getElementById("top-ext-target-temp").noUiSlider.on('slide', topExtTempSlide);
 		document.getElementById("top-ext-target-temp").noUiSlider.on('change', topExtTempChange);
-		document.getElementById("top-ext-target-temp").noUiSlider.on('start', blockSliders);
-		document.getElementById("top-ext-target-temp").noUiSlider.on('end', enableSliders);
+        document.getElementById("top-ext-target-temp").noUiSlider.on(
+			'start',
+			function() {
+				document.getElementById("ext-target-temp").noUiSlider._clicked = true;
+				document.getElementById("top-ext-target-temp").noUiSlider._clicked = true;
+			}
+        );
+        document.getElementById("top-ext-target-temp").noUiSlider.on(
+			'end',
+			function() {
+				document.getElementById("ext-target-temp").noUiSlider._clicked = false;
+				document.getElementById("top-ext-target-temp").noUiSlider._clicked = false;
+			}
+        );
 		$("#top-act-ext-temp .noUi-handle").remove();
 	}
 	// ===============================================================================
 	//SLIDER EVENTS - BED
 	document.getElementById("top-bed-target-temp").noUiSlider.on('slide', topBedTempSlide);
 	document.getElementById("top-bed-target-temp").noUiSlider.on('change', topBedTempChange);
-	document.getElementById("top-bed-target-temp").noUiSlider.on('start', blockSliders);
-	document.getElementById("top-bed-target-temp").noUiSlider.on('end', enableSliders);
-}
-
-
-function blockSliders(){
-}
-
-
-function enableSliders(){ 
+	document.getElementById("top-bed-target-temp").noUiSlider.on(
+		'start',
+		function() {
+			document.getElementById("bed-target-temp").noUiSlider._clicked = true;
+			document.getElementById("top-bed-target-temp").noUiSlider._clicked = true;
+		}
+	);
+	document.getElementById("top-bed-target-temp").noUiSlider.on(
+		'end',
+		function() {
+			document.getElementById("bed-target-temp").noUiSlider._clicked = false;
+			document.getElementById("top-bed-target-temp").noUiSlider._clicked = false;
+		}
+	);
 }
 
 
@@ -1257,7 +1295,6 @@ function topExtTempSlide(e){
 function topExtTempChange(e){
 	jog_call("ext_temp", parseInt(e[0]));
 }
-
 
 function topBedTempSlide(e){
 	
@@ -1331,7 +1368,7 @@ function RefreshTable(tableId, urlData)
 }
 
 /** analize serial response */
-function analizeResponse(response){
+function analizeResponse(response) {
 	var regex_endstop_hit = /echo:endstops\shit:\s\s([^a-z])/g;
 	m = regex_endstop_hit.exec(response);
 	if( m !== null){
@@ -1348,13 +1385,20 @@ function analizeResponse(response){
 /** */
 function analizeMenu()
 {
-	var item_to_hide = ['feeder/engage', 'maintenance/4-axis'];
+	var items_to_hide = ['feeder/engage', 'maintenance/4-axis'];
+	var items_to_hide_lite = ['settings/raspi-cam', 'make/scan'];
 	var a = $("nav li > a");
+
 	a.each(function() {
 		var link = $(this);
 		var controller = link.attr('data-controller');
-		if(jQuery.inArray( controller, item_to_hide ) >= 0 && SHOW_FEEDER == false){
+
+		if (jQuery.inArray( controller, items_to_hide ) >= 0 && SHOW_FEEDER == false) {
 			link.remove();
+		}
+		if (jQuery.inArray( controller, items_to_hide_lite ) >= 0) {
+			if ((FAB_LITE_LOWER <= hardware_id && hardware_id <= FAB_LITE_UPPER) || (is_custom && !has_camera))
+				link.remove();
 		}
 	});
 }

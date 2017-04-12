@@ -70,7 +70,8 @@ if ( ! function_exists('create_default_config'))
 			'hardware'      => array('head' => array('type' => 'print_v2', 'description'=>'Printing Head V2', 'max_temp'=>250)),
 			'custom'        => array(
 				'overrides' => CONFIG_FOLDER . 'custom_overrides.txt',
-				'invert_x_endstop_logic' => false
+				'invert_x_endstop_logic' => false,
+                'camera_available' => false
 			)
 		);
 		write_file(CONFIG_FOLDER . 'config.json', json_encode($dafault_config));

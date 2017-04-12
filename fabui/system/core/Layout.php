@@ -30,6 +30,9 @@ class FT_Layout {
 	protected $_show_feeder = true;
 	protected $_show_nozzle_temp = true;
 	protected $_max_temp = 230;
+	protected $_hardware_id = 1;
+	protected $_is_custom = false;
+	protected $_camera_available = false;
 
 	protected $_ci;
 
@@ -169,15 +172,13 @@ class FT_Layout {
 
 		$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER . 'config.json'), true);
 
-		if (isset($fabtotum_config['settings_type']) && $fabtotum_config['settings_type'] == 'custom' && file_exists(CONFIG_FOLDER . 'custom_config.json')) {
-			$fabtotum_config = json_decode(file_get_contents(CONFIG_FOLDER . 'custom_config.json'), true);
-		}
-
 		$this -> _show_feeder = isset($fabtotum_config['feeder']['show']) ? $fabtotum_config['feeder']['show'] : true;
 		$this -> _show_nozzle_temp = isset($fabtotum_config['hardware']['head']['max_temp']) && $fabtotum_config['hardware']['head']['max_temp'] > 0 ? true : false;
 		$this -> _max_temp = isset($fabtotum_config['hardware']['head']['max_temp']) ? $fabtotum_config['hardware']['head']['max_temp'] : 230;
+		$this -> _hardware_id = isset($fabtotum_config['hardware']['id']) ? $fabtotum_config['hardware']['id'] : 1;
+		$this->_is_custom = isset($fabtotum_config['settings_type']) && $fabtotum_config['settings_type'] == "custom" ? true : false;
+		$this->_camera_available = isset($fabtotum_config['custom']['camera_available']) && $fabtotum_config['custom']['camera_available'] ? true : false;
 		unset($fabtotum_config);
-
 	}
 
 	public function getFeeder() {
@@ -234,9 +235,11 @@ class FT_Layout {
 		
 		$data['_max_temp'] = $this -> _max_temp;
 		$data['_show_feeder'] = $this -> getFeeder();
+		$data['_hardware_id'] = $this->_hardware_id;
+		$data['_is_custom'] = $this->_is_custom;
+		$data['_camera_available'] = $this->_camera_available;
 
-		
-		
+
 		return $this -> _ft_load(array('_ci_view' => 'index', '_ci_vars' => $this -> _ci_object_to_array($data), '_ci_return' => $return));
 	}
 

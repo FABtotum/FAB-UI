@@ -1,4 +1,22 @@
 # FABTOTUM USER INTERFACE
+### Version 0.987 - 2017-04-12
+#### Bugfixes:
+* Fixed occasional timeout issue while performing a task with slow feedrates
+* Fixed fine nozzle calibration when ZMAX homing is used
+* Fixed pre-heat nozzle and bed temperatures not being respected
+* Minor fixes
+
+#### Enhancements:
+* Jog sliders aren't automatically dragged anymore when you are moving them
+* End of print procedure now parks head after homing Z axis to prevent crashing when printing multiple object one at a time
+* Make menu subpaths can now be used to go back to the active printing job
+* Added Raspi Cam management in custom settings page
+
+### Firmware
+* See complete changelog [here](https://github.com/FABtotum/FABlin#version-100098)
+
+==================================================================
+
 
 ### Version 0.986 - 2017-03-01
 
@@ -13,7 +31,7 @@
 * Setting laser power to 0 actually turns off the laser beam
 * Ambient color correctly reset after homing
 
-See complete changelog [here] (https://github.com/FABtotum/FABlin#version-1000972)
+See complete changelog [here](https://github.com/FABtotum/FABlin#version-1000972)
 
 ==================================================================
 
@@ -36,7 +54,7 @@ See complete changelog [here] (https://github.com/FABtotum/FABlin#version-100097
 * Broadened head misplacement detection cases
 * Workaround for faulty z-min endstops
 
-See complete changelog [here] (https://github.com/FABtotum/FABlin#version-100097)
+See complete changelog [here](https://github.com/FABtotum/FABlin#version-100097)
 
 ==================================================================
 
@@ -63,7 +81,7 @@ See complete changelog [here] (https://github.com/FABtotum/FABlin#version-100096
 * General bugfixes
 
 #### Firmware
-See complete changelog [here] (https://github.com/FABtotum/FABlin#version-100096)
+See complete changelog [here](https://github.com/FABtotum/FABlin#version-100096)
 
 ==================================================================
 

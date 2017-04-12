@@ -124,11 +124,12 @@ def checkPreMill(serial_util, settings, params=None):
 def endPrintAdditive(serial_util, settings, params=None):
     serial_util.doMacro('G90', 'ok', -1, 'Set Absolute movement')
     serial_util.doMacro('G27 Z0', 'ok', -1, 'Lowering the plane')
+    serial_util.doMacro('G0 X200 Y200 F2500', 'ok', -1, 'Moving head in parking position')
     serial_util.doMacro('M104 S0', 'ok', -1, 'Shutting down extruder')
     serial_util.doMacro('M140 S0', 'ok', -1, 'Shutting down heated Bed')
     serial_util.doMacro('M220 S100', 'ok', -1, 'Reset Speed factor override')
     serial_util.doMacro('M221 S100', 'ok', -1, 'Reset Extruder factor override')
-    serial_util.doMacro('M107 S100', 'ok', -1, 'Turning Fan off')
+    serial_util.doMacro('M107', 'ok', -1, 'Turning Fan off')
     serial_util.doMacro('M18', 'ok', -1, 'Motor off')
     serial_util.doMacro('M300', 'ok', -1, 'Done!')
 """ ################################################################### """
@@ -336,19 +337,16 @@ def probeSetupCalibrate(serial_util, settings, params=None):
     serial_util.doMacro('G92 Z0.08', 'ok', -1, 'Setting paper height', verbose=False)
 
     if not zprobe_disabled:
-        zpos = 40
-        G30_offset = 10
+        zprobe_safe = 40
         serial_util.trace("Getting new Z Probe length")
         serial_util.doMacro('G90', 'ok', 1, 'Absolute mode', verbose=False)
-        serial_util.doMacro('G0 X86 Y58 Z{0} F10000'.format(zpos), 'ok', -1, 'Moving the plane', verbose=False)
-        # Workaround for G30
-        serial_util.doMacro('G92 Z{0}'.format(zpos+G30_offset), 'ok', -1, 'setting position', verbose=False)
+        serial_util.doMacro('G0 X86 Y58 Z{0} F10000'.format(zprobe_safe), 'ok', -1, 'Moving the plane', verbose=False)
         serial_util.doMacro('M401', 'ok', -1, 'Open probe', verbose=False)
-        probe_length = serial_util.g30()-G30_offset
-        serial_util.doMacro('M710 S{0}'.format(probe_length), 'ok', -1, 'Saving new value: {0}'.format(probe_length), verbose=False)
-        # zpos+1 is the actual position, due to the behavior of G30 and the Z+1 movement done
+        probe_length = serial_util.g30()
+        # probe_length+1 is the actual position, due to the Z+1 movement done
         # by the serial_util.g30() function.
-        serial_util.doMacro('G92 Z{0}'.format(zpos+1), 'ok', -1, 'setting position', verbose=False)
+        serial_util.doMacro('G92 Z{0}'.format(probe_length+1), 'ok', -1, 'setting position', verbose=False)
+        serial_util.doMacro('M710 S{0}'.format(probe_length), 'ok', -1, 'Saving new value: {0}'.format(probe_length), verbose=False)
         #serial_util.doMacro('G91', 'ok', -1, 'Relative mode', verbose=False)
         # Already done during call of serial_util.g30()
         #serial_util.doMacro('G0 Z5 F1000', 'ok', -1, 'Moving the plane', verbose=False)
@@ -356,22 +354,14 @@ def probeSetupCalibrate(serial_util, settings, params=None):
 
     serial_util.trace("Calculating Z Max Height")
     serial_util.doMacro('M121', 'ok', -1, 'Forcefully enable endstops', verbose=False)
-    serial_util.doMacro('G90', 'ok', 1, 'Absolute mode', verbose=False)
-    serial_util.doMacro('G0 Z250 F1000', 'ok', -1, 'Lowering bed', verbose=False)
+    serial_util.doMacro('G90', 'ok', -1, 'Absolute mode', verbose=False)
+    serial_util.doMacro('G0 Z250 F1000', 'ok', -1, 'Moving Z axis down', verbose=False)
     current_position = serial_util.getPosition()
     z_offset_max = current_position['count']['z']
     serial_util.doMacro('G92 Z{0}'.format(z_offset_max), 'ok', -1, 'setting position', verbose=False)
-
-    #serial_util.trace("Z Lenght calibrated : {0} mm".format(z_offset_max))
-    ''' ============================================== '''
-    ### probe lenght calibration
-    #serial_util.trace("Calculating Probe Length")
-    #serial_util.doMacro('G0 X86 Y58 Z50 F1000', 'ok', -1, 'calibration point', verbose=False)
-    serial_util.doMacro('G91', 'ok', 1, 'Relative mode', verbose=False)
-    serial_util.doMacro('G0 Z-5 F1000', 'ok', -1, 'Moving the plane', verbose=False)
-    serial_util.doMacro('G28 X0 Y0', 'ok', -1, 'Homing all axes', verbose=False)
-    serial_util.doMacro('G90', 'ok', 1, 'Absolute mode', verbose=False)
-    serial_util.doMacro('M300', 'ok', -1, 'Complete')
+    serial_util.doMacro('G91', 'ok', -1, 'Relative mode', verbose=False)
+    serial_util.doMacro('G0 Z-2 F1000', 'ok', -1, 'Relative mode', verbose=False)
+    serial_util.doMacro('M300', 'ok', 1, 'Complete')
 
     settings['zprobe']['zmax'] = z_offset_max
     serial_util.trace("New Z Max Height : {0} mm".format(z_offset_max))

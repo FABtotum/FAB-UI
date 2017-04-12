@@ -1,5 +1,7 @@
 <script type="text/javascript">
-
+    
+    TEMPS_TIMEOUT = 2500;
+    
 	var positions = new Array();
 	
 	var interval_ticker;
@@ -218,15 +220,35 @@
 		 	//SLIDER EVENTS - EXTRUDER
 		 	document.getElementById("ext-target-temp").noUiSlider.on('slide', extTempSlide);
 			document.getElementById("ext-target-temp").noUiSlider.on('change', extTempChange);
-			document.getElementById("ext-target-temp").noUiSlider.on('start', blockSliders);
-			document.getElementById("ext-target-temp").noUiSlider.on('end', enableSliders);
+			document.getElementById("ext-target-temp").noUiSlider.on(
+					'start',
+					function() {
+							document.getElementById("ext-target-temp").noUiSlider._clicked = true;
+					}
+			);
+			document.getElementById("ext-target-temp").noUiSlider.on(
+					'end',
+					function() {
+							document.getElementById("ext-target-temp").noUiSlider._clicked = false;
+					}
+			);
 		}
 		
 		//SLIDER EVENTS - BED
 		document.getElementById("bed-target-temp").noUiSlider.on('slide', bedTempSlide);
 		document.getElementById("bed-target-temp").noUiSlider.on('change', bedTempChange);
-		document.getElementById("bed-target-temp").noUiSlider.on('start', blockSliders);
-		document.getElementById("bed-target-temp").noUiSlider.on('end', enableSliders);
+        document.getElementById("bed-target-temp").noUiSlider.on(
+                'start',
+                function() {
+                        document.getElementById("bed-target-temp").noUiSlider._clicked = true;
+                }
+        );
+        document.getElementById("bed-target-temp").noUiSlider.on(
+                'end',
+                function() {
+                        document.getElementById("bed-target-temp").noUiSlider._clicked = false;
+                }
+        );
 	 	
 	 	
 	 	$(".extruder-mode").on('click', function() {

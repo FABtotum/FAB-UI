@@ -303,10 +303,20 @@ function save_hardware_settings(){
 	var feeder_extruder_steps_per_unit_e = $("#hw-feeder-extruder-steps-per-unit-e").val();
 	var feeder_extruder_steps_per_unit_a = $("#hw-feeder-extruder-steps-per-unit-a").val();
 	var invert_x_endstop_logic           = $("#invert_x_endstop_logic").val();
+	var has_camera			             = $("#camera_available").val();
 	var show_feeder                      = $("#show_feeder").val();
-	var custom_overrides                 = $("#custom_overrides").val();  	
+	var custom_overrides                 = $("#custom_overrides").val();
 
-	var data = {type: settings_type, feeder_extruder_steps_per_unit_a: feeder_extruder_steps_per_unit_a, feeder_extruder_steps_per_unit_e: feeder_extruder_steps_per_unit_e, show_feeder : show_feeder, custom_overrides:custom_overrides, invert_x_endstop_logic:invert_x_endstop_logic, action:action};
+	var data = {
+		type: settings_type,
+		feeder_extruder_steps_per_unit_a: feeder_extruder_steps_per_unit_a,
+		feeder_extruder_steps_per_unit_e: feeder_extruder_steps_per_unit_e,
+		show_feeder: show_feeder,
+		custom_overrides: custom_overrides,
+		invert_x_endstop_logic: invert_x_endstop_logic,
+		camera_available: has_camera,
+		action: action
+	};
 	  
 	  
 	openWait("Please wait");

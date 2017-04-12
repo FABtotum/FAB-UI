@@ -30,7 +30,7 @@ if($action == 'calculate'){
 }
 
 if($new_step_value > 2000){
-	$m203E = "12.00";
+	$m203E = "11.00";
 }else{
 	$m203E = "23.00";
 }

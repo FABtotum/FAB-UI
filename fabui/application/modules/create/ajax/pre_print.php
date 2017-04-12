@@ -34,8 +34,8 @@ if($_type == 'additive'){
 	$serial->confStopBits(1);
 	$serial->deviceOpen();
 	
-	$ext_temp = isset($configs['print']['pre-heating']['extruder']) ? $configs['print']['pre-heating']['extruder'] : 150;
-	$bed_temp = isset($configs['print']['pre-heating']['bed']) ? $configs['print']['pre-heating']['bed'] : 50;
+	$ext_temp = isset($configs['print']['pre-heating']['extruder']) ? $configs['print']['pre-heating']['extruder'] : 180;
+	$bed_temp = isset($configs['print']['pre-heating']['bed']) ? $configs['print']['pre-heating']['bed'] : 35;
 	$serial->sendMessage("M104 S".$ext_temp.PHP_EOL);
 	$serial->sendMessage("M140 S".$bed_temp.PHP_EOL);
 	$serial->deviceClose();
@@ -52,9 +52,9 @@ if($_type == 'additive'){
 	
 }else{
 	
-	$_4th_axis_mmode = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m 4th_axis_mode';
+	$_4th_axis_mode = 'sudo python '.PYTHON_PATH.'gmacro_new.py -m 4th_axis_mode';
 	//$_4th_axis_mmode = 'sudo python '.PYTHON_PATH.'gmacro.py 4th_axis_mode /var/www/temp/macro_trace  /var/www/temp/macro_response';
-	$_output_command = shell_exec ( $_4th_axis_mmode );
+	$_output_command = shell_exec ( $_4th_axis_mode );
 	
 }
 

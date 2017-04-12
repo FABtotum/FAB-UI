@@ -8,7 +8,7 @@ class Jog extends Module {
         //FLUSH SERIAL PORT BUFFER INPUT/OUTPUT
         $this->load->helper('print_helper');
         /** IF PRINTER IS BUSY I CANT JOG  */
-        if(is_printer_busy()){
+        if (is_printer_busy()) {
             redirect('dashboard');
         }
         
@@ -16,33 +16,43 @@ class Jog extends Module {
         
 	}
 
-	public function index(){
-		
-		
+    private function index_impl($index_view) {
 		$this -> config -> load('fabtotum', TRUE);
 		$units = json_decode(file_get_contents($this -> config -> item('fabtotum_config_units', 'fabtotum')), TRUE);
 
         
         $data['max_temp'] = isset($units['hardware']['head']['max_temp']) ? $units['hardware']['head']['max_temp'] : 230;
 		
-		$css_in_page = $this->load->view('index/css', '', TRUE);
-		$js_in_page  = $this->load->view('index/js', $data, TRUE);
+		$css_in_page = $this->load->view($index_view.'/css', '', TRUE);
+		$js_in_page  = $this->load->view($index_view.'/js', $data, TRUE);
 
 		$this->layout->add_css_in_page(array('data'=> $css_in_page, 'comment' => 'JOG CSS'));
 		$this->layout->add_js_in_page(array('data'=> $js_in_page, 'comment' => 'JOG JS'));
-		
-		
+
         $this->layout->add_js_file(array('src'=>'/assets/js/plugin/knob/jquery.knob.min.js', 'comment'=>'KNOB'));
 		
 		$this->layout->set_compress(false);
-	
-		$this->layout->view('index/index', $data); 
+
+		$this->layout->view($index_view.'/index', $data);
 	}
-    
-    
-    
-    
-    public function setup(){
+
+	public function index() {
+        if (ENVIRONMENT == 'production') {
+            $this->index_impl('index');
+        }
+        elseif (ENVIRONMENT == 'development') {
+            $this -> layout -> add_js_file(array('src' => '/assets/js/plugin/flot/jquery.flot.cust.min.js', 'comment' => 'create utilities'));
+            $this -> layout -> add_js_file(array('src' => '/assets/js/plugin/flot/jquery.flot.resize.min.js', 'comment' => 'create utilities'));
+            $this -> layout -> add_js_file(array('src' => '/assets/js/plugin/flot/jquery.flot.fillbetween.min.js', 'comment' => 'create utilities'));
+            $this -> layout -> add_js_file(array('src' => '/assets/js/plugin/flot/jquery.flot.orderBar.min.js', 'comment' => 'create utilities'));
+            $this -> layout -> add_js_file(array('src' => '/assets/js/plugin/flot/jquery.flot.time.min.js', 'comment' => 'create utilities'));
+            $this -> layout -> add_js_file(array('src' => '/assets/js/plugin/flot/jquery.flot.tooltip.min.js', 'comment' => 'create utilities'));
+            $this -> layout -> add_js_file(array('src' => '/assets/js/plugin/flot/jquery.flot.axislabels.js', 'comment' => 'create utilities'));
+            $this->index_impl('dev');
+        }
+    }
+
+    public function setup() {
         
         $this->load->database();
 		$this->load->model('configuration');
@@ -59,7 +69,6 @@ class Jog extends Module {
 	
 	
 	public function manual(){
-		
 		//carico X class database
 		$this->load->database();
 		$this->load->model('codes');
@@ -72,10 +81,6 @@ class Jog extends Module {
 		
 		$this->load->view('manual/index', $data);
 	}
-
-
-
-
 
 }
 

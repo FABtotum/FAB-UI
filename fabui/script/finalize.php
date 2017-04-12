@@ -134,7 +134,7 @@ function finalize_print($tid, $status) {
 	
 	//UPDATE TASK
 	update_task($tid, $status, file_get_contents($task['attributes']));
-	
+
 	if($percent < 0.2){
 		shell_exec('sudo python '.PYTHON_PATH.'boot.py -R -f');
 		sleep(2);
